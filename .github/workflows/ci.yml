@@ -1,0 +1,123 @@
+name: ci
+
+on:
+  push:
+    # issue#N and hotfix/* branches are validated in their pull request (avoids duplicate runs)
+    branches: [main, pre, dev]
+  pull_request:
+    branches: [dev, pre, main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build-test:
+    name: Lint, tests, coverage and build
+    runs-on: ubuntu-24.04
+    env:
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      PRIMEUI_LICENSE: ${{ secrets.PRIMEUI_LICENSE }}
+      # pre (staging) pushes and PRs into pre use environment.pre.ts; everything else is a production build
+      BUILD_CONFIGURATION: ${{ (github.ref == 'refs/heads/pre' || github.base_ref == 'pre') && 'pre' || 'production' }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0 # SonarQube needs the history to compute new code
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Tests and coverage (>= 80%)
+        run: npm run test:ci
+
+      - name: Coverage summary
+        if: always()
+        run: |
+          echo "## Coverage (Vitest)" >> "$GITHUB_STEP_SUMMARY"
+          if [ -f coverage/oneleft/lcov.info ]; then
+            awk -F: '/^LF:/{lf+=$2} /^LH:/{lh+=$2} /^BRF:/{bf+=$2} /^BRH:/{bh+=$2} /^FNF:/{ff+=$2} /^FNH:/{fh+=$2}
+              END {printf "| Metric | Coverage |\n|---|---|\n| Lines | %.1f %% (%d/%d) |\n| Branches | %.1f %% (%d/%d) |\n| Functions | %.1f %% (%d/%d) |\n",
+                   100*lh/lf, lh, lf, 100*bh/bf, bh, bf, 100*fh/ff, fh, ff}' coverage/oneleft/lcov.info >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Build (${{ env.BUILD_CONFIGURATION }})
+        run: |
+          if [ -n "$PRIMEUI_LICENSE" ]; then
+            npx ng build --configuration "$BUILD_CONFIGURATION" --define "PRIMEUI_LICENSE='$PRIMEUI_LICENSE'"
+          else
+            echo "::notice::PRIMEUI_LICENSE is not set; the app will show the PrimeNG license notice."
+            npx ng build --configuration "$BUILD_CONFIGURATION"
+          fi
+
+      - name: Upload build and coverage
+        uses: actions/upload-artifact@v7
+        with:
+          name: frontend
+          path: |
+            dist/oneleft/browser
+            coverage/oneleft
+
+      - name: SonarQube Cloud analysis
+        if: env.SONAR_TOKEN != ''
+        uses: SonarSource/sonarqube-scan-action@v8
+
+      - name: Notice when SonarQube Cloud is missing
+        if: env.SONAR_TOKEN == ''
+        run: echo "::notice::SONAR_TOKEN is not set; skipping the SonarQube Cloud analysis."
+
+  # Result of the CI in the project Slack channel, for pushes to dev/pre/main and for pull requests. The webhook URL
+  # is a secret (SLACK_WEBHOOK_URL), never in the repository; without it the notification is skipped. Pull requests
+  # from forks do not receive secrets, so they are skipped too.
+  notify:
+    name: Slack notification
+    needs: [build-test]
+    if: always()
+    runs-on: ubuntu-24.04
+    env:
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      RESULT: ${{ contains(needs.*.result, 'failure') && 'failure' || (contains(needs.*.result, 'cancelled') && 'cancelled' || 'success') }}
+    steps:
+      - name: Notify the project channel
+        if: env.SLACK_WEBHOOK_URL != ''
+        env:
+          REPO: ${{ github.repository }}
+          BRANCH: ${{ github.ref_name }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          COMMIT: ${{ github.event.head_commit.message }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_BRANCH: ${{ github.head_ref }}
+          ACTOR: ${{ github.actor }}
+          PUBLISHED: ''
+        run: |
+          case "$RESULT" in
+            success) status=":white_check_mark: CI passed" ;;
+            failure) status=":x: CI failed" ;;
+            *) status=":warning: CI cancelled" ;;
+          esac
+          if [ "$RESULT" = success ] && [ -n "$PUBLISHED" ] && [ -z "$PR_NUMBER" ] && [ "$BRANCH" != dev ]; then
+            status="$status · $PUBLISHED :$([ "$BRANCH" = main ] && echo latest || echo pre)"
+          fi
+          if [ -n "$PR_NUMBER" ]; then
+            # Pull request: the ref is refs/pull/N/merge, so show the PR and its branch instead
+            BRANCH="$PR_BRANCH → PR #$PR_NUMBER"
+            COMMIT="$PR_TITLE"
+          fi
+          text=$(printf '%s *%s* · `%s`\n%s (%s)\n<%s|View run>' "$status" "$REPO" "$BRANCH" "${COMMIT%%$'\n'*}" "$ACTOR" "$RUN_URL")
+          jq -n --arg text "$text" '{text: $text}' | curl -fsS -X POST -H 'Content-Type: application/json' --data @- "$SLACK_WEBHOOK_URL"
+
+      - name: Notice when Slack is not configured
+        if: env.SLACK_WEBHOOK_URL == ''
+        run: echo "::notice::SLACK_WEBHOOK_URL is not set; skipping the Slack notification."
