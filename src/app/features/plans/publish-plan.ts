@@ -1,7 +1,8 @@
-import { ChangeDetectorRef, Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ChangeDetectorRef, Component, computed, DestroyRef, inject, OnInit, signal } from '@angular/core';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { Button } from 'primeng/button';
 import { InputNumber } from 'primeng/inputnumber';
 import { InputText } from 'primeng/inputtext';
@@ -10,16 +11,42 @@ import { Select } from 'primeng/select';
 import { SelectButton } from 'primeng/selectbutton';
 import { Textarea } from 'primeng/textarea';
 import { PlansApi } from '../../core/api/plans-api';
-import { ApproximateLocation, MEETING_POINT_DECIMALS } from '../../core/geo/approximate-location';
-import { ACTIVITIES } from '../../shared/model/activities';
-import { LEVEL_LABELS, Level } from '../../shared/model/profile';
+import { ApproximateLocation, LocationError, MEETING_POINT_DECIMALS } from '../../core/geo/approximate-location';
+import { apiErrorKey } from '../../core/i18n/api-error';
+import { ACTIVITIES, activityKey } from '../../shared/model/activities';
+import { Level, LEVELS, levelKey } from '../../shared/model/profile';
 import { MAX_HORIZON_HOURS, nextOccurrence, startsInRange } from '../../shared/time/plan-time';
 
 type StartOption = '30' | '60' | '120' | '180' | 'custom';
 
+const START_OPTIONS: { key: string; value: StartOption }[] = [
+  { key: 'publish.in30', value: '30' },
+  { key: 'publish.in60', value: '60' },
+  { key: 'publish.in120', value: '120' },
+  { key: 'publish.in180', value: '180' },
+  { key: 'publish.custom', value: 'custom' },
+];
+
+/** Message shown under the form: a translation key and its parameters. */
+interface StatusMessage {
+  key: string;
+  params?: Record<string, unknown>;
+}
+
 @Component({
   selector: 'app-publish-plan',
-  imports: [ReactiveFormsModule, RouterLink, Button, InputNumber, InputText, Message, Select, SelectButton, Textarea],
+  imports: [
+    ReactiveFormsModule,
+    RouterLink,
+    Button,
+    InputNumber,
+    InputText,
+    Message,
+    Select,
+    SelectButton,
+    Textarea,
+    TranslocoPipe,
+  ],
   templateUrl: './publish-plan.html',
 })
 export class PublishPlan implements OnInit {
@@ -27,26 +54,32 @@ export class PublishPlan implements OnInit {
   private readonly location = inject(ApproximateLocation);
   private readonly router = inject(Router);
   private readonly fb = inject(NonNullableFormBuilder);
+  private readonly transloco = inject(TranslocoService);
   private readonly changeDetector = inject(ChangeDetectorRef);
   private readonly destroyRef = inject(DestroyRef);
 
-  protected readonly activities = ACTIVITIES;
+  /** Active language as a signal: the PrimeNG option labels are recomputed when it changes. */
+  private readonly lang = toSignal(this.transloco.langChanges$, { initialValue: this.transloco.getActiveLang() });
+  private readonly translate = (key: string) => {
+    this.lang();
+    return this.transloco.translate(key);
+  };
+
   protected readonly maxHours = MAX_HORIZON_HOURS;
-  protected readonly startOptions: { label: string; value: StartOption }[] = [
-    { label: 'En 30 min', value: '30' },
-    { label: 'En 1 h', value: '60' },
-    { label: 'En 2 h', value: '120' },
-    { label: 'En 3 h', value: '180' },
-    { label: 'Otra hora', value: 'custom' },
-  ];
-  protected readonly levelOptions: { label: string; value: Level | null }[] = [
-    { label: 'Cualquiera', value: null },
-    ...(Object.entries(LEVEL_LABELS) as [Level, string][]).map(([value, label]) => ({ label, value })),
-  ];
+  protected readonly activities = computed(() =>
+    ACTIVITIES.map(({ code }) => ({ code, name: this.translate(activityKey(code)) })),
+  );
+  protected readonly startOptions = computed(() =>
+    START_OPTIONS.map(({ key, value }) => ({ label: this.translate(key), value })),
+  );
+  protected readonly levelOptions = computed<{ label: string; value: Level | null }[]>(() => [
+    { label: this.translate('publish.anyLevel'), value: null },
+    ...LEVELS.map((value) => ({ label: this.translate(levelKey(value)), value })),
+  ]);
 
   protected readonly publishing = signal(false);
   protected readonly locating = signal(false);
-  protected readonly error = signal<string | null>(null);
+  protected readonly error = signal<StatusMessage | null>(null);
 
   protected readonly form = this.fb.group({
     activity: ['', Validators.required],
@@ -88,7 +121,7 @@ export class PublishPlan implements OnInit {
       const { latitude, longitude } = await this.location.current(MEETING_POINT_DECIMALS);
       this.form.patchValue({ latitude, longitude });
     } catch (error) {
-      this.error.set((error as Error).message);
+      this.error.set({ key: error instanceof LocationError ? error.translationKey : 'errors.location.denied' });
     } finally {
       this.locating.set(false);
     }
@@ -99,7 +132,9 @@ export class PublishPlan implements OnInit {
     if (this.form.invalid || !startsAt) {
       this.form.markAllAsTouched();
       this.error.set(
-        startsAt ? 'Revisa los campos marcados' : `Elige una hora dentro de las próximas ${MAX_HORIZON_HOURS} horas`,
+        startsAt
+          ? { key: 'publish.checkFields' }
+          : { key: 'publish.chooseTime', params: { hours: MAX_HORIZON_HOURS } },
       );
       return;
     }
@@ -120,7 +155,7 @@ export class PublishPlan implements OnInit {
         next: (plan) => this.router.navigate(['/plans', plan.id], { queryParams: { published: 1 } }),
         error: (error) => {
           this.publishing.set(false);
-          this.error.set(error?.error?.detail ?? 'No se ha podido publicar el plan');
+          this.error.set({ key: apiErrorKey(this.transloco, error, 'errors.publishFailed') });
         },
       });
   }

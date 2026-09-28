@@ -6,6 +6,7 @@ import { FakeSession } from '../../../testing/fake-session';
 import { Session } from '../../core/auth/session';
 import { Home } from './home';
 import { SAMPLE_PLANS } from './sample-plans';
+import { translocoTesting } from '../../../testing/transloco-testing';
 
 describe('Home', () => {
   let fixture: ComponentFixture<Home>;
@@ -15,7 +16,7 @@ describe('Home', () => {
   beforeEach(async () => {
     session = new FakeSession();
     await TestBed.configureTestingModule({
-      imports: [Home],
+      imports: [Home, translocoTesting()],
       providers: [
         provideRouter([]),
         provideHttpClient(),
@@ -54,7 +55,7 @@ describe('Home', () => {
   });
 
   it('should offer login and registration without a session', () => {
-    const buttons = element.querySelectorAll('header p-button button');
+    const buttons = element.querySelectorAll('header p-button:not(.language-switcher) button');
     (buttons[0] as HTMLButtonElement).click();
     (buttons[1] as HTMLButtonElement).click();
     expect(session.register).toHaveBeenCalled();
@@ -92,6 +93,19 @@ describe('Home', () => {
     expect(myPlan?.textContent).toContain('Mi partido de pádel');
     expect(myPlan?.textContent).toContain('Falta 1');
     expect(myPlan?.getAttribute('href')).toBe('/plans/plan-1');
+  });
+
+  it('should switch to English and back from the header', async () => {
+    (element.querySelector('.language-switcher button') as HTMLButtonElement).click();
+    fixture.detectChanges();
+    await fixture.whenStable();
+    expect(element.querySelector('h1')?.textContent).toContain('One short?');
+    expect(Array.from(element.querySelectorAll('p-tag')).map((t) => t.textContent?.trim())).toContain('1 spot left');
+    expect(document.documentElement.lang).toBe('en');
+    (element.querySelector('.language-switcher button') as HTMLButtonElement).click();
+    fixture.detectChanges();
+    await fixture.whenStable();
+    expect(element.querySelector('h1')?.textContent).toContain('¿Te falta uno?');
   });
 
   it('should not ask for my plans without a session', () => {

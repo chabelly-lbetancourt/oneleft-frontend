@@ -4,9 +4,11 @@ import { of, throwError } from 'rxjs';
 import { FakeSession } from '../../../testing/fake-session';
 import { UsersApi } from '../../core/api/users-api';
 import { Session } from '../../core/auth/session';
-import { ApproximateLocation } from '../../core/geo/approximate-location';
+import { ApproximateLocation, LocationError } from '../../core/geo/approximate-location';
 import { Catalog, MyProfile } from '../../shared/model/profile';
+import { TranslocoService } from '@jsverse/transloco';
 import { Profile } from './profile';
+import { translocoTesting } from '../../../testing/transloco-testing';
 
 const CATALOG: Catalog = {
   activities: ['PADEL', 'CINEMA', 'RUNNING'],
@@ -49,7 +51,7 @@ describe('Profile', () => {
     session = new FakeSession();
     session.signIn('Ana Test');
     TestBed.configureTestingModule({
-      imports: [Profile],
+      imports: [Profile, translocoTesting()],
       providers: [
         provideRouter([]),
         { provide: Session, useValue: session },
@@ -114,7 +116,7 @@ describe('Profile', () => {
   });
 
   it('should explain why the location is not available', async () => {
-    location.current.mockRejectedValue(new Error('No se ha podido obtener tu ubicación'));
+    location.current.mockRejectedValue(new LocationError('denied'));
     await call<Promise<void>>('useMyLocation');
     await render();
     expect(element().querySelector('.status-message')?.textContent).toContain('No se ha podido obtener tu ubicación');
@@ -144,7 +146,7 @@ describe('Profile', () => {
 
   it('should show the reason given by the server when saving fails', async () => {
     api.updateMyProfile.mockReturnValue(
-      throwError(() => ({ error: { detail: 'Cada actividad solo puede aparecer una vez' } })),
+      throwError(() => ({ error: { code: 'profile.duplicateActivity', detail: 'Each activity can only appear once' } })),
     );
     call('save');
     await render();
@@ -153,6 +155,24 @@ describe('Profile', () => {
     call('save');
     await render();
     expect(element().querySelector('.status-message')?.textContent).toContain('No se ha podido guardar el perfil');
+    api.updateMyProfile.mockReturnValue(throwError(() => ({ error: { code: 'unknown.code' } })));
+    call('save');
+    await render();
+    expect(element().querySelector('.status-message')?.textContent).toContain('No se ha podido guardar el perfil');
+  });
+
+  it('should show levels, activities and roles in English', async () => {
+    TestBed.inject(TranslocoService).setActiveLang('en');
+    await render();
+    const tags = Array.from(element().querySelectorAll('p-tag')).map((t) => t.textContent?.trim());
+    expect(tags).toEqual(['Administrator', 'User']);
+    expect(call<{ name: string }[]>('activityOptions', 0).map((o) => o.name)).toEqual(['Padel', 'Cinema', 'Running']);
+    expect((component['levelOptions'] as () => { label: string }[])().map((o) => o.label)).toEqual([
+      'Beginner',
+      'Intermediate',
+      'Advanced',
+    ]);
+    expect(element().querySelector('h1')?.textContent).toContain('My profile');
   });
 
   it('should not save an invalid profile', async () => {
@@ -175,7 +195,7 @@ describe('Profile', () => {
   });
 
   it('should log out', async () => {
-    (element().querySelector('p-button[label="Cerrar sesión"] button') as HTMLButtonElement).click();
+    (element().querySelector('.logout-button button') as HTMLButtonElement).click();
     expect(session.logout).toHaveBeenCalled();
   });
 });
