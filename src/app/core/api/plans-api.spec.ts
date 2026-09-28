@@ -18,12 +18,15 @@ describe('PlansApi', () => {
     api.publish(plan).subscribe();
     api.plan('abc').subscribe();
     api.mine().subscribe();
+    api.join('abc').subscribe();
 
     const post = http.expectOne({ method: 'POST', url: base });
     expect(post.request.body).toEqual(plan);
     post.flush({});
     http.expectOne({ method: 'GET', url: `${base}/abc` }).flush({});
     http.expectOne({ method: 'GET', url: `${base}/mine` }).flush([]);
+    http.expectOne({ method: 'POST', url: `${base}/abc/participants` }).flush({});
+    expect(api.eventsStreamUrl()).toBe(`${base}/events/stream`);
     http.verify();
   });
 

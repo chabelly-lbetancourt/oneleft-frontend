@@ -23,6 +23,16 @@ export class PlansApi {
     return this.http.get<Plan[]>(`${this.base}/mine`);
   }
 
+  /** Takes a free spot in the plan (HU-005). */
+  join(id: string): Observable<Plan> {
+    return this.http.post<Plan>(`${this.base}/${id}/participants`, null);
+  }
+
+  /** URL of the personal Server-Sent Events stream (someone joined one of my plans). */
+  eventsStreamUrl(): string {
+    return `${this.base}/events/stream`;
+  }
+
   /** URL of the nearby plans list; the page reads it through httpResource so it can reload it. */
   nearbyUrl(): string {
     return `${this.base}/nearby`;

@@ -4,6 +4,7 @@ import { computed, signal } from '@angular/core';
 export class FakeSession {
   readonly authenticated = signal(false);
   readonly name = signal('');
+  readonly userId = signal<string | null>(null);
   readonly isAuthenticated = computed(() => this.authenticated());
   readonly userName = computed(() => this.name());
   readonly initials = computed(() => this.name().slice(0, 2).toUpperCase());
@@ -11,8 +12,9 @@ export class FakeSession {
   readonly register = vi.fn();
   readonly logout = vi.fn();
 
-  signIn(name: string): void {
+  signIn(name: string, id = 'me'): void {
     this.name.set(name);
+    this.userId.set(id);
     this.authenticated.set(true);
   }
 }
