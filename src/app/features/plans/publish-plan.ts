@@ -12,7 +12,7 @@ import { SelectButton } from 'primeng/selectbutton';
 import { Textarea } from 'primeng/textarea';
 import { PlansApi } from '../../core/api/plans-api';
 import { ApproximateLocation, LocationError, MEETING_POINT_DECIMALS } from '../../core/geo/approximate-location';
-import { apiErrorKey } from '../../core/i18n/api-error';
+import { apiErrorMessage } from '../../core/i18n/api-error';
 import { ACTIVITIES, activityKey } from '../../shared/model/activities';
 import { Level, LEVELS, levelKey } from '../../shared/model/profile';
 import { MAX_HORIZON_HOURS, nextOccurrence, startsInRange } from '../../shared/time/plan-time';
@@ -155,7 +155,7 @@ export class PublishPlan implements OnInit {
         next: (plan) => this.router.navigate(['/plans', plan.id], { queryParams: { published: 1 } }),
         error: (error) => {
           this.publishing.set(false);
-          this.error.set({ key: apiErrorKey(this.transloco, error, 'errors.publishFailed') });
+          this.error.set(apiErrorMessage(this.transloco, error, 'errors.publishFailed'));
         },
       });
   }
