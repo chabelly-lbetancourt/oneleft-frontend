@@ -8,7 +8,7 @@
 
 Aplicación web **Angular** con **PrimeNG** y **Tailwind CSS**, empaquetada como app nativa de **Android** con **Capacitor** a partir del mismo código.
 
-**Stack:** Angular 22 (sin Zone.js, con signals) · PrimeNG 22 · Tailwind CSS 4 · Capacitor · Android · Vitest · SonarQube
+**Stack:** Angular 22 (sin Zone.js, con signals) · PrimeNG 22 · Tailwind CSS 4 · Transloco (es/en) · angular-auth-oidc-client · Capacitor · Android · Vitest · SonarQube
 
 **IDE recomendado:** WebStorm (Android Studio para compilar la app de Android)
 
@@ -27,16 +27,53 @@ npm run build                  # build de producción en dist/oneleft
 
 ```
 src/app/
-├── core/       configuración transversal: tema de PrimeNG, licencia
-├── features/   una carpeta por funcionalidad (home, plans, profile...)
-└── shared/     modelos y componentes reutilizables
+├── core/
+│   ├── api/        clientes de los servicios users y plans (a través del gateway)
+│   ├── auth/       OpenID Connect con Keycloak (PKCE) y sesión como signals
+│   ├── geo/        ubicación aproximada: se redondea antes de salir del dispositivo
+│   ├── i18n/       idioma activo, cargador de traducciones, títulos y errores de la API traducidos
+│   └── theme/      tema de PrimeNG con el naranja de marca
+├── features/       una carpeta por funcionalidad: home, plans (publicar, detalle), profile
+└── shared/         modelos, reglas de tiempo de los planes y componentes (selector de idioma)
+public/i18n/        traducciones es.json y en.json
 ```
+
+| Ruta | Pantalla | Sesión |
+|---|---|---|
+| `/` | Inicio: tus próximos planes y planes cerca | Opcional |
+| `/profile` | Mi perfil (HU-002) | Obligatoria |
+| `/plans/new` | Publicar un plan (HU-003) | Obligatoria |
+| `/plans/:id` | Detalle de un plan | Obligatoria |
 
 - **PrimeNG** aporta los componentes (botones, etiquetas, avatares, tablas, formularios) con un tema propio
   basado en Aura y el naranja de marca ([`core/theme/oneleft-preset.ts`](src/app/core/theme/oneleft-preset.ts)).
 - **Tailwind CSS 4** se encarga del diseño y la maquetación *mobile-first*. El plugin `tailwindcss-primeui`
   expone los colores de PrimeNG como utilidades de Tailwind (`bg-primary`, `text-muted-color`...).
 - PrimeNG va en su propia capa CSS (`primeng`) para que las utilidades de Tailwind puedan sobrescribirlo.
+
+## Idiomas (HU-022)
+
+- **Transloco** traduce en tiempo de ejecución: un único bundle para la web y Android, y se cambia de idioma sin
+  recargar la página.
+- Los textos están en `public/i18n/es.json` y `en.json` (mismas claves). Actividades, niveles y errores de la API se
+  traducen a partir de sus códigos.
+- **Idioma inicial:** el elegido antes (guardado en `localStorage`); si no, el del navegador o dispositivo; y si no,
+  español. El login de Keycloak recibe `ui_locales` y sale en el mismo idioma.
+- **El código va en inglés** (ver [CONTRIBUTING.md](CONTRIBUTING.md)); ningún texto visible se escribe en las
+  plantillas.
+
+## Entornos
+
+| Rama | Entorno | Configuración de build | API y Keycloak |
+|---|---|---|---|
+| `dev` | dev (local) | `development` / `production` | `environment.ts`: `localhost:8080` y `localhost:8180` |
+| `pre` | pre (*staging*) | `pre` | `environment.pre.ts`: mismo origen que la web (`/api`, `/auth`) |
+| `main` | pro | `production` (se completará con el despliegue en AWS) | — |
+
+```bash
+npx ng build --configuration pre                                        # web de pre
+npx ng build --configuration pre --define "ONELEFT_ORIGIN='https://…'"  # app Android contra pre
+```
 
 ## Licencia de PrimeNG
 

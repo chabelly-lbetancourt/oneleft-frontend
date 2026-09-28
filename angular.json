@@ -51,6 +51,27 @@
               "optimization": false,
               "extractLicenses": false,
               "sourceMap": true
+            },
+            "pre": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "700kB",
+                  "maximumError": "1MB"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "4kB",
+                  "maximumError": "8kB"
+                }
+              ],
+              "outputHashing": "all",
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.pre.ts"
+                }
+              ]
             }
           },
           "defaultConfiguration": "production"
@@ -63,6 +84,9 @@
             },
             "development": {
               "buildTarget": "oneleft:build:development"
+            },
+            "pre": {
+              "buildTarget": "oneleft:build:pre"
             }
           },
           "defaultConfiguration": "development"
