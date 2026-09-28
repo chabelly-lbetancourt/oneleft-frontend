@@ -16,6 +16,21 @@ export interface PublishPlan {
   level: Level | null;
 }
 
+export interface Participant {
+  userId: string;
+  name: string;
+  joinedAt: string;
+}
+
+/** Someone has joined one of my plans (personal real-time stream). */
+export interface PlanJoinedNotice {
+  planId: string;
+  title: string;
+  participantName: string;
+  freeSpots: number;
+  full: boolean;
+}
+
 export interface Plan extends PublishPlan {
   id: string;
   organizerId: string;
@@ -24,4 +39,5 @@ export interface Plan extends PublishPlan {
   freeSpots: number;
   status: 'OPEN' | 'FULL' | 'IN_PROGRESS' | 'FINISHED' | 'CANCELLED';
   publishedAt: string;
+  participants: Participant[];
 }
