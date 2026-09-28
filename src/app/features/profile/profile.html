@@ -1,0 +1,53 @@
+<div class="min-h-full">
+  <header class="bg-surface-0 border-b border-surface-200">
+    <div class="mx-auto max-w-3xl flex items-center gap-2 px-4 py-3">
+      <p-button icon="pi pi-arrow-left" [text]="true" [rounded]="true" routerLink="/" ariaLabel="Volver" />
+      <h1 class="text-lg font-bold">Mi perfil</h1>
+    </div>
+  </header>
+
+  <main class="mx-auto max-w-3xl px-4 py-6">
+    @if (profile.isLoading()) {
+      <p class="text-muted-color">Cargando tu perfil…</p>
+    } @else if (profile.error()) {
+      <div class="profile-error rounded-2xl border border-red-200 bg-red-50 p-4 text-red-800">
+        No se ha podido cargar tu perfil. Inténtalo de nuevo más tarde.
+      </div>
+    } @else if (profile.value(); as user) {
+      <section class="profile-card rounded-2xl bg-surface-0 border border-surface-200 p-6 shadow-sm">
+        <div class="flex items-center gap-4">
+          <p-avatar
+            [label]="session.initials()"
+            shape="circle"
+            size="xlarge"
+            class="bg-primary-100! text-primary-700! font-bold"
+          />
+          <div class="min-w-0">
+            <h2 class="text-xl font-bold truncate">{{ user.name }}</h2>
+            <p class="text-muted-color truncate">{{ user.email }}</p>
+          </div>
+        </div>
+
+        <div class="mt-5 flex flex-wrap gap-2">
+          @for (role of user.roles; track role) {
+            <p-tag [value]="roleLabel(role)" [severity]="role === 'ADMIN' ? 'danger' : 'info'" [rounded]="true" />
+          }
+        </div>
+
+        <dl class="mt-6 text-sm">
+          <dt class="text-muted-color">Identificador</dt>
+          <dd class="font-mono break-all">{{ user.id }}</dd>
+        </dl>
+      </section>
+
+      <p-button
+        label="Cerrar sesión"
+        icon="pi pi-sign-out"
+        severity="secondary"
+        [outlined]="true"
+        styleClass="w-full mt-6"
+        (onClick)="session.logout()"
+      />
+    }
+  </main>
+</div>

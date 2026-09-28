@@ -1,16 +1,19 @@
-import { Component, computed, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { Avatar } from 'primeng/avatar';
 import { Button } from 'primeng/button';
 import { Tag } from 'primeng/tag';
+import { Session } from '../../core/auth/session';
 import { PlanSummary } from '../../shared/model/plan';
 import { SAMPLE_PLANS } from './sample-plans';
 
 @Component({
   selector: 'app-home',
-  imports: [Avatar, Button, Tag],
+  imports: [Avatar, Button, RouterLink, Tag],
   templateUrl: './home.html',
 })
 export class Home {
+  protected readonly session = inject(Session);
   protected readonly plans = signal<PlanSummary[]>(SAMPLE_PLANS);
   protected readonly plansByStart = computed(() =>
     [...this.plans()].sort((a, b) => a.startsAt.getTime() - b.startsAt.getTime()),
