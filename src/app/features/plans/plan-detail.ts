@@ -9,7 +9,7 @@ import { Tag } from 'primeng/tag';
 import { filter } from 'rxjs';
 import { PlansApi } from '../../core/api/plans-api';
 import { Session } from '../../core/auth/session';
-import { apiErrorKey } from '../../core/i18n/api-error';
+import { ApiErrorMessage, apiErrorMessage } from '../../core/i18n/api-error';
 import { Language } from '../../core/i18n/language';
 import { UserEvents } from '../../core/realtime/user-events';
 import { activityKey, activityOf } from '../../shared/model/activities';
@@ -38,7 +38,7 @@ export class PlanDetail {
   protected readonly plan = signal<Plan | null>(null);
   protected readonly notFound = signal(false);
   protected readonly joining = signal(false);
-  protected readonly joinError = signal<string | null>(null);
+  protected readonly joinError = signal<ApiErrorMessage | null>(null);
   protected readonly justJoined = signal(false);
   protected readonly spotsKey = spotsKey;
   protected readonly activity = computed(() => activityOf(this.plan()?.activity ?? ''));
@@ -100,7 +100,7 @@ export class PlanDetail {
       },
       error: (error) => {
         this.joining.set(false);
-        this.joinError.set(apiErrorKey(this.transloco, error, 'errors.joinFailed'));
+        this.joinError.set(apiErrorMessage(this.transloco, error, 'errors.joinFailed'));
         // The plan may have changed (for example, the last spot was taken): show its current state
         this.load(this.id());
       },

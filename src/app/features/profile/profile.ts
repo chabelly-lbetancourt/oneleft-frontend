@@ -22,7 +22,7 @@ import { forkJoin } from 'rxjs';
 import { UsersApi } from '../../core/api/users-api';
 import { Session } from '../../core/auth/session';
 import { ApproximateLocation, LocationError } from '../../core/geo/approximate-location';
-import { apiErrorKey } from '../../core/i18n/api-error';
+import { apiErrorMessage } from '../../core/i18n/api-error';
 import { activityKey } from '../../shared/model/activities';
 import { Catalog, Level, levelKey, MAX_HOBBIES, MyProfile } from '../../shared/model/profile';
 import { LanguageSwitcher } from '../../shared/ui/language-switcher';
@@ -75,7 +75,7 @@ export class Profile implements OnInit {
   protected readonly saving = signal(false);
   protected readonly locating = signal(false);
   /** Message under the form, as a translation key. */
-  protected readonly status = signal<{ severity: 'success' | 'error'; key: string } | null>(null);
+  protected readonly status = signal<{ severity: 'success' | 'error'; key: string; params?: Record<string, unknown> } | null>(null);
 
   /** Active language as a signal: the PrimeNG option labels are recomputed when it changes. */
   private readonly lang = toSignal(this.transloco.langChanges$, { initialValue: this.transloco.getActiveLang() });
@@ -194,7 +194,7 @@ export class Profile implements OnInit {
       },
       error: (error) => {
         this.saving.set(false);
-        this.status.set({ severity: 'error', key: apiErrorKey(this.transloco, error, 'errors.saveFailed') });
+        this.status.set({ severity: 'error', ...apiErrorMessage(this.transloco, error, 'errors.saveFailed') });
       },
     });
   }
