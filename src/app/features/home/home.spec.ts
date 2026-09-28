@@ -4,6 +4,9 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { FakeSession } from '../../../testing/fake-session';
 import { Session } from '../../core/auth/session';
+import { UserEvents } from '../../core/realtime/user-events';
+import { PlanJoinedNotice } from '../../shared/model/published-plan';
+import { Subject } from 'rxjs';
 import { Home } from './home';
 import { translocoTesting } from '../../../testing/transloco-testing';
 
@@ -11,6 +14,7 @@ describe('Home', () => {
   let fixture: ComponentFixture<Home>;
   let element: HTMLElement;
   let session: FakeSession;
+  const notices = new Subject<PlanJoinedNotice>();
 
   beforeEach(async () => {
     session = new FakeSession();
@@ -21,6 +25,7 @@ describe('Home', () => {
         provideHttpClient(),
         provideHttpClientTesting(),
         { provide: Session, useValue: session },
+        { provide: UserEvents, useValue: { joined$: notices.asObservable() } },
       ],
     }).compileComponents();
     fixture = TestBed.createComponent(Home);
@@ -91,6 +96,19 @@ describe('Home', () => {
     fixture.detectChanges();
     await fixture.whenStable();
     expect(element.querySelector('h1')?.textContent).toContain('¿Te falta uno?');
+  });
+
+  it('should refresh my plans when someone joins one of them', async () => {
+    session.signIn('Ana Test');
+    fixture.detectChanges();
+    const http = TestBed.inject(HttpTestingController);
+    http.expectOne((r) => r.url.endsWith('/api/v1/plans/mine')).flush([]);
+    await fixture.whenStable();
+
+    notices.next({ planId: 'p1', title: 'Pádel', participantName: 'Lucía', freeSpots: 1, full: false });
+    fixture.detectChanges();
+
+    http.expectOne((r) => r.url.endsWith('/api/v1/plans/mine')).flush([]);
   });
 
   it('should not ask for my plans without a session', () => {
