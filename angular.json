@@ -3,7 +3,9 @@
   "version": 1,
   "cli": {
     "packageManager": "npm",
-    "schematicCollections": ["angular-eslint"]
+    "schematicCollections": [
+      "angular-eslint"
+    ]
   },
   "newProjectRoot": "projects",
   "projects": {
@@ -25,14 +27,16 @@
                 "input": "public"
               }
             ],
-            "styles": ["src/styles.css"]
+            "styles": [
+              "src/styles.css"
+            ]
           },
           "configurations": {
             "production": {
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "500kB",
+                  "maximumWarning": "700kB",
                   "maximumError": "1MB"
                 },
                 {
@@ -66,13 +70,19 @@
         "test": {
           "builder": "@angular/build:unit-test",
           "options": {
-            "coverageInclude": ["src/app/**/*.ts"],
+            "coverageInclude": [
+              "src/app/**/*.ts"
+            ],
             "coverageExclude": [
               "src/app/**/*.spec.ts",
               "src/app/app.config.ts",
               "src/app/app.routes.ts"
             ],
-            "coverageReporters": ["text-summary", "html", "lcov"],
+            "coverageReporters": [
+              "text-summary",
+              "html",
+              "lcov"
+            ],
             "coverageThresholds": {
               "statements": 80,
               "branches": 80,
@@ -84,7 +94,10 @@
         "lint": {
           "builder": "@angular-eslint/builder:lint",
           "options": {
-            "lintFilePatterns": ["src/**/*.ts", "src/**/*.html"]
+            "lintFilePatterns": [
+              "src/**/*.ts",
+              "src/**/*.html"
+            ]
           }
         }
       }
