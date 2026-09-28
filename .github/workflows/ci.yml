@@ -1,0 +1,75 @@
+name: ci
+
+on:
+  push:
+    branches: [main, dev, 'issue#*', 'hotfix/**']
+  pull_request:
+    branches: [dev, main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build-test:
+    name: Lint, tests, cobertura y build
+    runs-on: ubuntu-24.04
+    env:
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      PRIMEUI_LICENSE: ${{ secrets.PRIMEUI_LICENSE }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0 # SonarQube necesita el historial para calcular el código nuevo
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Tests y cobertura (≥ 80 %)
+        run: npm run test:ci
+
+      - name: Resumen de cobertura
+        if: always()
+        run: |
+          echo "## Cobertura (Vitest)" >> "$GITHUB_STEP_SUMMARY"
+          if [ -f coverage/oneleft/lcov.info ]; then
+            awk -F: '/^LF:/{lf+=$2} /^LH:/{lh+=$2} /^BRF:/{bf+=$2} /^BRH:/{bh+=$2} /^FNF:/{ff+=$2} /^FNH:/{fh+=$2}
+              END {printf "| Métrica | Cobertura |\n|---|---|\n| Líneas | %.1f %% (%d/%d) |\n| Ramas | %.1f %% (%d/%d) |\n| Funciones | %.1f %% (%d/%d) |\n",
+                   100*lh/lf, lh, lf, 100*bh/bf, bh, bf, 100*fh/ff, fh, ff}' coverage/oneleft/lcov.info >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Build de producción
+        run: |
+          if [ -n "$PRIMEUI_LICENSE" ]; then
+            npx ng build --define "PRIMEUI_LICENSE='$PRIMEUI_LICENSE'"
+          else
+            echo "::notice::PRIMEUI_LICENSE no configurado; la app mostrará el aviso de licencia de PrimeNG."
+            npx ng build
+          fi
+
+      - name: Guardar build y cobertura
+        uses: actions/upload-artifact@v7
+        with:
+          name: frontend
+          path: |
+            dist/oneleft/browser
+            coverage/oneleft
+
+      - name: Análisis en SonarQube Cloud
+        if: env.SONAR_TOKEN != ''
+        uses: SonarSource/sonarqube-scan-action@v8
+
+      - name: Aviso si falta SonarQube Cloud
+        if: env.SONAR_TOKEN == ''
+        run: echo "::notice::SONAR_TOKEN no configurado; se omite el análisis de SonarQube Cloud."
