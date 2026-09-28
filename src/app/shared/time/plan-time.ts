@@ -23,20 +23,31 @@ export const startsInRange = (startsAt: Date, now: Date): boolean => {
   return diff >= MIN_LEAD_MINUTES * MINUTE && diff <= MAX_HORIZON_HOURS * 60 * MINUTE;
 };
 
-/** Relative text: "en 45 min", "en 2 h", "en 1 h 30 min", "ya ha empezado". */
-export const startsInLabel = (startsAt: Date, now: Date): string => {
+/** Translation key and parameters of a relative time. */
+export interface RelativeTime {
+  key: string;
+  params: Record<string, number>;
+}
+
+/** Relative start: "in 45 min", "in 2 h", "in 1 h 30 min" or "already started" (keys under time.*). */
+export const startsIn = (startsAt: Date, now: Date): RelativeTime => {
   const minutes = Math.round((startsAt.getTime() - now.getTime()) / MINUTE);
   if (minutes <= 0) {
-    return 'ya ha empezado';
+    return { key: 'time.started', params: {} };
   }
   if (minutes < 60) {
-    return `en ${minutes} min`;
+    return { key: 'time.inMinutes', params: { minutes } };
   }
   const hours = Math.floor(minutes / 60);
   const rest = minutes % 60;
-  return rest === 0 ? `en ${hours} h` : `en ${hours} h ${rest} min`;
+  return rest === 0
+    ? { key: 'time.inHours', params: { hours } }
+    : { key: 'time.inHoursMinutes', params: { hours, minutes: rest } };
 };
 
-/** Local time in 24-hour format, for example "18:30". */
-export const clockTime = (date: Date): string =>
-  date.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', hour12: false });
+/** Local time in 24-hour format in the given locale, for example "18:30". */
+export const clockTime = (date: Date, locale = 'es-ES'): string =>
+  date.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit', hour12: false });
+
+/** Translation key of the free spots label: singular or plural (the count goes as a parameter). */
+export const spotsKey = (freeSpots: number): string => (freeSpots === 1 ? 'spots.one' : 'spots.other');

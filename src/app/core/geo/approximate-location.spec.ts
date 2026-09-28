@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { ApproximateLocation, roundCoordinate } from './approximate-location';
+import { ApproximateLocation, LocationError, roundCoordinate } from './approximate-location';
 
 describe('ApproximateLocation', () => {
   const original = globalThis.navigator.geolocation;
@@ -28,11 +28,13 @@ describe('ApproximateLocation', () => {
       getCurrentPosition: (_: PositionCallback, error: PositionErrorCallback) =>
         error({ code: 1 } as GeolocationPositionError),
     });
-    await expect(TestBed.inject(ApproximateLocation).current()).rejects.toThrow('No se ha podido obtener tu ubicación');
+    const error = await TestBed.inject(ApproximateLocation).current().catch((e: LocationError) => e);
+    expect(error).toBeInstanceOf(LocationError);
+    expect((error as LocationError).translationKey).toBe('errors.location.denied');
   });
 
   it('should fail when geolocation is not available', async () => {
     setGeolocation(undefined);
-    await expect(TestBed.inject(ApproximateLocation).current()).rejects.toThrow('no está disponible');
+    await expect(TestBed.inject(ApproximateLocation).current()).rejects.toMatchObject({ code: 'unavailable' });
   });
 });

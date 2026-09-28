@@ -3,7 +3,9 @@ import { provideRouter } from '@angular/router';
 import { of, throwError } from 'rxjs';
 import { PlansApi } from '../../core/api/plans-api';
 import { Plan } from '../../shared/model/published-plan';
+import { TranslocoService } from '@jsverse/transloco';
 import { PlanDetail } from './plan-detail';
+import { translocoTesting } from '../../../testing/transloco-testing';
 
 const PLAN: Plan = {
   id: 'plan-1',
@@ -30,7 +32,7 @@ describe('PlanDetail', () => {
   const create = async (plan: unknown, published?: string) => {
     api.plan.mockReturnValue(plan instanceof Error ? throwError(() => plan) : of(plan));
     TestBed.configureTestingModule({
-      imports: [PlanDetail],
+      imports: [PlanDetail, translocoTesting()],
       providers: [provideRouter([]), { provide: PlansApi, useValue: api }],
     });
     fixture = TestBed.createComponent(PlanDetail);
@@ -62,6 +64,18 @@ describe('PlanDetail', () => {
     expect(element().textContent).toContain('Cualquier nivel');
     expect(element().textContent).toContain('Falta 1');
     expect(element().querySelector('.published-message')).toBeNull();
+  });
+
+  it('should show the plan in English', async () => {
+    await create(PLAN);
+    TestBed.inject(TranslocoService).setActiveLang('en');
+    fixture.detectChanges();
+    await fixture.whenStable();
+    const card = element().querySelector('.plan-card')!;
+    expect(card.textContent).toContain('2 spots left');
+    expect(card.textContent).toContain('Intermediate');
+    expect(card.textContent).toContain('Organized by Ana Test');
+    expect(element().querySelector('.plan-time')?.textContent).toMatch(/At \d\d:\d\d · in 1 h (29|30) min/);
   });
 
   it('should explain when the plan does not exist', async () => {

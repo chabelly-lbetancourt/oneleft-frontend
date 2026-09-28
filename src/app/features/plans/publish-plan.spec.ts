@@ -2,8 +2,10 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import { of, throwError } from 'rxjs';
 import { PlansApi } from '../../core/api/plans-api';
-import { ApproximateLocation } from '../../core/geo/approximate-location';
+import { ApproximateLocation, LocationError } from '../../core/geo/approximate-location';
+import { TranslocoService } from '@jsverse/transloco';
 import { PublishPlan } from './publish-plan';
+import { translocoTesting } from '../../../testing/transloco-testing';
 
 describe('PublishPlan', () => {
   let fixture: ComponentFixture<PublishPlan>;
@@ -34,7 +36,7 @@ describe('PublishPlan', () => {
   beforeEach(async () => {
     vi.clearAllMocks();
     TestBed.configureTestingModule({
-      imports: [PublishPlan],
+      imports: [PublishPlan, translocoTesting()],
       providers: [
         provideRouter([]),
         { provide: PlansApi, useValue: api },
@@ -106,12 +108,14 @@ describe('PublishPlan', () => {
   });
 
   it('should show why the location or the publication failed', async () => {
-    location.current.mockRejectedValue(new Error('No se ha podido obtener tu ubicación'));
+    location.current.mockRejectedValue(new LocationError('denied'));
     await call<Promise<void>>('useMyLocation');
     await render();
     expect(element().querySelector('.status-message')?.textContent).toContain('No se ha podido obtener tu ubicación');
 
-    api.publish.mockReturnValue(throwError(() => ({ error: { detail: 'El plan debe empezar dentro de las próximas 12 horas' } })));
+    api.publish.mockReturnValue(
+      throwError(() => ({ error: { code: 'plan.startsTooLate', detail: 'The plan must start within the next 12 hours' } })),
+    );
     fillValidPlan();
     call('publish');
     await render();
@@ -121,5 +125,20 @@ describe('PublishPlan', () => {
     call('publish');
     await render();
     expect(element().querySelector('.status-message')?.textContent).toContain('No se ha podido publicar el plan');
+
+    location.current.mockRejectedValue(new Error('unexpected'));
+    await call<Promise<void>>('useMyLocation');
+    await render();
+    expect(element().querySelector('.status-message')?.textContent).toContain('No se ha podido obtener tu ubicación');
+  });
+
+  it('should translate the options when the language changes', async () => {
+    TestBed.inject(TranslocoService).setActiveLang('en');
+    await render();
+    const labels = (component['startOptions'] as () => { label: string }[])().map((o) => o.label);
+    expect(labels).toEqual(['In 30 min', 'In 1 h', 'In 2 h', 'In 3 h', 'Another time']);
+    expect((component['levelOptions'] as () => { label: string }[])()[0].label).toBe('Any');
+    expect((component['activities'] as () => { name: string }[])()[7].name).toBe('Board games');
+    expect(element().querySelector('h1')?.textContent).toContain('Publish a plan');
   });
 });
