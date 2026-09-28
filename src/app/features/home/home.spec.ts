@@ -1,13 +1,21 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
+import { FakeSession } from '../../../testing/fake-session';
+import { Session } from '../../core/auth/session';
 import { Home } from './home';
 import { SAMPLE_PLANS } from './sample-plans';
 
 describe('Home', () => {
   let fixture: ComponentFixture<Home>;
   let element: HTMLElement;
+  let session: FakeSession;
 
   beforeEach(async () => {
-    await TestBed.configureTestingModule({ imports: [Home] }).compileComponents();
+    session = new FakeSession();
+    await TestBed.configureTestingModule({
+      imports: [Home],
+      providers: [provideRouter([]), { provide: Session, useValue: session }],
+    }).compileComponents();
     fixture = TestBed.createComponent(Home);
     fixture.detectChanges();
     await fixture.whenStable();
@@ -36,5 +44,23 @@ describe('Home', () => {
     const labels = Array.from(element.querySelectorAll('p-tag')).map((t) => t.textContent?.trim());
     expect(labels).toContain('Falta 1');
     expect(labels).toContain('Faltan 2');
+  });
+
+  it('should offer login and registration without a session', () => {
+    const buttons = element.querySelectorAll('header p-button button');
+    (buttons[0] as HTMLButtonElement).click();
+    (buttons[1] as HTMLButtonElement).click();
+    expect(session.register).toHaveBeenCalled();
+    expect(session.login).toHaveBeenCalled();
+    expect(element.querySelector('.user-menu')).toBeNull();
+  });
+
+  it('should show the user and a link to the profile with a session', async () => {
+    session.signIn('Ana Pruebas');
+    fixture.detectChanges();
+    await fixture.whenStable();
+    const menu = element.querySelector('.user-menu');
+    expect(menu?.textContent).toContain('Ana Pruebas');
+    expect(menu?.getAttribute('href')).toBe('/perfil');
   });
 });
