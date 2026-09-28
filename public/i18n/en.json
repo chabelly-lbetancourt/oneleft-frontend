@@ -4,22 +4,49 @@
     "back": "Back",
     "loading": "Loading…",
     "language": "Language",
-    "languages": { "es": "Español", "en": "English" }
+    "languages": {
+      "es": "Español",
+      "en": "English"
+    }
   },
   "titles": {
     "home": "OneLeft · Plans right now",
     "profile": "OneLeft · My profile",
     "newPlan": "OneLeft · Publish a plan",
-    "plan": "OneLeft · Plan"
+    "plan": "OneLeft · Plan",
+    "nearby": "OneLeft · Nearby plans"
   },
-  "auth": { "login": "Sign in", "register": "Sign up", "logout": "Sign out" },
+  "auth": {
+    "login": "Sign in",
+    "register": "Sign up",
+    "logout": "Sign out"
+  },
   "activities": {
-    "PADEL": "Padel", "FOOTBALL": "Football", "BASKETBALL": "Basketball", "TENNIS": "Tennis", "RUNNING": "Running",
-    "CYCLING": "Cycling", "HIKING": "Hiking", "BOARD_GAMES": "Board games", "CINEMA": "Cinema", "CONCERTS": "Concerts"
+    "PADEL": "Padel",
+    "FOOTBALL": "Football",
+    "BASKETBALL": "Basketball",
+    "TENNIS": "Tennis",
+    "RUNNING": "Running",
+    "CYCLING": "Cycling",
+    "HIKING": "Hiking",
+    "BOARD_GAMES": "Board games",
+    "CINEMA": "Cinema",
+    "CONCERTS": "Concerts"
   },
-  "levels": { "BEGINNER": "Beginner", "INTERMEDIATE": "Intermediate", "ADVANCED": "Advanced", "ANY": "Any level" },
-  "roles": { "ADMIN": "Administrator", "USER": "User" },
-  "spots": { "one": "1 spot left", "other": "{{count}} spots left" },
+  "levels": {
+    "BEGINNER": "Beginner",
+    "INTERMEDIATE": "Intermediate",
+    "ADVANCED": "Advanced",
+    "ANY": "Any level"
+  },
+  "roles": {
+    "ADMIN": "Administrator",
+    "USER": "User"
+  },
+  "spots": {
+    "one": "1 spot left",
+    "other": "{{count}} spots left"
+  },
   "time": {
     "started": "already started",
     "inMinutes": "in {{minutes}} min",
@@ -32,10 +59,8 @@
     "subtitle": "Publish your plan for the next few hours and fill it with people near you.",
     "myPlans": "Your upcoming plans",
     "nearby": "Plans near you right now",
-    "plansCount": "{{count}} plans",
-    "participants": "Participants",
-    "join": "I'm in",
-    "publish": "Publish a plan"
+    "publish": "Publish a plan",
+    "nearbyHint": "See the plans starting soon near you, in a list or on the map."
   },
   "plan": {
     "title": "Plan",
@@ -56,7 +81,11 @@
     "optional": "(optional)",
     "detailsPlaceholder": "Intermediate level, indoor court, we bring the balls",
     "when": "When does it start?",
-    "in30": "In 30 min", "in60": "In 1 h", "in120": "In 2 h", "in180": "In 3 h", "custom": "Another time",
+    "in30": "In 30 min",
+    "in60": "In 1 h",
+    "in120": "In 2 h",
+    "in180": "In 3 h",
+    "custom": "Another time",
     "startTime": "Start time",
     "horizon": "OneLeft is for plans in the next {{hours}} hours.",
     "where": "Where do you meet?",
@@ -110,18 +139,45 @@
       "description": "The description allows up to 280 characters",
       "spots": "Free spots must be between 1 and 20"
     },
-    "meetingPoint": { "name": "The meeting point needs a name of up to 100 characters" },
-    "coordinates": { "outOfRange": "Coordinates out of range" },
+    "meetingPoint": {
+      "name": "The meeting point needs a name of up to 100 characters"
+    },
+    "coordinates": {
+      "outOfRange": "Coordinates out of range"
+    },
     "search": {
       "radius": "The radius must be between 500 m and 25 km",
       "startsWithin": "Only plans starting in the next 1 to 12 hours can be searched"
     },
-    "zone": { "name": "The area needs a name of up to 60 characters" },
+    "zone": {
+      "name": "The area needs a name of up to 60 characters"
+    },
     "profile": {
       "notFound": "This user has no profile",
       "displayName": "The display name is required and allows up to 50 characters",
       "tooManyHobbies": "At most 10 hobbies are allowed",
       "duplicateActivity": "Each activity can only appear once"
     }
+  },
+  "nearby": {
+    "title": "Nearby plans",
+    "radius": "Distance",
+    "within": "Starting within the next",
+    "within1": "1 h",
+    "within3": "3 h",
+    "within12": "12 h",
+    "activities": "Activities",
+    "allActivities": "All activities",
+    "list": "List",
+    "map": "Map",
+    "locating": "Finding your location…",
+    "retry": "Try again",
+    "loadError": "The nearby plans could not be loaded.",
+    "count": "{{count}} plans within {{distance}}",
+    "empty": "No plans nearby with these filters. Why not publish one yourself?",
+    "newPlan": "New plan nearby: {{activity}} {{distance}} away",
+    "open": "View plan",
+    "you": "You are here",
+    "privacy": "Your location is only used to search, with about 100 m precision, and it is not stored."
   }
 }

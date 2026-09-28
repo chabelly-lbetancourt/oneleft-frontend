@@ -5,7 +5,6 @@ import { provideRouter } from '@angular/router';
 import { FakeSession } from '../../../testing/fake-session';
 import { Session } from '../../core/auth/session';
 import { Home } from './home';
-import { SAMPLE_PLANS } from './sample-plans';
 import { translocoTesting } from '../../../testing/transloco-testing';
 
 describe('Home', () => {
@@ -34,24 +33,10 @@ describe('Home', () => {
     expect(element.querySelector('h1')?.textContent).toContain('¿Te falta uno?');
   });
 
-  it('should list every nearby plan', () => {
-    expect(element.querySelectorAll('.plan-card').length).toBe(SAMPLE_PLANS.length);
-  });
-
-  it('should show the plans ordered by start time', () => {
-    const titles = Array.from(element.querySelectorAll('.plan-card h3')).map((h) =>
-      h.textContent?.trim(),
-    );
-    const expected = [...SAMPLE_PLANS]
-      .sort((a, b) => a.startsAt.getTime() - b.startsAt.getTime())
-      .map((p) => p.title);
-    expect(titles).toEqual(expected);
-  });
-
-  it('should label free spots in singular and plural', () => {
-    const labels = Array.from(element.querySelectorAll('p-tag')).map((t) => t.textContent?.trim());
-    expect(labels).toContain('Falta 1');
-    expect(labels).toContain('Faltan 2');
+  it('should lead to the nearby plans', () => {
+    const entry = element.querySelector('.nearby-entry');
+    expect(entry?.getAttribute('href')).toBe('/plans/nearby');
+    expect(entry?.textContent).toContain('Planes cerca de ti ahora');
   });
 
   it('should offer login and registration without a session', () => {
@@ -100,7 +85,7 @@ describe('Home', () => {
     fixture.detectChanges();
     await fixture.whenStable();
     expect(element.querySelector('h1')?.textContent).toContain('One short?');
-    expect(Array.from(element.querySelectorAll('p-tag')).map((t) => t.textContent?.trim())).toContain('1 spot left');
+    expect(element.querySelector('.nearby-entry')?.textContent).toContain('Plans near you right now');
     expect(document.documentElement.lang).toBe('en');
     (element.querySelector('.language-switcher button') as HTMLButtonElement).click();
     fixture.detectChanges();

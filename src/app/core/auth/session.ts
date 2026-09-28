@@ -1,5 +1,6 @@
 import { computed, inject, Injectable } from '@angular/core';
 import { OidcSecurityService } from 'angular-auth-oidc-client';
+import { firstValueFrom } from 'rxjs';
 import { Language } from '../i18n/language';
 
 /**
@@ -34,6 +35,11 @@ export class Session {
   /** Opens the Keycloak registration form directly. */
   register(): void {
     this.oidc.authorize(undefined, { customParams: { prompt: 'create', ui_locales: this.language.current() } });
+  }
+
+  /** Current access token, for requests the HTTP interceptor does not see (for example, streams opened with fetch). */
+  accessToken(): Promise<string> {
+    return firstValueFrom(this.oidc.getAccessToken());
   }
 
   logout(): void {
