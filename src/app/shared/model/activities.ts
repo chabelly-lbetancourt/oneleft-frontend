@@ -1,15 +1,15 @@
-/** Catálogo de actividades: los códigos son el contrato con los servicios users y plans. */
+/** Activity catalog: the codes are the contract with the users and plans services. */
 export const ACTIVITIES: { code: string; name: string; icon: string }[] = [
   { code: 'PADEL', name: 'Pádel', icon: 'pi-bolt' },
-  { code: 'FUTBOL', name: 'Fútbol', icon: 'pi-flag' },
-  { code: 'BALONCESTO', name: 'Baloncesto', icon: 'pi-circle' },
-  { code: 'TENIS', name: 'Tenis', icon: 'pi-bolt' },
+  { code: 'FOOTBALL', name: 'Fútbol', icon: 'pi-flag' },
+  { code: 'BASKETBALL', name: 'Baloncesto', icon: 'pi-circle' },
+  { code: 'TENNIS', name: 'Tenis', icon: 'pi-bolt' },
   { code: 'RUNNING', name: 'Running', icon: 'pi-directions-alt' },
-  { code: 'CICLISMO', name: 'Ciclismo', icon: 'pi-compass' },
-  { code: 'SENDERISMO', name: 'Senderismo', icon: 'pi-map' },
-  { code: 'JUEGOS_DE_MESA', name: 'Juegos de mesa', icon: 'pi-th-large' },
-  { code: 'CINE', name: 'Cine', icon: 'pi-video' },
-  { code: 'CONCIERTOS', name: 'Conciertos', icon: 'pi-ticket' },
+  { code: 'CYCLING', name: 'Ciclismo', icon: 'pi-compass' },
+  { code: 'HIKING', name: 'Senderismo', icon: 'pi-map' },
+  { code: 'BOARD_GAMES', name: 'Juegos de mesa', icon: 'pi-th-large' },
+  { code: 'CINEMA', name: 'Cine', icon: 'pi-video' },
+  { code: 'CONCERTS', name: 'Conciertos', icon: 'pi-ticket' },
 ];
 
 export const activityOf = (code: string) =>

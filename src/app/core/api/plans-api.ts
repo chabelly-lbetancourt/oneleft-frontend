@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { Plan, PublishPlan } from '../../shared/model/published-plan';
 
-/** Cliente del servicio plans a través del API Gateway. */
+/** Client of the plans service through the API Gateway. */
 @Injectable({ providedIn: 'root' })
 export class PlansApi {
   private readonly http = inject(HttpClient);

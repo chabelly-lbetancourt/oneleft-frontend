@@ -21,12 +21,13 @@ import { forkJoin } from 'rxjs';
 import { UsersApi } from '../../core/api/users-api';
 import { Session } from '../../core/auth/session';
 import { ApproximateLocation } from '../../core/geo/approximate-location';
+import { activityOf } from '../../shared/model/activities';
 import { Catalog, LEVEL_LABELS, Level, MAX_HOBBIES, MyProfile } from '../../shared/model/profile';
 import { UserProfile } from '../../shared/model/user';
 
 type HobbyForm = FormGroup<{ activity: FormControl<string>; level: FormControl<Level> }>;
 
-/** La zona es opcional, pero si se indica necesita nombre y coordenadas. */
+/** The zone is optional, but when given it needs a name and coordinates. */
 const zoneComplete = (group: AbstractControl): ValidationErrors | null => {
   const { zoneName, latitude, longitude } = group.value as {
     zoneName: string;
@@ -79,7 +80,7 @@ export class Profile implements OnInit {
   }
 
   ngOnInit(): void {
-    // Sin Zone.js, los cambios del formulario (que no son signals) no refrescan la vista por sí solos
+    // Without Zone.js, form changes (which are not signals) do not refresh the view on their own
     this.form.valueChanges
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(() => this.changeDetector.markForCheck());
@@ -101,12 +102,12 @@ export class Profile implements OnInit {
     return role === 'ADMIN' ? 'Administrador' : 'Usuario';
   }
 
-  /** Actividades que se pueden elegir en una fila: las no usadas en las demás filas. */
+  /** Activities that can be chosen in a row: those not used in the other rows. */
   protected activityOptions(index: number): { code: string; name: string }[] {
     const usedElsewhere = new Set(
       this.hobbies.controls.filter((_, i) => i !== index).map((hobby) => hobby.controls.activity.value),
     );
-    return (this.catalog()?.activities ?? []).filter((activity) => !usedElsewhere.has(activity.code));
+    return (this.catalog()?.activities ?? []).filter((code) => !usedElsewhere.has(code)).map(activityOf);
   }
 
   protected canAddHobby(): boolean {
@@ -116,7 +117,7 @@ export class Profile implements OnInit {
   protected addHobby(): void {
     const next = this.nextFreeActivity();
     if (next && this.hobbies.length < MAX_HOBBIES) {
-      this.hobbies.push(this.hobbyGroup(next.code, 'INTERMEDIO'));
+      this.hobbies.push(this.hobbyGroup(next.code, 'INTERMEDIATE'));
     }
   }
 
@@ -171,7 +172,8 @@ export class Profile implements OnInit {
 
   private nextFreeActivity(): { code: string; name: string } | undefined {
     const used = new Set(this.hobbies.controls.map((hobby) => hobby.controls.activity.value));
-    return this.catalog()?.activities.find((activity) => !used.has(activity.code));
+    const code = this.catalog()?.activities.find((activity) => !used.has(activity));
+    return code ? activityOf(code) : undefined;
   }
 
   private fill(profile: MyProfile): void {

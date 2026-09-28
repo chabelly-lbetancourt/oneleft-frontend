@@ -5,10 +5,10 @@ export interface Coordinates {
   longitude: number;
 }
 
-/** Número de decimales que se conservan: una cuadrícula de unos 1,1 km. */
+/** Decimals kept: a grid of about 1.1 km. */
 export const APPROXIMATE_DECIMALS = 2;
 
-/** Decimales del punto de encuentro de un plan: unos 110 m, suficiente para quedar sin exponer tu casa. */
+/** Decimals of a plan's meeting point: about 110 m, enough to meet without exposing your home. */
 export const MEETING_POINT_DECIMALS = 3;
 
 export const roundCoordinate = (value: number, decimals = APPROXIMATE_DECIMALS): number => {
@@ -17,8 +17,8 @@ export const roundCoordinate = (value: number, decimals = APPROXIMATE_DECIMALS):
 };
 
 /**
- * Ubicación aproximada del dispositivo. Las coordenadas se redondean aquí, antes de salir del dispositivo,
- * de modo que la ubicación exacta nunca se envía al servidor.
+ * Approximate location of the device. Coordinates are rounded here, before leaving the device,
+ * so the exact location is never sent to the server.
  */
 @Injectable({ providedIn: 'root' })
 export class ApproximateLocation {

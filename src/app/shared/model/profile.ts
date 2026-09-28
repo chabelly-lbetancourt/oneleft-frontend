@@ -1,4 +1,4 @@
-export type Level = 'PRINCIPIANTE' | 'INTERMEDIO' | 'AVANZADO';
+export type Level = 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED';
 
 export interface Zone {
   name: string;
@@ -25,14 +25,15 @@ export interface UpdateProfile {
 }
 
 export interface Catalog {
-  activities: { code: string; name: string }[];
+  /** Activity codes; names come from the translations */
+  activities: string[];
   levels: Level[];
 }
 
 export const LEVEL_LABELS: Record<Level, string> = {
-  PRINCIPIANTE: 'Principiante',
-  INTERMEDIO: 'Intermedio',
-  AVANZADO: 'Avanzado',
+  BEGINNER: 'Principiante',
+  INTERMEDIATE: 'Intermedio',
+  ADVANCED: 'Avanzado',
 };
 
 export const MAX_HOBBIES = 10;

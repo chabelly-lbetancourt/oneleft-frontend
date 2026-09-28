@@ -62,13 +62,13 @@ export class PublishPlan implements OnInit {
   });
 
   ngOnInit(): void {
-    // Sin Zone.js, los cambios del formulario no refrescan la vista por sí solos
+    // Without Zone.js, form changes do not refresh the view on their own
     this.form.valueChanges
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(() => this.changeDetector.markForCheck());
   }
 
-  /** Hora de inicio elegida, o null si la hora personalizada no está dentro de las próximas horas. */
+  /** Chosen start time, or null if the custom time is not within the next hours. */
   protected startsAt(now = new Date()): Date | null {
     const { start, customTime } = this.form.getRawValue();
     if (start !== 'custom') {
@@ -117,7 +117,7 @@ export class PublishPlan implements OnInit {
         level: value.level,
       })
       .subscribe({
-        next: (plan) => this.router.navigate(['/planes', plan.id], { queryParams: { publicado: 1 } }),
+        next: (plan) => this.router.navigate(['/plans', plan.id], { queryParams: { published: 1 } }),
         error: (error) => {
           this.publishing.set(false);
           this.error.set(error?.error?.detail ?? 'No se ha podido publicar el plan');

@@ -63,17 +63,17 @@ describe('Home', () => {
   });
 
   it('should show the user and a link to the profile with a session', async () => {
-    session.signIn('Ana Pruebas');
+    session.signIn('Ana Test');
     fixture.detectChanges();
     TestBed.inject(HttpTestingController).expectOne((r) => r.url.endsWith('/api/v1/plans/mine')).flush([]);
     await fixture.whenStable();
     const menu = element.querySelector('.user-menu');
-    expect(menu?.textContent).toContain('Ana Pruebas');
-    expect(menu?.getAttribute('href')).toBe('/perfil');
+    expect(menu?.textContent).toContain('Ana Test');
+    expect(menu?.getAttribute('href')).toBe('/profile');
   });
 
   it('should list my upcoming plans with a session', async () => {
-    session.signIn('Ana Pruebas');
+    session.signIn('Ana Test');
     fixture.detectChanges();
     TestBed.inject(HttpTestingController)
       .expectOne((r) => r.url.endsWith('/api/v1/plans/mine'))
@@ -91,7 +91,7 @@ describe('Home', () => {
     const myPlan = element.querySelector('.my-plan');
     expect(myPlan?.textContent).toContain('Mi partido de pádel');
     expect(myPlan?.textContent).toContain('Falta 1');
-    expect(myPlan?.getAttribute('href')).toBe('/planes/plan-1');
+    expect(myPlan?.getAttribute('href')).toBe('/plans/plan-1');
   });
 
   it('should not ask for my plans without a session', () => {

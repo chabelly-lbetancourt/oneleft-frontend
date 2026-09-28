@@ -12,9 +12,9 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes, withComponentInputBinding()),
-    // Comprueba la sesión al arrancar (vuelta del login de Keycloak o sesión guardada)
+    // Checks the session on startup (return from the Keycloak login or a stored session)
     provideAuth(authConfig, withAppInitializerAuthCheck()),
-    // Añade el token de acceso solo a las peticiones dirigidas a la API de OneLeft
+    // Adds the access token only to requests sent to the OneLeft API
     provideHttpClient(withInterceptors([authInterceptor()])),
     providePrimeNG({
       license: primeUiLicense,
@@ -22,7 +22,7 @@ export const appConfig: ApplicationConfig = {
         preset: OneLeftPreset,
         options: {
           darkModeSelector: '.app-dark',
-          // PrimeNG en su propia capa CSS para que las utilidades de Tailwind puedan sobrescribirlo
+          // PrimeNG in its own CSS layer so that Tailwind utilities can override it
           cssLayer: { name: 'primeng', order: 'theme, base, primeng' },
         },
       },

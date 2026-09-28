@@ -3,8 +3,8 @@ import { PlanSummary } from '../../shared/model/plan';
 const inMinutes = (minutes: number) => new Date(Date.now() + minutes * 60_000);
 
 /**
- * Datos de ejemplo para maquetar la pantalla de inicio.
- * Se sustituyen por la API del servicio de planes en HU-004 · Ver planes cercanos.
+ * Sample data to lay out the home screen.
+ * Replaced by the plans service API in HU-004 · See nearby plans.
  */
 export const SAMPLE_PLANS: PlanSummary[] = [
   {
