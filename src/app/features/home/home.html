@@ -1,0 +1,109 @@
+<div class="min-h-full flex flex-col">
+  <header class="sticky top-0 z-10 bg-surface-0/90 backdrop-blur border-b border-surface-200">
+    <div class="mx-auto max-w-3xl flex items-center justify-between px-4 py-3">
+      <span class="text-xl font-extrabold tracking-tight">
+        One<span class="text-primary">Left</span>
+      </span>
+      <div class="flex items-center gap-1">
+      <app-language-switcher />
+      @if (session.isAuthenticated()) {
+        <a
+          routerLink="/profile"
+          class="user-menu flex items-center gap-2 rounded-full py-1 pl-1 pr-3 hover:bg-surface-100"
+        >
+          <p-avatar
+            [label]="session.initials()"
+            shape="circle"
+            class="bg-primary-100! text-primary-700! font-semibold"
+          />
+          <span class="text-sm font-medium">{{ session.userName() }}</span>
+        </a>
+      } @else {
+        <div class="flex gap-1">
+          <p-button
+            [label]="'auth.register' | transloco"
+            [text]="true"
+            size="small"
+            severity="secondary"
+            (onClick)="session.register()"
+          />
+          <p-button
+            [label]="'auth.login' | transloco"
+            icon="pi pi-user"
+            size="small"
+            [rounded]="true"
+            (onClick)="session.login()"
+          />
+        </div>
+      }
+      </div>
+    </div>
+  </header>
+
+  <main class="mx-auto w-full max-w-3xl flex-1 px-4 pb-28">
+    <section class="py-8">
+      <h1 class="text-3xl sm:text-4xl font-extrabold leading-tight" [innerHTML]="'home.title' | transloco"></h1>
+      <p class="mt-2 text-muted-color">{{ 'home.subtitle' | transloco }}</p>
+    </section>
+
+    @if (session.isAuthenticated() && myPlans.value()?.length) {
+      <section aria-labelledby="my-plans-title" class="my-plans mb-8">
+        <h2 id="my-plans-title" class="text-lg font-bold mb-3">{{ 'home.myPlans' | transloco }}</h2>
+        <ul class="flex flex-col gap-2">
+          @for (plan of myPlans.value(); track plan.id) {
+            <li>
+              <a
+                [routerLink]="['/plans', plan.id]"
+                class="my-plan flex items-center gap-3 rounded-2xl bg-primary-50 border border-primary-200 p-3"
+              >
+                <i class="pi {{ activityOf(plan.activity).icon }} text-primary text-xl" aria-hidden="true"></i>
+                <span class="flex-1 min-w-0">
+                  <span class="block font-semibold truncate">{{ plan.title }}</span>
+                  <span class="block text-sm text-muted-color">
+                    @let myStart = startsIn(plan.startsAt);
+                    {{ clockTime(plan.startsAt) }} · {{ myStart.key | transloco: myStart.params }}
+                  </span>
+                </span>
+                <p-tag
+                  [value]="spotsKey(plan.freeSpots) | transloco: { count: plan.freeSpots }"
+                  severity="warn"
+                  [rounded]="true"
+                  class="shrink-0 whitespace-nowrap"
+                />
+              </a>
+            </li>
+          }
+        </ul>
+      </section>
+    }
+
+    <section aria-labelledby="nearby-title">
+      <a
+        routerLink="/plans/nearby"
+        class="nearby-entry flex items-center gap-4 rounded-2xl bg-surface-0 border border-surface-200 p-5 shadow-sm hover:border-primary-300"
+      >
+        <div class="flex size-14 shrink-0 items-center justify-center rounded-xl bg-primary-50 text-primary">
+          <i class="pi pi-map-marker text-2xl" aria-hidden="true"></i>
+        </div>
+        <div class="flex-1 min-w-0">
+          <h2 id="nearby-title" class="text-lg font-bold">{{ 'home.nearby' | transloco }}</h2>
+          <p class="text-sm text-muted-color">{{ 'home.nearbyHint' | transloco }}</p>
+        </div>
+        <i class="pi pi-chevron-right text-muted-color" aria-hidden="true"></i>
+      </a>
+    </section>
+  </main>
+
+  <div class="fixed inset-x-0 bottom-0 p-4 bg-gradient-to-t from-surface-50 via-surface-50/95">
+    <div class="mx-auto max-w-3xl">
+      <p-button
+        [label]="'home.publish' | transloco"
+        icon="pi pi-plus"
+        styleClass="w-full"
+        size="large"
+        [rounded]="true"
+        routerLink="/plans/new"
+      />
+    </div>
+  </div>
+</div>
