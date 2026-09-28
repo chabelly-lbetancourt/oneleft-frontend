@@ -1,0 +1,76 @@
+<div class="min-h-full">
+  <header class="bg-surface-0 border-b border-surface-200">
+    <div class="mx-auto max-w-3xl flex items-center gap-2 px-4 py-3">
+      <p-button icon="pi pi-arrow-left" [text]="true" [rounded]="true" routerLink="/" ariaLabel="Volver" />
+      <h1 class="text-lg font-bold">Publicar un plan</h1>
+    </div>
+  </header>
+
+  <main class="mx-auto max-w-3xl px-4 py-6 pb-16">
+    <form class="publish-form flex flex-col gap-6" [formGroup]="form" (ngSubmit)="publish()">
+      <section class="rounded-2xl bg-surface-0 border border-surface-200 p-5 shadow-sm flex flex-col gap-3">
+        <label for="activity" class="font-semibold">¿Qué plan es?</label>
+        <p-select
+          inputId="activity"
+          formControlName="activity"
+          [options]="activities"
+          optionLabel="name"
+          optionValue="code"
+          placeholder="Elige la actividad"
+          class="w-full"
+        />
+        <label for="title" class="font-semibold mt-2">Título</label>
+        <input pInputText id="title" formControlName="title" placeholder="Partido de pádel, falta uno" maxlength="80" />
+        @if (form.controls.title.invalid && form.controls.title.touched) {
+          <small class="field-error text-red-600">El título debe tener entre 3 y 80 caracteres.</small>
+        }
+        <label for="description" class="font-semibold mt-2">Detalles <span class="text-muted-color font-normal">(opcional)</span></label>
+        <textarea pTextarea id="description" formControlName="description" rows="2" maxlength="280"
+          placeholder="Nivel medio, pista cubierta, traemos bolas"></textarea>
+      </section>
+
+      <section class="rounded-2xl bg-surface-0 border border-surface-200 p-5 shadow-sm flex flex-col gap-3">
+        <span class="font-semibold">¿Cuándo empieza?</span>
+        <p-selectbutton formControlName="start" [options]="startOptions" optionLabel="label" optionValue="value"
+          [allowEmpty]="false" size="small" class="flex-wrap" />
+        @if (form.controls.start.value === 'custom') {
+          <input pInputText type="time" id="customTime" formControlName="customTime" class="w-40" aria-label="Hora de inicio" />
+        }
+        <small class="text-muted-color">OneLeft es para planes de las próximas {{ maxHours }} horas.</small>
+      </section>
+
+      <section class="rounded-2xl bg-surface-0 border border-surface-200 p-5 shadow-sm flex flex-col gap-3">
+        <label for="placeName" class="font-semibold">¿Dónde quedáis?</label>
+        <input pInputText id="placeName" formControlName="placeName" placeholder="Pistas del polideportivo de Vallecas"
+          maxlength="100" />
+        <div class="flex flex-wrap items-center gap-2">
+          <p-button label="Estoy aquí" icon="pi pi-map-marker" severity="secondary" size="small" [outlined]="true"
+            [loading]="locating()" (onClick)="useMyLocation()" />
+          @if (form.controls.latitude.value !== null) {
+            <span class="meeting-coordinates text-sm text-muted-color">
+              {{ form.controls.latitude.value }}, {{ form.controls.longitude.value }}
+            </span>
+          } @else if (form.controls.latitude.touched) {
+            <small class="field-error text-red-600">Indica el punto de encuentro con «Estoy aquí».</small>
+          }
+        </div>
+      </section>
+
+      <section class="rounded-2xl bg-surface-0 border border-surface-200 p-5 shadow-sm flex flex-col gap-3">
+        <label for="spots" class="font-semibold">¿Cuántas plazas faltan?</label>
+        <p-inputnumber inputId="spots" formControlName="spots" [showButtons]="true" buttonLayout="horizontal"
+          [min]="1" [max]="20" incrementButtonIcon="pi pi-plus" decrementButtonIcon="pi pi-minus" />
+        <span class="font-semibold mt-2">Nivel</span>
+        <p-selectbutton formControlName="level" [options]="levelOptions" optionLabel="label" optionValue="value"
+          [allowEmpty]="false" size="small" />
+      </section>
+
+      @if (error(); as message) {
+        <p-message severity="error" class="status-message">{{ message }}</p-message>
+      }
+
+      <p-button type="submit" label="Publicar plan" icon="pi pi-send" [loading]="publishing()" styleClass="w-full"
+        size="large" />
+    </form>
+  </main>
+</div>
