@@ -14,5 +14,17 @@ export const routes: Routes = [
     loadComponent: () => import('./features/profile/profile').then((m) => m.Profile),
     title: 'OneLeft · Mi perfil',
   },
+  {
+    path: 'planes/nuevo',
+    canActivate: [autoLoginPartialRoutesGuard],
+    loadComponent: () => import('./features/plans/publish-plan').then((m) => m.PublishPlan),
+    title: 'OneLeft · Publicar un plan',
+  },
+  {
+    path: 'planes/:id',
+    canActivate: [autoLoginPartialRoutesGuard],
+    loadComponent: () => import('./features/plans/plan-detail').then((m) => m.PlanDetail),
+    title: 'OneLeft · Plan',
+  },
   { path: '**', redirectTo: '' },
 ];

@@ -1,10 +1,15 @@
+import { httpResource } from '@angular/common/http';
 import { Component, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Avatar } from 'primeng/avatar';
 import { Button } from 'primeng/button';
 import { Tag } from 'primeng/tag';
+import { environment } from '../../../environments/environment';
 import { Session } from '../../core/auth/session';
+import { activityOf } from '../../shared/model/activities';
+import { Plan } from '../../shared/model/published-plan';
 import { PlanSummary } from '../../shared/model/plan';
+import { clockTime, startsInLabel } from '../../shared/time/plan-time';
 import { SAMPLE_PLANS } from './sample-plans';
 
 @Component({
@@ -14,6 +19,11 @@ import { SAMPLE_PLANS } from './sample-plans';
 })
 export class Home {
   protected readonly session = inject(Session);
+  /** Planes que organizo y aún no han empezado (solo con sesión iniciada). */
+  protected readonly myPlans = httpResource<Plan[]>(() =>
+    this.session.isAuthenticated() ? `${environment.apiUrl}/api/v1/plans/mine` : undefined,
+  );
+  protected readonly activityOf = activityOf;
   protected readonly plans = signal<PlanSummary[]>(SAMPLE_PLANS);
   protected readonly plansByStart = computed(() =>
     [...this.plans()].sort((a, b) => a.startsAt.getTime() - b.startsAt.getTime()),
@@ -29,7 +39,12 @@ export class Home {
     return rest === 0 ? `en ${hours} h` : `en ${hours} h ${rest} min`;
   }
 
-  protected freeSpotsLabel(plan: PlanSummary): string {
+  protected myPlanTime(plan: Plan): string {
+    const date = new Date(plan.startsAt);
+    return `${clockTime(date)} · ${startsInLabel(date, new Date())}`;
+  }
+
+  protected freeSpotsLabel(plan: { freeSpots: number }): string {
     return plan.freeSpots === 1 ? 'Falta 1' : `Faltan ${plan.freeSpots}`;
   }
 }
