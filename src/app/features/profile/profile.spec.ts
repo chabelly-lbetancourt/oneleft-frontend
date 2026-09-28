@@ -9,19 +9,15 @@ import { Catalog, MyProfile } from '../../shared/model/profile';
 import { Profile } from './profile';
 
 const CATALOG: Catalog = {
-  activities: [
-    { code: 'PADEL', name: 'Pádel' },
-    { code: 'CINE', name: 'Cine' },
-    { code: 'RUNNING', name: 'Running' },
-  ],
-  levels: ['PRINCIPIANTE', 'INTERMEDIO', 'AVANZADO'],
+  activities: ['PADEL', 'CINEMA', 'RUNNING'],
+  levels: ['BEGINNER', 'INTERMEDIATE', 'ADVANCED'],
 };
 
 const PROFILE: MyProfile = {
   userId: 'a624d063',
   displayName: 'Ana',
   zone: { name: 'Vallecas', latitude: 40.39, longitude: -3.63 },
-  hobbies: [{ activity: 'PADEL', level: 'INTERMEDIO' }],
+  hobbies: [{ activity: 'PADEL', level: 'INTERMEDIATE' }],
 };
 
 describe('Profile', () => {
@@ -42,16 +38,16 @@ describe('Profile', () => {
     await fixture.whenStable();
     fixture.detectChanges();
   };
-  // Acceso a los miembros protegidos del componente desde los tests
+  // Access to the component's protected members from the tests
   const call = <T>(name: string, ...args: unknown[]) => (component[name] as (...a: unknown[]) => T)(...args);
 
   beforeEach(async () => {
     vi.clearAllMocks();
-    api.me.mockReturnValue(of({ id: 'a624d063', name: 'Ana Pruebas', email: 'ana@oneleft.dev', roles: ['ADMIN', 'USER'] }));
+    api.me.mockReturnValue(of({ id: 'a624d063', name: 'Ana Test', email: 'ana@oneleft.dev', roles: ['ADMIN', 'USER'] }));
     api.myProfile.mockReturnValue(of(PROFILE));
     api.catalog.mockReturnValue(of(CATALOG));
     session = new FakeSession();
-    session.signIn('Ana Pruebas');
+    session.signIn('Ana Test');
     TestBed.configureTestingModule({
       imports: [Profile],
       providers: [
@@ -67,7 +63,7 @@ describe('Profile', () => {
   });
 
   it('should show the account and fill the form with the stored profile', () => {
-    expect(element().querySelector('.profile-card')?.textContent).toContain('Ana Pruebas');
+    expect(element().querySelector('.profile-card')?.textContent).toContain('Ana Test');
     const tags = Array.from(element().querySelectorAll('p-tag')).map((t) => t.textContent?.trim());
     expect(tags).toEqual(['Administrador', 'Usuario']);
     expect((element().querySelector('#displayName') as HTMLInputElement).value).toBe('Ana');
@@ -86,7 +82,7 @@ describe('Profile', () => {
   it('should offer only activities not used in other rows', () => {
     call('addHobby');
     const options = call<{ code: string }[]>('activityOptions', 1).map((o) => o.code);
-    expect(options).toEqual(['CINE', 'RUNNING']);
+    expect(options).toEqual(['CINEMA', 'RUNNING']);
   });
 
   it('should add hobbies until every activity is used and remove them', async () => {
@@ -134,7 +130,7 @@ describe('Profile', () => {
     expect(api.updateMyProfile).toHaveBeenCalledWith({
       displayName: 'Anita',
       zone: { name: 'Vallecas', latitude: 40.39, longitude: -3.63 },
-      hobbies: [{ activity: 'PADEL', level: 'INTERMEDIO' }],
+      hobbies: [{ activity: 'PADEL', level: 'INTERMEDIATE' }],
     });
     expect(element().querySelector('.status-message')?.textContent).toContain('Perfil guardado');
   });

@@ -8,7 +8,7 @@ import { PlanDetail } from './plan-detail';
 const PLAN: Plan = {
   id: 'plan-1',
   organizerId: 'org',
-  organizerName: 'Ana Pruebas',
+  organizerName: 'Ana Test',
   activity: 'PADEL',
   title: 'Partido de pádel, falta uno',
   description: 'Pista cubierta',
@@ -17,8 +17,8 @@ const PLAN: Plan = {
   spots: 2,
   occupied: 0,
   freeSpots: 2,
-  level: 'INTERMEDIO',
-  status: 'ABIERTO',
+  level: 'INTERMEDIATE',
+  status: 'OPEN',
   publishedAt: new Date().toISOString(),
 };
 
@@ -27,7 +27,7 @@ describe('PlanDetail', () => {
   const api = { plan: vi.fn() };
   const element = () => fixture.nativeElement as HTMLElement;
 
-  const create = async (plan: unknown, publicado?: string) => {
+  const create = async (plan: unknown, published?: string) => {
     api.plan.mockReturnValue(plan instanceof Error ? throwError(() => plan) : of(plan));
     TestBed.configureTestingModule({
       imports: [PlanDetail],
@@ -35,8 +35,8 @@ describe('PlanDetail', () => {
     });
     fixture = TestBed.createComponent(PlanDetail);
     fixture.componentRef.setInput('id', 'plan-1');
-    if (publicado) {
-      fixture.componentRef.setInput('publicado', publicado);
+    if (published) {
+      fixture.componentRef.setInput('published', published);
     }
     fixture.detectChanges();
     await fixture.whenStable();
@@ -51,7 +51,7 @@ describe('PlanDetail', () => {
     expect(card.textContent).toContain('Pádel');
     expect(card.textContent).toContain('Faltan 2');
     expect(card.textContent).toContain('Intermedio');
-    expect(card.textContent).toContain('Organiza Ana Pruebas');
+    expect(card.textContent).toContain('Organiza Ana Test');
     expect(element().querySelector('.plan-time')?.textContent).toMatch(/en 1 h (29|30) min/);
     expect(card.querySelector('a')?.getAttribute('href')).toContain('mlat=40.391');
     expect(element().querySelector('.published-message')).not.toBeNull();

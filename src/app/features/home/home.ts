@@ -19,7 +19,7 @@ import { SAMPLE_PLANS } from './sample-plans';
 })
 export class Home {
   protected readonly session = inject(Session);
-  /** Planes que organizo y aún no han empezado (solo con sesión iniciada). */
+  /** Plans I organize that have not started yet (only with a session). */
   protected readonly myPlans = httpResource<Plan[]>(() =>
     this.session.isAuthenticated() ? `${environment.apiUrl}/api/v1/plans/mine` : undefined,
   );

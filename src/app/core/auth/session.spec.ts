@@ -33,9 +33,9 @@ describe('Session', () => {
   });
 
   it('should use the full name and its initials', () => {
-    userData.set({ userData: { name: 'Ana Pruebas', email: 'ana@oneleft.dev' }, allUserData: [] });
-    expect(session.userName()).toBe('Ana Pruebas');
-    expect(session.initials()).toBe('AP');
+    userData.set({ userData: { name: 'Ana Test', email: 'ana@oneleft.dev' }, allUserData: [] });
+    expect(session.userName()).toBe('Ana Test');
+    expect(session.initials()).toBe('AT');
   });
 
   it('should fall back to the username or the email', () => {
