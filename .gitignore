@@ -1,0 +1,18 @@
+node_modules/
+dist/
+.angular/
+coverage/
+*.log
+.env
+# WebStorm
+.idea/
+# Android / Capacitor
+android/app/build/
+android/build/
+android/.gradle/
+android/local.properties
+android/app/release/
+*.keystore
+*.jks
+# macOS
+.DS_Store
