@@ -2,6 +2,7 @@ import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { OidcSecurityService } from 'angular-auth-oidc-client';
 import { of } from 'rxjs';
+import { Language } from '../i18n/language';
 import { Session } from './session';
 
 describe('Session', () => {
@@ -22,7 +23,10 @@ describe('Session', () => {
     vi.clearAllMocks();
     authenticated.set({ isAuthenticated: false, allConfigsAuthenticated: [] });
     userData.set({ userData: null, allUserData: [] });
-    TestBed.configureTestingModule({ providers: [{ provide: OidcSecurityService, useValue: oidc }] });
+    TestBed.configureTestingModule({ providers: [
+        { provide: OidcSecurityService, useValue: oidc },
+        { provide: Language, useValue: { current: signal('en') } },
+      ], });
     session = TestBed.inject(Session);
   });
 
@@ -48,11 +52,11 @@ describe('Session', () => {
     expect(session.initials()).toBe('');
   });
 
-  it('should start the login and the registration in Keycloak', () => {
+  it('should start the login and the registration in Keycloak in the language of the app', () => {
     session.login();
-    expect(oidc.authorize).toHaveBeenCalledWith();
+    expect(oidc.authorize).toHaveBeenCalledWith(undefined, { customParams: { ui_locales: 'en' } });
     session.register();
-    expect(oidc.authorize).toHaveBeenCalledWith(undefined, { customParams: { prompt: 'create' } });
+    expect(oidc.authorize).toHaveBeenCalledWith(undefined, { customParams: { prompt: 'create', ui_locales: 'en' } });
   });
 
   it('should log out revoking the tokens', () => {

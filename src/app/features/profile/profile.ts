@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, computed, DestroyRef, inject, OnInit, signal } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import {
   AbstractControl,
   FormControl,
@@ -10,6 +10,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { Avatar } from 'primeng/avatar';
 import { Button } from 'primeng/button';
 import { InputText } from 'primeng/inputtext';
@@ -20,9 +21,11 @@ import { Tag } from 'primeng/tag';
 import { forkJoin } from 'rxjs';
 import { UsersApi } from '../../core/api/users-api';
 import { Session } from '../../core/auth/session';
-import { ApproximateLocation } from '../../core/geo/approximate-location';
-import { activityOf } from '../../shared/model/activities';
-import { Catalog, LEVEL_LABELS, Level, MAX_HOBBIES, MyProfile } from '../../shared/model/profile';
+import { ApproximateLocation, LocationError } from '../../core/geo/approximate-location';
+import { apiErrorKey } from '../../core/i18n/api-error';
+import { activityKey } from '../../shared/model/activities';
+import { Catalog, Level, levelKey, MAX_HOBBIES, MyProfile } from '../../shared/model/profile';
+import { LanguageSwitcher } from '../../shared/ui/language-switcher';
 import { UserProfile } from '../../shared/model/user';
 
 type HobbyForm = FormGroup<{ activity: FormControl<string>; level: FormControl<Level> }>;
@@ -41,7 +44,19 @@ const zoneComplete = (group: AbstractControl): ValidationErrors | null => {
 
 @Component({
   selector: 'app-profile',
-  imports: [ReactiveFormsModule, RouterLink, Avatar, Button, InputText, Message, Select, SelectButton, Tag],
+  imports: [
+    ReactiveFormsModule,
+    RouterLink,
+    Avatar,
+    Button,
+    InputText,
+    LanguageSwitcher,
+    Message,
+    Select,
+    SelectButton,
+    Tag,
+    TranslocoPipe,
+  ],
   templateUrl: './profile.html',
 })
 export class Profile implements OnInit {
@@ -49,6 +64,7 @@ export class Profile implements OnInit {
   private readonly api = inject(UsersApi);
   private readonly location = inject(ApproximateLocation);
   private readonly fb = inject(NonNullableFormBuilder);
+  private readonly transloco = inject(TranslocoService);
   private readonly changeDetector = inject(ChangeDetectorRef);
   private readonly destroyRef = inject(DestroyRef);
 
@@ -58,10 +74,18 @@ export class Profile implements OnInit {
   protected readonly loadError = signal(false);
   protected readonly saving = signal(false);
   protected readonly locating = signal(false);
-  protected readonly status = signal<{ severity: 'success' | 'error'; text: string } | null>(null);
+  /** Message under the form, as a translation key. */
+  protected readonly status = signal<{ severity: 'success' | 'error'; key: string } | null>(null);
+
+  /** Active language as a signal: the PrimeNG option labels are recomputed when it changes. */
+  private readonly lang = toSignal(this.transloco.langChanges$, { initialValue: this.transloco.getActiveLang() });
+  private readonly translate = (key: string) => {
+    this.lang();
+    return this.transloco.translate(key);
+  };
 
   protected readonly levelOptions = computed(() =>
-    (this.catalog()?.levels ?? []).map((level) => ({ label: LEVEL_LABELS[level], value: level })),
+    (this.catalog()?.levels ?? []).map((level) => ({ label: this.translate(levelKey(level)), value: level })),
   );
 
   protected readonly form = this.fb.group(
@@ -98,8 +122,8 @@ export class Profile implements OnInit {
     });
   }
 
-  protected roleLabel(role: string): string {
-    return role === 'ADMIN' ? 'Administrador' : 'Usuario';
+  protected roleKey(role: string): string {
+    return role === 'ADMIN' ? 'roles.ADMIN' : 'roles.USER';
   }
 
   /** Activities that can be chosen in a row: those not used in the other rows. */
@@ -107,7 +131,9 @@ export class Profile implements OnInit {
     const usedElsewhere = new Set(
       this.hobbies.controls.filter((_, i) => i !== index).map((hobby) => hobby.controls.activity.value),
     );
-    return (this.catalog()?.activities ?? []).filter((code) => !usedElsewhere.has(code)).map(activityOf);
+    return (this.catalog()?.activities ?? [])
+      .filter((code) => !usedElsewhere.has(code))
+      .map((code) => ({ code, name: this.translate(activityKey(code)) }));
   }
 
   protected canAddHobby(): boolean {
@@ -117,7 +143,7 @@ export class Profile implements OnInit {
   protected addHobby(): void {
     const next = this.nextFreeActivity();
     if (next && this.hobbies.length < MAX_HOBBIES) {
-      this.hobbies.push(this.hobbyGroup(next.code, 'INTERMEDIATE'));
+      this.hobbies.push(this.hobbyGroup(next, 'INTERMEDIATE'));
     }
   }
 
@@ -132,10 +158,13 @@ export class Profile implements OnInit {
       const { latitude, longitude } = await this.location.current();
       this.form.patchValue({ latitude, longitude });
       if (!this.form.controls.zoneName.value.trim()) {
-        this.form.controls.zoneName.setValue('Mi zona');
+        this.form.controls.zoneName.setValue(this.transloco.translate('profile.myZone'));
       }
     } catch (error) {
-      this.status.set({ severity: 'error', text: (error as Error).message });
+      this.status.set({
+        severity: 'error',
+        key: error instanceof LocationError ? error.translationKey : 'errors.location.denied',
+      });
     } finally {
       this.locating.set(false);
     }
@@ -161,19 +190,18 @@ export class Profile implements OnInit {
       next: (profile) => {
         this.fill(profile);
         this.saving.set(false);
-        this.status.set({ severity: 'success', text: 'Perfil guardado' });
+        this.status.set({ severity: 'success', key: 'profile.saved' });
       },
       error: (error) => {
         this.saving.set(false);
-        this.status.set({ severity: 'error', text: error?.error?.detail ?? 'No se ha podido guardar el perfil' });
+        this.status.set({ severity: 'error', key: apiErrorKey(this.transloco, error, 'errors.saveFailed') });
       },
     });
   }
 
-  private nextFreeActivity(): { code: string; name: string } | undefined {
+  private nextFreeActivity(): string | undefined {
     const used = new Set(this.hobbies.controls.map((hobby) => hobby.controls.activity.value));
-    const code = this.catalog()?.activities.find((activity) => !used.has(activity));
-    return code ? activityOf(code) : undefined;
+    return this.catalog()?.activities.find((activity) => !used.has(activity));
   }
 
   private fill(profile: MyProfile): void {

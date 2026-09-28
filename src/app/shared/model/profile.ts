@@ -30,10 +30,9 @@ export interface Catalog {
   levels: Level[];
 }
 
-export const LEVEL_LABELS: Record<Level, string> = {
-  BEGINNER: 'Principiante',
-  INTERMEDIATE: 'Intermedio',
-  ADVANCED: 'Avanzado',
-};
+export const LEVELS: Level[] = ['BEGINNER', 'INTERMEDIATE', 'ADVANCED'];
+
+/** Translation key of a level; no level means any level. */
+export const levelKey = (level: Level | null | undefined): string => `levels.${level ?? 'ANY'}`;
 
 export const MAX_HOBBIES = 10;
