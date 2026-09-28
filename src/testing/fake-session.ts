@@ -1,6 +1,6 @@
 import { computed, signal } from '@angular/core';
 
-/** Doble de prueba de Session: permite simular sesiones sin Keycloak. */
+/** Session test double: simulates sessions without Keycloak. */
 export class FakeSession {
   readonly authenticated = signal(false);
   readonly name = signal('');

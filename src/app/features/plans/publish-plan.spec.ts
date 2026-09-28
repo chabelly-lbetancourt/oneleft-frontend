@@ -28,7 +28,7 @@ describe('PublishPlan', () => {
       longitude: -3.629,
       start: '60',
       spots: 2,
-      level: 'INTERMEDIO',
+      level: 'INTERMEDIATE',
     });
 
   beforeEach(async () => {
@@ -61,12 +61,12 @@ describe('PublishPlan', () => {
       description: null,
       meetingPoint: { name: 'Pistas del polideportivo', latitude: 40.391, longitude: -3.629 },
       spots: 2,
-      level: 'INTERMEDIO',
+      level: 'INTERMEDIATE',
     });
     const startsIn = new Date(sent.startsAt).getTime() - before;
     expect(startsIn).toBeGreaterThanOrEqual(59 * 60_000);
     expect(startsIn).toBeLessThanOrEqual(61 * 60_000);
-    expect(navigate).toHaveBeenCalledWith(['/planes', 'plan-1'], { queryParams: { publicado: 1 } });
+    expect(navigate).toHaveBeenCalledWith(['/plans', 'plan-1'], { queryParams: { published: 1 } });
   });
 
   it('should not publish an incomplete plan', async () => {

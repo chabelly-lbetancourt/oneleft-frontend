@@ -1,9 +1,9 @@
 /**
- * Clave de la PrimeUI Community License (PrimeNG 22 ya no es MIT).
+ * PrimeUI Community License key (PrimeNG 22 is no longer MIT).
  *
- * No se guarda en el repositorio: se inyecta al compilar desde la variable de entorno PRIMEUI_LICENSE
+ * It is not stored in the repository: it is injected at build time from the PRIMEUI_LICENSE environment variable
  *   ng build --define "PRIMEUI_LICENSE='$PRIMEUI_LICENSE'"
- * En GitHub Actions procede del secreto del mismo nombre. Sin clave, PrimeNG muestra un aviso de licencia.
+ * In GitHub Actions it comes from the secret with the same name. Without a key, PrimeNG shows a license notice.
  */
 declare const PRIMEUI_LICENSE: string | undefined;
 

@@ -2,8 +2,8 @@ import { definePreset } from '@primeuix/themes';
 import Aura from '@primeuix/themes/aura';
 
 /**
- * Tema de OneLeft: Aura de PrimeNG con el naranja de marca como color primario.
- * El naranja transmite urgencia, acorde con los planes «para ya».
+ * OneLeft theme: PrimeNG Aura with the brand orange as primary colour.
+ * Orange conveys urgency, in line with "right now" plans.
  */
 export const OneLeftPreset = definePreset(Aura, {
   semantic: {
