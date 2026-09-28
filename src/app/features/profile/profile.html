@@ -6,46 +6,157 @@
     </div>
   </header>
 
-  <main class="mx-auto max-w-3xl px-4 py-6">
-    @if (profile.isLoading()) {
+  <main class="mx-auto max-w-3xl px-4 py-6 pb-16">
+    @if (loading()) {
       <p class="text-muted-color">Cargando tu perfil…</p>
-    } @else if (profile.error()) {
+    } @else if (loadError()) {
       <div class="profile-error rounded-2xl border border-red-200 bg-red-50 p-4 text-red-800">
         No se ha podido cargar tu perfil. Inténtalo de nuevo más tarde.
       </div>
-    } @else if (profile.value(); as user) {
-      <section class="profile-card rounded-2xl bg-surface-0 border border-surface-200 p-6 shadow-sm">
-        <div class="flex items-center gap-4">
-          <p-avatar
-            [label]="session.initials()"
-            shape="circle"
-            size="xlarge"
-            class="bg-primary-100! text-primary-700! font-bold"
-          />
-          <div class="min-w-0">
-            <h2 class="text-xl font-bold truncate">{{ user.name }}</h2>
-            <p class="text-muted-color truncate">{{ user.email }}</p>
+    } @else {
+      @if (user(); as account) {
+        <section class="profile-card rounded-2xl bg-surface-0 border border-surface-200 p-5 shadow-sm">
+          <div class="flex items-center gap-4">
+            <p-avatar
+              [label]="session.initials()"
+              shape="circle"
+              size="xlarge"
+              class="bg-primary-100! text-primary-700! font-bold"
+            />
+            <div class="min-w-0">
+              <h2 class="text-xl font-bold truncate">{{ account.name }}</h2>
+              <p class="text-muted-color truncate">{{ account.email }}</p>
+            </div>
           </div>
-        </div>
+          <div class="mt-4 flex flex-wrap gap-2">
+            @for (role of account.roles; track role) {
+              <p-tag [value]="roleLabel(role)" [severity]="role === 'ADMIN' ? 'danger' : 'info'" [rounded]="true" />
+            }
+          </div>
+        </section>
+      }
 
-        <div class="mt-5 flex flex-wrap gap-2">
-          @for (role of user.roles; track role) {
-            <p-tag [value]="roleLabel(role)" [severity]="role === 'ADMIN' ? 'danger' : 'info'" [rounded]="true" />
+      <form class="profile-form mt-6 flex flex-col gap-6" [formGroup]="form" (ngSubmit)="save()">
+        <section class="rounded-2xl bg-surface-0 border border-surface-200 p-5 shadow-sm flex flex-col gap-2">
+          <label for="displayName" class="font-semibold">Nombre visible</label>
+          <input pInputText id="displayName" formControlName="displayName" maxlength="50" />
+          <small class="text-muted-color">Es el nombre que verán el resto de participantes de tus planes.</small>
+          @if (form.controls.displayName.invalid && form.controls.displayName.touched) {
+            <small class="field-error text-red-600">El nombre visible es obligatorio.</small>
           }
-        </div>
+        </section>
 
-        <dl class="mt-6 text-sm">
-          <dt class="text-muted-color">Identificador</dt>
-          <dd class="font-mono break-all">{{ user.id }}</dd>
-        </dl>
-      </section>
+        <section class="rounded-2xl bg-surface-0 border border-surface-200 p-5 shadow-sm flex flex-col gap-2">
+          <label for="zoneName" class="font-semibold">Zona habitual</label>
+          <input
+            pInputText
+            id="zoneName"
+            formControlName="zoneName"
+            placeholder="Por ejemplo, Vallecas"
+            maxlength="60"
+          />
+          <div class="flex flex-wrap items-center gap-2">
+            <p-button
+              label="Usar mi ubicación"
+              icon="pi pi-map-marker"
+              severity="secondary"
+              size="small"
+              [outlined]="true"
+              [loading]="locating()"
+              (onClick)="useMyLocation()"
+            />
+            @if (form.controls.latitude.value !== null) {
+              <span class="zone-coordinates text-sm text-muted-color">
+                Aproximada: {{ form.controls.latitude.value }}, {{ form.controls.longitude.value }}
+              </span>
+              <p-button label="Quitar zona" size="small" [text]="true" severity="secondary" (onClick)="clearZone()" />
+            }
+          </div>
+          <small class="text-muted-color">
+            <i class="pi pi-lock text-xs" aria-hidden="true"></i>
+            Solo se guarda una ubicación aproximada (aproximadamente 1 km) y nadie más ve las coordenadas.
+          </small>
+          @if (form.hasError('zoneIncomplete')) {
+            <small class="field-error text-red-600">
+              Para indicar tu zona escribe su nombre y pulsa «Usar mi ubicación».
+            </small>
+          }
+        </section>
+
+        <section class="rounded-2xl bg-surface-0 border border-surface-200 p-5 shadow-sm flex flex-col gap-3">
+          <div class="flex items-center justify-between">
+            <h3 class="font-semibold">Aficiones y nivel</h3>
+            <span class="text-sm text-muted-color">{{ hobbies.length }}/10</span>
+          </div>
+
+          <div formArrayName="hobbies" class="flex flex-col gap-3">
+            @for (hobby of hobbies.controls; track hobby; let i = $index) {
+              <div class="hobby-row flex flex-col gap-2 sm:flex-row sm:items-center" [formGroupName]="i">
+                <p-select
+                  formControlName="activity"
+                  [options]="activityOptions(i)"
+                  optionLabel="name"
+                  optionValue="code"
+                  class="sm:w-48"
+                  ariaLabel="Actividad"
+                />
+                <div class="flex items-center justify-between gap-2 sm:flex-1">
+                  <p-selectbutton
+                    formControlName="level"
+                    [options]="levelOptions()"
+                    optionLabel="label"
+                    optionValue="value"
+                    [allowEmpty]="false"
+                    size="small"
+                  />
+                  <p-button
+                    icon="pi pi-trash"
+                    severity="danger"
+                    [text]="true"
+                    [rounded]="true"
+                    ariaLabel="Quitar afición"
+                    (onClick)="removeHobby(i)"
+                  />
+                </div>
+              </div>
+            } @empty {
+              <p class="text-sm text-muted-color">
+                Añade las actividades que te gustan para recibir planes que te encajen.
+              </p>
+            }
+          </div>
+
+          <p-button
+            label="Añadir afición"
+            icon="pi pi-plus"
+            severity="secondary"
+            [outlined]="true"
+            size="small"
+            [disabled]="!canAddHobby()"
+            (onClick)="addHobby()"
+          />
+        </section>
+
+        @if (status(); as message) {
+          <p-message [severity]="message.severity" class="status-message">{{ message.text }}</p-message>
+        }
+
+        <p-button
+          type="submit"
+          label="Guardar perfil"
+          icon="pi pi-check"
+          [loading]="saving()"
+          styleClass="w-full"
+        />
+      </form>
 
       <p-button
         label="Cerrar sesión"
         icon="pi pi-sign-out"
         severity="secondary"
         [outlined]="true"
-        styleClass="w-full mt-6"
+        class="block mt-4"
+        styleClass="w-full"
         (onClick)="session.logout()"
       />
     }
