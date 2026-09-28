@@ -17,9 +17,9 @@ import { clockTime, startsInLabel } from '../../shared/time/plan-time';
 export class PlanDetail {
   private readonly api = inject(PlansApi);
 
-  /** Parámetros de la ruta (withComponentInputBinding) */
+  /** Route parameters (withComponentInputBinding) */
   readonly id = input.required<string>();
-  readonly publicado = input<string>();
+  readonly published = input<string>();
 
   protected readonly plan = signal<Plan | null>(null);
   protected readonly notFound = signal(false);

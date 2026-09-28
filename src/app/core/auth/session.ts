@@ -2,7 +2,7 @@ import { computed, inject, Injectable } from '@angular/core';
 import { OidcSecurityService } from 'angular-auth-oidc-client';
 
 /**
- * Sesión del usuario expuesta como signals. Oculta la librería OIDC al resto de la aplicación.
+ * The user's session exposed as signals. It hides the OIDC library from the rest of the application.
  */
 @Injectable({ providedIn: 'root' })
 export class Session {
@@ -28,7 +28,7 @@ export class Session {
     this.oidc.authorize();
   }
 
-  /** Abre directamente el formulario de registro de Keycloak. */
+  /** Opens the Keycloak registration form directly. */
   register(): void {
     this.oidc.authorize(undefined, { customParams: { prompt: 'create' } });
   }

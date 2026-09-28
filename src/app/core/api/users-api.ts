@@ -5,7 +5,7 @@ import { environment } from '../../../environments/environment';
 import { Catalog, MyProfile, UpdateProfile } from '../../shared/model/profile';
 import { UserProfile } from '../../shared/model/user';
 
-/** Cliente del servicio users a través del API Gateway. */
+/** Client of the users service through the API Gateway. */
 @Injectable({ providedIn: 'root' })
 export class UsersApi {
   private readonly http = inject(HttpClient);

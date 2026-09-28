@@ -1,5 +1,5 @@
 @import 'tailwindcss';
-/* Integra los tokens de PrimeNG en Tailwind: clases como bg-primary o text-muted-color */
+/* Brings the PrimeNG tokens into Tailwind: classes such as bg-primary or text-muted-color */
 @import 'tailwindcss-primeui';
 @import 'primeicons/primeicons.css';
 

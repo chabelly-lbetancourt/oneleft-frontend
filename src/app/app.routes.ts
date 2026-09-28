@@ -8,20 +8,20 @@ export const routes: Routes = [
     title: 'OneLeft · Planes para ya',
   },
   {
-    path: 'perfil',
-    // Si no hay sesión, redirige al login de Keycloak y vuelve aquí después
+    path: 'profile',
+    // Without a session, redirects to the Keycloak login and comes back here afterwards
     canActivate: [autoLoginPartialRoutesGuard],
     loadComponent: () => import('./features/profile/profile').then((m) => m.Profile),
     title: 'OneLeft · Mi perfil',
   },
   {
-    path: 'planes/nuevo',
+    path: 'plans/new',
     canActivate: [autoLoginPartialRoutesGuard],
     loadComponent: () => import('./features/plans/publish-plan').then((m) => m.PublishPlan),
     title: 'OneLeft · Publicar un plan',
   },
   {
-    path: 'planes/:id',
+    path: 'plans/:id',
     canActivate: [autoLoginPartialRoutesGuard],
     loadComponent: () => import('./features/plans/plan-detail').then((m) => m.PlanDetail),
     title: 'OneLeft · Plan',

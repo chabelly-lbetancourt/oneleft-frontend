@@ -2,8 +2,8 @@ import { LogLevel, PassedInitialConfig } from 'angular-auth-oidc-client';
 import { environment } from '../../../environments/environment';
 
 /**
- * OpenID Connect con Keycloak: Authorization Code + PKCE (cliente público, sin secreto),
- * renovación silenciosa con refresh token y token añadido solo en las peticiones a la API de OneLeft.
+ * OpenID Connect with Keycloak: Authorization Code + PKCE (public client, no secret),
+ * silent renewal with a refresh token, and the token added only to requests to the OneLeft API.
  */
 export const authConfig: PassedInitialConfig = {
   config: {

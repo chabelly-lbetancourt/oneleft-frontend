@@ -22,6 +22,6 @@ export interface Plan extends PublishPlan {
   organizerName: string;
   occupied: number;
   freeSpots: number;
-  status: 'ABIERTO' | 'COMPLETO' | 'EN_CURSO' | 'FINALIZADO' | 'CANCELADO';
+  status: 'OPEN' | 'FULL' | 'IN_PROGRESS' | 'FINISHED' | 'CANCELLED';
   publishedAt: string;
 }

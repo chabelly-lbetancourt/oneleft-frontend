@@ -1,6 +1,6 @@
 /**
- * Configuración del entorno de desarrollo local (Docker Compose de oneleft-infra).
- * Para producción y Android se sustituye con fileReplacements en angular.json.
+ * Local development configuration (oneleft-infra Docker Compose).
+ * Production and Android replace it with fileReplacements in angular.json.
  */
 export const environment = {
   apiUrl: 'http://localhost:8080',
