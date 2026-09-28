@@ -5,6 +5,17 @@ export interface Coordinates {
   longitude: number;
 }
 
+/** Why the location is missing; the code is also the translation key suffix (errors.location.*). */
+export class LocationError extends Error {
+  constructor(readonly code: 'unavailable' | 'denied') {
+    super(code === 'unavailable' ? 'Geolocation is not available on this device' : 'The location could not be obtained');
+  }
+
+  get translationKey(): string {
+    return `errors.location.${this.code}`;
+  }
+}
+
 /** Decimals kept: a grid of about 1.1 km. */
 export const APPROXIMATE_DECIMALS = 2;
 
@@ -25,7 +36,7 @@ export class ApproximateLocation {
   current(decimals = APPROXIMATE_DECIMALS): Promise<Coordinates> {
     return new Promise((resolve, reject) => {
       if (!globalThis.navigator?.geolocation) {
-        reject(new Error('La geolocalización no está disponible en este dispositivo'));
+        reject(new LocationError('unavailable'));
         return;
       }
       globalThis.navigator.geolocation.getCurrentPosition(
@@ -34,7 +45,7 @@ export class ApproximateLocation {
             latitude: roundCoordinate(position.coords.latitude, decimals),
             longitude: roundCoordinate(position.coords.longitude, decimals),
           }),
-        () => reject(new Error('No se ha podido obtener tu ubicación')),
+        () => reject(new LocationError('denied')),
         { enableHighAccuracy: false, timeout: 10000, maximumAge: 600000 },
       );
     });

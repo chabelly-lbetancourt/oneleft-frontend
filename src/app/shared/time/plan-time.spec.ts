@@ -1,4 +1,4 @@
-import { clockTime, nextOccurrence, startsInLabel, startsInRange } from './plan-time';
+import { clockTime, nextOccurrence, spotsKey, startsIn, startsInRange } from './plan-time';
 
 describe('plan-time', () => {
   const now = new Date(2026, 8, 28, 17, 0, 0);
@@ -27,10 +27,19 @@ describe('plan-time', () => {
 
   it('should describe the time left', () => {
     const minutes = (m: number) => new Date(now.getTime() + m * 60_000);
-    expect(startsInLabel(minutes(-1), now)).toBe('ya ha empezado');
-    expect(startsInLabel(minutes(45), now)).toBe('en 45 min');
-    expect(startsInLabel(minutes(120), now)).toBe('en 2 h');
-    expect(startsInLabel(minutes(90), now)).toBe('en 1 h 30 min');
+    expect(startsIn(minutes(-1), now)).toEqual({ key: 'time.started', params: {} });
+    expect(startsIn(minutes(45), now)).toEqual({ key: 'time.inMinutes', params: { minutes: 45 } });
+    expect(startsIn(minutes(120), now)).toEqual({ key: 'time.inHours', params: { hours: 2 } });
+    expect(startsIn(minutes(90), now)).toEqual({ key: 'time.inHoursMinutes', params: { hours: 1, minutes: 30 } });
+  });
+
+  it('should format the clock time in the locale of the language', () => {
     expect(clockTime(new Date(2026, 8, 28, 9, 5))).toBe('09:05');
+    expect(clockTime(new Date(2026, 8, 28, 21, 5), 'en-GB')).toBe('21:05');
+  });
+
+  it('should choose the singular or plural spots label', () => {
+    expect(spotsKey(1)).toBe('spots.one');
+    expect(spotsKey(3)).toBe('spots.other');
   });
 });

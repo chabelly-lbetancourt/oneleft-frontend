@@ -1,17 +1,18 @@
 <div class="min-h-full">
   <header class="bg-surface-0 border-b border-surface-200">
     <div class="mx-auto max-w-3xl flex items-center gap-2 px-4 py-3">
-      <p-button icon="pi pi-arrow-left" [text]="true" [rounded]="true" routerLink="/" ariaLabel="Volver" />
-      <h1 class="text-lg font-bold">Mi perfil</h1>
+      <p-button icon="pi pi-arrow-left" [text]="true" [rounded]="true" routerLink="/" [ariaLabel]="'app.back' | transloco" />
+      <h1 class="text-lg font-bold flex-1">{{ 'profile.title' | transloco }}</h1>
+      <app-language-switcher />
     </div>
   </header>
 
   <main class="mx-auto max-w-3xl px-4 py-6 pb-16">
     @if (loading()) {
-      <p class="text-muted-color">Cargando tu perfil…</p>
+      <p class="text-muted-color">{{ 'profile.loading' | transloco }}</p>
     } @else if (loadError()) {
       <div class="profile-error rounded-2xl border border-red-200 bg-red-50 p-4 text-red-800">
-        No se ha podido cargar tu perfil. Inténtalo de nuevo más tarde.
+        {{ 'profile.loadError' | transloco }}
       </div>
     } @else {
       @if (user(); as account) {
@@ -30,7 +31,7 @@
           </div>
           <div class="mt-4 flex flex-wrap gap-2">
             @for (role of account.roles; track role) {
-              <p-tag [value]="roleLabel(role)" [severity]="role === 'ADMIN' ? 'danger' : 'info'" [rounded]="true" />
+              <p-tag [value]="roleKey(role) | transloco" [severity]="role === 'ADMIN' ? 'danger' : 'info'" [rounded]="true" />
             }
           </div>
         </section>
@@ -38,26 +39,26 @@
 
       <form class="profile-form mt-6 flex flex-col gap-6" [formGroup]="form" (ngSubmit)="save()">
         <section class="rounded-2xl bg-surface-0 border border-surface-200 p-5 shadow-sm flex flex-col gap-2">
-          <label for="displayName" class="font-semibold">Nombre visible</label>
+          <label for="displayName" class="font-semibold">{{ 'profile.displayName' | transloco }}</label>
           <input pInputText id="displayName" formControlName="displayName" maxlength="50" />
-          <small class="text-muted-color">Es el nombre que verán el resto de participantes de tus planes.</small>
+          <small class="text-muted-color">{{ 'profile.displayNameHint' | transloco }}</small>
           @if (form.controls.displayName.invalid && form.controls.displayName.touched) {
-            <small class="field-error text-red-600">El nombre visible es obligatorio.</small>
+            <small class="field-error text-red-600">{{ 'profile.displayNameError' | transloco }}</small>
           }
         </section>
 
         <section class="rounded-2xl bg-surface-0 border border-surface-200 p-5 shadow-sm flex flex-col gap-2">
-          <label for="zoneName" class="font-semibold">Zona habitual</label>
+          <label for="zoneName" class="font-semibold">{{ 'profile.zone' | transloco }}</label>
           <input
             pInputText
             id="zoneName"
             formControlName="zoneName"
-            placeholder="Por ejemplo, Vallecas"
+            [placeholder]="'profile.zonePlaceholder' | transloco"
             maxlength="60"
           />
           <div class="flex flex-wrap items-center gap-2">
             <p-button
-              label="Usar mi ubicación"
+              [label]="'profile.useLocation' | transloco"
               icon="pi pi-map-marker"
               severity="secondary"
               size="small"
@@ -67,25 +68,25 @@
             />
             @if (form.controls.latitude.value !== null) {
               <span class="zone-coordinates text-sm text-muted-color">
-                Aproximada: {{ form.controls.latitude.value }}, {{ form.controls.longitude.value }}
+                {{ 'profile.approximate' | transloco: { latitude: form.controls.latitude.value, longitude: form.controls.longitude.value } }}
               </span>
-              <p-button label="Quitar zona" size="small" [text]="true" severity="secondary" (onClick)="clearZone()" />
+              <p-button [label]="'profile.removeZone' | transloco" size="small" [text]="true" severity="secondary" (onClick)="clearZone()" />
             }
           </div>
           <small class="text-muted-color">
             <i class="pi pi-lock text-xs" aria-hidden="true"></i>
-            Solo se guarda una ubicación aproximada (aproximadamente 1 km) y nadie más ve las coordenadas.
+            {{ 'profile.zonePrivacy' | transloco }}
           </small>
           @if (form.hasError('zoneIncomplete')) {
             <small class="field-error text-red-600">
-              Para indicar tu zona escribe su nombre y pulsa «Usar mi ubicación».
+              {{ 'profile.zoneError' | transloco }}
             </small>
           }
         </section>
 
         <section class="rounded-2xl bg-surface-0 border border-surface-200 p-5 shadow-sm flex flex-col gap-3">
           <div class="flex items-center justify-between">
-            <h3 class="font-semibold">Aficiones y nivel</h3>
+            <h3 class="font-semibold">{{ 'profile.hobbies' | transloco }}</h3>
             <span class="text-sm text-muted-color">{{ hobbies.length }}/10</span>
           </div>
 
@@ -98,7 +99,7 @@
                   optionLabel="name"
                   optionValue="code"
                   class="sm:w-48"
-                  ariaLabel="Actividad"
+                  [ariaLabel]="'profile.activity' | transloco"
                 />
                 <div class="flex items-center justify-between gap-2 sm:flex-1">
                   <p-selectbutton
@@ -114,20 +115,20 @@
                     severity="danger"
                     [text]="true"
                     [rounded]="true"
-                    ariaLabel="Quitar afición"
+                    [ariaLabel]="'profile.removeHobby' | transloco"
                     (onClick)="removeHobby(i)"
                   />
                 </div>
               </div>
             } @empty {
               <p class="text-sm text-muted-color">
-                Añade las actividades que te gustan para recibir planes que te encajen.
+                {{ 'profile.noHobbies' | transloco }}
               </p>
             }
           </div>
 
           <p-button
-            label="Añadir afición"
+            [label]="'profile.addHobby' | transloco"
             icon="pi pi-plus"
             severity="secondary"
             [outlined]="true"
@@ -138,12 +139,12 @@
         </section>
 
         @if (status(); as message) {
-          <p-message [severity]="message.severity" class="status-message">{{ message.text }}</p-message>
+          <p-message [severity]="message.severity" class="status-message">{{ message.key | transloco }}</p-message>
         }
 
         <p-button
           type="submit"
-          label="Guardar perfil"
+          [label]="'profile.save' | transloco"
           icon="pi pi-check"
           [loading]="saving()"
           styleClass="w-full"
@@ -151,11 +152,11 @@
       </form>
 
       <p-button
-        label="Cerrar sesión"
+        [label]="'auth.logout' | transloco"
         icon="pi pi-sign-out"
         severity="secondary"
         [outlined]="true"
-        class="block mt-4"
+        class="logout-button block mt-4"
         styleClass="w-full"
         (onClick)="session.logout()"
       />

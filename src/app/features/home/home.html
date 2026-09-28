@@ -4,6 +4,8 @@
       <span class="text-xl font-extrabold tracking-tight">
         One<span class="text-primary">Left</span>
       </span>
+      <div class="flex items-center gap-1">
+      <app-language-switcher />
       @if (session.isAuthenticated()) {
         <a
           routerLink="/profile"
@@ -19,31 +21,34 @@
       } @else {
         <div class="flex gap-1">
           <p-button
-            label="Crear cuenta"
+            [label]="'auth.register' | transloco"
             [text]="true"
             size="small"
             severity="secondary"
             (onClick)="session.register()"
           />
-          <p-button label="Entrar" icon="pi pi-user" size="small" [rounded]="true" (onClick)="session.login()" />
+          <p-button
+            [label]="'auth.login' | transloco"
+            icon="pi pi-user"
+            size="small"
+            [rounded]="true"
+            (onClick)="session.login()"
+          />
         </div>
       }
+      </div>
     </div>
   </header>
 
   <main class="mx-auto w-full max-w-3xl flex-1 px-4 pb-28">
     <section class="py-8">
-      <h1 class="text-3xl sm:text-4xl font-extrabold leading-tight">
-        ¿Te falta <span class="text-primary">uno</span>?
-      </h1>
-      <p class="mt-2 text-muted-color">
-        Publica tu plan para las próximas horas y complétalo con gente cerca de ti.
-      </p>
+      <h1 class="text-3xl sm:text-4xl font-extrabold leading-tight" [innerHTML]="'home.title' | transloco"></h1>
+      <p class="mt-2 text-muted-color">{{ 'home.subtitle' | transloco }}</p>
     </section>
 
     @if (session.isAuthenticated() && myPlans.value()?.length) {
       <section aria-labelledby="my-plans-title" class="my-plans mb-8">
-        <h2 id="my-plans-title" class="text-lg font-bold mb-3">Tus próximos planes</h2>
+        <h2 id="my-plans-title" class="text-lg font-bold mb-3">{{ 'home.myPlans' | transloco }}</h2>
         <ul class="flex flex-col gap-2">
           @for (plan of myPlans.value(); track plan.id) {
             <li>
@@ -54,9 +59,17 @@
                 <i class="pi {{ activityOf(plan.activity).icon }} text-primary text-xl" aria-hidden="true"></i>
                 <span class="flex-1 min-w-0">
                   <span class="block font-semibold truncate">{{ plan.title }}</span>
-                  <span class="block text-sm text-muted-color">{{ myPlanTime(plan) }}</span>
+                  <span class="block text-sm text-muted-color">
+                    @let myStart = startsIn(plan.startsAt);
+                    {{ clockTime(plan.startsAt) }} · {{ myStart.key | transloco: myStart.params }}
+                  </span>
                 </span>
-                <p-tag [value]="freeSpotsLabel(plan)" severity="warn" [rounded]="true" class="shrink-0 whitespace-nowrap" />
+                <p-tag
+                  [value]="spotsKey(plan.freeSpots) | transloco: { count: plan.freeSpots }"
+                  severity="warn"
+                  [rounded]="true"
+                  class="shrink-0 whitespace-nowrap"
+                />
               </a>
             </li>
           }
@@ -66,8 +79,8 @@
 
     <section aria-labelledby="nearby-title">
       <div class="flex items-baseline justify-between mb-3">
-        <h2 id="nearby-title" class="text-lg font-bold">Planes cerca de ti ahora</h2>
-        <span class="text-sm text-muted-color">{{ plans().length }} planes</span>
+        <h2 id="nearby-title" class="text-lg font-bold">{{ 'home.nearby' | transloco }}</h2>
+        <span class="text-sm text-muted-color">{{ 'home.plansCount' | transloco: { count: plans().length } }}</span>
       </div>
 
       <ul class="flex flex-col gap-3">
@@ -78,14 +91,14 @@
             <div
               class="flex size-12 shrink-0 items-center justify-center rounded-xl bg-primary-50 text-primary"
             >
-              <i class="pi {{ plan.icon }} text-xl" aria-hidden="true"></i>
+              <i class="pi {{ activityOf(plan.activity).icon }} text-xl" aria-hidden="true"></i>
             </div>
 
             <div class="flex-1 min-w-0">
               <div class="flex items-start justify-between gap-2">
                 <h3 class="font-semibold leading-snug">{{ plan.title }}</h3>
                 <p-tag
-                  [value]="freeSpotsLabel(plan)"
+                  [value]="spotsKey(plan.freeSpots) | transloco: { count: plan.freeSpots }"
                   severity="warn"
                   [rounded]="true"
                   class="shrink-0 whitespace-nowrap"
@@ -93,16 +106,17 @@
               </div>
 
               <p class="mt-1 text-sm text-muted-color">
-                <i class="pi pi-clock text-xs" aria-hidden="true"></i> {{ startsIn(plan) }}
+                @let start = startsIn(plan.startsAt);
+                <i class="pi pi-clock text-xs" aria-hidden="true"></i> {{ start.key | transloco: start.params }}
                 · <i class="pi pi-map-marker text-xs" aria-hidden="true"></i> {{ plan.zone }},
                 {{ plan.distanceKm }} km
                 @if (plan.level) {
-                  · {{ plan.level }}
+                  · {{ levelKey(plan.level) | transloco }}
                 }
               </p>
 
               <div class="mt-3 flex items-center justify-between">
-                <div class="flex gap-1" aria-label="Participantes">
+                <div class="flex gap-1" [attr.aria-label]="'home.participants' | transloco">
                   @for (initials of plan.participants; track $index) {
                     <p-avatar
                       [label]="initials"
@@ -111,7 +125,7 @@
                     />
                   }
                 </div>
-                <p-button label="Me apunto" size="small" [rounded]="true" />
+                <p-button [label]="'home.join' | transloco" size="small" [rounded]="true" />
               </div>
             </div>
           </li>
@@ -123,7 +137,7 @@
   <div class="fixed inset-x-0 bottom-0 p-4 bg-gradient-to-t from-surface-50 via-surface-50/95">
     <div class="mx-auto max-w-3xl">
       <p-button
-        label="Publicar un plan"
+        [label]="'home.publish' | transloco"
         icon="pi pi-plus"
         styleClass="w-full"
         size="large"
