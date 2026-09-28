@@ -1,5 +1,6 @@
 import { httpResource } from '@angular/common/http';
-import { Component, inject } from '@angular/core';
+import { Component, DestroyRef, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { Avatar } from 'primeng/avatar';
@@ -8,6 +9,7 @@ import { Tag } from 'primeng/tag';
 import { environment } from '../../../environments/environment';
 import { Session } from '../../core/auth/session';
 import { Language } from '../../core/i18n/language';
+import { UserEvents } from '../../core/realtime/user-events';
 import { activityOf } from '../../shared/model/activities';
 import { Plan } from '../../shared/model/published-plan';
 import { clockTime, spotsKey, startsIn } from '../../shared/time/plan-time';
@@ -27,6 +29,13 @@ export class Home {
   );
   protected readonly activityOf = activityOf;
   protected readonly spotsKey = spotsKey;
+
+  constructor() {
+    // Free spots of my plans change when someone joins: refresh the list with each notice
+    inject(UserEvents)
+      .joined$.pipe(takeUntilDestroyed(inject(DestroyRef)))
+      .subscribe(() => this.myPlans.reload());
+  }
 
   protected startsIn(startsAt: string) {
     return startsIn(new Date(startsAt), new Date());

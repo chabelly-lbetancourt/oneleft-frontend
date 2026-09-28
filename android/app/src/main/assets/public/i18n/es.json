@@ -1,0 +1,183 @@
+{
+  "app": {
+    "name": "OneLeft",
+    "back": "Volver",
+    "loading": "Cargando…",
+    "language": "Idioma",
+    "languages": {
+      "es": "Español",
+      "en": "English"
+    }
+  },
+  "titles": {
+    "home": "OneLeft · Planes para ya",
+    "profile": "OneLeft · Mi perfil",
+    "newPlan": "OneLeft · Publicar un plan",
+    "plan": "OneLeft · Plan",
+    "nearby": "OneLeft · Planes cerca"
+  },
+  "auth": {
+    "login": "Entrar",
+    "register": "Crear cuenta",
+    "logout": "Cerrar sesión"
+  },
+  "activities": {
+    "PADEL": "Pádel",
+    "FOOTBALL": "Fútbol",
+    "BASKETBALL": "Baloncesto",
+    "TENNIS": "Tenis",
+    "RUNNING": "Running",
+    "CYCLING": "Ciclismo",
+    "HIKING": "Senderismo",
+    "BOARD_GAMES": "Juegos de mesa",
+    "CINEMA": "Cine",
+    "CONCERTS": "Conciertos"
+  },
+  "levels": {
+    "BEGINNER": "Principiante",
+    "INTERMEDIATE": "Intermedio",
+    "ADVANCED": "Avanzado",
+    "ANY": "Cualquier nivel"
+  },
+  "roles": {
+    "ADMIN": "Administrador",
+    "USER": "Usuario"
+  },
+  "spots": {
+    "one": "Falta 1",
+    "other": "Faltan {{count}}"
+  },
+  "time": {
+    "started": "ya ha empezado",
+    "inMinutes": "en {{minutes}} min",
+    "inHours": "en {{hours}} h",
+    "inHoursMinutes": "en {{hours}} h {{minutes}} min",
+    "at": "A las {{time}}"
+  },
+  "home": {
+    "title": "¿Te falta <span class=\"text-primary\">uno</span>?",
+    "subtitle": "Publica tu plan para las próximas horas y complétalo con gente cerca de ti.",
+    "myPlans": "Tus próximos planes",
+    "nearby": "Planes cerca de ti ahora",
+    "publish": "Publicar un plan",
+    "nearbyHint": "Mira en una lista o en el mapa los planes que empiezan pronto cerca de ti."
+  },
+  "plan": {
+    "title": "Plan",
+    "published": "¡Plan publicado! Avisaremos a la gente cercana que encaje.",
+    "notFound": "Este plan no existe o ya no está disponible.",
+    "viewOnMap": "Ver en el mapa",
+    "organizer": "Organiza {{name}}",
+    "loading": "Cargando el plan…"
+  },
+  "publish": {
+    "title": "Publicar un plan",
+    "what": "¿Qué plan es?",
+    "chooseActivity": "Elige la actividad",
+    "planTitle": "Título",
+    "planTitlePlaceholder": "Partido de pádel, falta uno",
+    "titleError": "El título debe tener entre 3 y 80 caracteres.",
+    "details": "Detalles",
+    "optional": "(opcional)",
+    "detailsPlaceholder": "Nivel medio, pista cubierta, traemos bolas",
+    "when": "¿Cuándo empieza?",
+    "in30": "En 30 min",
+    "in60": "En 1 h",
+    "in120": "En 2 h",
+    "in180": "En 3 h",
+    "custom": "Otra hora",
+    "startTime": "Hora de inicio",
+    "horizon": "OneLeft es para planes de las próximas {{hours}} horas.",
+    "where": "¿Dónde quedáis?",
+    "wherePlaceholder": "Pistas del polideportivo de Vallecas",
+    "here": "Estoy aquí",
+    "whereError": "Indica el punto de encuentro con «Estoy aquí».",
+    "spots": "¿Cuántas plazas faltan?",
+    "level": "Nivel",
+    "anyLevel": "Cualquiera",
+    "submit": "Publicar plan",
+    "checkFields": "Revisa los campos marcados",
+    "chooseTime": "Elige una hora dentro de las próximas {{hours}} horas"
+  },
+  "profile": {
+    "title": "Mi perfil",
+    "loading": "Cargando tu perfil…",
+    "loadError": "No se ha podido cargar tu perfil. Inténtalo de nuevo más tarde.",
+    "displayName": "Nombre visible",
+    "displayNameHint": "Es el nombre que verán el resto de participantes de tus planes.",
+    "displayNameError": "El nombre visible es obligatorio.",
+    "zone": "Zona habitual",
+    "zonePlaceholder": "Por ejemplo, Vallecas",
+    "useLocation": "Usar mi ubicación",
+    "approximate": "Aproximada: {{latitude}}, {{longitude}}",
+    "removeZone": "Quitar zona",
+    "zonePrivacy": "Solo se guarda una ubicación aproximada (aproximadamente 1 km) y nadie más ve las coordenadas.",
+    "zoneError": "Para indicar tu zona escribe su nombre y pulsa «Usar mi ubicación».",
+    "myZone": "Mi zona",
+    "hobbies": "Aficiones y nivel",
+    "activity": "Actividad",
+    "removeHobby": "Quitar afición",
+    "noHobbies": "Añade las actividades que te gustan para recibir planes que te encajen.",
+    "addHobby": "Añadir afición",
+    "save": "Guardar perfil",
+    "saved": "Perfil guardado"
+  },
+  "errors": {
+    "generic": "Algo ha fallado. Inténtalo de nuevo.",
+    "publishFailed": "No se ha podido publicar el plan",
+    "saveFailed": "No se ha podido guardar el perfil",
+    "validation": "Revisa los datos enviados",
+    "location": {
+      "unavailable": "La geolocalización no está disponible en este dispositivo",
+      "denied": "No se ha podido obtener tu ubicación"
+    },
+    "plan": {
+      "notFound": "Este plan no existe o ya no está disponible.",
+      "startsTooSoon": "El plan debe empezar dentro de al menos 5 minutos",
+      "startsTooLate": "El plan debe empezar dentro de las próximas 12 horas",
+      "title": "El título debe tener entre 3 y 80 caracteres",
+      "description": "La descripción admite hasta 280 caracteres",
+      "spots": "Las plazas libres deben estar entre 1 y 20"
+    },
+    "meetingPoint": {
+      "name": "El lugar necesita un nombre de hasta 100 caracteres"
+    },
+    "coordinates": {
+      "outOfRange": "Coordenadas fuera de rango"
+    },
+    "search": {
+      "radius": "El radio debe estar entre 500 m y 25 km",
+      "startsWithin": "Solo se pueden buscar planes que empiecen en las próximas 1 a 12 horas"
+    },
+    "zone": {
+      "name": "La zona necesita un nombre de hasta 60 caracteres"
+    },
+    "profile": {
+      "notFound": "Este usuario no tiene perfil",
+      "displayName": "El nombre visible es obligatorio y admite hasta 50 caracteres",
+      "tooManyHobbies": "Se admiten como máximo 10 aficiones",
+      "duplicateActivity": "Cada actividad solo puede aparecer una vez"
+    }
+  },
+  "nearby": {
+    "title": "Planes cerca",
+    "radius": "Distancia",
+    "within": "Empiezan en las próximas",
+    "within1": "1 h",
+    "within3": "3 h",
+    "within12": "12 h",
+    "activities": "Actividades",
+    "allActivities": "Todas las actividades",
+    "list": "Lista",
+    "map": "Mapa",
+    "locating": "Buscando tu ubicación…",
+    "retry": "Reintentar",
+    "loadError": "No se han podido cargar los planes cercanos.",
+    "count": "{{count}} planes a menos de {{distance}}",
+    "empty": "No hay planes cerca con estos filtros. ¿Y si publicas tú uno?",
+    "newPlan": "Nuevo plan cerca: {{activity}} a {{distance}}",
+    "open": "Ver plan",
+    "you": "Estás aquí",
+    "privacy": "Tu ubicación solo se usa para buscar, con unos 100 m de precisión, y no se guarda."
+  }
+}

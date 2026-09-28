@@ -68,7 +68,16 @@
     "notFound": "This plan does not exist or is no longer available.",
     "viewOnMap": "View on the map",
     "organizer": "Organized by {{name}}",
-    "loading": "Loading the plan…"
+    "loading": "Loading the plan…",
+    "participants": "Participants",
+    "noParticipants": "Nobody has joined yet. Be the first!",
+    "join": "I'm in",
+    "justJoined": "You're in! The organizer already knows.",
+    "youAreIn": "You have joined this plan.",
+    "yourPlan": "It's your plan: we will let you know when someone joins.",
+    "full": "Full",
+    "closed": "This plan no longer accepts people.",
+    "you": "you"
   },
   "publish": {
     "title": "Publish a plan",
@@ -137,7 +146,13 @@
       "startsTooLate": "The plan must start within the next 12 hours",
       "title": "The title must be between 3 and 80 characters",
       "description": "The description allows up to 280 characters",
-      "spots": "Free spots must be between 1 and 20"
+      "spots": "Free spots must be between 1 and 20",
+      "full": "Someone took the last spot just before you.",
+      "alreadyJoined": "You have already joined this plan.",
+      "ownPlan": "You cannot join your own plan.",
+      "started": "The plan has already started.",
+      "notOpen": "This plan is no longer open.",
+      "busy": "Many people are joining at once. Please try again."
     },
     "meetingPoint": {
       "name": "The meeting point needs a name of up to 100 characters"
@@ -157,6 +172,10 @@
       "displayName": "The display name is required and allows up to 50 characters",
       "tooManyHobbies": "At most 10 hobbies are allowed",
       "duplicateActivity": "Each activity can only appear once"
+    },
+    "joinFailed": "You could not join the plan",
+    "participant": {
+      "missingData": "Participant data is missing"
     }
   },
   "nearby": {
@@ -179,5 +198,10 @@
     "open": "View plan",
     "you": "You are here",
     "privacy": "Your location is only used to search, with about 100 m precision, and it is not stored."
+  },
+  "notices": {
+    "joinedTitle": "Someone joined",
+    "fullTitle": "Your plan is full!",
+    "joined": "{{name}} joined \"{{title}}\""
   }
 }

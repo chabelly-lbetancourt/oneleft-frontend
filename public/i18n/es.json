@@ -68,7 +68,16 @@
     "notFound": "Este plan no existe o ya no está disponible.",
     "viewOnMap": "Ver en el mapa",
     "organizer": "Organiza {{name}}",
-    "loading": "Cargando el plan…"
+    "loading": "Cargando el plan…",
+    "participants": "Participantes",
+    "noParticipants": "Aún no se ha apuntado nadie. ¡Sé la primera persona!",
+    "join": "Me apunto",
+    "justJoined": "¡Estás dentro! Quien organiza ya lo sabe.",
+    "youAreIn": "Estás apuntado a este plan.",
+    "yourPlan": "Es tu plan: te avisaremos cuando alguien se apunte.",
+    "full": "Completo",
+    "closed": "Este plan ya no admite gente.",
+    "you": "tú"
   },
   "publish": {
     "title": "Publicar un plan",
@@ -137,7 +146,13 @@
       "startsTooLate": "El plan debe empezar dentro de las próximas 12 horas",
       "title": "El título debe tener entre 3 y 80 caracteres",
       "description": "La descripción admite hasta 280 caracteres",
-      "spots": "Las plazas libres deben estar entre 1 y 20"
+      "spots": "Las plazas libres deben estar entre 1 y 20",
+      "full": "Vaya, alguien ha ocupado la última plaza antes que tú.",
+      "alreadyJoined": "Ya estás apuntado a este plan.",
+      "ownPlan": "No puedes apuntarte a tu propio plan.",
+      "started": "El plan ya ha empezado.",
+      "notOpen": "Este plan ya no está abierto.",
+      "busy": "Mucha gente se está apuntando a la vez. Inténtalo de nuevo."
     },
     "meetingPoint": {
       "name": "El lugar necesita un nombre de hasta 100 caracteres"
@@ -157,6 +172,10 @@
       "displayName": "El nombre visible es obligatorio y admite hasta 50 caracteres",
       "tooManyHobbies": "Se admiten como máximo 10 aficiones",
       "duplicateActivity": "Cada actividad solo puede aparecer una vez"
+    },
+    "joinFailed": "No se ha podido apuntarte al plan",
+    "participant": {
+      "missingData": "Faltan datos de la persona participante"
     }
   },
   "nearby": {
@@ -179,5 +198,10 @@
     "open": "Ver plan",
     "you": "Estás aquí",
     "privacy": "Tu ubicación solo se usa para buscar, con unos 100 m de precisión, y no se guarda."
+  },
+  "notices": {
+    "joinedTitle": "Alguien se ha apuntado",
+    "fullTitle": "¡Tu plan está completo!",
+    "joined": "{{name}} se ha unido a «{{title}}»"
   }
 }
