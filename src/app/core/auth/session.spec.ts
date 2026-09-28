@@ -3,6 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { OidcSecurityService } from 'angular-auth-oidc-client';
 import { of } from 'rxjs';
 import { Language } from '../i18n/language';
+import { NativePlatform } from '../platform';
 import { Session } from './session';
 
 describe('Session', () => {
@@ -18,6 +19,7 @@ describe('Session', () => {
     logoffAndRevokeTokens: vi.fn(() => of(null)),
     getAccessToken: vi.fn(() => of('token-1')),
   };
+  const platform = { isNative: vi.fn(() => false), openBrowser: vi.fn() };
   let session: Session;
 
   beforeEach(() => {
@@ -27,6 +29,7 @@ describe('Session', () => {
     TestBed.configureTestingModule({ providers: [
         { provide: OidcSecurityService, useValue: oidc },
         { provide: Language, useValue: { current: signal('en') } },
+        { provide: NativePlatform, useValue: platform },
       ], });
     session = TestBed.inject(Session);
   });
@@ -60,12 +63,23 @@ describe('Session', () => {
     expect(oidc.authorize).toHaveBeenCalledWith(undefined, { customParams: { prompt: 'create', ui_locales: 'en' } });
   });
 
+  it('should open the Keycloak pages in the system browser inside the Android app', () => {
+    platform.isNative.mockReturnValue(true);
+    session.login();
+    const options = oidc.authorize.mock.calls.at(-1)![1] as { urlHandler: (url: string) => void };
+    options.urlHandler('http://localhost:8180/realms/oneleft/protocol/openid-connect/auth?x=1');
+    expect(platform.openBrowser).toHaveBeenCalledWith('http://localhost:8180/realms/oneleft/protocol/openid-connect/auth?x=1');
+    session.logout();
+    expect(oidc.logoffAndRevokeTokens).toHaveBeenLastCalledWith(undefined, { urlHandler: expect.any(Function) });
+    platform.isNative.mockReturnValue(false);
+  });
+
   it('should give the access token for streams opened with fetch', async () => {
     await expect(session.accessToken()).resolves.toBe('token-1');
   });
 
   it('should log out revoking the tokens', () => {
     session.logout();
-    expect(oidc.logoffAndRevokeTokens).toHaveBeenCalled();
+    expect(oidc.logoffAndRevokeTokens).toHaveBeenCalledWith(undefined, {});
   });
 });

@@ -2,13 +2,21 @@ import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { ApplicationConfig, inject, isDevMode, provideAppInitializer, provideBrowserGlobalErrorListeners } from '@angular/core';
 import { provideRouter, TitleStrategy, withComponentInputBinding } from '@angular/router';
 import { provideTransloco } from '@jsverse/transloco';
-import { authInterceptor, provideAuth, withAppInitializerAuthCheck } from 'angular-auth-oidc-client';
+import {
+  AbstractSecurityStorage,
+  authInterceptor,
+  DefaultLocalStorageService,
+  provideAuth,
+  withAppInitializerAuthCheck,
+} from 'angular-auth-oidc-client';
 import { providePrimeNG } from 'primeng/config';
 import { routes } from './app.routes';
 import { authConfig } from './core/auth/auth.config';
+import { NativeAuthCallback } from './core/auth/native-auth-callback';
 import { DEFAULT_LANGUAGE, Language, LANGUAGES } from './core/i18n/language';
 import { TranslatedTitleStrategy } from './core/i18n/translated-title-strategy';
 import { TranslocoHttpLoader } from './core/i18n/transloco-loader';
+import { isNativeApp } from './core/platform';
 import { primeUiLicense } from './core/primeui-license';
 import { OneLeftPreset } from './core/theme/oneleft-preset';
 
@@ -18,6 +26,9 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes, withComponentInputBinding()),
     // Checks the session on startup (return from the Keycloak login or a stored session)
     provideAuth(authConfig, withAppInitializerAuthCheck()),
+    // Android app: the session survives closing the app (sessionStorage is lost) and the login returns by deep link
+    ...(isNativeApp() ? [{ provide: AbstractSecurityStorage, useClass: DefaultLocalStorageService }] : []),
+    provideAppInitializer(() => inject(NativeAuthCallback).listen()),
     // Adds the access token only to requests sent to the OneLeft API
     provideHttpClient(withInterceptors([authInterceptor()])),
     // Runtime translations: one bundle for the web and Android, language switchable without reloading
