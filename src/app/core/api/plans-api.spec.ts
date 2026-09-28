@@ -26,4 +26,14 @@ describe('PlansApi', () => {
     http.expectOne({ method: 'GET', url: `${base}/mine` }).flush([]);
     http.verify();
   });
+
+  it('should build the nearby URLs with repeated activities', () => {
+    TestBed.configureTestingModule({ providers: [provideHttpClient(), provideHttpClientTesting()] });
+    const api = TestBed.inject(PlansApi);
+    const base = `${environment.apiUrl}/api/v1/plans`;
+    expect(api.nearbyUrl()).toBe(`${base}/nearby`);
+    expect(api.nearbyStreamUrl({ latitude: 40.39, longitude: -3.63, radius: 1000, activities: [], withinHours: 12 })).toBe(
+      `${base}/nearby/stream?latitude=40.39&longitude=-3.63&radius=1000&withinHours=12`,
+    );
+  });
 });
