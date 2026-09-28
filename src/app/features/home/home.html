@@ -41,6 +41,29 @@
       </p>
     </section>
 
+    @if (session.isAuthenticated() && myPlans.value()?.length) {
+      <section aria-labelledby="my-plans-title" class="my-plans mb-8">
+        <h2 id="my-plans-title" class="text-lg font-bold mb-3">Tus próximos planes</h2>
+        <ul class="flex flex-col gap-2">
+          @for (plan of myPlans.value(); track plan.id) {
+            <li>
+              <a
+                [routerLink]="['/planes', plan.id]"
+                class="my-plan flex items-center gap-3 rounded-2xl bg-primary-50 border border-primary-200 p-3"
+              >
+                <i class="pi {{ activityOf(plan.activity).icon }} text-primary text-xl" aria-hidden="true"></i>
+                <span class="flex-1 min-w-0">
+                  <span class="block font-semibold truncate">{{ plan.title }}</span>
+                  <span class="block text-sm text-muted-color">{{ myPlanTime(plan) }}</span>
+                </span>
+                <p-tag [value]="freeSpotsLabel(plan)" severity="warn" [rounded]="true" class="shrink-0 whitespace-nowrap" />
+              </a>
+            </li>
+          }
+        </ul>
+      </section>
+    }
+
     <section aria-labelledby="nearby-title">
       <div class="flex items-baseline justify-between mb-3">
         <h2 id="nearby-title" class="text-lg font-bold">Planes cerca de ti ahora</h2>
@@ -105,6 +128,7 @@
         styleClass="w-full"
         size="large"
         [rounded]="true"
+        routerLink="/planes/nuevo"
       />
     </div>
   </div>
