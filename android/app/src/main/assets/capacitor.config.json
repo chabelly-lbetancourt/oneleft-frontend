@@ -1,0 +1,8 @@
+{
+	"appId": "es.upm.miw.oneleft",
+	"appName": "OneLeft",
+	"webDir": "dist/oneleft/browser",
+	"android": {
+		"allowMixedContent": true
+	}
+}

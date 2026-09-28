@@ -13,6 +13,9 @@ export class Session {
 
   readonly isAuthenticated = computed(() => this.oidc.authenticated().isAuthenticated);
 
+  /** Keycloak subject: the same id the services use for the user. */
+  readonly userId = computed<string | null>(() => this.oidc.userData().userData?.sub ?? null);
+
   readonly userName = computed<string>(() => {
     const data = this.oidc.userData().userData;
     return data?.name ?? data?.preferred_username ?? data?.email ?? '';

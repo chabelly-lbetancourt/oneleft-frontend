@@ -21,6 +21,7 @@ const PLAN: NearbyPlan = {
     level: null,
     status: 'OPEN',
     publishedAt: new Date().toISOString(),
+    participants: [],
   },
 };
 
