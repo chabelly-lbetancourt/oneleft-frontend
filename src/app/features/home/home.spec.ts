@@ -1,3 +1,5 @@
+import { provideHttpClient } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { FakeSession } from '../../../testing/fake-session';
@@ -14,7 +16,12 @@ describe('Home', () => {
     session = new FakeSession();
     await TestBed.configureTestingModule({
       imports: [Home],
-      providers: [provideRouter([]), { provide: Session, useValue: session }],
+      providers: [
+        provideRouter([]),
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        { provide: Session, useValue: session },
+      ],
     }).compileComponents();
     fixture = TestBed.createComponent(Home);
     fixture.detectChanges();
@@ -58,9 +65,37 @@ describe('Home', () => {
   it('should show the user and a link to the profile with a session', async () => {
     session.signIn('Ana Pruebas');
     fixture.detectChanges();
+    TestBed.inject(HttpTestingController).expectOne((r) => r.url.endsWith('/api/v1/plans/mine')).flush([]);
     await fixture.whenStable();
     const menu = element.querySelector('.user-menu');
     expect(menu?.textContent).toContain('Ana Pruebas');
     expect(menu?.getAttribute('href')).toBe('/perfil');
+  });
+
+  it('should list my upcoming plans with a session', async () => {
+    session.signIn('Ana Pruebas');
+    fixture.detectChanges();
+    TestBed.inject(HttpTestingController)
+      .expectOne((r) => r.url.endsWith('/api/v1/plans/mine'))
+      .flush([
+        {
+          id: 'plan-1',
+          activity: 'PADEL',
+          title: 'Mi partido de pádel',
+          startsAt: new Date(Date.now() + 60 * 60_000).toISOString(),
+          freeSpots: 1,
+        },
+      ]);
+    await fixture.whenStable();
+    fixture.detectChanges();
+    const myPlan = element.querySelector('.my-plan');
+    expect(myPlan?.textContent).toContain('Mi partido de pádel');
+    expect(myPlan?.textContent).toContain('Falta 1');
+    expect(myPlan?.getAttribute('href')).toBe('/planes/plan-1');
+  });
+
+  it('should not ask for my plans without a session', () => {
+    TestBed.inject(HttpTestingController).expectNone((r) => r.url.endsWith('/api/v1/plans/mine'));
+    expect(element.querySelector('.my-plans')).toBeNull();
   });
 });

@@ -8,8 +8,11 @@ export interface Coordinates {
 /** Número de decimales que se conservan: una cuadrícula de unos 1,1 km. */
 export const APPROXIMATE_DECIMALS = 2;
 
-export const roundCoordinate = (value: number): number => {
-  const factor = 10 ** APPROXIMATE_DECIMALS;
+/** Decimales del punto de encuentro de un plan: unos 110 m, suficiente para quedar sin exponer tu casa. */
+export const MEETING_POINT_DECIMALS = 3;
+
+export const roundCoordinate = (value: number, decimals = APPROXIMATE_DECIMALS): number => {
+  const factor = 10 ** decimals;
   return Math.round(value * factor) / factor;
 };
 
@@ -19,7 +22,7 @@ export const roundCoordinate = (value: number): number => {
  */
 @Injectable({ providedIn: 'root' })
 export class ApproximateLocation {
-  current(): Promise<Coordinates> {
+  current(decimals = APPROXIMATE_DECIMALS): Promise<Coordinates> {
     return new Promise((resolve, reject) => {
       if (!globalThis.navigator?.geolocation) {
         reject(new Error('La geolocalización no está disponible en este dispositivo'));
@@ -28,8 +31,8 @@ export class ApproximateLocation {
       globalThis.navigator.geolocation.getCurrentPosition(
         (position) =>
           resolve({
-            latitude: roundCoordinate(position.coords.latitude),
-            longitude: roundCoordinate(position.coords.longitude),
+            latitude: roundCoordinate(position.coords.latitude, decimals),
+            longitude: roundCoordinate(position.coords.longitude, decimals),
           }),
         () => reject(new Error('No se ha podido obtener tu ubicación')),
         { enableHighAccuracy: false, timeout: 10000, maximumAge: 600000 },

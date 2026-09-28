@@ -11,6 +11,7 @@ describe('ApproximateLocation', () => {
   it('should round coordinates to two decimals', () => {
     expect(roundCoordinate(40.391234)).toBe(40.39);
     expect(roundCoordinate(-3.628765)).toBe(-3.63);
+    expect(roundCoordinate(40.391234, 3)).toBe(40.391);
   });
 
   it('should return the rounded position of the device', async () => {
