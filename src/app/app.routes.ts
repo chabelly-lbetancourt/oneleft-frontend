@@ -22,6 +22,13 @@ export const routes: Routes = [
     title: 'titles.newPlan',
   },
   {
+    // Before plans/:id, which would otherwise take "nearby" as an id
+    path: 'plans/nearby',
+    canActivate: [autoLoginPartialRoutesGuard],
+    loadComponent: () => import('./features/plans/nearby-plans').then((m) => m.NearbyPlans),
+    title: 'titles.nearby',
+  },
+  {
     path: 'plans/:id',
     canActivate: [autoLoginPartialRoutesGuard],
     loadComponent: () => import('./features/plans/plan-detail').then((m) => m.PlanDetail),

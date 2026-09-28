@@ -1,5 +1,5 @@
 import { httpResource } from '@angular/common/http';
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { Avatar } from 'primeng/avatar';
@@ -9,12 +9,9 @@ import { environment } from '../../../environments/environment';
 import { Session } from '../../core/auth/session';
 import { Language } from '../../core/i18n/language';
 import { activityOf } from '../../shared/model/activities';
-import { PlanSummary } from '../../shared/model/plan';
-import { levelKey } from '../../shared/model/profile';
 import { Plan } from '../../shared/model/published-plan';
 import { clockTime, spotsKey, startsIn } from '../../shared/time/plan-time';
 import { LanguageSwitcher } from '../../shared/ui/language-switcher';
-import { SAMPLE_PLANS } from './sample-plans';
 
 @Component({
   selector: 'app-home',
@@ -30,13 +27,8 @@ export class Home {
   );
   protected readonly activityOf = activityOf;
   protected readonly spotsKey = spotsKey;
-  protected readonly levelKey = levelKey;
-  protected readonly plans = signal<PlanSummary[]>(SAMPLE_PLANS);
-  protected readonly plansByStart = computed(() =>
-    [...this.plans()].sort((a, b) => a.startsAt.getTime() - b.startsAt.getTime()),
-  );
 
-  protected startsIn(startsAt: Date | string) {
+  protected startsIn(startsAt: string) {
     return startsIn(new Date(startsAt), new Date());
   }
 

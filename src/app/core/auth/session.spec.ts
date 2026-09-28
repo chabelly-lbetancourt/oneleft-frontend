@@ -16,6 +16,7 @@ describe('Session', () => {
     userData,
     authorize: vi.fn(),
     logoffAndRevokeTokens: vi.fn(() => of(null)),
+    getAccessToken: vi.fn(() => of('token-1')),
   };
   let session: Session;
 
@@ -57,6 +58,10 @@ describe('Session', () => {
     expect(oidc.authorize).toHaveBeenCalledWith(undefined, { customParams: { ui_locales: 'en' } });
     session.register();
     expect(oidc.authorize).toHaveBeenCalledWith(undefined, { customParams: { prompt: 'create', ui_locales: 'en' } });
+  });
+
+  it('should give the access token for streams opened with fetch', async () => {
+    await expect(session.accessToken()).resolves.toBe('token-1');
   });
 
   it('should log out revoking the tokens', () => {
