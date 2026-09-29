@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { autoLoginPartialRoutesGuard } from 'angular-auth-oidc-client';
+import { authGuard, guestGuard } from './core/auth/auth-guard';
 
 /** Titles are translation keys (see TranslatedTitleStrategy). */
 export const routes: Routes = [
@@ -9,28 +9,42 @@ export const routes: Routes = [
     title: 'titles.home',
   },
   {
+    path: 'login',
+    canActivate: [guestGuard],
+    loadComponent: () => import('./features/auth/auth-page').then((m) => m.AuthPage),
+    data: { mode: 'login' },
+    title: 'titles.login',
+  },
+  {
+    path: 'register',
+    canActivate: [guestGuard],
+    loadComponent: () => import('./features/auth/auth-page').then((m) => m.AuthPage),
+    data: { mode: 'register' },
+    title: 'titles.register',
+  },
+  {
     path: 'profile',
-    // Without a session, redirects to the Keycloak login and comes back here afterwards
-    canActivate: [autoLoginPartialRoutesGuard],
+    // Without a session, the login page, which comes back here afterwards
+    canActivate: [authGuard],
     loadComponent: () => import('./features/profile/profile').then((m) => m.Profile),
     title: 'titles.profile',
   },
   {
     path: 'plans/new',
-    canActivate: [autoLoginPartialRoutesGuard],
+    canActivate: [authGuard],
     loadComponent: () => import('./features/plans/publish-plan').then((m) => m.PublishPlan),
     title: 'titles.newPlan',
   },
   {
     // Before plans/:id, which would otherwise take "nearby" as an id
     path: 'plans/nearby',
-    canActivate: [autoLoginPartialRoutesGuard],
+    canActivate: [authGuard],
     loadComponent: () => import('./features/plans/nearby-plans').then((m) => m.NearbyPlans),
     title: 'titles.nearby',
   },
   {
     path: 'plans/:id',
-    canActivate: [autoLoginPartialRoutesGuard],
+    canActivate: [authGuard],
     loadComponent: () => import('./features/plans/plan-detail').then((m) => m.PlanDetail),
     title: 'titles.plan',
   },

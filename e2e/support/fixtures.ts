@@ -132,9 +132,18 @@ export const test = base.extend<E2eOptions & Fixtures>({
 
 export { expect };
 
-/** Fills the Keycloak login form the app redirected to and waits to be back in OneLeft. */
+/**
+ * Signs in from the OneLeft login page (or directly in Keycloak if the app already sent the user there): chooses
+ * "continue with email", fills the Keycloak form and waits to be back in OneLeft.
+ */
 export const signIn = async (page: Page, user: TestUser) => {
-  await page.locator('#username').fill(user.username);
+  const withEmail = page.locator('.email-login button');
+  const keycloakForm = page.locator('#username');
+  await expect(withEmail.or(keycloakForm)).toBeVisible();
+  if (await withEmail.isVisible()) {
+    await withEmail.click();
+  }
+  await keycloakForm.fill(user.username);
   // Set in the page instead of fill(), so the password never appears in the steps of the report or the trace
   await page
     .locator('#password')

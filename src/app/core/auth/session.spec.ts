@@ -1,7 +1,8 @@
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
+import { NavigationEnd, Router } from '@angular/router';
 import { OidcSecurityService } from 'angular-auth-oidc-client';
-import { of } from 'rxjs';
+import { of, Subject } from 'rxjs';
 import { Language } from '../i18n/language';
 import { Session } from './session';
 
@@ -18,16 +19,21 @@ describe('Session', () => {
     logoffAndRevokeTokens: vi.fn(() => of(null)),
     getAccessToken: vi.fn(() => of('token-1')),
   };
+  const routerEvents = new Subject<unknown>();
+  const router = { events: routerEvents, navigateByUrl: vi.fn(() => Promise.resolve(true)) };
+  const navigationEnd = () => routerEvents.next(new NavigationEnd(1, '/', '/'));
   let session: Session;
 
   beforeEach(() => {
     vi.clearAllMocks();
+    sessionStorage.clear();
     authenticated.set({ isAuthenticated: false, allConfigsAuthenticated: [] });
     userData.set({ userData: null, allUserData: [] });
     TestBed.configureTestingModule({
       providers: [
         { provide: OidcSecurityService, useValue: oidc },
         { provide: Language, useValue: { current: signal('en') } },
+        { provide: Router, useValue: router },
       ],
     });
     session = TestBed.inject(Session);
@@ -69,6 +75,49 @@ describe('Session', () => {
     expect(oidc.authorize).toHaveBeenCalledWith(undefined, {
       customParams: { kc_idp_hint: 'google', ui_locales: 'en' },
     });
+  });
+
+  it('should open the page that asked for the login when coming back from Keycloak', () => {
+    session.login('/plans/new?x=1');
+    expect(router.navigateByUrl).not.toHaveBeenCalled();
+
+    authenticated.set({ isAuthenticated: true, allConfigsAuthenticated: [] });
+    navigationEnd();
+    expect(router.navigateByUrl).toHaveBeenCalledWith('/plans/new?x=1');
+    // Only once
+    authenticated.set({ isAuthenticated: false, allConfigsAuthenticated: [] });
+    authenticated.set({ isAuthenticated: true, allConfigsAuthenticated: [] });
+    navigationEnd();
+    expect(router.navigateByUrl).toHaveBeenCalledTimes(1);
+  });
+
+  it('should never send the user to another site after the login', () => {
+    for (const url of ['https://evil.example', '//evil.example', '/\\evil.example', '']) {
+      session.register(url);
+      authenticated.set({ isAuthenticated: true, allConfigsAuthenticated: [] });
+      navigationEnd();
+      authenticated.set({ isAuthenticated: false, allConfigsAuthenticated: [] });
+      navigationEnd();
+    }
+    session.loginWithGoogle('/profile');
+    authenticated.set({ isAuthenticated: true, allConfigsAuthenticated: [] });
+    navigationEnd();
+    expect(router.navigateByUrl.mock.calls).toEqual([['/profile']]);
+  });
+
+  it('should work without session storage', () => {
+    const setItem = vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+      throw new Error('private mode');
+    });
+    const getItem = vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => {
+      throw new Error('private mode');
+    });
+    expect(() => session.login('/profile')).not.toThrow();
+    authenticated.set({ isAuthenticated: true, allConfigsAuthenticated: [] });
+    navigationEnd();
+    expect(router.navigateByUrl).not.toHaveBeenCalled();
+    setItem.mockRestore();
+    getItem.mockRestore();
   });
 
   it('should give the access token for streams opened with fetch', async () => {
