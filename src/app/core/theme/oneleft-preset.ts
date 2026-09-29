@@ -3,53 +3,57 @@ import Aura from '@primeuix/themes/aura';
 
 /**
  * OneLeft theme: PrimeNG Aura with the brand identity (see styles.css).
- * - Primary: tangerine, with ink text on it (better contrast than white and more recognisable)
- * - Surfaces: warm neutrals from cream to ink instead of Aura's cold greys
- * - Rounder fields and ink focus rings
+ * - Primary actions in ink with white text; the brand orange stays for highlights and the free spots
+ * - Warm neutral surfaces instead of Aura's cold greys
  */
 export const OneLeftPreset = definePreset(Aura, {
   semantic: {
-    // Tangerine
+    // Brand orange: highlights, links and free spots
     primary: {
-      50: '#fff4ed',
-      100: '#ffe6d5',
-      200: '#ffc9a8',
-      300: '#ffa470',
-      400: '#ff7a3d',
-      500: '#ff5f1f',
-      600: '#f0430a',
-      700: '#c7320a',
-      800: '#9e2a10',
-      900: '#7f2510',
-      950: '#451006',
+      50: '#fff6ed',
+      100: '#ffead4',
+      200: '#ffd0a8',
+      300: '#ffad70',
+      400: '#ff8138',
+      500: '#fa6212',
+      600: '#e04a08',
+      700: '#b93709',
+      800: '#932d10',
+      900: '#772810',
+      950: '#401106',
     },
-    focusRing: { width: '2px', style: 'solid', color: '#17131f', offset: '2px' },
-    formField: { borderRadius: '0.9rem', paddingY: '0.7rem' },
+    focusRing: { width: '2px', style: 'solid', color: '{surface.900}', offset: '2px' },
+    formField: { borderRadius: '0.75rem' },
     colorScheme: {
       light: {
         surface: {
           0: '#ffffff',
-          50: '#fff8f0',
-          100: '#f6ebdd',
-          200: '#eadccb',
-          300: '#d5c4b0',
-          400: '#a89886',
-          500: '#7a6d61',
-          600: '#5a4f47',
-          700: '#3f3732',
-          800: '#29221f',
-          900: '#17131f',
-          950: '#0d0a12',
+          50: '#fafaf9',
+          100: '#f5f5f4',
+          200: '#e7e5e4',
+          300: '#d6d3d1',
+          400: '#a8a29e',
+          500: '#78716c',
+          600: '#57534e',
+          700: '#44403c',
+          800: '#292524',
+          900: '#1c1917',
+          950: '#0c0a09',
         },
         primary: {
-          color: '{primary.500}',
-          contrastColor: '#17131f',
-          hoverColor: '{primary.400}',
-          activeColor: '{primary.600}',
+          color: '{surface.900}',
+          contrastColor: '#ffffff',
+          hoverColor: '{surface.800}',
+          activeColor: '{surface.700}',
+        },
+        highlight: {
+          background: '{primary.50}',
+          focusBackground: '{primary.100}',
+          color: '{primary.700}',
+          focusColor: '{primary.800}',
         },
         formField: {
-          borderColor: '{surface.300}',
-          hoverBorderColor: '{surface.900}',
+          hoverBorderColor: '{surface.400}',
           focusBorderColor: '{surface.900}',
         },
       },

@@ -32,7 +32,7 @@ describe('PlanTicket', () => {
     expect(element.querySelector('.nearby-distance')?.textContent).toBe('1,2 km');
     expect(element.querySelector('.spots-left')?.textContent?.trim()).toBe('Faltan 2');
     expect(element.querySelectorAll('.person-slot')).toHaveLength(2);
-    expect(element.querySelector('.bg-sky-200')).not.toBeNull();
+    expect(element.querySelector('.bg-sky-100')).not.toBeNull();
   });
 
   it('should leave the distance out when there is none', () => {

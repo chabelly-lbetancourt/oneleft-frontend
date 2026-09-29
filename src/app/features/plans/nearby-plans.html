@@ -18,9 +18,9 @@
   </app-page-header>
 
   <main class="mx-auto flex max-w-3xl flex-col gap-4 px-4 py-5 pb-32">
-    <section class="filters sticker flex flex-col gap-4 p-4">
+    <section class="filters card flex flex-col gap-4 p-4">
       <div class="flex flex-col gap-1">
-        <span class="text-xs font-extrabold uppercase tracking-wide">{{
+        <span class="text-sm font-semibold text-surface-700">{{
           'nearby.radius' | transloco
         }}</span>
         <p-selectbutton
@@ -35,7 +35,7 @@
         />
       </div>
       <div class="flex flex-col gap-1">
-        <span class="text-xs font-extrabold uppercase tracking-wide">{{
+        <span class="text-sm font-semibold text-surface-700">{{
           'nearby.within' | transloco
         }}</span>
         <p-selectbutton
@@ -110,7 +110,7 @@
         {{ 'nearby.loadError' | transloco }}
       </div>
     } @else if (position(); as center) {
-      <p class="results-count font-display text-lg font-extrabold">
+      <p class="results-count text-lg font-bold">
         {{ 'nearby.count' | transloco: { count: plans().length, distance: distance(radius()) } }}
       </p>
 
@@ -118,9 +118,9 @@
         <app-nearby-map [center]="center" [radius]="radius()" [plans]="plans()" />
       } @else if (plans().length === 0 && !results.isLoading()) {
         <div
-          class="empty flex flex-col items-center gap-3 rounded-3xl border-2 border-dashed border-ink p-8 text-center"
+          class="empty flex flex-col items-center gap-3 rounded-3xl border border-dashed border-surface-300 p-8 text-center"
         >
-          <span class="slot grid size-14 place-items-center rounded-full text-xl font-extrabold"
+          <span class="spot grid size-14 place-items-center rounded-full text-xl font-bold"
             >+1</span
           >
           <p class="max-w-xs text-surface-700">{{ 'nearby.empty' | transloco }}</p>
@@ -139,7 +139,7 @@
     }
   </main>
 
-  <div class="fixed inset-x-0 bottom-0 bg-gradient-to-t from-cream via-cream/95 p-4 pt-8">
+  <div class="fixed inset-x-0 bottom-0 bg-gradient-to-t from-surface-50 via-surface-50/95 p-4 pt-8">
     <div class="mx-auto max-w-3xl">
       <p-button
         [label]="'home.publish' | transloco"
