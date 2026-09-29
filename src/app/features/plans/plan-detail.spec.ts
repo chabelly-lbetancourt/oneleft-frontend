@@ -1,13 +1,13 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { TranslocoService } from '@jsverse/transloco';
-import { of, Subject, throwError } from 'rxjs';
+import { EMPTY, of, Subject, throwError } from 'rxjs';
 import { FakeSession } from '../../../testing/fake-session';
 import { translocoTesting } from '../../../testing/transloco-testing';
 import { PlansApi } from '../../core/api/plans-api';
 import { Session } from '../../core/auth/session';
 import { UserEvents } from '../../core/realtime/user-events';
-import { Plan, PlanJoinedNotice } from '../../shared/model/published-plan';
+import { Plan, PlanJoinedNotice, PlanLeftNotice } from '../../shared/model/published-plan';
 import { PlanDetail } from './plan-detail';
 
 const PLAN: Plan = {
@@ -26,6 +26,7 @@ const PLAN: Plan = {
   status: 'OPEN',
   publishedAt: new Date().toISOString(),
   participants: [],
+  waitlist: [],
 };
 
 const LUCIA = { userId: 'lucia', name: 'Lucía Martín', joinedAt: new Date().toISOString() };
@@ -34,7 +35,14 @@ describe('PlanDetail', () => {
   let fixture: ComponentFixture<PlanDetail>;
   let session: FakeSession;
   let notices: Subject<PlanJoinedNotice>;
-  const api = { plan: vi.fn(), join: vi.fn() };
+  let left: Subject<PlanLeftNotice>;
+  const api = {
+    plan: vi.fn(),
+    join: vi.fn(),
+    leave: vi.fn(),
+    joinWaitlist: vi.fn(),
+    leaveWaitlist: vi.fn(),
+  };
   const element = () => fixture.nativeElement as HTMLElement;
   const render = async () => {
     fixture.detectChanges();
@@ -57,13 +65,21 @@ describe('PlanDetail', () => {
     vi.clearAllMocks();
     session = new FakeSession();
     notices = new Subject();
+    left = new Subject();
     TestBed.configureTestingModule({
       imports: [PlanDetail, translocoTesting()],
       providers: [
         provideRouter([]),
         { provide: PlansApi, useValue: api },
         { provide: Session, useValue: session },
-        { provide: UserEvents, useValue: { joined$: notices.asObservable() } },
+        {
+          provide: UserEvents,
+          useValue: {
+            joined$: notices.asObservable(),
+            left$: left.asObservable(),
+            spotFreed$: EMPTY,
+          },
+        },
       ],
     });
   });
@@ -80,7 +96,9 @@ describe('PlanDetail', () => {
     expect(element().querySelector('.plan-time')?.textContent).toMatch(/en 1 h (29|30) min/);
     expect(card.querySelector('a')?.getAttribute('href')).toContain('mlat=40.391');
     expect(element().querySelector('.published-message')).not.toBeNull();
-    expect(element().querySelector('.participants')?.textContent).toContain('Aún no se ha apuntado nadie');
+    expect(element().querySelector('.participants')?.textContent).toContain(
+      'Aún no se ha apuntado nadie',
+    );
   });
 
   it('should accept any level and a single free spot', async () => {
@@ -92,7 +110,14 @@ describe('PlanDetail', () => {
 
   it('should join the plan and show that I am in', async () => {
     await create(PLAN);
-    api.join.mockReturnValue(of({ ...PLAN, occupied: 1, freeSpots: 1, participants: [{ ...LUCIA, userId: 'me', name: 'Me' }] }));
+    api.join.mockReturnValue(
+      of({
+        ...PLAN,
+        occupied: 1,
+        freeSpots: 1,
+        participants: [{ ...LUCIA, userId: 'me', name: 'Me' }],
+      }),
+    );
 
     (element().querySelector('.join-button button') as HTMLButtonElement).click();
     await render();
@@ -106,12 +131,22 @@ describe('PlanDetail', () => {
   it('should explain why joining failed and show the current state', async () => {
     await create(PLAN);
     api.join.mockReturnValue(throwError(() => ({ error: { code: 'plan.full' } })));
-    api.plan.mockReturnValue(of({ ...PLAN, status: 'FULL', occupied: 2, freeSpots: 0, participants: [LUCIA, { ...LUCIA, userId: 'diego', name: 'Diego' }] }));
+    api.plan.mockReturnValue(
+      of({
+        ...PLAN,
+        status: 'FULL',
+        occupied: 2,
+        freeSpots: 0,
+        participants: [LUCIA, { ...LUCIA, userId: 'diego', name: 'Diego' }],
+      }),
+    );
 
     (element().querySelector('.join-button button') as HTMLButtonElement).click();
     await render();
 
-    expect(element().querySelector('.join-error')?.textContent).toContain('alguien ha ocupado la última plaza');
+    expect(element().querySelector('.join-error')?.textContent).toContain(
+      'alguien ha ocupado la última plaza',
+    );
     expect(element().querySelector('.full-tag')?.textContent).toContain('Completo');
     expect(element().querySelectorAll('.participant').length).toBe(2);
     expect(element().querySelector('.participant')?.textContent).toContain('Lucía Martín');
@@ -129,7 +164,14 @@ describe('PlanDetail', () => {
         provideRouter([]),
         { provide: PlansApi, useValue: api },
         { provide: Session, useValue: session },
-        { provide: UserEvents, useValue: { joined$: notices.asObservable() } },
+        {
+          provide: UserEvents,
+          useValue: {
+            joined$: notices.asObservable(),
+            left$: left.asObservable(),
+            spotFreed$: EMPTY,
+          },
+        },
       ],
     });
     await create({ ...PLAN, participants: [{ ...LUCIA, userId: 'me' }] });
@@ -142,7 +184,14 @@ describe('PlanDetail', () => {
         provideRouter([]),
         { provide: PlansApi, useValue: api },
         { provide: Session, useValue: session },
-        { provide: UserEvents, useValue: { joined$: notices.asObservable() } },
+        {
+          provide: UserEvents,
+          useValue: {
+            joined$: notices.asObservable(),
+            left$: left.asObservable(),
+            spotFreed$: EMPTY,
+          },
+        },
       ],
     });
     await create({ ...PLAN, startsAt: new Date(Date.now() - 60_000).toISOString() });
@@ -153,12 +202,134 @@ describe('PlanDetail', () => {
     await create(PLAN, undefined, 'org');
     api.plan.mockReturnValue(of({ ...PLAN, occupied: 1, freeSpots: 1, participants: [LUCIA] }));
 
-    notices.next({ planId: 'other', title: 'Otro', participantName: 'Diego', freeSpots: 1, full: false });
-    notices.next({ planId: 'plan-1', title: PLAN.title, participantName: 'Lucía', freeSpots: 1, full: false });
+    notices.next({
+      planId: 'other',
+      title: 'Otro',
+      participantName: 'Diego',
+      freeSpots: 1,
+      full: false,
+    });
+    notices.next({
+      planId: 'plan-1',
+      title: PLAN.title,
+      participantName: 'Lucía',
+      freeSpots: 1,
+      full: false,
+    });
     await render();
 
     expect(api.plan).toHaveBeenCalledTimes(2);
     expect(element().querySelector('.participant')?.textContent).toContain('Lucía Martín');
+  });
+
+  it('should leave the plan after confirming and hand the spot over', async () => {
+    await create({
+      ...PLAN,
+      occupied: 1,
+      freeSpots: 1,
+      participants: [{ ...LUCIA, userId: 'me' }],
+    });
+    api.leave.mockReturnValue(of({ ...PLAN }));
+
+    element().querySelector<HTMLButtonElement>('.leave-button button')!.click();
+    await render();
+    expect(element().querySelector('.leave-confirm')?.textContent).toContain('Tu plaza pasará');
+    element().querySelector<HTMLButtonElement>('.leave-cancel button')!.click();
+    await render();
+    expect(element().querySelector('.leave-confirm')).toBeNull();
+
+    element().querySelector<HTMLButtonElement>('.leave-button button')!.click();
+    await render();
+    element().querySelector<HTMLButtonElement>('.leave-yes button')!.click();
+    await render();
+
+    expect(api.leave).toHaveBeenCalledWith('plan-1');
+    expect(element().querySelector('.left-message')?.textContent).toContain('Has salido del plan');
+    expect(element().querySelector('.join-button')).not.toBeNull();
+  });
+
+  it('should wait for a spot of a full plan, show the position and leave the list', async () => {
+    const full = {
+      ...PLAN,
+      spots: 1,
+      occupied: 1,
+      freeSpots: 0,
+      status: 'FULL',
+      participants: [LUCIA],
+    };
+    await create(full);
+    expect(element().querySelector('.full-tag')).not.toBeNull();
+    const diego = { userId: 'diego', name: 'Diego', joinedAt: '' };
+    api.joinWaitlist.mockReturnValue(
+      of({ ...full, waitlist: [diego, { userId: 'me', name: 'Me', joinedAt: '' }] }),
+    );
+
+    element().querySelector<HTMLButtonElement>('.waitlist-join button')!.click();
+    await render();
+
+    expect(api.joinWaitlist).toHaveBeenCalledWith('plan-1');
+    expect(element().querySelector('.waiting-message')?.textContent).toContain('posición 2');
+    expect(element().querySelector('.waitlist-count')?.textContent).toContain(
+      '2 en lista de espera',
+    );
+
+    api.leaveWaitlist.mockReturnValue(of({ ...full, waitlist: [diego] }));
+    element().querySelector<HTMLButtonElement>('.waitlist-leave button')!.click();
+    await render();
+    expect(api.leaveWaitlist).toHaveBeenCalledWith('plan-1');
+    expect(element().querySelector('.waitlist-join')).not.toBeNull();
+  });
+
+  it('should explain why the waiting list failed and reload the plan', async () => {
+    const full = {
+      ...PLAN,
+      spots: 1,
+      occupied: 1,
+      freeSpots: 0,
+      status: 'FULL',
+      participants: [LUCIA],
+    };
+    await create(full);
+    api.joinWaitlist.mockReturnValue(throwError(() => ({ error: { code: 'plan.waitlistFull' } })));
+
+    element().querySelector<HTMLButtonElement>('.waitlist-join button')!.click();
+    await render();
+
+    expect(element().querySelector('.join-error')?.textContent).toContain(
+      'La lista de espera está completa',
+    );
+    expect(api.plan).toHaveBeenCalledTimes(2);
+  });
+
+  it('should close full plans that have already started and reload when someone leaves', async () => {
+    const started = {
+      ...PLAN,
+      spots: 1,
+      occupied: 1,
+      freeSpots: 0,
+      status: 'FULL',
+      startsAt: new Date(Date.now() - 60_000).toISOString(),
+    };
+    await create(started);
+    expect(element().querySelector('.waitlist-join')).toBeNull();
+
+    left.next({
+      planId: 'plan-1',
+      title: 'Pádel',
+      participantName: 'Lucía',
+      promotedName: null,
+      freeSpots: 1,
+      full: false,
+    });
+    left.next({
+      planId: 'other',
+      title: 'Cine',
+      participantName: 'Diego',
+      promotedName: null,
+      freeSpots: 1,
+      full: false,
+    });
+    expect(api.plan).toHaveBeenCalledTimes(2);
   });
 
   it('should show the plan in English', async () => {
@@ -169,7 +340,9 @@ describe('PlanDetail', () => {
     expect(card.textContent).toContain('2 spots left');
     expect(card.textContent).toContain('Intermediate');
     expect(card.textContent).toContain('Organized by Ana Test');
-    expect(element().querySelector('.plan-time')?.textContent).toMatch(/At \d\d:\d\d · in 1 h (29|30) min/);
+    expect(element().querySelector('.plan-time')?.textContent).toMatch(
+      /At \d\d:\d\d · in 1 h (29|30) min/,
+    );
     expect(element().querySelector('.join-button')?.textContent).toContain("I'm in");
   });
 
@@ -180,7 +353,8 @@ describe('PlanDetail', () => {
 
   it('should build initials from the participant name', async () => {
     await create(PLAN);
-    const initials = (fixture.componentInstance as unknown as { initials: (n: string) => string }).initials;
+    const initials = (fixture.componentInstance as unknown as { initials: (n: string) => string })
+      .initials;
     expect(initials('lucía  martín gómez')).toBe('LM');
   });
 });
