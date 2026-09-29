@@ -14,6 +14,8 @@ test('joins a plan and the organizer is told in real time', async ({ openPage, p
 
   const joiner = await openPage();
   await joiner.goto(`/plans/${plan.id}`);
+  // The plan page is public (HU-024): joining asks to sign in and comes back
+  await joiner.locator('.guest-join button').click();
   await signIn(joiner, ADMIN);
   await joiner.locator('.join-button button').click();
   await expect(joiner.locator('.joined-message')).toBeVisible();

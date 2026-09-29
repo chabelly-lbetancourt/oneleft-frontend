@@ -120,7 +120,12 @@
     "waitlistHint": "Si alguien sale, la plaza será para la primera persona de la lista.",
     "waiting": "Estás en la lista de espera: posición {{position}}.",
     "waitlistLeave": "Salir de la lista",
-    "waitlistCount": "{{count}} en lista de espera"
+    "waitlistCount": "{{count}} en lista de espera",
+    "share": "Compartir",
+    "linkCopied": "Enlace copiado: pégalo donde quieras.",
+    "shareText": "{{activity}} a las {{time}} · {{spots}}. ¿Te apuntas?",
+    "guestHint": "Entra o crea tu cuenta para apuntarte; volverás a este plan.",
+    "spotsTaken": "{{occupied}} de {{spots}} plazas ocupadas"
   },
   "publish": {
     "title": "Publicar un plan",

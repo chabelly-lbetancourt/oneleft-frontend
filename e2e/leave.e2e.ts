@@ -17,6 +17,8 @@ test('leaves a plan after confirming and the organizer is told in real time', as
 
   const participant = await openPage();
   await participant.goto(`/plans/${plan.id}`);
+  // The plan page is public (HU-024): joining asks to sign in and comes back
+  await participant.locator('.guest-join button').click();
   await signIn(participant, ADMIN);
   await participant.locator('.join-button button').click();
   await expect(participant.locator('.joined-message')).toBeVisible();

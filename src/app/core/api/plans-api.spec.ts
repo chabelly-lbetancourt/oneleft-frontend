@@ -6,12 +6,19 @@ import { PlansApi } from './plans-api';
 
 describe('PlansApi', () => {
   it('should call the plans service through the gateway', () => {
-    TestBed.configureTestingModule({ providers: [provideHttpClient(), provideHttpClientTesting()] });
+    TestBed.configureTestingModule({
+      providers: [provideHttpClient(), provideHttpClientTesting()],
+    });
     const api = TestBed.inject(PlansApi);
     const http = TestBed.inject(HttpTestingController);
     const base = `${environment.apiUrl}/api/v1/plans`;
     const plan = {
-      activity: 'PADEL', title: 'Pádel', description: null, startsAt: '2026-09-28T18:00:00Z', spots: 1, level: null,
+      activity: 'PADEL',
+      title: 'Pádel',
+      description: null,
+      startsAt: '2026-09-28T18:00:00Z',
+      spots: 1,
+      level: null,
       meetingPoint: { name: 'Pistas', latitude: 40.39, longitude: -3.62 },
     };
 
@@ -30,13 +37,50 @@ describe('PlansApi', () => {
     http.verify();
   });
 
+  it('should read a shared plan without a session and build its share link (HU-024)', () => {
+    TestBed.configureTestingModule({
+      providers: [provideHttpClient(), provideHttpClientTesting()],
+    });
+    const api = TestBed.inject(PlansApi);
+    const http = TestBed.inject(HttpTestingController);
+    let plan: unknown;
+
+    api.publicPlan('abc').subscribe((shared) => (plan = shared));
+    http
+      .expectOne({ method: 'GET', url: `${environment.apiUrl}/api/v1/public/plans/abc` })
+      .flush({ id: 'abc', title: 'Pádel', freeSpots: 1 });
+
+    expect(plan).toEqual({
+      id: 'abc',
+      title: 'Pádel',
+      freeSpots: 1,
+      organizerId: '',
+      organizerName: '',
+      publishedAt: '',
+      participants: [],
+      waitlist: [],
+    });
+    expect(api.shareUrl('abc')).toBe(
+      new URL(`${environment.apiUrl}/share/plans/abc`, location.origin).href,
+    );
+    http.verify();
+  });
+
   it('should build the nearby URLs with repeated activities', () => {
-    TestBed.configureTestingModule({ providers: [provideHttpClient(), provideHttpClientTesting()] });
+    TestBed.configureTestingModule({
+      providers: [provideHttpClient(), provideHttpClientTesting()],
+    });
     const api = TestBed.inject(PlansApi);
     const base = `${environment.apiUrl}/api/v1/plans`;
     expect(api.nearbyUrl()).toBe(`${base}/nearby`);
-    expect(api.nearbyStreamUrl({ latitude: 40.39, longitude: -3.63, radius: 1000, activities: [], withinHours: 12 })).toBe(
-      `${base}/nearby/stream?latitude=40.39&longitude=-3.63&radius=1000&withinHours=12`,
-    );
+    expect(
+      api.nearbyStreamUrl({
+        latitude: 40.39,
+        longitude: -3.63,
+        radius: 1000,
+        activities: [],
+        withinHours: 12,
+      }),
+    ).toBe(`${base}/nearby/stream?latitude=40.39&longitude=-3.63&radius=1000&withinHours=12`);
   });
 });

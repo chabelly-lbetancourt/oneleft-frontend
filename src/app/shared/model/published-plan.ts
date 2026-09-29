@@ -47,6 +47,14 @@ export interface SpotFreedNotice {
   title: string;
 }
 
+/** A plan from a shared link, without a session (HU-024) */
+export interface PublicPlan extends PublishPlan {
+  id: string;
+  occupied: number;
+  freeSpots: number;
+  status: Plan['status'];
+}
+
 export interface Plan extends PublishPlan {
   id: string;
   organizerId: string;
