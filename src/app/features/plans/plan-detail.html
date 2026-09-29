@@ -1,7 +1,28 @@
 <div class="min-h-full">
-  <app-page-header [title]="'plan.title' | transloco" />
+  <app-page-header [title]="'plan.title' | transloco">
+    @if (plan()) {
+      <p-button
+        class="share-button"
+        icon="pi pi-share-alt"
+        [label]="'plan.share' | transloco"
+        [text]="true"
+        [rounded]="true"
+        severity="secondary"
+        (onClick)="share()"
+      />
+    }
+  </app-page-header>
 
   <main class="mx-auto flex max-w-3xl flex-col gap-5 px-4 py-6">
+    @if (copied()) {
+      <p-message
+        severity="success"
+        class="copied-message"
+        [closable]="true"
+        (onClose)="copied.set(false)"
+        >{{ 'plan.linkCopied' | transloco }}</p-message
+      >
+    }
     @if (published()) {
       <p-message severity="success" class="published-message">{{
         'plan.published' | transloco
@@ -63,7 +84,16 @@
             <dt class="text-surface-600"><i class="pi pi-chart-bar" aria-hidden="true"></i></dt>
             <dd>{{ levelKey() | transloco }}</dd>
             <dt class="text-surface-600"><i class="pi pi-user" aria-hidden="true"></i></dt>
-            <dd>{{ 'plan.organizer' | transloco: { name: current.organizerName } }}</dd>
+            <dd>
+              @if (current.organizerName) {
+                {{ 'plan.organizer' | transloco: { name: current.organizerName } }}
+              } @else {
+                {{
+                  'plan.spotsTaken'
+                    | transloco: { occupied: current.occupied, spots: current.spots }
+                }}
+              }
+            </dd>
           </dl>
         </div>
       </section>
@@ -100,11 +130,22 @@
               </li>
             }
           </ul>
-        } @else {
+        } @else if (!isGuest()) {
           <p class="text-sm text-surface-600">{{ 'plan.noParticipants' | transloco }}</p>
         }
 
         @switch (relation()) {
+          @case ('guest') {
+            <p-button
+              class="join-button guest-join"
+              [label]="'plan.join' | transloco"
+              icon="pi pi-user-plus"
+              size="large"
+              styleClass="w-full"
+              (onClick)="signIn()"
+            />
+            <p class="text-sm text-surface-600">{{ 'plan.guestHint' | transloco }}</p>
+          }
           @case ('canJoin') {
             <p-button
               class="join-button"
@@ -183,9 +224,11 @@
               styleClass="w-full"
               [outlined]="true"
               [loading]="busy()"
-              (onClick)="joinWaitlist()"
+              (onClick)="isGuest() ? signIn() : joinWaitlist()"
             />
-            <p class="text-sm text-surface-600">{{ 'plan.waitlistHint' | transloco }}</p>
+            <p class="text-sm text-surface-600">
+              {{ (isGuest() ? 'plan.guestHint' : 'plan.waitlistHint') | transloco }}
+            </p>
           }
           @case ('closed') {
             <p class="text-sm text-surface-600">{{ 'plan.closed' | transloco }}</p>

@@ -120,7 +120,12 @@
     "waitlistHint": "If someone leaves, the spot goes to the first person on the list.",
     "waiting": "You are on the waiting list: position {{position}}.",
     "waitlistLeave": "Leave the list",
-    "waitlistCount": "{{count}} on the waiting list"
+    "waitlistCount": "{{count}} on the waiting list",
+    "share": "Share",
+    "linkCopied": "Link copied: paste it anywhere.",
+    "shareText": "{{activity}} at {{time}} · {{spots}}. Are you in?",
+    "guestHint": "Sign in or create an account to join; you will come back to this plan.",
+    "spotsTaken": "{{occupied}} of {{spots}} spots taken"
   },
   "publish": {
     "title": "Publish a plan",

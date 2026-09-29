@@ -43,8 +43,8 @@ export const routes: Routes = [
     title: 'titles.nearby',
   },
   {
+    // Public: a shared link opens it without a session (HU-024)
     path: 'plans/:id',
-    canActivate: [authGuard],
     loadComponent: () => import('./features/plans/plan-detail').then((m) => m.PlanDetail),
     title: 'titles.plan',
   },
