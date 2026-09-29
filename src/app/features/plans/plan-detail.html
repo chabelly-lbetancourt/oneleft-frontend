@@ -102,8 +102,8 @@
             <p class="text-sm text-muted-color">{{ 'plan.closed' | transloco }}</p>
           }
         }
-        @if (joinError(); as key) {
-          <p-message severity="error" class="join-error">{{ key | transloco }}</p-message>
+        @if (joinError(); as message) {
+          <p-message severity="error" class="join-error">{{ message.key | transloco: message.params }}</p-message>
         }
       </section>
     } @else {
