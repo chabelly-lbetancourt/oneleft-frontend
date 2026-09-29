@@ -65,12 +65,8 @@ jobs:
 
       - name: Build (${{ env.BUILD_CONFIGURATION }})
         run: |
-          if [ -n "$PRIMEUI_LICENSE" ]; then
-            npx ng build --configuration "$BUILD_CONFIGURATION" --define "PRIMEUI_LICENSE='$PRIMEUI_LICENSE'"
-          else
-            echo "::notice::PRIMEUI_LICENSE is not set; the app will show the PrimeNG license notice."
-            npx ng build --configuration "$BUILD_CONFIGURATION"
-          fi
+          [ -n "$PRIMEUI_LICENSE" ] || echo "::notice::PRIMEUI_LICENSE is not set; the app will show the PrimeNG license notice."
+          npm run build -- --configuration "$BUILD_CONFIGURATION"
 
       - name: Upload build and coverage
         uses: actions/upload-artifact@v7
@@ -133,12 +129,7 @@ jobs:
             up -d --no-build --pull always --wait --wait-timeout 600
 
       - name: Build the app (development configuration)
-        run: |
-          if [ -n "$PRIMEUI_LICENSE" ]; then
-            npx ng build --configuration development --define "PRIMEUI_LICENSE='$PRIMEUI_LICENSE'"
-          else
-            npx ng build --configuration development
-          fi
+        run: npm run build -- --configuration development
 
       - name: End-to-end tests (es and en)
         run: npm run e2e
