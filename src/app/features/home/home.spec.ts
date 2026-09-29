@@ -38,7 +38,13 @@ describe('Home', () => {
     expect(element.querySelector('h1')?.textContent).toContain('¿Te falta uno?');
   });
 
-  it('should lead to the nearby plans', () => {
+  it('should lead to the nearby plans with a session', async () => {
+    session.signIn('Ana Test');
+    fixture.detectChanges();
+    TestBed.inject(HttpTestingController)
+      .expectOne((r) => r.url.endsWith('/api/v1/plans/mine'))
+      .flush([]);
+    await fixture.whenStable();
     const entry = element.querySelector('.nearby-entry');
     expect(entry?.getAttribute('href')).toBe('/plans/nearby');
     expect(entry?.textContent).toContain('Planes cerca de ti ahora');
@@ -61,7 +67,9 @@ describe('Home', () => {
 
     session.signIn('Ana Test');
     fixture.detectChanges();
-    TestBed.inject(HttpTestingController).expectOne((r) => r.url.endsWith('/api/v1/plans/mine')).flush([]);
+    TestBed.inject(HttpTestingController)
+      .expectOne((r) => r.url.endsWith('/api/v1/plans/mine'))
+      .flush([]);
     await fixture.whenStable();
     expect(element.querySelector('.google-login')).toBeNull();
   });
@@ -69,7 +77,9 @@ describe('Home', () => {
   it('should show the user and a link to the profile with a session', async () => {
     session.signIn('Ana Test');
     fixture.detectChanges();
-    TestBed.inject(HttpTestingController).expectOne((r) => r.url.endsWith('/api/v1/plans/mine')).flush([]);
+    TestBed.inject(HttpTestingController)
+      .expectOne((r) => r.url.endsWith('/api/v1/plans/mine'))
+      .flush([]);
     await fixture.whenStable();
     const menu = element.querySelector('.user-menu');
     expect(menu?.textContent).toContain('Ana Test');
@@ -87,6 +97,9 @@ describe('Home', () => {
           activity: 'PADEL',
           title: 'Mi partido de pádel',
           startsAt: new Date(Date.now() + 60 * 60_000).toISOString(),
+          meetingPoint: { name: 'Pistas de Vallecas', latitude: 40.39, longitude: -3.63 },
+          organizerName: 'Ana Test',
+          participants: [],
           freeSpots: 1,
         },
       ]);
@@ -95,6 +108,10 @@ describe('Home', () => {
     const myPlan = element.querySelector('.my-plan');
     expect(myPlan?.textContent).toContain('Mi partido de pádel');
     expect(myPlan?.textContent).toContain('Falta 1');
+    expect(myPlan?.textContent).toContain('Pistas de Vallecas');
+    // The organizer and the free spot of the plan
+    expect(myPlan?.querySelectorAll('.person-slot')).toHaveLength(1);
+    expect(myPlan?.querySelectorAll('.free-slot')).toHaveLength(1);
     expect(myPlan?.getAttribute('href')).toBe('/plans/plan-1');
   });
 
@@ -103,7 +120,7 @@ describe('Home', () => {
     fixture.detectChanges();
     await fixture.whenStable();
     expect(element.querySelector('h1')?.textContent).toContain('One short?');
-    expect(element.querySelector('.nearby-entry')?.textContent).toContain('Plans near you right now');
+    expect(element.querySelector('.start-button')?.textContent).toContain('Create a free account');
     expect(document.documentElement.lang).toBe('en');
     (element.querySelector('.language-switcher button') as HTMLButtonElement).click();
     fixture.detectChanges();
@@ -118,7 +135,13 @@ describe('Home', () => {
     http.expectOne((r) => r.url.endsWith('/api/v1/plans/mine')).flush([]);
     await fixture.whenStable();
 
-    notices.next({ planId: 'p1', title: 'Pádel', participantName: 'Lucía', freeSpots: 1, full: false });
+    notices.next({
+      planId: 'p1',
+      title: 'Pádel',
+      participantName: 'Lucía',
+      freeSpots: 1,
+      full: false,
+    });
     fixture.detectChanges();
 
     http.expectOne((r) => r.url.endsWith('/api/v1/plans/mine')).flush([]);

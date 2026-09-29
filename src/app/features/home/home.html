@@ -1,22 +1,20 @@
 <div class="min-h-full flex flex-col">
-  <header class="sticky top-0 z-10 bg-surface-0/90 backdrop-blur border-b border-surface-200">
-    <div class="mx-auto max-w-3xl flex items-center justify-between px-4 py-3">
-      <span class="text-xl font-extrabold tracking-tight">
-        One<span class="text-primary">Left</span>
-      </span>
+  <header class="sticky top-0 z-10 border-b-2 border-ink bg-cream/95 backdrop-blur">
+    <div class="mx-auto flex max-w-3xl items-center justify-between gap-2 px-4 py-3">
+      <app-brand-logo />
       <div class="flex items-center gap-1">
         <app-language-switcher />
         @if (session.isAuthenticated()) {
           <a
             routerLink="/profile"
-            class="user-menu flex items-center gap-2 rounded-full py-1 pl-1 pr-3 hover:bg-surface-100"
+            class="user-menu sticker-link flex items-center gap-2 rounded-full border-2 border-ink bg-white py-1 pl-1 pr-3 shadow-sticker-sm"
           >
             <p-avatar
               [label]="session.initials()"
               shape="circle"
-              class="bg-primary-100! text-primary-700! font-semibold"
+              class="bg-primary-300! text-ink! font-bold"
             />
-            <span class="text-sm font-medium">{{ session.userName() }}</span>
+            <span class="text-sm font-bold">{{ session.userName() }}</span>
           </a>
         } @else {
           <div class="flex gap-1">
@@ -40,105 +38,172 @@
     </div>
   </header>
 
-  <main class="mx-auto w-full max-w-3xl flex-1 px-4 pb-28">
-    <section class="py-8">
-      <h1
-        class="text-3xl sm:text-4xl font-extrabold leading-tight"
-        [innerHTML]="'home.title' | transloco"
-      ></h1>
-      <p class="mt-2 text-muted-color">{{ 'home.subtitle' | transloco }}</p>
-      @if (!session.isAuthenticated()) {
-        <button
-          type="button"
-          class="google-login mt-5 inline-flex items-center gap-3 rounded-full border border-surface-300 bg-white px-5 py-2.5 font-medium text-surface-800 shadow-sm hover:bg-surface-50"
-          (click)="session.loginWithGoogle()"
-        >
-          <svg class="h-5 w-5" viewBox="0 0 48 48" aria-hidden="true">
-            <path
-              fill="#EA4335"
-              d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"
-            />
-            <path
-              fill="#4285F4"
-              d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"
-            />
-            <path
-              fill="#FBBC05"
-              d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"
-            />
-            <path
-              fill="#34A853"
-              d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"
-            />
-          </svg>
-          {{ 'auth.google' | transloco }}
-        </button>
-      }
-    </section>
+  @if (session.isAuthenticated()) {
+    <main class="mx-auto w-full max-w-3xl flex-1 px-4 pb-32">
+      <section class="py-7">
+        <h1 class="text-3xl font-extrabold leading-tight sm:text-4xl">
+          {{ 'home.hello' | transloco: { name: firstName() } }}
+        </h1>
+        <p class="mt-1 text-surface-600">{{ 'home.helloHint' | transloco }}</p>
+      </section>
 
-    @if (session.isAuthenticated() && myPlans.value()?.length) {
-      <section aria-labelledby="my-plans-title" class="my-plans mb-8">
-        <h2 id="my-plans-title" class="text-lg font-bold mb-3">{{ 'home.myPlans' | transloco }}</h2>
-        <ul class="flex flex-col gap-2">
-          @for (plan of myPlans.value(); track plan.id) {
-            <li>
-              <a
-                [routerLink]="['/plans', plan.id]"
-                class="my-plan flex items-center gap-3 rounded-2xl bg-primary-50 border border-primary-200 p-3"
-              >
-                <i
-                  class="pi {{ activityOf(plan.activity).icon }} text-primary text-xl"
-                  aria-hidden="true"
-                ></i>
-                <span class="flex-1 min-w-0">
-                  <span class="block font-semibold truncate">{{ plan.title }}</span>
-                  <span class="block text-sm text-muted-color">
-                    @let myStart = startsIn(plan.startsAt);
-                    {{ clockTime(plan.startsAt) }} · {{ myStart.key | transloco: myStart.params }}
-                  </span>
-                </span>
-                <p-tag
-                  [value]="spotsKey(plan.freeSpots) | transloco: { count: plan.freeSpots }"
-                  severity="warn"
-                  [rounded]="true"
-                  class="shrink-0 whitespace-nowrap"
-                />
-              </a>
+      <section aria-labelledby="nearby-title" class="mb-8">
+        <a
+          routerLink="/plans/nearby"
+          class="nearby-entry sticker sticker-link flex items-center gap-4 bg-ink! p-5 text-cream"
+        >
+          <div class="slot grid size-14 shrink-0 place-items-center rounded-2xl text-ink">
+            <i class="pi pi-map-marker text-2xl" aria-hidden="true"></i>
+          </div>
+          <div class="min-w-0 flex-1">
+            <h2 id="nearby-title" class="text-xl font-extrabold">
+              {{ 'home.nearby' | transloco }}
+            </h2>
+            <p class="text-sm text-cream/80">{{ 'home.nearbyHint' | transloco }}</p>
+          </div>
+          <i class="pi pi-arrow-right text-xl text-primary-400" aria-hidden="true"></i>
+        </a>
+      </section>
+
+      @if (myPlans.value()?.length) {
+        <section aria-labelledby="my-plans-title" class="my-plans">
+          <h2 id="my-plans-title" class="mb-3 text-xl font-extrabold">
+            {{ 'home.myPlans' | transloco }}
+          </h2>
+          <ul class="flex flex-col gap-4">
+            @for (plan of myPlans.value(); track plan.id) {
+              <li>
+                <a [routerLink]="['/plans', plan.id]" class="my-plan block">
+                  <app-plan-ticket [plan]="plan" />
+                </a>
+              </li>
+            }
+          </ul>
+        </section>
+      }
+    </main>
+
+    <div class="fixed inset-x-0 bottom-0 bg-gradient-to-t from-cream via-cream/95 p-4 pt-8">
+      <div class="mx-auto max-w-3xl">
+        <p-button
+          [label]="'home.publish' | transloco"
+          icon="pi pi-plus"
+          styleClass="w-full"
+          size="large"
+          [rounded]="true"
+          routerLink="/plans/new"
+        />
+      </div>
+    </div>
+  } @else {
+    <main class="mx-auto w-full max-w-3xl flex-1 px-4 pb-16">
+      <section class="hero pt-10 pb-8">
+        <p class="text-sm font-bold uppercase tracking-widest text-primary-700">
+          {{ 'home.kicker' | transloco }}
+        </p>
+        <h1
+          class="mt-3 text-5xl font-extrabold leading-[1.05] sm:text-6xl"
+          [innerHTML]="'home.title' | transloco"
+        ></h1>
+        <p class="mt-4 max-w-md text-lg text-surface-700">{{ 'home.subtitle' | transloco }}</p>
+        <div class="mt-7 flex flex-col gap-3 sm:flex-row sm:items-center">
+          <p-button
+            class="start-button"
+            [label]="'home.start' | transloco"
+            icon="pi pi-arrow-right"
+            iconPos="right"
+            size="large"
+            [rounded]="true"
+            (onClick)="session.register()"
+          />
+          <button
+            type="button"
+            class="google-login sticker-link inline-flex items-center justify-center gap-3 rounded-full border-2 border-ink bg-white px-5 py-2.5 font-bold shadow-sticker-sm"
+            (click)="session.loginWithGoogle()"
+          >
+            <svg class="size-5" viewBox="0 0 48 48" aria-hidden="true">
+              <path
+                fill="#EA4335"
+                d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"
+              />
+              <path
+                fill="#4285F4"
+                d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"
+              />
+              <path
+                fill="#FBBC05"
+                d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"
+              />
+              <path
+                fill="#34A853"
+                d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"
+              />
+            </svg>
+            {{ 'auth.google' | transloco }}
+          </button>
+        </div>
+      </section>
+
+      <!-- An example plan: the empty spot waiting for the visitor -->
+      <section class="demo-plan sticker mb-12 -rotate-1 p-5" aria-hidden="true">
+        <div class="flex items-center gap-3">
+          <div class="grid size-12 place-items-center rounded-2xl border-2 border-ink bg-lime-200">
+            <i class="pi pi-bolt text-xl" aria-hidden="true"></i>
+          </div>
+          <div class="flex-1">
+            <p class="font-display text-lg font-extrabold leading-tight">
+              {{ 'home.demoTitle' | transloco }}
+            </p>
+            <p class="text-sm text-surface-600">{{ 'home.demoWhen' | transloco }}</p>
+          </div>
+          <span class="slot rounded-full px-2.5 py-0.5 text-xs font-extrabold">
+            {{ 'spots.one' | transloco: { count: 1 } }}
+          </span>
+        </div>
+        <div class="mt-4 flex items-center gap-3">
+          <app-spot-slots [names]="demoPeople" [free]="1" size="md" />
+          <span class="font-display font-bold text-primary-700">{{
+            'home.demoYou' | transloco
+          }}</span>
+        </div>
+      </section>
+
+      <section aria-labelledby="how-title" class="mb-12">
+        <h2 id="how-title" class="mb-4 text-2xl font-extrabold">
+          {{ 'home.howTitle' | transloco }}
+        </h2>
+        <ol class="grid gap-4 sm:grid-cols-3">
+          @for (step of steps; track step; let index = $index) {
+            <li class="sticker p-5">
+              <span class="font-display text-4xl font-extrabold text-primary-600">{{
+                index + 1
+              }}</span>
+              <h3 class="mt-2 text-lg font-extrabold leading-tight">
+                {{ 'home.' + step | transloco }}
+              </h3>
+              <p class="mt-1 text-sm text-surface-600">{{ 'home.' + step + 'Text' | transloco }}</p>
+            </li>
+          }
+        </ol>
+      </section>
+
+      <section aria-labelledby="activities-title">
+        <h2 id="activities-title" class="mb-4 text-2xl font-extrabold">
+          {{ 'home.activitiesTitle' | transloco }}
+        </h2>
+        <ul class="flex flex-wrap gap-2">
+          @for (activity of activities; track activity.code) {
+            <li
+              class="inline-flex items-center gap-2 rounded-full border-2 border-ink px-3 py-1.5 text-sm font-bold {{
+                activity.tone
+              }}"
+            >
+              <i class="pi {{ activity.icon }}" aria-hidden="true"></i>
+              {{ 'activities.' + activity.code | transloco }}
             </li>
           }
         </ul>
       </section>
-    }
-
-    <section aria-labelledby="nearby-title">
-      <a
-        routerLink="/plans/nearby"
-        class="nearby-entry flex items-center gap-4 rounded-2xl bg-surface-0 border border-surface-200 p-5 shadow-sm hover:border-primary-300"
-      >
-        <div
-          class="flex size-14 shrink-0 items-center justify-center rounded-xl bg-primary-50 text-primary"
-        >
-          <i class="pi pi-map-marker text-2xl" aria-hidden="true"></i>
-        </div>
-        <div class="flex-1 min-w-0">
-          <h2 id="nearby-title" class="text-lg font-bold">{{ 'home.nearby' | transloco }}</h2>
-          <p class="text-sm text-muted-color">{{ 'home.nearbyHint' | transloco }}</p>
-        </div>
-        <i class="pi pi-chevron-right text-muted-color" aria-hidden="true"></i>
-      </a>
-    </section>
-  </main>
-
-  <div class="fixed inset-x-0 bottom-0 p-4 bg-gradient-to-t from-surface-50 via-surface-50/95">
-    <div class="mx-auto max-w-3xl">
-      <p-button
-        [label]="'home.publish' | transloco"
-        icon="pi pi-plus"
-        styleClass="w-full"
-        size="large"
-        [rounded]="true"
-        routerLink="/plans/new"
-      />
-    </div>
-  </div>
+    </main>
+  }
 </div>
