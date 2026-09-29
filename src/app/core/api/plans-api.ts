@@ -1,9 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { nearbyParams, NearbyQuery, toQueryString } from '../../shared/model/nearby';
-import { Plan, PublishPlan } from '../../shared/model/published-plan';
+import { Plan, PublicPlan, PublishPlan } from '../../shared/model/published-plan';
 
 /** Client of the plans service through the API Gateway. */
 @Injectable({ providedIn: 'root' })
@@ -19,6 +19,28 @@ export class PlansApi {
     return this.http.get<Plan>(`${this.base}/${id}`);
   }
 
+  /**
+   * A plan without a session, as anyone with a shared link sees it (HU-024): no people and an approximate place.
+   * It comes as a plan with nobody in it, so the same page can show it.
+   */
+  publicPlan(id: string): Observable<Plan> {
+    return this.http.get<PublicPlan>(`${environment.apiUrl}/api/v1/public/plans/${id}`).pipe(
+      map((plan) => ({
+        ...plan,
+        organizerId: '',
+        organizerName: '',
+        publishedAt: '',
+        participants: [],
+        waitlist: [],
+      })),
+    );
+  }
+
+  /** Link to share a plan: its page gives messaging apps a preview and then opens the plan (HU-024). */
+  shareUrl(id: string): string {
+    return new URL(`${environment.apiUrl}/share/plans/${id}`, globalThis.location?.origin).href;
+  }
+
   mine(): Observable<Plan[]> {
     return this.http.get<Plan[]>(`${this.base}/mine`);
   }
@@ -26,6 +48,20 @@ export class PlansApi {
   /** Takes a free spot in the plan (HU-005). */
   join(id: string): Observable<Plan> {
     return this.http.post<Plan>(`${this.base}/${id}/participants`, null);
+  }
+
+  /** Gives the spot back (HU-023): the first person waiting takes it. */
+  leave(id: string): Observable<Plan> {
+    return this.http.delete<Plan>(`${this.base}/${id}/participants/me`);
+  }
+
+  /** Waits for a spot of a full plan (HU-023). */
+  joinWaitlist(id: string): Observable<Plan> {
+    return this.http.post<Plan>(`${this.base}/${id}/waitlist`, null);
+  }
+
+  leaveWaitlist(id: string): Observable<Plan> {
+    return this.http.delete<Plan>(`${this.base}/${id}/waitlist/me`);
   }
 
   /** URL of the personal Server-Sent Events stream (someone joined one of my plans). */

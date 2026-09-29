@@ -10,6 +10,7 @@ export class FakeSession {
   readonly initials = computed(() => this.name().slice(0, 2).toUpperCase());
   readonly login = vi.fn();
   readonly register = vi.fn();
+  readonly loginWithGoogle = vi.fn();
   readonly logout = vi.fn();
 
   signIn(name: string, id = 'me'): void {

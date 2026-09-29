@@ -1,0 +1,66 @@
+<div class="relative flex min-h-full flex-col overflow-hidden">
+  <header class="relative z-10 mx-auto flex w-full max-w-md items-center justify-between px-4 py-4">
+    <app-brand-logo />
+    <app-language-switcher />
+  </header>
+
+  <main
+    class="relative z-10 mx-auto flex w-full max-w-md flex-1 flex-col justify-center px-4 pb-12"
+  >
+    <section class="auth-card card p-6 sm:p-8">
+      <app-spot-slots [names]="people" [free]="1" size="md" />
+      <h1 class="mt-5 text-3xl font-bold leading-tight">
+        {{ (isLogin() ? 'auth.loginTitle' : 'auth.registerTitle') | transloco }}
+      </h1>
+      <p class="mt-2 text-surface-700">
+        {{ (isLogin() ? 'auth.loginSubtitle' : 'auth.registerSubtitle') | transloco }}
+      </p>
+
+      <div class="mt-7 flex flex-col gap-3">
+        <app-google-button (pressed)="withGoogle()" />
+        <div class="flex items-center gap-3 text-sm font-bold text-surface-600" aria-hidden="true">
+          <span class="h-px flex-1 bg-surface-200"></span>
+          {{ 'auth.or' | transloco }}
+          <span class="h-px flex-1 bg-surface-200"></span>
+        </div>
+        <p-button
+          class="email-login"
+          [label]="(isLogin() ? 'auth.withEmail' : 'auth.registerWithEmail') | transloco"
+          icon="pi pi-envelope"
+          styleClass="w-full"
+          size="large"
+          [rounded]="true"
+          (onClick)="withEmail()"
+        />
+      </div>
+
+      <p class="mt-6 text-center text-sm">
+        {{ (isLogin() ? 'auth.noAccount' : 'auth.haveAccount') | transloco }}
+        <a
+          class="switch-mode font-bold text-primary-700 underline"
+          [routerLink]="isLogin() ? '/register' : '/login'"
+          [queryParams]="returnUrl() ? { returnUrl: returnUrl() } : {}"
+          >{{ (isLogin() ? 'auth.register' : 'auth.login') | transloco }}</a
+        >
+      </p>
+    </section>
+
+    @if (!isLogin()) {
+      <ul class="perks mt-6 flex flex-col gap-2">
+        @for (perk of perks; track perk) {
+          <li class="flex items-center gap-3 font-semibold">
+            <span
+              class="spot grid size-7 shrink-0 place-items-center rounded-full text-xs font-bold"
+              >✓</span
+            >
+            {{ 'auth.' + perk | transloco }}
+          </li>
+        }
+      </ul>
+    }
+
+    <p class="mt-6 flex items-center justify-center gap-2 text-center text-xs text-surface-600">
+      <i class="pi pi-lock" aria-hidden="true"></i> {{ 'auth.secure' | transloco }}
+    </p>
+  </main>
+</div>

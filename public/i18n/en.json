@@ -14,12 +14,28 @@
     "profile": "OneLeft · My profile",
     "newPlan": "OneLeft · Publish a plan",
     "plan": "OneLeft · Plan",
-    "nearby": "OneLeft · Nearby plans"
+    "nearby": "OneLeft · Nearby plans",
+    "login": "OneLeft · Sign in",
+    "register": "OneLeft · Sign up"
   },
   "auth": {
     "login": "Sign in",
+    "google": "Continue with Google",
     "register": "Sign up",
-    "logout": "Sign out"
+    "logout": "Sign out",
+    "loginTitle": "Sign in to OneLeft",
+    "loginSubtitle": "Your plans and the people nearby are waiting for you.",
+    "registerTitle": "Join OneLeft",
+    "registerSubtitle": "It is free. Publish a plan or join one in a couple of minutes.",
+    "withEmail": "Continue with email",
+    "registerWithEmail": "Sign up with email",
+    "or": "or",
+    "noAccount": "No account yet?",
+    "haveAccount": "Already have an account?",
+    "secure": "You sign in with Keycloak: your password never goes through the app.",
+    "perk1": "Plans for the next few hours",
+    "perk2": "Only people near you",
+    "perk3": "Notices as soon as someone joins"
   },
   "activities": {
     "PADEL": "Padel",
@@ -45,7 +61,8 @@
   },
   "spots": {
     "one": "1 spot left",
-    "other": "{{count}} spots left"
+    "other": "{{count}} spots left",
+    "none": "Full"
   },
   "time": {
     "started": "already started",
@@ -55,12 +72,28 @@
     "at": "At {{time}}"
   },
   "home": {
-    "title": "One <span class=\"text-primary\">short</span>?",
+    "title": "One <span class=\"missing-word\">short</span>?",
     "subtitle": "Publish your plan for the next few hours and fill it with people near you.",
     "myPlans": "Your upcoming plans",
     "nearby": "Plans near you right now",
     "publish": "Publish a plan",
-    "nearbyHint": "See the plans starting soon near you, in a list or on the map."
+    "nearbyHint": "See the plans starting soon near you, in a list or on the map.",
+    "kicker": "Plans for right now, near you",
+    "start": "Create a free account",
+    "haveAccount": "I already have an account",
+    "demoTitle": "Padel in Vallecas",
+    "demoWhen": "Today · 7:30 pm",
+    "demoYou": "That spot could be yours!",
+    "howTitle": "As easy as this",
+    "step1": "Post what you are missing",
+    "step1Text": "A player, a running buddy or someone for the cinema. For the next 12 hours.",
+    "step2": "People nearby join",
+    "step2Text": "Your plan shows up right away to people nearby who fit it.",
+    "step3": "Meet up, done",
+    "step3Text": "We let you know as soon as someone joins. No endless group chats.",
+    "activitiesTitle": "For whatever you feel like",
+    "hello": "Hi, {{name}}",
+    "helloHint": "What do you feel like doing today?"
   },
   "plan": {
     "title": "Plan",
@@ -77,7 +110,22 @@
     "yourPlan": "It's your plan: we will let you know when someone joins.",
     "full": "Full",
     "closed": "This plan no longer accepts people.",
-    "you": "you"
+    "you": "you",
+    "leave": "Leave the plan",
+    "leaveConfirm": "Do you really want to leave? Your spot will go to the next person.",
+    "leaveYes": "Yes, leave",
+    "cancel": "Cancel",
+    "left": "You have left the plan. Maybe next time!",
+    "waitlistJoin": "Tell me if a spot opens up",
+    "waitlistHint": "If someone leaves, the spot goes to the first person on the list.",
+    "waiting": "You are on the waiting list: position {{position}}.",
+    "waitlistLeave": "Leave the list",
+    "waitlistCount": "{{count}} on the waiting list",
+    "share": "Share",
+    "linkCopied": "Link copied: paste it anywhere.",
+    "shareText": "{{activity}} at {{time}} · {{spots}}. Are you in?",
+    "guestHint": "Sign in or create an account to join; you will come back to this plan.",
+    "spotsTaken": "{{occupied}} of {{spots}} spots taken"
   },
   "publish": {
     "title": "Publish a plan",
@@ -152,7 +200,12 @@
       "ownPlan": "You cannot join your own plan.",
       "started": "The plan has already started.",
       "notOpen": "This plan is no longer open.",
-      "busy": "Many people are joining at once. Please try again."
+      "busy": "Many people are joining at once. Please try again.",
+      "notParticipant": "You have not joined this plan.",
+      "notFull": "There are still free spots: join directly.",
+      "alreadyWaiting": "You are already on the waiting list.",
+      "notWaiting": "You are not on the waiting list.",
+      "waitlistFull": "The waiting list is full."
     },
     "meetingPoint": {
       "name": "The meeting point needs a name of up to 100 characters"
@@ -179,7 +232,9 @@
     },
     "rate": {
       "limited": "You are going too fast. Please try again in {{ minutes }} min."
-    }
+    },
+    "leaveFailed": "You could not leave the plan",
+    "waitlistFailed": "The waiting list could not be updated"
   },
   "nearby": {
     "title": "Nearby plans",
@@ -205,6 +260,11 @@
   "notices": {
     "joinedTitle": "Someone joined",
     "fullTitle": "Your plan is full!",
-    "joined": "{{name}} joined \"{{title}}\""
+    "joined": "{{name}} joined \"{{title}}\"",
+    "leftTitle": "Someone left your plan",
+    "left": "{{name}} has left “{{title}}”",
+    "leftAndIn": "{{name}} has left “{{title}}” and {{promoted}} is in",
+    "spotTitle": "You have a spot!",
+    "spot": "A spot opened up in “{{title}}” and it is yours"
   }
 }

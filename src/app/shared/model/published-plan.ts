@@ -31,6 +31,30 @@ export interface PlanJoinedNotice {
   full: boolean;
 }
 
+/** Someone has left one of my plans; maybe someone from the waiting list came in (HU-023). */
+export interface PlanLeftNotice {
+  planId: string;
+  title: string;
+  participantName: string;
+  promotedName: string | null;
+  freeSpots: number;
+  full: boolean;
+}
+
+/** A spot of a plan I was waiting for is now mine (HU-023). */
+export interface SpotFreedNotice {
+  planId: string;
+  title: string;
+}
+
+/** A plan from a shared link, without a session (HU-024) */
+export interface PublicPlan extends PublishPlan {
+  id: string;
+  occupied: number;
+  freeSpots: number;
+  status: Plan['status'];
+}
+
 export interface Plan extends PublishPlan {
   id: string;
   organizerId: string;
@@ -40,4 +64,6 @@ export interface Plan extends PublishPlan {
   status: 'OPEN' | 'FULL' | 'IN_PROGRESS' | 'FINISHED' | 'CANCELLED';
   publishedAt: string;
   participants: Participant[];
+  /** People waiting for a spot, first to last (HU-023) */
+  waitlist: Participant[];
 }
