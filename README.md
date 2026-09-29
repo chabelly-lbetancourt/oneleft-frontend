@@ -8,7 +8,7 @@
 
 Aplicación web **Angular** con **PrimeNG** y **Tailwind CSS**, empaquetada como app nativa de **Android** con **Capacitor** a partir del mismo código.
 
-**Stack:** Angular 22 (sin Zone.js, con signals) · PrimeNG 22 · Tailwind CSS 4 · Transloco (es/en) · angular-auth-oidc-client · Capacitor · Android · Vitest · SonarQube
+**Stack:** Angular 22 (sin Zone.js, con signals) · PrimeNG 22 · Tailwind CSS 4 · Transloco (es/en) · angular-auth-oidc-client · Capacitor · Android · Vitest · Playwright · SonarQube
 
 **IDE recomendado:** WebStorm (Android Studio para compilar la app de Android)
 
@@ -21,6 +21,21 @@ npm install
 npm start                      # http://localhost:4200
 npm test -- --watch=false      # tests unitarios con Vitest
 npm run build                  # build de producción en dist/oneleft
+```
+
+### Tests de extremo a extremo (Playwright)
+
+Recorren la app completa (login, perfil, publicar, planes cercanos y unirse) en español y en inglés contra el
+Docker Compose de `oneleft-infra`, clonado junto a este repositorio. Los usuarios de prueba salen del realm de
+desarrollo. En la CI se ejecutan en cada PR hacia `pre` con las imágenes `:pre` de GHCR; si fallan, el artefacto
+`e2e-report` guarda capturas, vídeos y trazas.
+
+```bash
+# Backend con la configuración de los tests (imágenes locales; sin variables, las :pre de GHCR)
+ONELEFT_IMAGES=oneleft/ ONELEFT_IMAGE_TAG=dev docker compose -f ../oneleft-infra/docker/compose.yaml \
+  -f e2e/compose.e2e.yaml --profile backend up -d --no-build --wait
+npx playwright install chromium   # solo la primera vez
+npm run e2e                       # usa ng serve si está en marcha; si no, sirve dist/ (ng build --configuration development)
 ```
 
 ## Organización
