@@ -73,6 +73,12 @@
           <h3 class="text-lg font-bold">{{ 'plan.participants' | transloco }}</h3>
           <span class="font-bold">{{ current.occupied }}/{{ current.spots }}</span>
         </div>
+        @if (current.waitlist.length) {
+          <p class="waitlist-count -mt-2 text-sm text-surface-600">
+            <i class="pi pi-clock text-xs" aria-hidden="true"></i>
+            {{ 'plan.waitlistCount' | transloco: { count: current.waitlist.length } }}
+          </p>
+        }
         <app-spot-slots [names]="people()" [free]="current.freeSpots" size="md" />
         @if (current.participants.length) {
           <ul class="flex flex-wrap gap-2">
@@ -114,6 +120,50 @@
             <p-message severity="success" class="joined-message">
               {{ (justJoined() ? 'plan.justJoined' : 'plan.youAreIn') | transloco }}
             </p-message>
+            @if (confirmingLeave()) {
+              <div class="leave-confirm flex flex-col gap-3 rounded-xl bg-surface-100 p-4">
+                <p class="text-sm">{{ 'plan.leaveConfirm' | transloco }}</p>
+                <div class="flex gap-2">
+                  <p-button
+                    class="leave-yes"
+                    [label]="'plan.leaveYes' | transloco"
+                    severity="danger"
+                    [rounded]="true"
+                    [loading]="busy()"
+                    (onClick)="leave()"
+                  />
+                  <p-button
+                    class="leave-cancel"
+                    [label]="'plan.cancel' | transloco"
+                    [text]="true"
+                    severity="secondary"
+                    (onClick)="confirmingLeave.set(false)"
+                  />
+                </div>
+              </div>
+            } @else {
+              <p-button
+                class="leave-button"
+                [label]="'plan.leave' | transloco"
+                icon="pi pi-sign-out"
+                [text]="true"
+                severity="secondary"
+                (onClick)="confirmingLeave.set(true)"
+              />
+            }
+          }
+          @case ('waiting') {
+            <p-message severity="info" class="waiting-message">
+              {{ 'plan.waiting' | transloco: { position: waitingPosition() } }}
+            </p-message>
+            <p-button
+              class="waitlist-leave"
+              [label]="'plan.waitlistLeave' | transloco"
+              [text]="true"
+              severity="secondary"
+              [loading]="busy()"
+              (onClick)="leaveWaitlist()"
+            />
           }
           @case ('organizer') {
             <p class="organizer-hint text-sm text-surface-600">{{ 'plan.yourPlan' | transloco }}</p>
@@ -125,10 +175,24 @@
               severity="secondary"
               [rounded]="true"
             />
+            <p-button
+              class="waitlist-join"
+              [label]="'plan.waitlistJoin' | transloco"
+              icon="pi pi-bell"
+              size="large"
+              styleClass="w-full"
+              [outlined]="true"
+              [loading]="busy()"
+              (onClick)="joinWaitlist()"
+            />
+            <p class="text-sm text-surface-600">{{ 'plan.waitlistHint' | transloco }}</p>
           }
           @case ('closed') {
             <p class="text-sm text-surface-600">{{ 'plan.closed' | transloco }}</p>
           }
+        }
+        @if (justLeft()) {
+          <p-message severity="info" class="left-message">{{ 'plan.left' | transloco }}</p-message>
         }
         @if (joinError(); as message) {
           <p-message severity="error" class="join-error">{{

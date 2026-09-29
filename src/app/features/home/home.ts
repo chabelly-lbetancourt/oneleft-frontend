@@ -4,6 +4,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { Avatar } from 'primeng/avatar';
+import { merge } from 'rxjs';
 import { Button } from 'primeng/button';
 import { environment } from '../../../environments/environment';
 import { Session } from '../../core/auth/session';
@@ -44,9 +45,10 @@ export class Home {
   protected readonly demoPeople = ['Lucía Gómez', 'Diego Ruiz', 'Marta Sanz'];
 
   constructor() {
-    // Free spots of my plans change when someone joins: refresh the list with each notice
-    inject(UserEvents)
-      .joined$.pipe(takeUntilDestroyed(inject(DestroyRef)))
+    // Free spots of my plans change when someone joins or leaves: refresh the list with each notice
+    const events = inject(UserEvents);
+    merge(events.joined$, events.left$)
+      .pipe(takeUntilDestroyed(inject(DestroyRef)))
       .subscribe(() => this.myPlans.reload());
   }
 }

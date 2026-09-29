@@ -2,16 +2,20 @@ import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { Subject } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { PlanJoinedNotice } from '../../shared/model/published-plan';
+import {
+  PlanJoinedNotice,
+  PlanLeftNotice,
+  SpotFreedNotice,
+} from '../../shared/model/published-plan';
 import { Session } from '../auth/session';
-import { EventStream } from './event-stream';
+import { EventStream, StreamEvent } from './event-stream';
 import { UserEvents } from './user-events';
 
 describe('UserEvents', () => {
-  it('should open one shared personal stream only while signed in', async () => {
+  it('should open one shared personal stream only while signed in and split it by event', async () => {
     const authenticated = signal(false);
-    const source = new Subject<PlanJoinedNotice>();
-    const stream = { open: vi.fn(() => source.asObservable()) };
+    const source = new Subject<StreamEvent>();
+    const stream = { openEvents: vi.fn(() => source.asObservable()) };
     TestBed.configureTestingModule({
       providers: [
         { provide: Session, useValue: { isAuthenticated: authenticated } },
@@ -19,22 +23,48 @@ describe('UserEvents', () => {
       ],
     });
     const events = TestBed.inject(UserEvents);
-    const first: PlanJoinedNotice[] = [];
-    const second: PlanJoinedNotice[] = [];
-    events.joined$.subscribe((notice) => first.push(notice));
-    events.joined$.subscribe((notice) => second.push(notice));
+    const joined: PlanJoinedNotice[] = [];
+    const joinedToo: PlanJoinedNotice[] = [];
+    const left: PlanLeftNotice[] = [];
+    const spots: SpotFreedNotice[] = [];
+    events.joined$.subscribe((notice) => joined.push(notice));
+    events.joined$.subscribe((notice) => joinedToo.push(notice));
+    events.left$.subscribe((notice) => left.push(notice));
+    events.spotFreed$.subscribe((notice) => spots.push(notice));
     TestBed.tick();
-    expect(stream.open).not.toHaveBeenCalled();
+    expect(stream.openEvents).not.toHaveBeenCalled();
 
     authenticated.set(true);
     TestBed.tick();
-    const notice = { planId: 'p1', title: 'Pádel', participantName: 'Lucía', freeSpots: 0, full: true };
-    source.next(notice);
+    const join = {
+      planId: 'p1',
+      title: 'Pádel',
+      participantName: 'Lucía',
+      freeSpots: 0,
+      full: true,
+    };
+    const leave = {
+      planId: 'p1',
+      title: 'Pádel',
+      participantName: 'Lucía',
+      promotedName: 'Diego',
+      freeSpots: 0,
+      full: true,
+    };
+    const spot = { planId: 'p2', title: 'Cine' };
+    source.next({ event: 'plan-joined', data: join });
+    source.next({ event: 'plan-left', data: leave });
+    source.next({ event: 'plan-spot', data: spot });
 
-    expect(stream.open).toHaveBeenCalledOnce();
-    expect(stream.open).toHaveBeenCalledWith(`${environment.apiUrl}/api/v1/plans/events/stream`, 'plan-joined');
-    expect(first).toEqual([notice]);
-    expect(second).toEqual([notice]);
+    expect(stream.openEvents).toHaveBeenCalledOnce();
+    expect(stream.openEvents).toHaveBeenCalledWith(
+      `${environment.apiUrl}/api/v1/plans/events/stream`,
+      ['plan-joined', 'plan-left', 'plan-spot'],
+    );
+    expect(joined).toEqual([join]);
+    expect(joinedToo).toEqual([join]);
+    expect(left).toEqual([leave]);
+    expect(spots).toEqual([spot]);
 
     authenticated.set(false);
     TestBed.tick();
