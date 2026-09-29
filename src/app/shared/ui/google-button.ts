@@ -8,7 +8,7 @@ import { TranslocoPipe } from '@jsverse/transloco';
   template: `
     <button
       type="button"
-      class="google-login sticker-link inline-flex w-full items-center justify-center gap-3 rounded-full border-2 border-ink bg-white px-5 py-2.5 font-bold shadow-sticker-sm"
+      class="google-login inline-flex w-full items-center justify-center gap-3 rounded-full border border-surface-300 bg-white px-5 py-3 font-semibold transition-colors hover:bg-surface-100"
       (click)="pressed.emit()"
     >
       <svg class="size-5" viewBox="0 0 48 48" aria-hidden="true">

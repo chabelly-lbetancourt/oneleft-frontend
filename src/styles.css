@@ -2,28 +2,19 @@
 /* Brings the PrimeNG tokens into Tailwind: classes such as bg-primary or text-muted-color */
 @import 'tailwindcss-primeui';
 @import 'primeicons/primeicons.css';
-/* Self-hosted variable fonts (no CDN: the Android app works offline) */
-@import '@fontsource-variable/bricolage-grotesque';
-@import '@fontsource-variable/dm-sans';
+/* Self-hosted variable font (no CDN: the Android app works offline) */
+@import '@fontsource-variable/plus-jakarta-sans';
 
 /*
- * OneLeft visual identity
- * - Ink (text, borders) on a warm cream background, with the brand tangerine for actions
- * - Lime marks what is still free: the empty spot is the signature of the brand
- * - "Sticker" surfaces: ink border and an offset shadow, like a match ticket
+ * OneLeft visual identity: a calm, modern interface with its own details
+ * - One typeface (Plus Jakarta Sans) and warm neutrals; main actions in ink with white text (AA contrast)
+ * - The brand orange only as an accent: logo, free spots, active states
+ * - The free spot, the idea of the app, as a discreet dashed ring
  */
 @theme {
-  --font-display: 'Bricolage Grotesque Variable', 'DM Sans Variable', system-ui, sans-serif;
-  --font-sans: 'DM Sans Variable', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-
-  --color-ink: #17131f;
-  --color-cream: #fff8f0;
-  --color-sand: #f6ebdd;
-  --color-lime: #d9f46b;
-  --color-lime-strong: #b8dc2c;
-
-  --shadow-sticker: 4px 4px 0 0 var(--color-ink);
-  --shadow-sticker-sm: 2px 2px 0 0 var(--color-ink);
+  --font-sans:
+    'Plus Jakarta Sans Variable', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --color-ink: #1c1917;
 }
 
 html,
@@ -35,90 +26,50 @@ body {
   margin: 0;
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
-  @apply bg-cream text-ink;
+  @apply bg-surface-50 text-ink;
 }
 
 h1,
 h2,
-h3,
-.font-display {
-  font-family: var(--font-display);
-  letter-spacing: -0.02em;
+h3 {
+  letter-spacing: -0.015em;
+  word-spacing: 0.04em;
 }
 
-/* Surfaces with the ink border and offset shadow */
-@utility sticker {
+/* Content surface: thin border and a soft shadow */
+@utility card {
   background-color: #fff;
-  border: 2px solid var(--color-ink);
-  border-radius: 1.5rem;
-  box-shadow: var(--shadow-sticker);
+  border: 1px solid var(--p-surface-200);
+  border-radius: 1rem;
+  box-shadow:
+    0 1px 2px rgb(28 25 23 / 0.04),
+    0 1px 3px rgb(28 25 23 / 0.06);
 }
 
-/* Links that behave like stickers: they press down when tapped */
-@utility sticker-link {
+/* Cards that are links */
+@utility card-link {
   transition:
-    transform 120ms ease,
-    box-shadow 120ms ease;
+    border-color 150ms ease,
+    box-shadow 150ms ease;
   &:hover {
-    transform: translate(-1px, -1px);
-    box-shadow: 5px 5px 0 0 var(--color-ink);
-  }
-  &:active {
-    transform: translate(3px, 3px);
-    box-shadow: 1px 1px 0 0 var(--color-ink);
+    border-color: var(--p-surface-300);
+    box-shadow:
+      0 4px 12px rgb(28 25 23 / 0.08),
+      0 1px 3px rgb(28 25 23 / 0.06);
   }
 }
 
-/* The empty spot: dashed circle or pill */
-@utility slot {
-  border: 2px dashed var(--color-ink);
-  background-color: var(--color-lime);
+/* The free spot: a discreet dashed ring in the brand orange */
+@utility spot {
+  border: 1.5px dashed var(--p-primary-400);
+  background-color: var(--p-primary-50);
+  color: var(--p-primary-700);
 }
 
-/* The word in the headline that plays the empty spot */
-.slot-word {
-  display: inline-block;
-  padding: 0 0.3em 0.05em;
-  margin: 0 0.05em;
-  border: 3px dashed var(--color-ink);
-  border-radius: 999px;
-  background: var(--color-lime);
-  transform: rotate(-3deg);
-}
-
-/* --- PrimeNG with the identity ---
- * Outside any layer on purpose: PrimeNG injects its own layer at runtime, after this stylesheet */
-.p-button:not(.p-button-text):not(.p-button-link) {
-  border: 2px solid var(--color-ink);
-  box-shadow: var(--shadow-sticker-sm);
-  font-weight: 700;
-  transition:
-    transform 120ms ease,
-    box-shadow 120ms ease;
-}
-.p-button:not(.p-button-text):not(.p-button-link):not(:disabled):active {
-  transform: translate(2px, 2px);
-  box-shadow: none;
-}
-.p-button-secondary:not(.p-button-text) {
-  background: #fff;
-  color: var(--color-ink);
-}
-
-.p-togglebutton.p-togglebutton-checked .p-togglebutton-content {
-  background: var(--color-ink);
-  color: var(--color-cream);
-  box-shadow: none;
-}
-.p-selectbutton,
-.p-togglebutton {
-  font-weight: 600;
-}
-
-.p-inputtext,
-.p-select,
-.p-multiselect,
-.p-inputnumber-input,
-.p-textarea {
-  border-width: 2px;
+/* The word of the headline that is still missing */
+.missing-word {
+  color: var(--p-primary-600);
+  text-decoration: underline dashed var(--p-primary-300);
+  text-decoration-thickness: 3px;
+  text-underline-offset: 0.14em;
 }

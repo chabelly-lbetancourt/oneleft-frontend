@@ -71,7 +71,7 @@
     "at": "A las {{time}}"
   },
   "home": {
-    "title": "¿Te falta <span class=\"slot-word\">uno</span>?",
+    "title": "¿Te falta <span class=\"missing-word\">uno</span>?",
     "subtitle": "Publica tu plan para las próximas horas y complétalo con gente cerca de ti.",
     "myPlans": "Tus próximos planes",
     "nearby": "Planes cerca de ti ahora",
