@@ -53,6 +53,19 @@ describe('Home', () => {
     expect(element.querySelector('.user-menu')).toBeNull();
   });
 
+  it('should offer to continue with Google only without a session', async () => {
+    const google = element.querySelector<HTMLButtonElement>('.google-login');
+    expect(google?.textContent).toContain('Continuar con Google');
+    google?.click();
+    expect(session.loginWithGoogle).toHaveBeenCalled();
+
+    session.signIn('Ana Test');
+    fixture.detectChanges();
+    TestBed.inject(HttpTestingController).expectOne((r) => r.url.endsWith('/api/v1/plans/mine')).flush([]);
+    await fixture.whenStable();
+    expect(element.querySelector('.google-login')).toBeNull();
+  });
+
   it('should show the user and a link to the profile with a session', async () => {
     session.signIn('Ana Test');
     fixture.detectChanges();
