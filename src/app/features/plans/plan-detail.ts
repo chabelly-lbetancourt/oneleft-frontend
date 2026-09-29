@@ -1,6 +1,5 @@
 import { Component, computed, DestroyRef, effect, inject, input, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { RouterLink } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { Avatar } from 'primeng/avatar';
 import { Button } from 'primeng/button';
@@ -16,13 +15,15 @@ import { activityKey, activityOf } from '../../shared/model/activities';
 import { levelKey } from '../../shared/model/profile';
 import { Plan } from '../../shared/model/published-plan';
 import { clockTime, spotsKey, startsIn } from '../../shared/time/plan-time';
+import { PageHeader } from '../../shared/ui/page-header';
+import { SpotSlots } from '../../shared/ui/spot-slots';
 
 /** What the signed-in person can do with the plan. */
 type Relation = 'organizer' | 'participant' | 'canJoin' | 'full' | 'closed';
 
 @Component({
   selector: 'app-plan-detail',
-  imports: [RouterLink, Avatar, Button, Message, Tag, TranslocoPipe],
+  imports: [Avatar, Button, Message, PageHeader, SpotSlots, Tag, TranslocoPipe],
   templateUrl: './plan-detail.html',
 })
 export class PlanDetail {
@@ -42,6 +43,13 @@ export class PlanDetail {
   protected readonly justJoined = signal(false);
   protected readonly spotsKey = spotsKey;
   protected readonly activity = computed(() => activityOf(this.plan()?.activity ?? ''));
+  /** The organizer and the participants, for the spots of the plan */
+  protected readonly people = computed(() => {
+    const plan = this.plan();
+    return plan
+      ? [plan.organizerName, ...plan.participants.map((participant) => participant.name)]
+      : [];
+  });
   protected readonly activityKey = computed(() => activityKey(this.activity().code));
   protected readonly levelKey = computed(() => levelKey(this.plan()?.level));
   protected readonly startsAt = computed(() => {
@@ -74,7 +82,9 @@ export class PlanDetail {
     if (plan.status === 'FULL' || plan.freeSpots === 0) {
       return 'full';
     }
-    return plan.status === 'OPEN' && new Date(plan.startsAt).getTime() > Date.now() ? 'canJoin' : 'closed';
+    return plan.status === 'OPEN' && new Date(plan.startsAt).getTime() > Date.now()
+      ? 'canJoin'
+      : 'closed';
   });
   protected readonly isMe = (userId: string) => userId === this.session.userId();
 
