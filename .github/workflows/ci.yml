@@ -6,6 +6,14 @@ on:
     branches: [main, pre, dev]
   pull_request:
     branches: [dev, pre, main]
+    # labeled: adding the e2e label runs the end-to-end tests
+    types: [opened, synchronize, reopened, labeled]
+  # End-to-end tests by hand, against the backend images of an environment
+  workflow_dispatch:
+    inputs:
+      image-tag:
+        description: Tag of the backend images in GHCR (and branch of oneleft-infra)
+        default: pre
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -38,6 +46,9 @@ jobs:
 
       - name: Lint
         run: npm run lint
+
+      - name: Type-check the end-to-end tests
+        run: npx tsc -p tsconfig.e2e.json
 
       - name: Tests and coverage (>= 80%)
         run: npm run test:ci
@@ -77,12 +88,81 @@ jobs:
         if: env.SONAR_TOKEN == ''
         run: echo "::notice::SONAR_TOKEN is not set; skipping the SonarQube Cloud analysis."
 
+  # End-to-end tests (Playwright) against the whole stack: oneleft-infra Docker Compose with the backend images
+  # published in GHCR and the development build of the app. For pull requests into pre, pull requests with the e2e
+  # label and by hand.
+  e2e:
+    name: End-to-end tests (Playwright)
+    if: >-
+      github.base_ref == 'pre' || github.event_name == 'workflow_dispatch' ||
+      contains(github.event.pull_request.labels.*.name, 'e2e')
+    runs-on: ubuntu-24.04
+    env:
+      PRIMEUI_LICENSE: ${{ secrets.PRIMEUI_LICENSE }}
+      ONELEFT_IMAGE_TAG: ${{ inputs.image-tag || 'pre' }}
+    defaults:
+      run:
+        working-directory: oneleft-frontend
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          path: oneleft-frontend
+
+      # Compose file, Keycloak realm (test users) and database scripts
+      - uses: actions/checkout@v7
+        with:
+          repository: ${{ github.repository_owner }}/oneleft-infra
+          ref: ${{ env.ONELEFT_IMAGE_TAG }}
+          path: oneleft-infra
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: oneleft-frontend/.nvmrc
+          cache: npm
+          cache-dependency-path: oneleft-frontend/package-lock.json
+
+      - name: Install dependencies and Chromium
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+
+      - name: Start the stack (${{ env.ONELEFT_IMAGE_TAG }} images)
+        run: |
+          cp ../oneleft-infra/docker/.env.example ../oneleft-infra/docker/.env
+          docker compose -f ../oneleft-infra/docker/compose.yaml -f e2e/compose.e2e.yaml --profile backend \
+            up -d --no-build --pull always --wait --wait-timeout 600
+
+      - name: Build the app (development configuration)
+        run: |
+          if [ -n "$PRIMEUI_LICENSE" ]; then
+            npx ng build --configuration development --define "PRIMEUI_LICENSE='$PRIMEUI_LICENSE'"
+          else
+            npx ng build --configuration development
+          fi
+
+      - name: End-to-end tests (es and en)
+        run: npm run e2e
+
+      - name: Service logs
+        if: failure()
+        run: docker compose -f ../oneleft-infra/docker/compose.yaml -f e2e/compose.e2e.yaml --profile backend logs --tail 200
+
+      - name: Upload the report, screenshots, videos and traces
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: e2e-report
+          path: |
+            oneleft-frontend/e2e-report
+            oneleft-frontend/e2e-results
+          retention-days: 14
+
   # Result of the CI in the project Slack channel, for pushes to dev/pre/main and for pull requests. The webhook URL
   # is a secret (SLACK_WEBHOOK_URL), never in the repository; without it the notification is skipped. Pull requests
   # from forks do not receive secrets, so they are skipped too.
   notify:
     name: Slack notification
-    needs: [build-test]
+    needs: [build-test, e2e]
     if: always()
     runs-on: ubuntu-24.04
     env:
