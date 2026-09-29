@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { provideRouter } from '@angular/router';
+import { provideRouter, Router } from '@angular/router';
 import { TranslocoService } from '@jsverse/transloco';
 import { EMPTY, of, Subject, throwError } from 'rxjs';
 import { FakeSession } from '../../../testing/fake-session';
@@ -38,6 +38,8 @@ describe('PlanDetail', () => {
   let left: Subject<PlanLeftNotice>;
   const api = {
     plan: vi.fn(),
+    publicPlan: vi.fn(),
+    shareUrl: vi.fn((id: string) => `http://localhost:8080/share/plans/${id}`),
     join: vi.fn(),
     leave: vi.fn(),
     joinWaitlist: vi.fn(),
@@ -330,6 +332,83 @@ describe('PlanDetail', () => {
       full: false,
     });
     expect(api.plan).toHaveBeenCalledTimes(2);
+  });
+
+  it('should show a shared plan without a session and send the guest to sign in', async () => {
+    api.publicPlan.mockReturnValue(
+      of({
+        ...PLAN,
+        organizerId: '',
+        organizerName: '',
+        occupied: 1,
+        freeSpots: 1,
+        participants: [],
+      }),
+    );
+    fixture = TestBed.createComponent(PlanDetail);
+    fixture.componentRef.setInput('id', 'plan-1');
+    await render();
+    const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
+
+    expect(api.publicPlan).toHaveBeenCalledWith('plan-1');
+    expect(api.plan).not.toHaveBeenCalled();
+    const card = element().querySelector('.plan-card')!;
+    expect(card.textContent).not.toContain('Organiza');
+    expect(card.textContent).toContain('1 de 2 plazas ocupadas');
+    expect(element().querySelector('.participants')?.textContent).not.toContain(
+      'Aún no se ha apuntado nadie',
+    );
+
+    element().querySelector<HTMLButtonElement>('.guest-join button')!.click();
+    expect(navigate).toHaveBeenCalledWith(['/login'], {
+      queryParams: { returnUrl: '/plans/plan-1' },
+    });
+  });
+
+  it('should send guests to sign in from the waiting list of a full plan', async () => {
+    api.publicPlan.mockReturnValue(
+      of({ ...PLAN, occupied: 2, freeSpots: 0, status: 'FULL', participants: [] }),
+    );
+    fixture = TestBed.createComponent(PlanDetail);
+    fixture.componentRef.setInput('id', 'plan-1');
+    await render();
+    const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
+    expect(element().querySelector('.full-tag')).not.toBeNull();
+
+    element().querySelector<HTMLButtonElement>('.waitlist-join button')!.click();
+    expect(api.joinWaitlist).not.toHaveBeenCalled();
+    expect(navigate).toHaveBeenCalledWith(['/login'], {
+      queryParams: { returnUrl: '/plans/plan-1' },
+    });
+  });
+
+  it('should share the plan with the native sheet or copy the link', async () => {
+    await create(PLAN);
+    const share = vi.fn().mockResolvedValue(undefined);
+    Object.defineProperty(navigator, 'share', { value: share, configurable: true });
+
+    element().querySelector<HTMLButtonElement>('.share-button button')!.click();
+    await render();
+    expect(share).toHaveBeenCalledWith({
+      title: 'Partido de pádel, falta uno',
+      text: expect.stringMatching(/^Pádel a las \d{2}:\d{2} · Faltan 2\. ¿Te apuntas\?$/),
+      url: 'http://localhost:8080/share/plans/plan-1',
+    });
+
+    share.mockRejectedValue(new DOMException('cancelled', 'AbortError'));
+    element().querySelector<HTMLButtonElement>('.share-button button')!.click();
+    await render();
+    expect(element().querySelector('.copied-message')).toBeNull();
+
+    Object.defineProperty(navigator, 'share', { value: undefined, configurable: true });
+    const writeText = vi.fn().mockResolvedValue(undefined);
+    Object.defineProperty(navigator, 'clipboard', { value: { writeText }, configurable: true });
+    element().querySelector<HTMLButtonElement>('.share-button button')!.click();
+    await render();
+    expect(writeText).toHaveBeenCalledWith(
+      expect.stringContaining('http://localhost:8080/share/plans/plan-1'),
+    );
+    expect(element().querySelector('.copied-message')?.textContent).toContain('Enlace copiado');
   });
 
   it('should show the plan in English', async () => {
