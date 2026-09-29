@@ -132,6 +132,20 @@ describe('PublishPlan', () => {
     expect(element().querySelector('.status-message')?.textContent).toContain('No se ha podido obtener tu ubicación');
   });
 
+  it('should ask to wait when the publication limit is reached and keep the form', async () => {
+    api.publish.mockReturnValue(
+      throwError(() => ({ status: 429, error: { code: 'rate.limited', retryAfterSeconds: 610 } })),
+    );
+    fillValidPlan();
+    call('publish');
+    await render();
+
+    expect(element().querySelector('.status-message')?.textContent).toContain(
+      'Vas demasiado rápido. Vuelve a intentarlo en 11 min.',
+    );
+    expect((component['form'] as unknown as { value: { title: string } }).value.title).toBe('  Partido de pádel  ');
+  });
+
   it('should translate the options when the language changes', async () => {
     TestBed.inject(TranslocoService).setActiveLang('en');
     await render();

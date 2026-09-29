@@ -1,4 +1,12 @@
-import { ChangeDetectorRef, Component, computed, DestroyRef, inject, OnInit, signal } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  computed,
+  DestroyRef,
+  inject,
+  OnInit,
+  signal,
+} from '@angular/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import {
   AbstractControl,
@@ -9,8 +17,8 @@ import {
   ValidationErrors,
   Validators,
 } from '@angular/forms';
-import { RouterLink } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
+import { PageHeader } from '../../shared/ui/page-header';
 import { Avatar } from 'primeng/avatar';
 import { Button } from 'primeng/button';
 import { InputText } from 'primeng/inputtext';
@@ -22,7 +30,7 @@ import { forkJoin } from 'rxjs';
 import { UsersApi } from '../../core/api/users-api';
 import { Session } from '../../core/auth/session';
 import { ApproximateLocation, LocationError } from '../../core/geo/approximate-location';
-import { apiErrorKey } from '../../core/i18n/api-error';
+import { apiErrorMessage } from '../../core/i18n/api-error';
 import { activityKey } from '../../shared/model/activities';
 import { Catalog, Level, levelKey, MAX_HOBBIES, MyProfile } from '../../shared/model/profile';
 import { LanguageSwitcher } from '../../shared/ui/language-switcher';
@@ -46,7 +54,6 @@ const zoneComplete = (group: AbstractControl): ValidationErrors | null => {
   selector: 'app-profile',
   imports: [
     ReactiveFormsModule,
-    RouterLink,
     Avatar,
     Button,
     InputText,
@@ -56,6 +63,7 @@ const zoneComplete = (group: AbstractControl): ValidationErrors | null => {
     SelectButton,
     Tag,
     TranslocoPipe,
+    PageHeader,
   ],
   templateUrl: './profile.html',
 })
@@ -75,17 +83,26 @@ export class Profile implements OnInit {
   protected readonly saving = signal(false);
   protected readonly locating = signal(false);
   /** Message under the form, as a translation key. */
-  protected readonly status = signal<{ severity: 'success' | 'error'; key: string } | null>(null);
+  protected readonly status = signal<{
+    severity: 'success' | 'error';
+    key: string;
+    params?: Record<string, unknown>;
+  } | null>(null);
 
   /** Active language as a signal: the PrimeNG option labels are recomputed when it changes. */
-  private readonly lang = toSignal(this.transloco.langChanges$, { initialValue: this.transloco.getActiveLang() });
+  private readonly lang = toSignal(this.transloco.langChanges$, {
+    initialValue: this.transloco.getActiveLang(),
+  });
   private readonly translate = (key: string) => {
     this.lang();
     return this.transloco.translate(key);
   };
 
   protected readonly levelOptions = computed(() =>
-    (this.catalog()?.levels ?? []).map((level) => ({ label: this.translate(levelKey(level)), value: level })),
+    (this.catalog()?.levels ?? []).map((level) => ({
+      label: this.translate(levelKey(level)),
+      value: level,
+    })),
   );
 
   protected readonly form = this.fb.group(
@@ -108,7 +125,11 @@ export class Profile implements OnInit {
     this.form.valueChanges
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(() => this.changeDetector.markForCheck());
-    forkJoin({ user: this.api.me(), profile: this.api.myProfile(), catalog: this.api.catalog() }).subscribe({
+    forkJoin({
+      user: this.api.me(),
+      profile: this.api.myProfile(),
+      catalog: this.api.catalog(),
+    }).subscribe({
       next: ({ user, profile, catalog }) => {
         this.user.set(user);
         this.catalog.set(catalog);
@@ -129,7 +150,9 @@ export class Profile implements OnInit {
   /** Activities that can be chosen in a row: those not used in the other rows. */
   protected activityOptions(index: number): { code: string; name: string }[] {
     const usedElsewhere = new Set(
-      this.hobbies.controls.filter((_, i) => i !== index).map((hobby) => hobby.controls.activity.value),
+      this.hobbies.controls
+        .filter((_, i) => i !== index)
+        .map((hobby) => hobby.controls.activity.value),
     );
     return (this.catalog()?.activities ?? [])
       .filter((code) => !usedElsewhere.has(code))
@@ -194,7 +217,10 @@ export class Profile implements OnInit {
       },
       error: (error) => {
         this.saving.set(false);
-        this.status.set({ severity: 'error', key: apiErrorKey(this.transloco, error, 'errors.saveFailed') });
+        this.status.set({
+          severity: 'error',
+          ...apiErrorMessage(this.transloco, error, 'errors.saveFailed'),
+        });
       },
     });
   }
@@ -206,7 +232,9 @@ export class Profile implements OnInit {
 
   private fill(profile: MyProfile): void {
     this.hobbies.clear();
-    profile.hobbies.forEach((hobby) => this.hobbies.push(this.hobbyGroup(hobby.activity, hobby.level)));
+    profile.hobbies.forEach((hobby) =>
+      this.hobbies.push(this.hobbyGroup(hobby.activity, hobby.level)),
+    );
     this.form.patchValue({
       displayName: profile.displayName,
       zoneName: profile.zone?.name ?? '',

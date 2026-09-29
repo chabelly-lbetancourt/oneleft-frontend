@@ -1,22 +1,18 @@
 <div class="min-h-full">
-  <header class="bg-surface-0 border-b border-surface-200">
-    <div class="mx-auto max-w-3xl flex items-center gap-2 px-4 py-3">
-      <p-button icon="pi pi-arrow-left" [text]="true" [rounded]="true" routerLink="/" [ariaLabel]="'app.back' | transloco" />
-      <h1 class="text-lg font-bold flex-1">{{ 'profile.title' | transloco }}</h1>
-      <app-language-switcher />
-    </div>
-  </header>
+  <app-page-header [title]="'profile.title' | transloco">
+    <app-language-switcher />
+  </app-page-header>
 
   <main class="mx-auto max-w-3xl px-4 py-6 pb-16">
     @if (loading()) {
-      <p class="text-muted-color">{{ 'profile.loading' | transloco }}</p>
+      <p class="text-surface-600">{{ 'profile.loading' | transloco }}</p>
     } @else if (loadError()) {
       <div class="profile-error rounded-2xl border border-red-200 bg-red-50 p-4 text-red-800">
         {{ 'profile.loadError' | transloco }}
       </div>
     } @else {
       @if (user(); as account) {
-        <section class="profile-card rounded-2xl bg-surface-0 border border-surface-200 p-5 shadow-sm">
+        <section class="profile-card card p-5">
           <div class="flex items-center gap-4">
             <p-avatar
               [label]="session.initials()"
@@ -26,29 +22,37 @@
             />
             <div class="min-w-0">
               <h2 class="text-xl font-bold truncate">{{ account.name }}</h2>
-              <p class="text-muted-color truncate">{{ account.email }}</p>
+              <p class="text-surface-600 truncate">{{ account.email }}</p>
             </div>
           </div>
           <div class="mt-4 flex flex-wrap gap-2">
             @for (role of account.roles; track role) {
-              <p-tag [value]="roleKey(role) | transloco" [severity]="role === 'ADMIN' ? 'danger' : 'info'" [rounded]="true" />
+              <p-tag
+                [value]="roleKey(role) | transloco"
+                [severity]="role === 'ADMIN' ? 'danger' : 'info'"
+                [rounded]="true"
+              />
             }
           </div>
         </section>
       }
 
       <form class="profile-form mt-6 flex flex-col gap-6" [formGroup]="form" (ngSubmit)="save()">
-        <section class="rounded-2xl bg-surface-0 border border-surface-200 p-5 shadow-sm flex flex-col gap-2">
-          <label for="displayName" class="font-semibold">{{ 'profile.displayName' | transloco }}</label>
+        <section class="card p-5 flex flex-col gap-2">
+          <label for="displayName" class="text-lg font-bold">{{
+            'profile.displayName' | transloco
+          }}</label>
           <input pInputText id="displayName" formControlName="displayName" maxlength="50" />
-          <small class="text-muted-color">{{ 'profile.displayNameHint' | transloco }}</small>
+          <small class="text-surface-600">{{ 'profile.displayNameHint' | transloco }}</small>
           @if (form.controls.displayName.invalid && form.controls.displayName.touched) {
-            <small class="field-error text-red-600">{{ 'profile.displayNameError' | transloco }}</small>
+            <small class="field-error text-red-600">{{
+              'profile.displayNameError' | transloco
+            }}</small>
           }
         </section>
 
-        <section class="rounded-2xl bg-surface-0 border border-surface-200 p-5 shadow-sm flex flex-col gap-2">
-          <label for="zoneName" class="font-semibold">{{ 'profile.zone' | transloco }}</label>
+        <section class="card p-5 flex flex-col gap-2">
+          <label for="zoneName" class="text-lg font-bold">{{ 'profile.zone' | transloco }}</label>
           <input
             pInputText
             id="zoneName"
@@ -67,13 +71,26 @@
               (onClick)="useMyLocation()"
             />
             @if (form.controls.latitude.value !== null) {
-              <span class="zone-coordinates text-sm text-muted-color">
-                {{ 'profile.approximate' | transloco: { latitude: form.controls.latitude.value, longitude: form.controls.longitude.value } }}
+              <span class="zone-coordinates text-sm text-surface-600">
+                {{
+                  'profile.approximate'
+                    | transloco
+                      : {
+                          latitude: form.controls.latitude.value,
+                          longitude: form.controls.longitude.value,
+                        }
+                }}
               </span>
-              <p-button [label]="'profile.removeZone' | transloco" size="small" [text]="true" severity="secondary" (onClick)="clearZone()" />
+              <p-button
+                [label]="'profile.removeZone' | transloco"
+                size="small"
+                [text]="true"
+                severity="secondary"
+                (onClick)="clearZone()"
+              />
             }
           </div>
-          <small class="text-muted-color">
+          <small class="text-surface-600">
             <i class="pi pi-lock text-xs" aria-hidden="true"></i>
             {{ 'profile.zonePrivacy' | transloco }}
           </small>
@@ -84,15 +101,18 @@
           }
         </section>
 
-        <section class="rounded-2xl bg-surface-0 border border-surface-200 p-5 shadow-sm flex flex-col gap-3">
+        <section class="card p-5 flex flex-col gap-3">
           <div class="flex items-center justify-between">
-            <h3 class="font-semibold">{{ 'profile.hobbies' | transloco }}</h3>
-            <span class="text-sm text-muted-color">{{ hobbies.length }}/10</span>
+            <h3 class="text-lg font-bold">{{ 'profile.hobbies' | transloco }}</h3>
+            <span class="text-sm text-surface-600">{{ hobbies.length }}/10</span>
           </div>
 
           <div formArrayName="hobbies" class="flex flex-col gap-3">
             @for (hobby of hobbies.controls; track hobby; let i = $index) {
-              <div class="hobby-row flex flex-col gap-2 sm:flex-row sm:items-center" [formGroupName]="i">
+              <div
+                class="hobby-row flex flex-col gap-2 sm:flex-row sm:items-center"
+                [formGroupName]="i"
+              >
                 <p-select
                   formControlName="activity"
                   [options]="activityOptions(i)"
@@ -121,7 +141,7 @@
                 </div>
               </div>
             } @empty {
-              <p class="text-sm text-muted-color">
+              <p class="text-sm text-surface-600">
                 {{ 'profile.noHobbies' | transloco }}
               </p>
             }
@@ -139,7 +159,9 @@
         </section>
 
         @if (status(); as message) {
-          <p-message [severity]="message.severity" class="status-message">{{ message.key | transloco }}</p-message>
+          <p-message [severity]="message.severity" class="status-message">{{
+            message.key | transloco: message.params
+          }}</p-message>
         }
 
         <p-button

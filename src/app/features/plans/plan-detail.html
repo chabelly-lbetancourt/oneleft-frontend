@@ -1,113 +1,250 @@
 <div class="min-h-full">
-  <header class="bg-surface-0 border-b border-surface-200">
-    <div class="mx-auto max-w-3xl flex items-center gap-2 px-4 py-3">
-      <p-button icon="pi pi-arrow-left" [text]="true" [rounded]="true" routerLink="/" [ariaLabel]="'app.back' | transloco" />
-      <h1 class="text-lg font-bold">{{ 'plan.title' | transloco }}</h1>
-    </div>
-  </header>
+  <app-page-header [title]="'plan.title' | transloco">
+    @if (plan()) {
+      <p-button
+        class="share-button"
+        icon="pi pi-share-alt"
+        [label]="'plan.share' | transloco"
+        [text]="true"
+        [rounded]="true"
+        severity="secondary"
+        (onClick)="share()"
+      />
+    }
+  </app-page-header>
 
-  <main class="mx-auto max-w-3xl px-4 py-6 flex flex-col gap-4">
+  <main class="mx-auto flex max-w-3xl flex-col gap-5 px-4 py-6">
+    @if (copied()) {
+      <p-message
+        severity="success"
+        class="copied-message"
+        [closable]="true"
+        (onClose)="copied.set(false)"
+        >{{ 'plan.linkCopied' | transloco }}</p-message
+      >
+    }
     @if (published()) {
-      <p-message severity="success" class="published-message">{{ 'plan.published' | transloco }}</p-message>
+      <p-message severity="success" class="published-message">{{
+        'plan.published' | transloco
+      }}</p-message>
     }
 
     @if (notFound()) {
-      <div class="plan-error rounded-2xl border border-red-200 bg-red-50 p-4 text-red-800">
+      <div
+        class="plan-error rounded-3xl border border-surface-200 bg-red-100 p-4 font-semibold text-red-900"
+      >
         {{ 'plan.notFound' | transloco }}
       </div>
     } @else if (plan(); as current) {
-      <section class="plan-card rounded-2xl bg-surface-0 border border-surface-200 p-5 shadow-sm flex flex-col gap-4">
-        <div class="flex items-start gap-4">
-          <div class="flex size-14 shrink-0 items-center justify-center rounded-xl bg-primary-50 text-primary">
-            <i class="pi {{ activity().icon }} text-2xl" aria-hidden="true"></i>
+      <section class="plan-card card overflow-hidden">
+        <div class="flex items-center gap-4 border-b border-surface-200 p-5">
+          <div [class]="'grid size-12 shrink-0 place-items-center rounded-xl ' + activity().tone">
+            <i class="pi {{ activity().icon }} text-xl" aria-hidden="true"></i>
           </div>
-          <div class="flex-1 min-w-0">
-            <p class="text-sm text-muted-color">{{ activityKey() | transloco }}</p>
-            <h2 class="text-xl font-bold leading-snug">{{ current.title }}</h2>
-          </div>
-          <p-tag
-            [value]="spotsKey(current.freeSpots) | transloco: { count: current.freeSpots }"
-            severity="warn"
-            [rounded]="true"
-            class="shrink-0 whitespace-nowrap"
-          />
-        </div>
-
-        @if (current.description) {
-          <p>{{ current.description }}</p>
-        }
-
-        <dl class="grid grid-cols-[auto_1fr] gap-x-3 gap-y-2 text-sm">
-          <dt class="text-muted-color"><i class="pi pi-clock" aria-hidden="true"></i></dt>
-          <dd class="plan-time">
+          <div class="min-w-0 flex-1">
+            <p class="text-sm font-medium text-surface-600">
+              {{ activityKey() | transloco }}
+            </p>
             @if (startsAt(); as start) {
-              {{ 'time.at' | transloco: { time: start.time } }} ·
-              {{ start.relative.key | transloco: start.relative.params }}
+              <p class="text-2xl font-bold leading-tight">{{ start.time }}</p>
             }
-          </dd>
-          <dt class="text-muted-color"><i class="pi pi-map-marker" aria-hidden="true"></i></dt>
-          <dd>
-            {{ current.meetingPoint.name }} ·
-            <a class="text-primary underline" [href]="mapUrl()" target="_blank" rel="noopener">
-              {{ 'plan.viewOnMap' | transloco }}
-            </a>
-          </dd>
-          <dt class="text-muted-color"><i class="pi pi-chart-bar" aria-hidden="true"></i></dt>
-          <dd>{{ levelKey() | transloco }}</dd>
-          <dt class="text-muted-color"><i class="pi pi-user" aria-hidden="true"></i></dt>
-          <dd>{{ 'plan.organizer' | transloco: { name: current.organizerName } }}</dd>
-        </dl>
+          </div>
+          <span
+            class="shrink-0 rounded-full bg-primary-50 px-3 py-1 text-sm font-semibold whitespace-nowrap text-primary-700 ring-1 ring-primary-200"
+          >
+            {{ spotsKey(current.freeSpots) | transloco: { count: current.freeSpots } }}
+          </span>
+        </div>
+        <div class="flex flex-col gap-4 p-5">
+          <h2 class="text-xl font-bold leading-snug">{{ current.title }}</h2>
+          @if (current.description) {
+            <p>{{ current.description }}</p>
+          }
+
+          <dl class="grid grid-cols-[auto_1fr] gap-x-3 gap-y-2.5 text-sm">
+            <dt class="text-surface-600"><i class="pi pi-clock" aria-hidden="true"></i></dt>
+            <dd class="plan-time">
+              @if (startsAt(); as start) {
+                {{ 'time.at' | transloco: { time: start.time } }} ·
+                {{ start.relative.key | transloco: start.relative.params }}
+              }
+            </dd>
+            <dt class="text-surface-600"><i class="pi pi-map-marker" aria-hidden="true"></i></dt>
+            <dd>
+              {{ current.meetingPoint.name }} ·
+              <a
+                class="font-bold text-primary-700 underline"
+                [href]="mapUrl()"
+                target="_blank"
+                rel="noopener"
+              >
+                {{ 'plan.viewOnMap' | transloco }}
+              </a>
+            </dd>
+            <dt class="text-surface-600"><i class="pi pi-chart-bar" aria-hidden="true"></i></dt>
+            <dd>{{ levelKey() | transloco }}</dd>
+            <dt class="text-surface-600"><i class="pi pi-user" aria-hidden="true"></i></dt>
+            <dd>
+              @if (current.organizerName) {
+                {{ 'plan.organizer' | transloco: { name: current.organizerName } }}
+              } @else {
+                {{
+                  'plan.spotsTaken'
+                    | transloco: { occupied: current.occupied, spots: current.spots }
+                }}
+              }
+            </dd>
+          </dl>
+        </div>
       </section>
 
-      <section class="participants rounded-2xl bg-surface-0 border border-surface-200 p-5 shadow-sm flex flex-col gap-3">
+      <section class="participants card flex flex-col gap-4 p-5">
         <div class="flex items-center justify-between">
-          <h3 class="font-semibold">{{ 'plan.participants' | transloco }}</h3>
-          <span class="text-sm text-muted-color">{{ current.occupied }}/{{ current.spots }}</span>
+          <h3 class="text-lg font-bold">{{ 'plan.participants' | transloco }}</h3>
+          <span class="font-bold">{{ current.occupied }}/{{ current.spots }}</span>
         </div>
+        @if (current.waitlist.length) {
+          <p class="waitlist-count -mt-2 text-sm text-surface-600">
+            <i class="pi pi-clock text-xs" aria-hidden="true"></i>
+            {{ 'plan.waitlistCount' | transloco: { count: current.waitlist.length } }}
+          </p>
+        }
+        <app-spot-slots [names]="people()" [free]="current.freeSpots" size="md" />
         @if (current.participants.length) {
           <ul class="flex flex-wrap gap-2">
             @for (participant of current.participants; track participant.userId) {
-              <li class="participant flex items-center gap-2 rounded-full bg-surface-100 py-1 pl-1 pr-3">
-                <p-avatar [label]="initials(participant.name)" shape="circle" class="bg-primary-100! text-primary-700! text-xs!" />
+              <li
+                class="participant flex items-center gap-2 rounded-full border border-surface-200 bg-white py-1 pl-1 pr-3"
+              >
+                <p-avatar
+                  [label]="initials(participant.name)"
+                  shape="circle"
+                  class="bg-primary-200! text-ink! text-xs! font-bold!"
+                />
                 <span class="text-sm">
                   {{ participant.name }}
                   @if (isMe(participant.userId)) {
-                    <span class="text-muted-color">({{ 'plan.you' | transloco }})</span>
+                    <span class="text-surface-600">({{ 'plan.you' | transloco }})</span>
                   }
                 </span>
               </li>
             }
           </ul>
-        } @else {
-          <p class="text-sm text-muted-color">{{ 'plan.noParticipants' | transloco }}</p>
+        } @else if (!isGuest()) {
+          <p class="text-sm text-surface-600">{{ 'plan.noParticipants' | transloco }}</p>
         }
 
         @switch (relation()) {
+          @case ('guest') {
+            <p-button
+              class="join-button guest-join"
+              [label]="'plan.join' | transloco"
+              icon="pi pi-user-plus"
+              size="large"
+              styleClass="w-full"
+              (onClick)="signIn()"
+            />
+            <p class="text-sm text-surface-600">{{ 'plan.guestHint' | transloco }}</p>
+          }
           @case ('canJoin') {
-            <p-button class="join-button" [label]="'plan.join' | transloco" icon="pi pi-user-plus" size="large"
-              styleClass="w-full" [loading]="joining()" (onClick)="join()" />
+            <p-button
+              class="join-button"
+              [label]="'plan.join' | transloco"
+              icon="pi pi-user-plus"
+              size="large"
+              styleClass="w-full"
+              [loading]="joining()"
+              (onClick)="join()"
+            />
           }
           @case ('participant') {
             <p-message severity="success" class="joined-message">
               {{ (justJoined() ? 'plan.justJoined' : 'plan.youAreIn') | transloco }}
             </p-message>
+            @if (confirmingLeave()) {
+              <div class="leave-confirm flex flex-col gap-3 rounded-xl bg-surface-100 p-4">
+                <p class="text-sm">{{ 'plan.leaveConfirm' | transloco }}</p>
+                <div class="flex gap-2">
+                  <p-button
+                    class="leave-yes"
+                    [label]="'plan.leaveYes' | transloco"
+                    severity="danger"
+                    [rounded]="true"
+                    [loading]="busy()"
+                    (onClick)="leave()"
+                  />
+                  <p-button
+                    class="leave-cancel"
+                    [label]="'plan.cancel' | transloco"
+                    [text]="true"
+                    severity="secondary"
+                    (onClick)="confirmingLeave.set(false)"
+                  />
+                </div>
+              </div>
+            } @else {
+              <p-button
+                class="leave-button"
+                [label]="'plan.leave' | transloco"
+                icon="pi pi-sign-out"
+                [text]="true"
+                severity="secondary"
+                (onClick)="confirmingLeave.set(true)"
+              />
+            }
+          }
+          @case ('waiting') {
+            <p-message severity="info" class="waiting-message">
+              {{ 'plan.waiting' | transloco: { position: waitingPosition() } }}
+            </p-message>
+            <p-button
+              class="waitlist-leave"
+              [label]="'plan.waitlistLeave' | transloco"
+              [text]="true"
+              severity="secondary"
+              [loading]="busy()"
+              (onClick)="leaveWaitlist()"
+            />
           }
           @case ('organizer') {
-            <p class="organizer-hint text-sm text-muted-color">{{ 'plan.yourPlan' | transloco }}</p>
+            <p class="organizer-hint text-sm text-surface-600">{{ 'plan.yourPlan' | transloco }}</p>
           }
           @case ('full') {
-            <p-tag class="full-tag" [value]="'plan.full' | transloco" severity="secondary" [rounded]="true" />
+            <p-tag
+              class="full-tag"
+              [value]="'plan.full' | transloco"
+              severity="secondary"
+              [rounded]="true"
+            />
+            <p-button
+              class="waitlist-join"
+              [label]="'plan.waitlistJoin' | transloco"
+              icon="pi pi-bell"
+              size="large"
+              styleClass="w-full"
+              [outlined]="true"
+              [loading]="busy()"
+              (onClick)="isGuest() ? signIn() : joinWaitlist()"
+            />
+            <p class="text-sm text-surface-600">
+              {{ (isGuest() ? 'plan.guestHint' : 'plan.waitlistHint') | transloco }}
+            </p>
           }
           @case ('closed') {
-            <p class="text-sm text-muted-color">{{ 'plan.closed' | transloco }}</p>
+            <p class="text-sm text-surface-600">{{ 'plan.closed' | transloco }}</p>
           }
         }
-        @if (joinError(); as key) {
-          <p-message severity="error" class="join-error">{{ key | transloco }}</p-message>
+        @if (justLeft()) {
+          <p-message severity="info" class="left-message">{{ 'plan.left' | transloco }}</p-message>
+        }
+        @if (joinError(); as message) {
+          <p-message severity="error" class="join-error">{{
+            message.key | transloco: message.params
+          }}</p-message>
         }
       </section>
     } @else {
-      <p class="text-muted-color">{{ 'plan.loading' | transloco }}</p>
+      <p class="text-surface-600">{{ 'plan.loading' | transloco }}</p>
     }
   </main>
 </div>
