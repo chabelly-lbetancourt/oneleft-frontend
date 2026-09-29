@@ -1,15 +1,34 @@
 import { computed, inject, Injectable } from '@angular/core';
+import { NavigationEnd, Router } from '@angular/router';
 import { OidcSecurityService } from 'angular-auth-oidc-client';
-import { firstValueFrom } from 'rxjs';
+import { filter, firstValueFrom } from 'rxjs';
 import { Language } from '../i18n/language';
+
+const RETURN_URL_KEY = 'oneleft.returnUrl';
+
+/** Only paths inside the app: never another site (open redirect) */
+const safeReturnUrl = (url: string | null | undefined): string | null =>
+  url && url.startsWith('/') && !url.startsWith('//') && !url.startsWith('/\\') ? url : null;
 
 /**
  * The user's session exposed as signals. It hides the OIDC library from the rest of the application.
+ * The login always happens in Keycloak (Authorization Code + PKCE): the app never sees the password.
  */
 @Injectable({ providedIn: 'root' })
 export class Session {
   private readonly oidc = inject(OidcSecurityService);
   private readonly language = inject(Language);
+  private readonly router = inject(Router);
+
+  constructor() {
+    // Back from Keycloak: once the router has handled the callback, open the page that asked for the login
+    this.router.events.pipe(filter((event) => event instanceof NavigationEnd)).subscribe(() => {
+      const url = this.isAuthenticated() ? this.takeReturnUrl() : null;
+      if (url) {
+        void this.router.navigateByUrl(url);
+      }
+    });
+  }
 
   readonly isAuthenticated = computed(() => this.oidc.authenticated().isAuthenticated);
 
@@ -31,23 +50,53 @@ export class Session {
   );
 
   /** The Keycloak pages use the language of the app (ui_locales). */
-  login(): void {
+  login(returnUrl?: string): void {
+    this.keepReturnUrl(returnUrl);
     this.oidc.authorize(undefined, { customParams: { ui_locales: this.language.current() } });
   }
 
   /** Skips the Keycloak form and goes straight to Google (identity provider brokered by Keycloak). */
-  loginWithGoogle(): void {
-    this.oidc.authorize(undefined, { customParams: { kc_idp_hint: 'google', ui_locales: this.language.current() } });
+  loginWithGoogle(returnUrl?: string): void {
+    this.keepReturnUrl(returnUrl);
+    this.oidc.authorize(undefined, {
+      customParams: { kc_idp_hint: 'google', ui_locales: this.language.current() },
+    });
   }
 
   /** Opens the Keycloak registration form directly. */
-  register(): void {
-    this.oidc.authorize(undefined, { customParams: { prompt: 'create', ui_locales: this.language.current() } });
+  register(returnUrl?: string): void {
+    this.keepReturnUrl(returnUrl);
+    this.oidc.authorize(undefined, {
+      customParams: { prompt: 'create', ui_locales: this.language.current() },
+    });
   }
 
   /** Current access token, for requests the HTTP interceptor does not see (for example, streams opened with fetch). */
   accessToken(): Promise<string> {
     return firstValueFrom(this.oidc.getAccessToken());
+  }
+
+  private keepReturnUrl(returnUrl?: string): void {
+    const url = safeReturnUrl(returnUrl);
+    try {
+      if (url) {
+        sessionStorage.setItem(RETURN_URL_KEY, url);
+      } else {
+        sessionStorage.removeItem(RETURN_URL_KEY);
+      }
+    } catch {
+      // Without storage (private mode) the user simply lands on the home screen
+    }
+  }
+
+  private takeReturnUrl(): string | null {
+    try {
+      const url = sessionStorage.getItem(RETURN_URL_KEY);
+      sessionStorage.removeItem(RETURN_URL_KEY);
+      return safeReturnUrl(url);
+    } catch {
+      return null;
+    }
   }
 
   logout(): void {
