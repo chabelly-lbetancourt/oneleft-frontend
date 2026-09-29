@@ -1,11 +1,17 @@
 import { Component, computed, input } from '@angular/core';
 
-const TONES = ['bg-primary-300', 'bg-sky-300', 'bg-violet-300', 'bg-emerald-300', 'bg-rose-300'];
+const TONES = [
+  'bg-primary-100 text-primary-800',
+  'bg-sky-100 text-sky-800',
+  'bg-violet-100 text-violet-800',
+  'bg-emerald-100 text-emerald-800',
+  'bg-rose-100 text-rose-800',
+];
 const MAX_FREE = 4;
 
 /**
- * Who is in a plan and how many spots are left: a circle with the initials of each person and a dashed
- * lime circle for each free spot (the brand's empty spot). Decorative: the caller says it in words.
+ * Who is in a plan and how many spots are left: a circle with the initials of each person and a dashed ring
+ * for each free spot (the brand's free spot). Decorative: the caller says it in words.
  */
 @Component({
   selector: 'app-spot-slots',
@@ -14,7 +20,7 @@ const MAX_FREE = 4;
       @for (person of people(); track $index) {
         <span
           [class]="
-            'person-slot grid place-items-center rounded-full border-2 border-ink font-bold text-ink ' +
+            'person-slot grid place-items-center rounded-full font-semibold ring-2 ring-white ' +
             person.tone +
             ' ' +
             sizeClass()
@@ -26,7 +32,7 @@ const MAX_FREE = 4;
       @for (free of freeSlots(); track $index) {
         <span
           [class]="
-            'free-slot slot grid place-items-center rounded-full font-bold text-ink ' + sizeClass()
+            'free-slot spot grid place-items-center rounded-full font-semibold ' + sizeClass()
           "
           [style.margin-left]="$first && people().length === 0 ? null : '0.25rem'"
           >+</span

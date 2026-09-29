@@ -12,7 +12,7 @@
       </div>
     } @else {
       @if (user(); as account) {
-        <section class="profile-card sticker p-5">
+        <section class="profile-card card p-5">
           <div class="flex items-center gap-4">
             <p-avatar
               [label]="session.initials()"
@@ -38,8 +38,8 @@
       }
 
       <form class="profile-form mt-6 flex flex-col gap-6" [formGroup]="form" (ngSubmit)="save()">
-        <section class="sticker p-5 flex flex-col gap-2">
-          <label for="displayName" class="font-display text-lg font-extrabold">{{
+        <section class="card p-5 flex flex-col gap-2">
+          <label for="displayName" class="text-lg font-bold">{{
             'profile.displayName' | transloco
           }}</label>
           <input pInputText id="displayName" formControlName="displayName" maxlength="50" />
@@ -51,10 +51,8 @@
           }
         </section>
 
-        <section class="sticker p-5 flex flex-col gap-2">
-          <label for="zoneName" class="font-display text-lg font-extrabold">{{
-            'profile.zone' | transloco
-          }}</label>
+        <section class="card p-5 flex flex-col gap-2">
+          <label for="zoneName" class="text-lg font-bold">{{ 'profile.zone' | transloco }}</label>
           <input
             pInputText
             id="zoneName"
@@ -103,9 +101,9 @@
           }
         </section>
 
-        <section class="sticker p-5 flex flex-col gap-3">
+        <section class="card p-5 flex flex-col gap-3">
           <div class="flex items-center justify-between">
-            <h3 class="font-display text-lg font-extrabold">{{ 'profile.hobbies' | transloco }}</h3>
+            <h3 class="text-lg font-bold">{{ 'profile.hobbies' | transloco }}</h3>
             <span class="text-sm text-surface-600">{{ hobbies.length }}/10</span>
           </div>
 

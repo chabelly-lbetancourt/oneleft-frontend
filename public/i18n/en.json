@@ -71,7 +71,7 @@
     "at": "At {{time}}"
   },
   "home": {
-    "title": "One <span class=\"slot-word\">short</span>?",
+    "title": "One <span class=\"missing-word\">short</span>?",
     "subtitle": "Publish your plan for the next few hours and fill it with people near you.",
     "myPlans": "Your upcoming plans",
     "nearby": "Plans near you right now",
