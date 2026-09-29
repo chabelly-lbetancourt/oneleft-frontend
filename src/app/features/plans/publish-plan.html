@@ -1,15 +1,12 @@
 <div class="min-h-full">
-  <header class="bg-surface-0 border-b border-surface-200">
-    <div class="mx-auto max-w-3xl flex items-center gap-2 px-4 py-3">
-      <p-button icon="pi pi-arrow-left" [text]="true" [rounded]="true" routerLink="/" [ariaLabel]="'app.back' | transloco" />
-      <h1 class="text-lg font-bold">{{ 'publish.title' | transloco }}</h1>
-    </div>
-  </header>
+  <app-page-header [title]="'publish.title' | transloco" />
 
   <main class="mx-auto max-w-3xl px-4 py-6 pb-16">
     <form class="publish-form flex flex-col gap-6" [formGroup]="form" (ngSubmit)="publish()">
-      <section class="rounded-2xl bg-surface-0 border border-surface-200 p-5 shadow-sm flex flex-col gap-3">
-        <label for="activity" class="font-semibold">{{ 'publish.what' | transloco }}</label>
+      <section class="sticker p-5 flex flex-col gap-3">
+        <label for="activity" class="font-display text-lg font-extrabold">{{
+          'publish.what' | transloco
+        }}</label>
         <p-select
           inputId="activity"
           formControlName="activity"
@@ -19,7 +16,9 @@
           [placeholder]="'publish.chooseActivity' | transloco"
           class="w-full"
         />
-        <label for="title" class="font-semibold mt-2">{{ 'publish.planTitle' | transloco }}</label>
+        <label for="title" class="font-display text-lg font-extrabold mt-2">{{
+          'publish.planTitle' | transloco
+        }}</label>
         <input
           pInputText
           id="title"
@@ -30,9 +29,9 @@
         @if (form.controls.title.invalid && form.controls.title.touched) {
           <small class="field-error text-red-600">{{ 'publish.titleError' | transloco }}</small>
         }
-        <label for="description" class="font-semibold mt-2">
+        <label for="description" class="font-display text-lg font-extrabold mt-2">
           {{ 'publish.details' | transloco }}
-          <span class="text-muted-color font-normal">{{ 'publish.optional' | transloco }}</span>
+          <span class="text-surface-600 font-normal">{{ 'publish.optional' | transloco }}</span>
         </label>
         <textarea
           pTextarea
@@ -44,26 +43,55 @@
         ></textarea>
       </section>
 
-      <section class="rounded-2xl bg-surface-0 border border-surface-200 p-5 shadow-sm flex flex-col gap-3">
-        <span class="font-semibold">{{ 'publish.when' | transloco }}</span>
-        <p-selectbutton formControlName="start" [options]="startOptions()" optionLabel="label" optionValue="value"
-          [allowEmpty]="false" size="small" class="flex-wrap" />
+      <section class="sticker p-5 flex flex-col gap-3">
+        <span class="font-display text-lg font-extrabold">{{ 'publish.when' | transloco }}</span>
+        <p-selectbutton
+          formControlName="start"
+          [options]="startOptions()"
+          optionLabel="label"
+          optionValue="value"
+          [allowEmpty]="false"
+          size="small"
+          class="flex-wrap"
+        />
         @if (form.controls.start.value === 'custom') {
-          <input pInputText type="time" id="customTime" formControlName="customTime" class="w-40"
-            [attr.aria-label]="'publish.startTime' | transloco" />
+          <input
+            pInputText
+            type="time"
+            id="customTime"
+            formControlName="customTime"
+            class="w-40"
+            [attr.aria-label]="'publish.startTime' | transloco"
+          />
         }
-        <small class="text-muted-color">{{ 'publish.horizon' | transloco: { hours: maxHours } }}</small>
+        <small class="text-surface-600">{{
+          'publish.horizon' | transloco: { hours: maxHours }
+        }}</small>
       </section>
 
-      <section class="rounded-2xl bg-surface-0 border border-surface-200 p-5 shadow-sm flex flex-col gap-3">
-        <label for="placeName" class="font-semibold">{{ 'publish.where' | transloco }}</label>
-        <input pInputText id="placeName" formControlName="placeName"
-          [placeholder]="'publish.wherePlaceholder' | transloco" maxlength="100" />
+      <section class="sticker p-5 flex flex-col gap-3">
+        <label for="placeName" class="font-display text-lg font-extrabold">{{
+          'publish.where' | transloco
+        }}</label>
+        <input
+          pInputText
+          id="placeName"
+          formControlName="placeName"
+          [placeholder]="'publish.wherePlaceholder' | transloco"
+          maxlength="100"
+        />
         <div class="flex flex-wrap items-center gap-2">
-          <p-button [label]="'publish.here' | transloco" icon="pi pi-map-marker" severity="secondary" size="small"
-            [outlined]="true" [loading]="locating()" (onClick)="useMyLocation()" />
+          <p-button
+            [label]="'publish.here' | transloco"
+            icon="pi pi-map-marker"
+            severity="secondary"
+            size="small"
+            [outlined]="true"
+            [loading]="locating()"
+            (onClick)="useMyLocation()"
+          />
           @if (form.controls.latitude.value !== null) {
-            <span class="meeting-coordinates text-sm text-muted-color">
+            <span class="meeting-coordinates text-sm text-surface-600">
               {{ form.controls.latitude.value }}, {{ form.controls.longitude.value }}
             </span>
           } @else if (form.controls.latitude.touched) {
@@ -72,21 +100,47 @@
         </div>
       </section>
 
-      <section class="rounded-2xl bg-surface-0 border border-surface-200 p-5 shadow-sm flex flex-col gap-3">
-        <label for="spots" class="font-semibold">{{ 'publish.spots' | transloco }}</label>
-        <p-inputnumber inputId="spots" formControlName="spots" [showButtons]="true" buttonLayout="horizontal"
-          [min]="1" [max]="20" incrementButtonIcon="pi pi-plus" decrementButtonIcon="pi pi-minus" />
-        <span class="font-semibold mt-2">{{ 'publish.level' | transloco }}</span>
-        <p-selectbutton formControlName="level" [options]="levelOptions()" optionLabel="label" optionValue="value"
-          [allowEmpty]="false" size="small" />
+      <section class="sticker p-5 flex flex-col gap-3">
+        <label for="spots" class="font-display text-lg font-extrabold">{{
+          'publish.spots' | transloco
+        }}</label>
+        <p-inputnumber
+          inputId="spots"
+          formControlName="spots"
+          [showButtons]="true"
+          buttonLayout="horizontal"
+          [min]="1"
+          [max]="20"
+          incrementButtonIcon="pi pi-plus"
+          decrementButtonIcon="pi pi-minus"
+        />
+        <span class="font-display text-lg font-extrabold mt-2">{{
+          'publish.level' | transloco
+        }}</span>
+        <p-selectbutton
+          formControlName="level"
+          [options]="levelOptions()"
+          optionLabel="label"
+          optionValue="value"
+          [allowEmpty]="false"
+          size="small"
+        />
       </section>
 
       @if (error(); as message) {
-        <p-message severity="error" class="status-message">{{ message.key | transloco: message.params }}</p-message>
+        <p-message severity="error" class="status-message">{{
+          message.key | transloco: message.params
+        }}</p-message>
       }
 
-      <p-button type="submit" [label]="'publish.submit' | transloco" icon="pi pi-send" [loading]="publishing()"
-        styleClass="w-full" size="large" />
+      <p-button
+        type="submit"
+        [label]="'publish.submit' | transloco"
+        icon="pi pi-send"
+        [loading]="publishing()"
+        styleClass="w-full"
+        size="large"
+      />
     </form>
   </main>
 </div>
