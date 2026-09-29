@@ -41,5 +41,6 @@ describe('plan-time', () => {
   it('should choose the singular or plural spots label', () => {
     expect(spotsKey(1)).toBe('spots.one');
     expect(spotsKey(3)).toBe('spots.other');
+    expect(spotsKey(0)).toBe('spots.none');
   });
 });
