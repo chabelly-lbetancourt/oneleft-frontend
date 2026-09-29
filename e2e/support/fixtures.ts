@@ -30,7 +30,7 @@ export interface PublishedPlan {
   title: string;
 }
 
-const API_URL = process.env['ONELEFT_API_URL'] ?? 'http://localhost:8080';
+export const API_URL = process.env['ONELEFT_API_URL'] ?? 'http://localhost:8080';
 const KEYCLOAK_URL = process.env['ONELEFT_KEYCLOAK_URL'] ?? 'http://localhost:8180/realms/oneleft';
 
 // Test users and the API client come from the development realm of oneleft-infra (never from a real environment)

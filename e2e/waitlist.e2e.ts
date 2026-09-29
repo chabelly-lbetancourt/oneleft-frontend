@@ -11,6 +11,8 @@ test('waits for a spot of a full plan and gets it when someone leaves', async ({
 
   const page = await openPage();
   await page.goto(`/plans/${plan.id}`);
+  // The plan page is public (HU-024): joining asks to sign in and comes back
+  await page.locator('.waitlist-join button').click();
   const stream = page.waitForRequest(/\/api\/v1\/plans\/events\/stream/);
   await signIn(page, ADMIN);
   await stream;

@@ -1,4 +1,5 @@
 import { Component, computed, DestroyRef, effect, inject, input, signal } from '@angular/core';
+import { Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { Avatar } from 'primeng/avatar';
@@ -19,7 +20,7 @@ import { PageHeader } from '../../shared/ui/page-header';
 import { SpotSlots } from '../../shared/ui/spot-slots';
 
 /** What the signed-in person can do with the plan. */
-type Relation = 'organizer' | 'participant' | 'waiting' | 'canJoin' | 'full' | 'closed';
+type Relation = 'guest' | 'organizer' | 'participant' | 'waiting' | 'canJoin' | 'full' | 'closed';
 
 @Component({
   selector: 'app-plan-detail',
@@ -31,6 +32,7 @@ export class PlanDetail {
   private readonly language = inject(Language);
   private readonly session = inject(Session);
   private readonly transloco = inject(TranslocoService);
+  private readonly router = inject(Router);
 
   /** Route parameters (withComponentInputBinding) */
   readonly id = input.required<string>();
@@ -45,12 +47,16 @@ export class PlanDetail {
   protected readonly confirmingLeave = signal(false);
   /** A leave or waiting list request in progress */
   protected readonly busy = signal(false);
+  /** Opened from a shared link without a session (HU-024): the public view of the plan */
+  protected readonly isGuest = computed(() => !this.session.isAuthenticated());
+  /** Browsers without the native share sheet copy the link instead */
+  protected readonly copied = signal(false);
   protected readonly spotsKey = spotsKey;
   protected readonly activity = computed(() => activityOf(this.plan()?.activity ?? ''));
   /** The organizer and the participants, for the spots of the plan */
   protected readonly people = computed(() => {
     const plan = this.plan();
-    return plan
+    return plan && !this.isGuest()
       ? [plan.organizerName, ...plan.participants.map((participant) => participant.name)]
       : [];
   });
@@ -77,13 +83,19 @@ export class PlanDetail {
     if (!plan) {
       return null;
     }
+    const upcoming = new Date(plan.startsAt).getTime() > Date.now();
+    if (this.isGuest()) {
+      if (plan.status === 'OPEN' && plan.freeSpots > 0 && upcoming) {
+        return 'guest';
+      }
+      return plan.status === 'FULL' ? 'full' : 'closed';
+    }
     if (plan.organizerId === me) {
       return 'organizer';
     }
     if (plan.participants.some((participant) => participant.userId === me)) {
       return 'participant';
     }
-    const upcoming = new Date(plan.startsAt).getTime() > Date.now();
     if ((plan.waitlist ?? []).some((person) => person.userId === me)) {
       return 'waiting';
     }
@@ -130,6 +142,35 @@ export class PlanDetail {
     });
   }
 
+  /** Without a session: sign in (or sign up) and come back to this plan to join it. */
+  protected signIn(): void {
+    void this.router.navigate(['/login'], { queryParams: { returnUrl: `/plans/${this.id()}` } });
+  }
+
+  /** Native share sheet (Web Share API); where there is none, the link is copied. */
+  protected async share(): Promise<void> {
+    const plan = this.plan();
+    if (!plan) {
+      return;
+    }
+    const url = this.api.shareUrl(plan.id);
+    const text = this.transloco.translate('plan.shareText', {
+      activity: this.transloco.translate(this.activityKey()),
+      time: this.startsAt()?.time,
+      spots: this.transloco.translate(spotsKey(plan.freeSpots), { count: plan.freeSpots }),
+    });
+    if (typeof navigator.share === 'function') {
+      try {
+        await navigator.share({ title: plan.title, text, url });
+      } catch {
+        // The user closed the sheet: nothing to do
+      }
+      return;
+    }
+    await navigator.clipboard.writeText(`${text} ${url}`);
+    this.copied.set(true);
+  }
+
   protected leave(): void {
     this.change(this.api.leave(this.id()), 'errors.leaveFailed', () => {
       this.confirmingLeave.set(false);
@@ -174,7 +215,7 @@ export class PlanDetail {
   }
 
   private load(id: string): void {
-    this.api.plan(id).subscribe({
+    (this.isGuest() ? this.api.publicPlan(id) : this.api.plan(id)).subscribe({
       next: (plan) => this.plan.set(plan),
       error: () => this.notFound.set(true),
     });
