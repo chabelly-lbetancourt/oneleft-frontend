@@ -14,12 +14,28 @@
     "profile": "OneLeft · Mi perfil",
     "newPlan": "OneLeft · Publicar un plan",
     "plan": "OneLeft · Plan",
-    "nearby": "OneLeft · Planes cerca"
+    "nearby": "OneLeft · Planes cerca",
+    "login": "OneLeft · Entrar",
+    "register": "OneLeft · Crear cuenta"
   },
   "auth": {
     "login": "Entrar",
+    "google": "Continuar con Google",
     "register": "Crear cuenta",
-    "logout": "Cerrar sesión"
+    "logout": "Cerrar sesión",
+    "loginTitle": "Entra en OneLeft",
+    "loginSubtitle": "Tus planes y la gente de cerca te están esperando.",
+    "registerTitle": "Únete a OneLeft",
+    "registerSubtitle": "Es gratis. Publica un plan o apúntate a uno en un par de minutos.",
+    "withEmail": "Continuar con email",
+    "registerWithEmail": "Registrarme con email",
+    "or": "o",
+    "noAccount": "¿Aún no tienes cuenta?",
+    "haveAccount": "¿Ya tienes cuenta?",
+    "secure": "Entras con Keycloak: tu contraseña nunca pasa por la app.",
+    "perk1": "Planes para las próximas horas",
+    "perk2": "Solo gente cerca de ti",
+    "perk3": "Avisos en cuanto alguien se une"
   },
   "activities": {
     "PADEL": "Pádel",
@@ -45,7 +61,8 @@
   },
   "spots": {
     "one": "Falta 1",
-    "other": "Faltan {{count}}"
+    "other": "Faltan {{count}}",
+    "none": "Completo"
   },
   "time": {
     "started": "ya ha empezado",
@@ -55,12 +72,28 @@
     "at": "A las {{time}}"
   },
   "home": {
-    "title": "¿Te falta <span class=\"text-primary\">uno</span>?",
+    "title": "¿Te falta <span class=\"missing-word\">uno</span>?",
     "subtitle": "Publica tu plan para las próximas horas y complétalo con gente cerca de ti.",
     "myPlans": "Tus próximos planes",
     "nearby": "Planes cerca de ti ahora",
     "publish": "Publicar un plan",
-    "nearbyHint": "Mira en una lista o en el mapa los planes que empiezan pronto cerca de ti."
+    "nearbyHint": "Mira en una lista o en el mapa los planes que empiezan pronto cerca de ti.",
+    "kicker": "Planes para ya, cerca de ti",
+    "start": "Crear cuenta gratis",
+    "haveAccount": "Ya tengo cuenta",
+    "demoTitle": "Pádel en Vallecas",
+    "demoWhen": "Hoy · 19:30",
+    "demoYou": "¡Esa plaza puede ser tuya!",
+    "howTitle": "Así de fácil",
+    "step1": "Publica lo que te falta",
+    "step1Text": "Un jugador, un compañero de ruta o alguien para el cine. Para las próximas 12 horas.",
+    "step2": "Gente cerca se apunta",
+    "step2Text": "Tu plan aparece al momento a quien está cerca y le encaja.",
+    "step3": "Quedáis y listo",
+    "step3Text": "Te avisamos en cuanto alguien se une. Sin grupos eternos ni mensajes.",
+    "activitiesTitle": "Para lo que te apetezca",
+    "hello": "Hola, {{name}}",
+    "helloHint": "¿Qué te apetece hacer hoy?"
   },
   "plan": {
     "title": "Plan",
@@ -77,7 +110,22 @@
     "yourPlan": "Es tu plan: te avisaremos cuando alguien se apunte.",
     "full": "Completo",
     "closed": "Este plan ya no admite gente.",
-    "you": "tú"
+    "you": "tú",
+    "leave": "Salir del plan",
+    "leaveConfirm": "¿Seguro que quieres salir? Tu plaza pasará a la siguiente persona.",
+    "leaveYes": "Sí, salir",
+    "cancel": "Cancelar",
+    "left": "Has salido del plan. ¡Otra vez será!",
+    "waitlistJoin": "Avisarme si queda una plaza",
+    "waitlistHint": "Si alguien sale, la plaza será para la primera persona de la lista.",
+    "waiting": "Estás en la lista de espera: posición {{position}}.",
+    "waitlistLeave": "Salir de la lista",
+    "waitlistCount": "{{count}} en lista de espera",
+    "share": "Compartir",
+    "linkCopied": "Enlace copiado: pégalo donde quieras.",
+    "shareText": "{{activity}} a las {{time}} · {{spots}}. ¿Te apuntas?",
+    "guestHint": "Entra o crea tu cuenta para apuntarte; volverás a este plan.",
+    "spotsTaken": "{{occupied}} de {{spots}} plazas ocupadas"
   },
   "publish": {
     "title": "Publicar un plan",
@@ -152,7 +200,12 @@
       "ownPlan": "No puedes apuntarte a tu propio plan.",
       "started": "El plan ya ha empezado.",
       "notOpen": "Este plan ya no está abierto.",
-      "busy": "Mucha gente se está apuntando a la vez. Inténtalo de nuevo."
+      "busy": "Mucha gente se está apuntando a la vez. Inténtalo de nuevo.",
+      "notParticipant": "No estás apuntado a este plan.",
+      "notFull": "Aún quedan plazas: apúntate directamente.",
+      "alreadyWaiting": "Ya estás en la lista de espera.",
+      "notWaiting": "No estás en la lista de espera.",
+      "waitlistFull": "La lista de espera está completa."
     },
     "meetingPoint": {
       "name": "El lugar necesita un nombre de hasta 100 caracteres"
@@ -176,7 +229,12 @@
     "joinFailed": "No se ha podido apuntarte al plan",
     "participant": {
       "missingData": "Faltan datos de la persona participante"
-    }
+    },
+    "rate": {
+      "limited": "Vas demasiado rápido. Vuelve a intentarlo en {{ minutes }} min."
+    },
+    "leaveFailed": "No se ha podido salir del plan",
+    "waitlistFailed": "No se ha podido actualizar la lista de espera"
   },
   "nearby": {
     "title": "Planes cerca",
@@ -202,6 +260,11 @@
   "notices": {
     "joinedTitle": "Alguien se ha apuntado",
     "fullTitle": "¡Tu plan está completo!",
-    "joined": "{{name}} se ha unido a «{{title}}»"
+    "joined": "{{name}} se ha unido a «{{title}}»",
+    "leftTitle": "Alguien ha salido de tu plan",
+    "left": "{{name}} ha salido de «{{title}}»",
+    "leftAndIn": "{{name}} ha salido de «{{title}}» y entra {{promoted}}",
+    "spotTitle": "¡Tienes plaza!",
+    "spot": "Se ha liberado una plaza en «{{title}}» y es para ti"
   }
 }

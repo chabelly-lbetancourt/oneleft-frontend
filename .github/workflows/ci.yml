@@ -6,6 +6,14 @@ on:
     branches: [main, pre, dev]
   pull_request:
     branches: [dev, pre, main]
+    # labeled: adding the e2e label runs the end-to-end tests
+    types: [opened, synchronize, reopened, labeled]
+  # End-to-end tests by hand, against the backend images of an environment
+  workflow_dispatch:
+    inputs:
+      image-tag:
+        description: Tag of the backend images in GHCR (and branch of oneleft-infra)
+        default: pre
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -39,6 +47,9 @@ jobs:
       - name: Lint
         run: npm run lint
 
+      - name: Type-check the end-to-end tests
+        run: npx tsc -p tsconfig.e2e.json
+
       - name: Tests and coverage (>= 80%)
         run: npm run test:ci
 
@@ -54,12 +65,8 @@ jobs:
 
       - name: Build (${{ env.BUILD_CONFIGURATION }})
         run: |
-          if [ -n "$PRIMEUI_LICENSE" ]; then
-            npx ng build --configuration "$BUILD_CONFIGURATION" --define "PRIMEUI_LICENSE='$PRIMEUI_LICENSE'"
-          else
-            echo "::notice::PRIMEUI_LICENSE is not set; the app will show the PrimeNG license notice."
-            npx ng build --configuration "$BUILD_CONFIGURATION"
-          fi
+          [ -n "$PRIMEUI_LICENSE" ] || echo "::notice::PRIMEUI_LICENSE is not set; the app will show the PrimeNG license notice."
+          npm run build -- --configuration "$BUILD_CONFIGURATION"
 
       - name: Upload build and coverage
         uses: actions/upload-artifact@v7
@@ -76,6 +83,70 @@ jobs:
       - name: Notice when SonarQube Cloud is missing
         if: env.SONAR_TOKEN == ''
         run: echo "::notice::SONAR_TOKEN is not set; skipping the SonarQube Cloud analysis."
+
+  # End-to-end tests (Playwright) against the whole stack: oneleft-infra Docker Compose with the backend images
+  # published in GHCR and the development build of the app. For pull requests into pre, pull requests with the e2e
+  # label and by hand.
+  e2e:
+    name: End-to-end tests (Playwright)
+    if: >-
+      github.base_ref == 'pre' || github.event_name == 'workflow_dispatch' ||
+      contains(github.event.pull_request.labels.*.name, 'e2e')
+    runs-on: ubuntu-24.04
+    env:
+      PRIMEUI_LICENSE: ${{ secrets.PRIMEUI_LICENSE }}
+      ONELEFT_IMAGE_TAG: ${{ inputs.image-tag || 'pre' }}
+    defaults:
+      run:
+        working-directory: oneleft-frontend
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          path: oneleft-frontend
+
+      # Compose file, Keycloak realm (test users) and database scripts
+      - uses: actions/checkout@v7
+        with:
+          repository: ${{ github.repository_owner }}/oneleft-infra
+          ref: ${{ env.ONELEFT_IMAGE_TAG }}
+          path: oneleft-infra
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: oneleft-frontend/.nvmrc
+          cache: npm
+          cache-dependency-path: oneleft-frontend/package-lock.json
+
+      - name: Install dependencies and Chromium
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+
+      - name: Start the stack (${{ env.ONELEFT_IMAGE_TAG }} images)
+        run: |
+          cp ../oneleft-infra/docker/.env.example ../oneleft-infra/docker/.env
+          docker compose -f ../oneleft-infra/docker/compose.yaml -f e2e/compose.e2e.yaml --profile backend \
+            up -d --no-build --pull always --wait --wait-timeout 600
+
+      - name: Build the app (development configuration)
+        run: npm run build -- --configuration development
+
+      - name: End-to-end tests (es and en)
+        run: npm run e2e
+
+      - name: Service logs
+        if: failure()
+        run: docker compose -f ../oneleft-infra/docker/compose.yaml -f e2e/compose.e2e.yaml --profile backend logs --tail 200
+
+      - name: Upload the report, screenshots, videos and traces
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: e2e-report
+          path: |
+            oneleft-frontend/e2e-report
+            oneleft-frontend/e2e-results
+          retention-days: 14
 
   # Android app (Capacitor): the same Angular build packaged as a debug APK, uploaded as an artifact
   android:
@@ -102,13 +173,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      # The build script passes the PrimeUI license (secret) to Angular
       - name: Web build (${{ env.BUILD_CONFIGURATION }})
-        run: |
-          if [ -n "$PRIMEUI_LICENSE" ]; then
-            npx ng build --configuration "$BUILD_CONFIGURATION" --define "PRIMEUI_LICENSE='$PRIMEUI_LICENSE'"
-          else
-            npx ng build --configuration "$BUILD_CONFIGURATION"
-          fi
+        run: npm run build -- --configuration "$BUILD_CONFIGURATION"
 
       - name: Copy the build into the Android project
         run: npx cap sync android
@@ -128,7 +195,7 @@ jobs:
   # from forks do not receive secrets, so they are skipped too.
   notify:
     name: Slack notification
-    needs: [build-test, android]
+    needs: [build-test, android, e2e]
     if: always()
     runs-on: ubuntu-24.04
     env:

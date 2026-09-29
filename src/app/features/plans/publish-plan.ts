@@ -1,7 +1,15 @@
-import { ChangeDetectorRef, Component, computed, DestroyRef, inject, OnInit, signal } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  computed,
+  DestroyRef,
+  inject,
+  OnInit,
+  signal,
+} from '@angular/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { Button } from 'primeng/button';
 import { InputNumber } from 'primeng/inputnumber';
@@ -10,9 +18,14 @@ import { Message } from 'primeng/message';
 import { Select } from 'primeng/select';
 import { SelectButton } from 'primeng/selectbutton';
 import { Textarea } from 'primeng/textarea';
+import { PageHeader } from '../../shared/ui/page-header';
 import { PlansApi } from '../../core/api/plans-api';
-import { ApproximateLocation, LocationError, MEETING_POINT_DECIMALS } from '../../core/geo/approximate-location';
-import { apiErrorKey } from '../../core/i18n/api-error';
+import {
+  ApproximateLocation,
+  LocationError,
+  MEETING_POINT_DECIMALS,
+} from '../../core/geo/approximate-location';
+import { apiErrorMessage } from '../../core/i18n/api-error';
 import { ACTIVITIES, activityKey } from '../../shared/model/activities';
 import { Level, LEVELS, levelKey } from '../../shared/model/profile';
 import { MAX_HORIZON_HOURS, nextOccurrence, startsInRange } from '../../shared/time/plan-time';
@@ -37,7 +50,6 @@ interface StatusMessage {
   selector: 'app-publish-plan',
   imports: [
     ReactiveFormsModule,
-    RouterLink,
     Button,
     InputNumber,
     InputText,
@@ -46,6 +58,7 @@ interface StatusMessage {
     SelectButton,
     Textarea,
     TranslocoPipe,
+    PageHeader,
   ],
   templateUrl: './publish-plan.html',
 })
@@ -59,7 +72,9 @@ export class PublishPlan implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
 
   /** Active language as a signal: the PrimeNG option labels are recomputed when it changes. */
-  private readonly lang = toSignal(this.transloco.langChanges$, { initialValue: this.transloco.getActiveLang() });
+  private readonly lang = toSignal(this.transloco.langChanges$, {
+    initialValue: this.transloco.getActiveLang(),
+  });
   private readonly translate = (key: string) => {
     this.lang();
     return this.transloco.translate(key);
@@ -121,7 +136,9 @@ export class PublishPlan implements OnInit {
       const { latitude, longitude } = await this.location.current(MEETING_POINT_DECIMALS);
       this.form.patchValue({ latitude, longitude });
     } catch (error) {
-      this.error.set({ key: error instanceof LocationError ? error.translationKey : 'errors.location.denied' });
+      this.error.set({
+        key: error instanceof LocationError ? error.translationKey : 'errors.location.denied',
+      });
     } finally {
       this.locating.set(false);
     }
@@ -146,16 +163,21 @@ export class PublishPlan implements OnInit {
         activity: value.activity,
         title: value.title.trim(),
         description: value.description.trim() || null,
-        meetingPoint: { name: value.placeName.trim(), latitude: value.latitude!, longitude: value.longitude! },
+        meetingPoint: {
+          name: value.placeName.trim(),
+          latitude: value.latitude!,
+          longitude: value.longitude!,
+        },
         startsAt: startsAt.toISOString(),
         spots: value.spots,
         level: value.level,
       })
       .subscribe({
-        next: (plan) => this.router.navigate(['/plans', plan.id], { queryParams: { published: 1 } }),
+        next: (plan) =>
+          this.router.navigate(['/plans', plan.id], { queryParams: { published: 1 } }),
         error: (error) => {
           this.publishing.set(false);
-          this.error.set({ key: apiErrorKey(this.transloco, error, 'errors.publishFailed') });
+          this.error.set(apiErrorMessage(this.transloco, error, 'errors.publishFailed'));
         },
       });
   }

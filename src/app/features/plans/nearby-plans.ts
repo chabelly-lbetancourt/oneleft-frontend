@@ -8,15 +8,20 @@ import { Button } from 'primeng/button';
 import { Message } from 'primeng/message';
 import { MultiSelect } from 'primeng/multiselect';
 import { SelectButton } from 'primeng/selectbutton';
-import { Tag } from 'primeng/tag';
 import { PlansApi } from '../../core/api/plans-api';
-import { ApproximateLocation, Coordinates, LocationError, MEETING_POINT_DECIMALS } from '../../core/geo/approximate-location';
+import {
+  ApproximateLocation,
+  Coordinates,
+  LocationError,
+  MEETING_POINT_DECIMALS,
+} from '../../core/geo/approximate-location';
 import { Language } from '../../core/i18n/language';
 import { NearbyStream } from '../../core/realtime/nearby-stream';
 import { formatDistance } from '../../shared/geo/distance';
-import { ACTIVITIES, activityKey, activityOf } from '../../shared/model/activities';
+import { ACTIVITIES, activityKey } from '../../shared/model/activities';
 import { NearbyPlan, NearbyPlanEvent, nearbyParams, NearbyQuery } from '../../shared/model/nearby';
-import { spotsKey, startsIn } from '../../shared/time/plan-time';
+import { PageHeader } from '../../shared/ui/page-header';
+import { PlanTicket } from '../../shared/ui/plan-ticket';
 import { NearbyMap } from './nearby-map';
 
 export const RADIUS_OPTIONS = [1000, 3000, 5000, 10000];
@@ -32,7 +37,18 @@ type View = 'list' | 'map';
  */
 @Component({
   selector: 'app-nearby-plans',
-  imports: [FormsModule, RouterLink, Button, Message, MultiSelect, NearbyMap, SelectButton, Tag, TranslocoPipe],
+  imports: [
+    FormsModule,
+    RouterLink,
+    Button,
+    Message,
+    MultiSelect,
+    NearbyMap,
+    PageHeader,
+    PlanTicket,
+    SelectButton,
+    TranslocoPipe,
+  ],
   templateUrl: './nearby-plans.html',
 })
 export class NearbyPlans {
@@ -43,7 +59,9 @@ export class NearbyPlans {
   private readonly language = inject(Language);
 
   /** Active language as a signal: the PrimeNG option labels are recomputed when it changes. */
-  private readonly lang = toSignal(this.transloco.langChanges$, { initialValue: this.transloco.getActiveLang() });
+  private readonly lang = toSignal(this.transloco.langChanges$, {
+    initialValue: this.transloco.getActiveLang(),
+  });
   private readonly translate = (key: string) => {
     this.lang();
     return this.transloco.translate(key);
@@ -58,12 +76,13 @@ export class NearbyPlans {
   protected readonly view = signal<View>('list');
   protected readonly newPlan = signal<NearbyPlanEvent | null>(null);
 
-  protected readonly spotsKey = spotsKey;
-  protected readonly activityOf = activityOf;
   protected readonly activityKey = activityKey;
 
   protected readonly radiusOptions = computed(() =>
-    RADIUS_OPTIONS.map((value) => ({ label: formatDistance(value, this.language.locale()), value })),
+    RADIUS_OPTIONS.map((value) => ({
+      label: formatDistance(value, this.language.locale()),
+      value,
+    })),
   );
   protected readonly windowOptions = computed(() =>
     WINDOW_OPTIONS.map((value) => ({ label: this.translate(`nearby.within${value}`), value })),
@@ -117,7 +136,9 @@ export class NearbyPlans {
       // About 110 m: enough to search, and the position is not stored by the server
       this.position.set(await this.location.current(MEETING_POINT_DECIMALS));
     } catch (error) {
-      this.locationError.set(error instanceof LocationError ? error.translationKey : 'errors.location.denied');
+      this.locationError.set(
+        error instanceof LocationError ? error.translationKey : 'errors.location.denied',
+      );
     } finally {
       this.locating.set(false);
     }
@@ -125,9 +146,5 @@ export class NearbyPlans {
 
   protected distance(meters: number): string {
     return formatDistance(meters, this.language.locale());
-  }
-
-  protected startsIn(startsAt: string) {
-    return startsIn(new Date(startsAt), new Date());
   }
 }
