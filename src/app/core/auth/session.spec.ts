@@ -24,10 +24,12 @@ describe('Session', () => {
     vi.clearAllMocks();
     authenticated.set({ isAuthenticated: false, allConfigsAuthenticated: [] });
     userData.set({ userData: null, allUserData: [] });
-    TestBed.configureTestingModule({ providers: [
+    TestBed.configureTestingModule({
+      providers: [
         { provide: OidcSecurityService, useValue: oidc },
         { provide: Language, useValue: { current: signal('en') } },
-      ], });
+      ],
+    });
     session = TestBed.inject(Session);
   });
 
@@ -57,7 +59,16 @@ describe('Session', () => {
     session.login();
     expect(oidc.authorize).toHaveBeenCalledWith(undefined, { customParams: { ui_locales: 'en' } });
     session.register();
-    expect(oidc.authorize).toHaveBeenCalledWith(undefined, { customParams: { prompt: 'create', ui_locales: 'en' } });
+    expect(oidc.authorize).toHaveBeenCalledWith(undefined, {
+      customParams: { prompt: 'create', ui_locales: 'en' },
+    });
+  });
+
+  it('should go straight to Google through Keycloak', () => {
+    session.loginWithGoogle();
+    expect(oidc.authorize).toHaveBeenCalledWith(undefined, {
+      customParams: { kc_idp_hint: 'google', ui_locales: 'en' },
+    });
   });
 
   it('should give the access token for streams opened with fetch', async () => {

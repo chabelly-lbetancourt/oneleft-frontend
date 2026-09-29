@@ -35,6 +35,11 @@ export class Session {
     this.oidc.authorize(undefined, { customParams: { ui_locales: this.language.current() } });
   }
 
+  /** Skips the Keycloak form and goes straight to Google (identity provider brokered by Keycloak). */
+  loginWithGoogle(): void {
+    this.oidc.authorize(undefined, { customParams: { kc_idp_hint: 'google', ui_locales: this.language.current() } });
+  }
+
   /** Opens the Keycloak registration form directly. */
   register(): void {
     this.oidc.authorize(undefined, { customParams: { prompt: 'create', ui_locales: this.language.current() } });
