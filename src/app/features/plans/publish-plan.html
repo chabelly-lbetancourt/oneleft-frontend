@@ -3,10 +3,8 @@
 
   <main class="mx-auto max-w-3xl px-4 py-6 pb-16">
     <form class="publish-form flex flex-col gap-6" [formGroup]="form" (ngSubmit)="publish()">
-      <section class="sticker p-5 flex flex-col gap-3">
-        <label for="activity" class="font-display text-lg font-extrabold">{{
-          'publish.what' | transloco
-        }}</label>
+      <section class="card p-5 flex flex-col gap-3">
+        <label for="activity" class="text-lg font-bold">{{ 'publish.what' | transloco }}</label>
         <p-select
           inputId="activity"
           formControlName="activity"
@@ -16,7 +14,7 @@
           [placeholder]="'publish.chooseActivity' | transloco"
           class="w-full"
         />
-        <label for="title" class="font-display text-lg font-extrabold mt-2">{{
+        <label for="title" class="text-lg font-bold mt-2">{{
           'publish.planTitle' | transloco
         }}</label>
         <input
@@ -29,7 +27,7 @@
         @if (form.controls.title.invalid && form.controls.title.touched) {
           <small class="field-error text-red-600">{{ 'publish.titleError' | transloco }}</small>
         }
-        <label for="description" class="font-display text-lg font-extrabold mt-2">
+        <label for="description" class="text-lg font-bold mt-2">
           {{ 'publish.details' | transloco }}
           <span class="text-surface-600 font-normal">{{ 'publish.optional' | transloco }}</span>
         </label>
@@ -43,8 +41,8 @@
         ></textarea>
       </section>
 
-      <section class="sticker p-5 flex flex-col gap-3">
-        <span class="font-display text-lg font-extrabold">{{ 'publish.when' | transloco }}</span>
+      <section class="card p-5 flex flex-col gap-3">
+        <span class="text-lg font-bold">{{ 'publish.when' | transloco }}</span>
         <p-selectbutton
           formControlName="start"
           [options]="startOptions()"
@@ -69,10 +67,8 @@
         }}</small>
       </section>
 
-      <section class="sticker p-5 flex flex-col gap-3">
-        <label for="placeName" class="font-display text-lg font-extrabold">{{
-          'publish.where' | transloco
-        }}</label>
+      <section class="card p-5 flex flex-col gap-3">
+        <label for="placeName" class="text-lg font-bold">{{ 'publish.where' | transloco }}</label>
         <input
           pInputText
           id="placeName"
@@ -100,10 +96,8 @@
         </div>
       </section>
 
-      <section class="sticker p-5 flex flex-col gap-3">
-        <label for="spots" class="font-display text-lg font-extrabold">{{
-          'publish.spots' | transloco
-        }}</label>
+      <section class="card p-5 flex flex-col gap-3">
+        <label for="spots" class="text-lg font-bold">{{ 'publish.spots' | transloco }}</label>
         <p-inputnumber
           inputId="spots"
           formControlName="spots"
@@ -114,9 +108,7 @@
           incrementButtonIcon="pi pi-plus"
           decrementButtonIcon="pi pi-minus"
         />
-        <span class="font-display text-lg font-extrabold mt-2">{{
-          'publish.level' | transloco
-        }}</span>
+        <span class="text-lg font-bold mt-2">{{ 'publish.level' | transloco }}</span>
         <p-selectbutton
           formControlName="level"
           [options]="levelOptions()"

@@ -1,10 +1,4 @@
 <div class="relative flex min-h-full flex-col overflow-hidden">
-  <!-- The empty spot, big, behind the card -->
-  <div
-    class="slot pointer-events-none absolute -bottom-32 -right-32 size-96 rounded-full opacity-60"
-    aria-hidden="true"
-  ></div>
-
   <header class="relative z-10 mx-auto flex w-full max-w-md items-center justify-between px-4 py-4">
     <app-brand-logo />
     <app-language-switcher />
@@ -13,9 +7,9 @@
   <main
     class="relative z-10 mx-auto flex w-full max-w-md flex-1 flex-col justify-center px-4 pb-12"
   >
-    <section class="auth-card sticker p-6 sm:p-8">
+    <section class="auth-card card p-6 sm:p-8">
       <app-spot-slots [names]="people" [free]="1" size="md" />
-      <h1 class="mt-5 text-3xl font-extrabold leading-tight">
+      <h1 class="mt-5 text-3xl font-bold leading-tight">
         {{ (isLogin() ? 'auth.loginTitle' : 'auth.registerTitle') | transloco }}
       </h1>
       <p class="mt-2 text-surface-700">
@@ -25,9 +19,9 @@
       <div class="mt-7 flex flex-col gap-3">
         <app-google-button (pressed)="withGoogle()" />
         <div class="flex items-center gap-3 text-sm font-bold text-surface-600" aria-hidden="true">
-          <span class="h-0.5 flex-1 border-t-2 border-dashed border-ink"></span>
+          <span class="h-px flex-1 bg-surface-200"></span>
           {{ 'auth.or' | transloco }}
-          <span class="h-0.5 flex-1 border-t-2 border-dashed border-ink"></span>
+          <span class="h-px flex-1 bg-surface-200"></span>
         </div>
         <p-button
           class="email-login"
@@ -43,7 +37,7 @@
       <p class="mt-6 text-center text-sm">
         {{ (isLogin() ? 'auth.noAccount' : 'auth.haveAccount') | transloco }}
         <a
-          class="switch-mode font-extrabold text-primary-700 underline"
+          class="switch-mode font-bold text-primary-700 underline"
           [routerLink]="isLogin() ? '/register' : '/login'"
           [queryParams]="returnUrl() ? { returnUrl: returnUrl() } : {}"
           >{{ (isLogin() ? 'auth.register' : 'auth.login') | transloco }}</a
@@ -56,7 +50,7 @@
         @for (perk of perks; track perk) {
           <li class="flex items-center gap-3 font-semibold">
             <span
-              class="slot grid size-7 shrink-0 place-items-center rounded-full text-xs font-extrabold"
+              class="spot grid size-7 shrink-0 place-items-center rounded-full text-xs font-bold"
               >✓</span
             >
             {{ 'auth.' + perk | transloco }}
