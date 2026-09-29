@@ -139,7 +139,7 @@
         </section>
 
         @if (status(); as message) {
-          <p-message [severity]="message.severity" class="status-message">{{ message.key | transloco }}</p-message>
+          <p-message [severity]="message.severity" class="status-message">{{ message.key | transloco: message.params }}</p-message>
         }
 
         <p-button

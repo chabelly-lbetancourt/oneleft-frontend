@@ -176,6 +176,9 @@
     "joinFailed": "No se ha podido apuntarte al plan",
     "participant": {
       "missingData": "Faltan datos de la persona participante"
+    },
+    "rate": {
+      "limited": "Vas demasiado rápido. Vuelve a intentarlo en {{ minutes }} min."
     }
   },
   "nearby": {

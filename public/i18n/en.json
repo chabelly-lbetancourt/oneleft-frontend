@@ -176,6 +176,9 @@
     "joinFailed": "You could not join the plan",
     "participant": {
       "missingData": "Participant data is missing"
+    },
+    "rate": {
+      "limited": "You are going too fast. Please try again in {{ minutes }} min."
     }
   },
   "nearby": {
