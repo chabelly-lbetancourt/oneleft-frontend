@@ -61,7 +61,8 @@
   },
   "spots": {
     "one": "Falta 1",
-    "other": "Faltan {{count}}"
+    "other": "Faltan {{count}}",
+    "none": "Completo"
   },
   "time": {
     "started": "ya ha empezado",
@@ -109,7 +110,17 @@
     "yourPlan": "Es tu plan: te avisaremos cuando alguien se apunte.",
     "full": "Completo",
     "closed": "Este plan ya no admite gente.",
-    "you": "tú"
+    "you": "tú",
+    "leave": "Salir del plan",
+    "leaveConfirm": "¿Seguro que quieres salir? Tu plaza pasará a la siguiente persona.",
+    "leaveYes": "Sí, salir",
+    "cancel": "Cancelar",
+    "left": "Has salido del plan. ¡Otra vez será!",
+    "waitlistJoin": "Avisarme si queda una plaza",
+    "waitlistHint": "Si alguien sale, la plaza será para la primera persona de la lista.",
+    "waiting": "Estás en la lista de espera: posición {{position}}.",
+    "waitlistLeave": "Salir de la lista",
+    "waitlistCount": "{{count}} en lista de espera"
   },
   "publish": {
     "title": "Publicar un plan",
@@ -184,7 +195,12 @@
       "ownPlan": "No puedes apuntarte a tu propio plan.",
       "started": "El plan ya ha empezado.",
       "notOpen": "Este plan ya no está abierto.",
-      "busy": "Mucha gente se está apuntando a la vez. Inténtalo de nuevo."
+      "busy": "Mucha gente se está apuntando a la vez. Inténtalo de nuevo.",
+      "notParticipant": "No estás apuntado a este plan.",
+      "notFull": "Aún quedan plazas: apúntate directamente.",
+      "alreadyWaiting": "Ya estás en la lista de espera.",
+      "notWaiting": "No estás en la lista de espera.",
+      "waitlistFull": "La lista de espera está completa."
     },
     "meetingPoint": {
       "name": "El lugar necesita un nombre de hasta 100 caracteres"
@@ -211,7 +227,9 @@
     },
     "rate": {
       "limited": "Vas demasiado rápido. Vuelve a intentarlo en {{ minutes }} min."
-    }
+    },
+    "leaveFailed": "No se ha podido salir del plan",
+    "waitlistFailed": "No se ha podido actualizar la lista de espera"
   },
   "nearby": {
     "title": "Planes cerca",
@@ -237,6 +255,11 @@
   "notices": {
     "joinedTitle": "Alguien se ha apuntado",
     "fullTitle": "¡Tu plan está completo!",
-    "joined": "{{name}} se ha unido a «{{title}}»"
+    "joined": "{{name}} se ha unido a «{{title}}»",
+    "leftTitle": "Alguien ha salido de tu plan",
+    "left": "{{name}} ha salido de «{{title}}»",
+    "leftAndIn": "{{name}} ha salido de «{{title}}» y entra {{promoted}}",
+    "spotTitle": "¡Tienes plaza!",
+    "spot": "Se ha liberado una plaza en «{{title}}» y es para ti"
   }
 }

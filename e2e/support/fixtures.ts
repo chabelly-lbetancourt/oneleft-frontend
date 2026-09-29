@@ -51,6 +51,7 @@ const realmUser = (username: string): TestUser => {
 
 export const ANA = realmUser('ana@oneleft.dev');
 export const ADMIN = realmUser('admin@oneleft.dev');
+export const LUCIA = realmUser('lucia@oneleft.dev');
 
 /** Where the device is (Vallecas, Madrid): the plans of the tests are published around it. */
 export const POSITION = { latitude: 40.391234, longitude: -3.628765 };
@@ -64,7 +65,9 @@ interface Fixtures {
   /** A new mobile browser (its own session) with the app language chosen and the device location granted. */
   openPage: () => Promise<Page>;
   /** Publishes a plan through the gateway as a user, 70 minutes from now and about 600 m from the device. */
-  publishPlan: (user: TestUser, title: string) => Promise<PublishedPlan>;
+  publishPlan: (user: TestUser, title: string, spots?: number) => Promise<PublishedPlan>;
+  /** Takes a spot of a plan (POST) or gives it back (DELETE) through the gateway as a user. */
+  participate: (user: TestUser, planId: string, method: 'POST' | 'DELETE') => Promise<void>;
 }
 
 export const test = base.extend<E2eOptions & Fixtures>({
@@ -126,7 +129,18 @@ export const test = base.extend<E2eOptions & Fixtures>({
   },
 
   publishPlan: async ({ request }, use) => {
-    await use((user, title) => publish(request, user, title));
+    await use((user, title, spots = 2) => publish(request, user, title, spots));
+  },
+
+  participate: async ({ request }, use) => {
+    await use(async (user, planId, method) => {
+      const url = `${API_URL}/api/v1/plans/${planId}/participants${method === 'DELETE' ? '/me' : ''}`;
+      const response = await request.fetch(url, {
+        method,
+        headers: { Authorization: `Bearer ${await token(request, user)}` },
+      });
+      expect(response.status(), await response.text()).toBe(200);
+    });
   },
 });
 
@@ -171,6 +185,7 @@ const publish = async (
   request: APIRequestContext,
   user: TestUser,
   title: string,
+  spots: number,
 ): Promise<PublishedPlan> => {
   const response = await request.post(`${API_URL}/api/v1/plans`, {
     headers: { Authorization: `Bearer ${await token(request, user)}` },
@@ -179,7 +194,7 @@ const publish = async (
       title,
       meetingPoint: { name: 'Pistas de la Albufera', latitude: 40.3964, longitude: -3.6297 },
       startsAt: new Date(Date.now() + 70 * 60_000).toISOString(),
-      spots: 2,
+      spots,
     },
   });
   expect(response.status(), await response.text()).toBe(201);

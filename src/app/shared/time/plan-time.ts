@@ -50,4 +50,9 @@ export const clockTime = (date: Date, locale = 'es-ES'): string =>
   date.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit', hour12: false });
 
 /** Translation key of the free spots label: singular or plural (the count goes as a parameter). */
-export const spotsKey = (freeSpots: number): string => (freeSpots === 1 ? 'spots.one' : 'spots.other');
+export const spotsKey = (freeSpots: number): string => {
+  if (freeSpots === 0) {
+    return 'spots.none';
+  }
+  return freeSpots === 1 ? 'spots.one' : 'spots.other';
+};
