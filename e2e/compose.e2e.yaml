@@ -1,0 +1,17 @@
+# Overrides for the oneleft-infra Docker Compose in the end-to-end tests: the published backend images
+# (ghcr.io with ONELEFT_IMAGE_TAG, pre by default; ONELEFT_IMAGES=oneleft/ ONELEFT_IMAGE_TAG=dev uses the local builds), no observability stack and a publication limit that the tests never reach.
+#   docker compose -f ../oneleft-infra/docker/compose.yaml -f e2e/compose.e2e.yaml --profile backend up -d --no-build --wait
+x-e2e-env: &e2e-env
+  SPRING_PROFILES_ACTIVE: seed
+  RATE_LIMIT_PUBLISH_PER_HOUR: '1000'
+
+services:
+  gateway:
+    image: ${ONELEFT_IMAGES:-ghcr.io/chabelly-lbetancourt/oneleft-}gateway:${ONELEFT_IMAGE_TAG:-pre}
+    environment: *e2e-env
+  users:
+    image: ${ONELEFT_IMAGES:-ghcr.io/chabelly-lbetancourt/oneleft-}users:${ONELEFT_IMAGE_TAG:-pre}
+    environment: *e2e-env
+  plans:
+    image: ${ONELEFT_IMAGES:-ghcr.io/chabelly-lbetancourt/oneleft-}plans:${ONELEFT_IMAGE_TAG:-pre}
+    environment: *e2e-env
