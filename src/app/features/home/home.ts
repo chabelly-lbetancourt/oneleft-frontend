@@ -11,6 +11,7 @@ import { UserEvents } from '../../core/realtime/user-events';
 import { ACTIVITIES } from '../../shared/model/activities';
 import { Plan } from '../../shared/model/published-plan';
 import { BrandLogo } from '../../shared/ui/brand-logo';
+import { GoogleButton } from '../../shared/ui/google-button';
 import { LanguageSwitcher } from '../../shared/ui/language-switcher';
 import { PlanTicket } from '../../shared/ui/plan-ticket';
 import { SpotSlots } from '../../shared/ui/spot-slots';
@@ -21,6 +22,7 @@ import { SpotSlots } from '../../shared/ui/spot-slots';
     Avatar,
     BrandLogo,
     Button,
+    GoogleButton,
     LanguageSwitcher,
     PlanTicket,
     RouterLink,

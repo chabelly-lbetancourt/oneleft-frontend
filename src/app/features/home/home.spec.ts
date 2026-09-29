@@ -1,7 +1,7 @@
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { provideRouter } from '@angular/router';
+import { provideRouter, Router, UrlTree } from '@angular/router';
 import { FakeSession } from '../../../testing/fake-session';
 import { Session } from '../../core/auth/session';
 import { UserEvents } from '../../core/realtime/user-events';
@@ -50,12 +50,18 @@ describe('Home', () => {
     expect(entry?.textContent).toContain('Planes cerca de ti ahora');
   });
 
-  it('should offer login and registration without a session', () => {
-    const buttons = element.querySelectorAll('header p-button:not(.language-switcher) button');
-    (buttons[0] as HTMLButtonElement).click();
-    (buttons[1] as HTMLButtonElement).click();
-    expect(session.register).toHaveBeenCalled();
-    expect(session.login).toHaveBeenCalled();
+  it('should lead to the login and registration pages without a session', () => {
+    const router = TestBed.inject(Router);
+    const navigate = vi.spyOn(router, 'navigateByUrl').mockResolvedValue(true);
+    const buttons = element.querySelectorAll<HTMLButtonElement>(
+      'header p-button:not(.language-switcher) button',
+    );
+    buttons[0].click();
+    buttons[1].click();
+    expect(navigate.mock.calls.map(([url]) => router.serializeUrl(url as UrlTree))).toEqual([
+      '/register',
+      '/login',
+    ]);
     expect(element.querySelector('.user-menu')).toBeNull();
   });
 
