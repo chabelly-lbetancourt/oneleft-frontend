@@ -28,6 +28,20 @@ export class PlansApi {
     return this.http.post<Plan>(`${this.base}/${id}/participants`, null);
   }
 
+  /** Gives the spot back (HU-023): the first person waiting takes it. */
+  leave(id: string): Observable<Plan> {
+    return this.http.delete<Plan>(`${this.base}/${id}/participants/me`);
+  }
+
+  /** Waits for a spot of a full plan (HU-023). */
+  joinWaitlist(id: string): Observable<Plan> {
+    return this.http.post<Plan>(`${this.base}/${id}/waitlist`, null);
+  }
+
+  leaveWaitlist(id: string): Observable<Plan> {
+    return this.http.delete<Plan>(`${this.base}/${id}/waitlist/me`);
+  }
+
   /** URL of the personal Server-Sent Events stream (someone joined one of my plans). */
   eventsStreamUrl(): string {
     return `${this.base}/events/stream`;

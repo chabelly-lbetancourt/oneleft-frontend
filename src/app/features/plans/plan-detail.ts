@@ -5,7 +5,7 @@ import { Avatar } from 'primeng/avatar';
 import { Button } from 'primeng/button';
 import { Message } from 'primeng/message';
 import { Tag } from 'primeng/tag';
-import { filter } from 'rxjs';
+import { filter, merge, Observable } from 'rxjs';
 import { PlansApi } from '../../core/api/plans-api';
 import { Session } from '../../core/auth/session';
 import { ApiErrorMessage, apiErrorMessage } from '../../core/i18n/api-error';
@@ -19,7 +19,7 @@ import { PageHeader } from '../../shared/ui/page-header';
 import { SpotSlots } from '../../shared/ui/spot-slots';
 
 /** What the signed-in person can do with the plan. */
-type Relation = 'organizer' | 'participant' | 'canJoin' | 'full' | 'closed';
+type Relation = 'organizer' | 'participant' | 'waiting' | 'canJoin' | 'full' | 'closed';
 
 @Component({
   selector: 'app-plan-detail',
@@ -41,6 +41,10 @@ export class PlanDetail {
   protected readonly joining = signal(false);
   protected readonly joinError = signal<ApiErrorMessage | null>(null);
   protected readonly justJoined = signal(false);
+  protected readonly justLeft = signal(false);
+  protected readonly confirmingLeave = signal(false);
+  /** A leave or waiting list request in progress */
+  protected readonly busy = signal(false);
   protected readonly spotsKey = spotsKey;
   protected readonly activity = computed(() => activityOf(this.plan()?.activity ?? ''));
   /** The organizer and the participants, for the spots of the plan */
@@ -79,20 +83,29 @@ export class PlanDetail {
     if (plan.participants.some((participant) => participant.userId === me)) {
       return 'participant';
     }
-    if (plan.status === 'FULL' || plan.freeSpots === 0) {
-      return 'full';
+    const upcoming = new Date(plan.startsAt).getTime() > Date.now();
+    if ((plan.waitlist ?? []).some((person) => person.userId === me)) {
+      return 'waiting';
     }
-    return plan.status === 'OPEN' && new Date(plan.startsAt).getTime() > Date.now()
-      ? 'canJoin'
-      : 'closed';
+    if (plan.status === 'FULL' || plan.freeSpots === 0) {
+      return upcoming && plan.status === 'FULL' ? 'full' : 'closed';
+    }
+    return plan.status === 'OPEN' && upcoming ? 'canJoin' : 'closed';
   });
+  /** 1 for the first person of the waiting list */
+  protected readonly waitingPosition = computed(
+    () =>
+      (this.plan()?.waitlist ?? []).findIndex((person) => person.userId === this.session.userId()) +
+      1,
+  );
   protected readonly isMe = (userId: string) => userId === this.session.userId();
 
   constructor() {
     effect(() => this.load(this.id()));
-    // The organizer sees new participants at once when a notice about this plan arrives
-    inject(UserEvents)
-      .joined$.pipe(
+    // The plan is refreshed at once when a notice about it arrives: someone joined or left, or my spot came up
+    const events = inject(UserEvents);
+    merge(events.joined$, events.left$, events.spotFreed$)
+      .pipe(
         filter((notice) => notice.planId === this.id()),
         takeUntilDestroyed(inject(DestroyRef)),
       )
@@ -112,6 +125,40 @@ export class PlanDetail {
         this.joining.set(false);
         this.joinError.set(apiErrorMessage(this.transloco, error, 'errors.joinFailed'));
         // The plan may have changed (for example, the last spot was taken): show its current state
+        this.load(this.id());
+      },
+    });
+  }
+
+  protected leave(): void {
+    this.change(this.api.leave(this.id()), 'errors.leaveFailed', () => {
+      this.confirmingLeave.set(false);
+      this.justJoined.set(false);
+      this.justLeft.set(true);
+    });
+  }
+
+  protected joinWaitlist(): void {
+    this.change(this.api.joinWaitlist(this.id()), 'errors.waitlistFailed');
+  }
+
+  protected leaveWaitlist(): void {
+    this.change(this.api.leaveWaitlist(this.id()), 'errors.waitlistFailed');
+  }
+
+  /** Leave or waiting list: shows the new plan or, if it fails, why and the current state of the plan. */
+  private change(request: Observable<Plan>, fallback: string, done?: () => void): void {
+    this.busy.set(true);
+    this.joinError.set(null);
+    request.subscribe({
+      next: (plan) => {
+        this.plan.set(plan);
+        this.busy.set(false);
+        done?.();
+      },
+      error: (error) => {
+        this.busy.set(false);
+        this.joinError.set(apiErrorMessage(this.transloco, error, fallback));
         this.load(this.id());
       },
     });

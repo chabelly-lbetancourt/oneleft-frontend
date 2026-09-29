@@ -5,8 +5,8 @@ import { provideRouter, Router, UrlTree } from '@angular/router';
 import { FakeSession } from '../../../testing/fake-session';
 import { Session } from '../../core/auth/session';
 import { UserEvents } from '../../core/realtime/user-events';
-import { PlanJoinedNotice } from '../../shared/model/published-plan';
-import { Subject } from 'rxjs';
+import { PlanJoinedNotice, PlanLeftNotice } from '../../shared/model/published-plan';
+import { EMPTY, Subject } from 'rxjs';
 import { Home } from './home';
 import { translocoTesting } from '../../../testing/transloco-testing';
 
@@ -15,6 +15,7 @@ describe('Home', () => {
   let element: HTMLElement;
   let session: FakeSession;
   const notices = new Subject<PlanJoinedNotice>();
+  const left = new Subject<PlanLeftNotice>();
 
   beforeEach(async () => {
     session = new FakeSession();
@@ -25,7 +26,14 @@ describe('Home', () => {
         provideHttpClient(),
         provideHttpClientTesting(),
         { provide: Session, useValue: session },
-        { provide: UserEvents, useValue: { joined$: notices.asObservable() } },
+        {
+          provide: UserEvents,
+          useValue: {
+            joined$: notices.asObservable(),
+            left$: left.asObservable(),
+            spotFreed$: EMPTY,
+          },
+        },
       ],
     }).compileComponents();
     fixture = TestBed.createComponent(Home);
@@ -106,6 +114,7 @@ describe('Home', () => {
           meetingPoint: { name: 'Pistas de Vallecas', latitude: 40.39, longitude: -3.63 },
           organizerName: 'Ana Test',
           participants: [],
+          waitlist: [],
           freeSpots: 1,
         },
       ]);
@@ -134,7 +143,7 @@ describe('Home', () => {
     expect(element.querySelector('h1')?.textContent).toContain('¿Te falta uno?');
   });
 
-  it('should refresh my plans when someone joins one of them', async () => {
+  it('should refresh my plans when someone joins or leaves one of them', async () => {
     session.signIn('Ana Test');
     fixture.detectChanges();
     const http = TestBed.inject(HttpTestingController);
@@ -149,7 +158,18 @@ describe('Home', () => {
       full: false,
     });
     fixture.detectChanges();
+    http.expectOne((r) => r.url.endsWith('/api/v1/plans/mine')).flush([]);
+    await fixture.whenStable();
 
+    left.next({
+      planId: 'p1',
+      title: 'Pádel',
+      participantName: 'Lucía',
+      promotedName: null,
+      freeSpots: 1,
+      full: false,
+    });
+    fixture.detectChanges();
     http.expectOne((r) => r.url.endsWith('/api/v1/plans/mine')).flush([]);
   });
 

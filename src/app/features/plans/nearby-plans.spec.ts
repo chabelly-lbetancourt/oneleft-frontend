@@ -37,6 +37,7 @@ const nearby = (id: string, activity: string, distanceMeters: number, freeSpots 
     status: 'OPEN',
     publishedAt: new Date().toISOString(),
     participants: [],
+    waitlist: [],
   },
 });
 

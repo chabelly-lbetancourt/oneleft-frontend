@@ -1,7 +1,13 @@
 import { inject, Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { filter, map, Observable } from 'rxjs';
 import { Session } from '../auth/session';
 import { SseParser } from './sse-parser';
+
+/** An event of the stream: its name and its data, parsed as JSON. */
+export interface StreamEvent {
+  event: string;
+  data: unknown;
+}
 
 /** Delay before reconnecting after the server closes the stream (it expires every 30 min) or the network fails. */
 export const RECONNECT_DELAY_MS = 5000;
@@ -16,7 +22,15 @@ export class EventStream {
 
   /** Data of every event called {@code eventName}, parsed as JSON. */
   open<T>(url: string, eventName: string): Observable<T> {
-    return new Observable<T>((subscriber) => {
+    return this.openEvents(url, [eventName]).pipe(
+      filter((message) => message.event === eventName),
+      map((message) => message.data as T),
+    );
+  }
+
+  /** Every event whose name is in {@code eventNames}, through a single connection. */
+  openEvents(url: string, eventNames: readonly string[]): Observable<StreamEvent> {
+    return new Observable<StreamEvent>((subscriber) => {
       const controller = new AbortController();
       let retry: ReturnType<typeof setTimeout> | undefined;
 
@@ -39,8 +53,8 @@ export class EventStream {
               break;
             }
             for (const message of parser.push(decoder.decode(value, { stream: true }))) {
-              if (message.event === eventName) {
-                subscriber.next(JSON.parse(message.data) as T);
+              if (message.event && eventNames.includes(message.event)) {
+                subscriber.next({ event: message.event, data: JSON.parse(message.data) });
               }
             }
           }
