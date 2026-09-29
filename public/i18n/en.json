@@ -56,12 +56,28 @@
     "at": "At {{time}}"
   },
   "home": {
-    "title": "One <span class=\"text-primary\">short</span>?",
+    "title": "One <span class=\"slot-word\">short</span>?",
     "subtitle": "Publish your plan for the next few hours and fill it with people near you.",
     "myPlans": "Your upcoming plans",
     "nearby": "Plans near you right now",
     "publish": "Publish a plan",
-    "nearbyHint": "See the plans starting soon near you, in a list or on the map."
+    "nearbyHint": "See the plans starting soon near you, in a list or on the map.",
+    "kicker": "Plans for right now, near you",
+    "start": "Create a free account",
+    "haveAccount": "I already have an account",
+    "demoTitle": "Padel in Vallecas",
+    "demoWhen": "Today · 7:30 pm",
+    "demoYou": "That spot could be yours!",
+    "howTitle": "As easy as this",
+    "step1": "Post what you are missing",
+    "step1Text": "A player, a running buddy or someone for the cinema. For the next 12 hours.",
+    "step2": "People nearby join",
+    "step2Text": "Your plan shows up right away to people nearby who fit it.",
+    "step3": "Meet up, done",
+    "step3Text": "We let you know as soon as someone joins. No endless group chats.",
+    "activitiesTitle": "For whatever you feel like",
+    "hello": "Hi, {{name}}",
+    "helloHint": "What do you feel like doing today?"
   },
   "plan": {
     "title": "Plan",
