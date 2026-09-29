@@ -1,11 +1,22 @@
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
-import { ApplicationConfig, inject, isDevMode, provideAppInitializer, provideBrowserGlobalErrorListeners } from '@angular/core';
+import {
+  ApplicationConfig,
+  inject,
+  isDevMode,
+  provideAppInitializer,
+  provideBrowserGlobalErrorListeners,
+} from '@angular/core';
 import { provideRouter, TitleStrategy, withComponentInputBinding } from '@angular/router';
 import { provideTransloco } from '@jsverse/transloco';
-import { authInterceptor, provideAuth, withAppInitializerAuthCheck } from 'angular-auth-oidc-client';
+import {
+  authInterceptor,
+  provideAuth,
+  withAppInitializerAuthCheck,
+} from 'angular-auth-oidc-client';
 import { providePrimeNG } from 'primeng/config';
 import { routes } from './app.routes';
 import { authConfig } from './core/auth/auth.config';
+import { Session } from './core/auth/session';
 import { DEFAULT_LANGUAGE, Language, LANGUAGES } from './core/i18n/language';
 import { TranslatedTitleStrategy } from './core/i18n/translated-title-strategy';
 import { TranslocoHttpLoader } from './core/i18n/transloco-loader';
@@ -33,6 +44,10 @@ export const appConfig: ApplicationConfig = {
       loader: TranslocoHttpLoader,
     }),
     provideAppInitializer(() => inject(Language).init()),
+    // The session exists from the start: it opens the page that asked for the login when coming back from Keycloak
+    provideAppInitializer(() => {
+      inject(Session);
+    }),
     { provide: TitleStrategy, useClass: TranslatedTitleStrategy },
     providePrimeNG({
       license: primeUiLicense,

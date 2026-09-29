@@ -14,13 +14,28 @@
     "profile": "OneLeft · My profile",
     "newPlan": "OneLeft · Publish a plan",
     "plan": "OneLeft · Plan",
-    "nearby": "OneLeft · Nearby plans"
+    "nearby": "OneLeft · Nearby plans",
+    "login": "OneLeft · Sign in",
+    "register": "OneLeft · Sign up"
   },
   "auth": {
     "login": "Sign in",
     "google": "Continue with Google",
     "register": "Sign up",
-    "logout": "Sign out"
+    "logout": "Sign out",
+    "loginTitle": "Sign in to OneLeft",
+    "loginSubtitle": "Your plans and the people nearby are waiting for you.",
+    "registerTitle": "Join OneLeft",
+    "registerSubtitle": "It is free. Publish a plan or join one in a couple of minutes.",
+    "withEmail": "Continue with email",
+    "registerWithEmail": "Sign up with email",
+    "or": "or",
+    "noAccount": "No account yet?",
+    "haveAccount": "Already have an account?",
+    "secure": "You sign in with Keycloak: your password never goes through the app.",
+    "perk1": "Plans for the next few hours",
+    "perk2": "Only people near you",
+    "perk3": "Notices as soon as someone joins"
   },
   "activities": {
     "PADEL": "Padel",
