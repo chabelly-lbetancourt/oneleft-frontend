@@ -18,6 +18,7 @@
   },
   "auth": {
     "login": "Entrar",
+    "google": "Continuar con Google",
     "register": "Crear cuenta",
     "logout": "Cerrar sesión"
   },
