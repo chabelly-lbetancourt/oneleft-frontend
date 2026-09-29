@@ -95,12 +95,16 @@ npx ng build --configuration pre --define "ONELEFT_ORIGIN='https://…'"  # app 
 Desde la versión 22, PrimeNG necesita una clave de la **PrimeUI Community License** (gratuita para estudiantes
 en proyectos propios). La clave **no se guarda en el repositorio**: se inyecta al compilar.
 
+`npm start`, `npm run build` y `npm run watch` la pasan a Angular (`--define`) desde la variable de entorno
+`PRIMEUI_LICENSE` o desde un fichero `.env` junto a `package.json`, que Git ignora:
+
 ```bash
-export PRIMEUI_LICENSE='<clave>'
-npx ng build --define "PRIMEUI_LICENSE='$PRIMEUI_LICENSE'"
+echo "PRIMEUI_LICENSE=<clave>" > .env   # una sola vez
+npm start
 ```
 
-En GitHub Actions se lee del secreto `PRIMEUI_LICENSE`. Sin clave, la app funciona pero muestra un aviso de licencia.
+En GitHub Actions se lee del secreto `PRIMEUI_LICENSE`. Sin clave, la app funciona pero muestra el aviso
+«Invalid PrimeUI License» (script: [`scripts/ng-with-license.mjs`](scripts/ng-with-license.mjs)).
 
 ## Proyecto
 
