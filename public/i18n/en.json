@@ -18,6 +18,7 @@
   },
   "auth": {
     "login": "Sign in",
+    "google": "Continue with Google",
     "register": "Sign up",
     "logout": "Sign out"
   },
