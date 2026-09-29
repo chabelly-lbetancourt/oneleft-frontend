@@ -135,7 +135,10 @@ export { expect };
 /** Fills the Keycloak login form the app redirected to and waits to be back in OneLeft. */
 export const signIn = async (page: Page, user: TestUser) => {
   await page.locator('#username').fill(user.username);
-  await page.locator('#password').fill(user.password);
+  // Set in the page instead of fill(), so the password never appears in the steps of the report or the trace
+  await page
+    .locator('#password')
+    .evaluate((input: HTMLInputElement, value) => (input.value = value), user.password);
   await page.locator('#kc-login').click();
   await page.waitForURL((url) => url.port === '4200' && !url.searchParams.has('code'));
 };
