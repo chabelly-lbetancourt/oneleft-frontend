@@ -4,11 +4,15 @@ import { Router } from '@angular/router';
 import { TranslocoService } from '@jsverse/transloco';
 import { MessageService } from 'primeng/api';
 import { Toast } from 'primeng/toast';
+import { Language } from '../../core/i18n/language';
 import { UserEvents } from '../../core/realtime/user-events';
+import { activityKey } from '../model/activities';
+import { PlanNearbyNotice } from '../model/notifications';
+import { clockTime, spotsKey } from '../time/plan-time';
 
 /**
- * Toasts of the personal events: someone joined or left one of my plans, or a spot I was waiting for is mine.
- * Tapping one opens the plan.
+ * Toasts of the personal events: someone joined or left one of my plans, a spot I was waiting for is mine, or a plan I
+ * like has been published nearby (HU-006). Tapping one opens the plan.
  */
 @Component({
   selector: 'app-join-notices',
@@ -36,6 +40,7 @@ export class JoinNotices {
   private readonly messages = inject(MessageService);
   private readonly transloco = inject(TranslocoService);
   private readonly router = inject(Router);
+  private readonly language = inject(Language);
 
   constructor() {
     const events = inject(UserEvents);
@@ -67,6 +72,11 @@ export class JoinNotices {
           notice.planId,
           'success',
         ),
+      );
+    events.nearby$
+      .pipe(takeUntilDestroyed(destroyRef))
+      .subscribe((notice) =>
+        this.show('pi-map-marker', 'notices.nearbyTitle', this.nearby(notice), notice.planId),
       );
     events.joined$.pipe(takeUntilDestroyed(destroyRef)).subscribe((notice) =>
       this.messages.add({
@@ -102,6 +112,20 @@ export class JoinNotices {
       detail,
       life: 8000,
       data: planId,
+    });
+  }
+
+  /** "Padel at 18:20 · Pistas de la Albufera · 0.7 km · 1 spot left", in the app's language. */
+  private nearby(notice: PlanNearbyNotice): string {
+    return this.transloco.translate('notices.nearby', {
+      title: notice.title,
+      activity: this.transloco.translate(activityKey(notice.activity)),
+      time: clockTime(new Date(notice.startsAt), this.language.locale()),
+      place: notice.placeName,
+      km: (notice.distanceMeters / 1000).toLocaleString(this.language.locale(), {
+        maximumFractionDigits: 1,
+      }),
+      spots: this.transloco.translate(spotsKey(notice.freeSpots), { count: notice.freeSpots }),
     });
   }
 
