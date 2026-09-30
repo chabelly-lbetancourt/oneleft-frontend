@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { App, URLOpenListenerEvent } from '@capacitor/app';
 import { Browser } from '@capacitor/browser';
 import { Capacitor } from '@capacitor/core';
+import { Share } from '@capacitor/share';
 
 /** True inside the Android app (Capacitor), false in the browser. */
 export const isNativeApp = (): boolean => Capacitor.isNativePlatform();
@@ -26,6 +27,11 @@ export class NativePlatform {
 
   closeBrowser(): Promise<void> {
     return Browser.close();
+  }
+
+  /** Android share sheet: the WebView has no Web Share API. */
+  async share(content: { title: string; text: string; url: string }): Promise<void> {
+    await Share.share({ ...content, dialogTitle: content.title });
   }
 
   onAppUrlOpen(listener: (event: URLOpenListenerEvent) => void): Promise<unknown> {
