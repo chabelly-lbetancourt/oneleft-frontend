@@ -1,6 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { EMPTY, filter, map, Observable, share, switchMap } from 'rxjs';
+import { PlanNearbyNotice } from '../../shared/model/notifications';
 import {
   PlanJoinedNotice,
   PlanLeftNotice,
@@ -13,10 +14,11 @@ import { EventStream, StreamEvent } from './event-stream';
 const PLAN_JOINED = 'plan-joined';
 const PLAN_LEFT = 'plan-left';
 const SPOT_FREED = 'plan-spot';
+const PLAN_NEARBY = 'plan-nearby';
 
 /**
  * Personal events of the signed-in user while the app is open: someone has joined (HU-005) or left (HU-023) one of
- * my plans, or a spot I was waiting for is now mine. A single connection is shared by every subscriber and closed
+ * my plans, a spot I was waiting for is now mine, or a plan I like has been published nearby (HU-006). A single connection is shared by every subscriber and closed
  * when the user signs out.
  */
 @Injectable({ providedIn: 'root' })
@@ -30,7 +32,12 @@ export class UserEvents {
   ).pipe(
     switchMap((signedIn) =>
       signedIn
-        ? this.stream.openEvents(this.api.eventsStreamUrl(), [PLAN_JOINED, PLAN_LEFT, SPOT_FREED])
+        ? this.stream.openEvents(this.api.eventsStreamUrl(), [
+            PLAN_JOINED,
+            PLAN_LEFT,
+            SPOT_FREED,
+            PLAN_NEARBY,
+          ])
         : EMPTY,
     ),
     share(),
@@ -39,6 +46,7 @@ export class UserEvents {
   readonly joined$ = this.of<PlanJoinedNotice>(PLAN_JOINED);
   readonly left$ = this.of<PlanLeftNotice>(PLAN_LEFT);
   readonly spotFreed$ = this.of<SpotFreedNotice>(SPOT_FREED);
+  readonly nearby$ = this.of<PlanNearbyNotice>(PLAN_NEARBY);
 
   private of<T>(name: string): Observable<T> {
     return this.events$.pipe(

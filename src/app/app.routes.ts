@@ -30,6 +30,14 @@ export const routes: Routes = [
     title: 'titles.profile',
   },
   {
+    // Notices of nearby plans (HU-006)
+    path: 'notifications',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/notifications/notification-settings').then((m) => m.NotificationSettings),
+    title: 'titles.notifications',
+  },
+  {
     path: 'plans/new',
     canActivate: [authGuard],
     loadComponent: () => import('./features/plans/publish-plan').then((m) => m.PublishPlan),

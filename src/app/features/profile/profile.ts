@@ -17,6 +17,7 @@ import {
   ValidationErrors,
   Validators,
 } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { PageHeader } from '../../shared/ui/page-header';
 import { Avatar } from 'primeng/avatar';
@@ -64,6 +65,7 @@ const zoneComplete = (group: AbstractControl): ValidationErrors | null => {
     Tag,
     TranslocoPipe,
     PageHeader,
+    RouterLink,
   ],
   templateUrl: './profile.html',
 })
