@@ -16,7 +16,8 @@
     "plan": "OneLeft · Plan",
     "nearby": "OneLeft · Planes cerca",
     "login": "OneLeft · Entrar",
-    "register": "OneLeft · Crear cuenta"
+    "register": "OneLeft · Crear cuenta",
+    "notifications": "OneLeft · Avisos"
   },
   "auth": {
     "login": "Entrar",
@@ -93,7 +94,9 @@
     "step3Text": "Te avisamos en cuanto alguien se une. Sin grupos eternos ni mensajes.",
     "activitiesTitle": "Para lo que te apetezca",
     "hello": "Hola, {{name}}",
-    "helloHint": "¿Qué te apetece hacer hoy?"
+    "helloHint": "¿Qué te apetece hacer hoy?",
+    "notifications": "Avisos de planes cerca",
+    "notificationsHint": "Elige qué planes quieres que te avisemos y cuándo."
   },
   "plan": {
     "title": "Plan",
@@ -177,7 +180,8 @@
     "noHobbies": "Añade las actividades que te gustan para recibir planes que te encajen.",
     "addHobby": "Añadir afición",
     "save": "Guardar perfil",
-    "saved": "Perfil guardado"
+    "saved": "Perfil guardado",
+    "notifications": "Avisos de planes cerca"
   },
   "errors": {
     "generic": "Algo ha fallado. Inténtalo de nuevo.",
@@ -234,7 +238,18 @@
       "limited": "Vas demasiado rápido. Vuelve a intentarlo en {{ minutes }} min."
     },
     "leaveFailed": "No se ha podido salir del plan",
-    "waitlistFailed": "No se ha podido actualizar la lista de espera"
+    "waitlistFailed": "No se ha podido actualizar la lista de espera",
+    "notificationsSaveFailed": "No se han podido guardar tus avisos",
+    "pushFailed": "No se han podido activar los avisos en este navegador",
+    "notifications": {
+      "zoneRequired": "Elige una zona para recibir avisos",
+      "zone": "La zona no es válida",
+      "radius": "La distancia debe estar entre 0,5 y 20 km",
+      "maxPerDay": "El máximo de avisos al día debe estar entre 1 y 20",
+      "quietHours": "El horario sin avisos necesita una hora de inicio y otra de fin distintas",
+      "pushEndpoint": "La suscripción del navegador no es válida",
+      "pushKeys": "La suscripción del navegador no es válida"
+    }
   },
   "nearby": {
     "title": "Planes cerca",
@@ -265,6 +280,41 @@
     "left": "{{name}} ha salido de «{{title}}»",
     "leftAndIn": "{{name}} ha salido de «{{title}}» y entra {{promoted}}",
     "spotTitle": "¡Tienes plaza!",
-    "spot": "Se ha liberado una plaza en «{{title}}» y es para ti"
+    "spot": "Se ha liberado una plaza en «{{title}}» y es para ti",
+    "nearbyTitle": "Plan cerca de ti",
+    "nearby": "«{{title}}» · {{activity}} a las {{time}} · {{place}} · a {{km}} km · {{spots}}"
+  },
+  "notifications": {
+    "title": "Avisos de planes cerca",
+    "loading": "Cargando tus avisos…",
+    "loadError": "No se han podido cargar tus avisos. Inténtalo de nuevo.",
+    "enable": "Avísame de planes cerca",
+    "enableHint": "Cuando alguien publique cerca un plan que te encaja, te avisamos al momento.",
+    "zone": "¿Alrededor de dónde?",
+    "useProfileZone": "Usar mi zona ({{name}})",
+    "noZone": "Elige una zona para recibir avisos.",
+    "zonePrivacy": "Solo se guarda una zona aproximada (unos 1 km), nunca tu dirección.",
+    "radius": "Distancia máxima",
+    "km": "{{km}} km",
+    "activities": "Actividades",
+    "activitiesHint": "Si no marcas ninguna, te avisamos de todas.",
+    "quiet": "Horario sin avisos",
+    "quietHint": "Durante estas horas no te molestamos.",
+    "from": "De",
+    "to": "a",
+    "maxPerDay": "Máximo de avisos al día",
+    "save": "Guardar avisos",
+    "saved": "Listo: te avisaremos de los planes que te encajen.",
+    "savedOff": "Guardado. Los avisos están desactivados.",
+    "push": "Avisos en este navegador",
+    "pushEnable": "Recibir avisos aunque OneLeft esté cerrado",
+    "pushDisable": "Dejar de recibirlos en este navegador",
+    "pushState": {
+      "on": "Este navegador te muestra los avisos aunque OneLeft esté cerrado.",
+      "off": "Ahora solo te llegan con OneLeft abierto.",
+      "denied": "Has bloqueado las notificaciones de OneLeft en este navegador. Actívalas en sus ajustes.",
+      "unavailable": "Este servidor no tiene activadas las notificaciones del navegador: te llegarán con OneLeft abierto.",
+      "unsupported": "Este navegador no admite notificaciones: te llegarán con OneLeft abierto."
+    }
   }
 }

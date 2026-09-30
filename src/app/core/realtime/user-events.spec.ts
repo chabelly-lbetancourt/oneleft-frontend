@@ -7,6 +7,7 @@ import {
   PlanLeftNotice,
   SpotFreedNotice,
 } from '../../shared/model/published-plan';
+import { PlanNearbyNotice } from '../../shared/model/notifications';
 import { Session } from '../auth/session';
 import { EventStream, StreamEvent } from './event-stream';
 import { UserEvents } from './user-events';
@@ -27,10 +28,12 @@ describe('UserEvents', () => {
     const joinedToo: PlanJoinedNotice[] = [];
     const left: PlanLeftNotice[] = [];
     const spots: SpotFreedNotice[] = [];
+    const nearby: PlanNearbyNotice[] = [];
     events.joined$.subscribe((notice) => joined.push(notice));
     events.joined$.subscribe((notice) => joinedToo.push(notice));
     events.left$.subscribe((notice) => left.push(notice));
     events.spotFreed$.subscribe((notice) => spots.push(notice));
+    events.nearby$.subscribe((notice) => nearby.push(notice));
     TestBed.tick();
     expect(stream.openEvents).not.toHaveBeenCalled();
 
@@ -55,16 +58,27 @@ describe('UserEvents', () => {
     source.next({ event: 'plan-joined', data: join });
     source.next({ event: 'plan-left', data: leave });
     source.next({ event: 'plan-spot', data: spot });
+    const near: PlanNearbyNotice = {
+      planId: 'p3',
+      activity: 'PADEL',
+      title: 'Pádel',
+      placeName: 'Pistas',
+      startsAt: '2026-11-16T17:20:00Z',
+      freeSpots: 1,
+      distanceMeters: 700,
+    };
+    source.next({ event: 'plan-nearby', data: near });
 
     expect(stream.openEvents).toHaveBeenCalledOnce();
     expect(stream.openEvents).toHaveBeenCalledWith(
       `${environment.apiUrl}/api/v1/plans/events/stream`,
-      ['plan-joined', 'plan-left', 'plan-spot'],
+      ['plan-joined', 'plan-left', 'plan-spot', 'plan-nearby'],
     );
     expect(joined).toEqual([join]);
     expect(joinedToo).toEqual([join]);
     expect(left).toEqual([leave]);
     expect(spots).toEqual([spot]);
+    expect(nearby).toEqual([near]);
 
     authenticated.set(false);
     TestBed.tick();

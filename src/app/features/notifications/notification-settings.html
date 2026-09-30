@@ -1,0 +1,185 @@
+<div class="min-h-full">
+  <app-page-header [title]="'notifications.title' | transloco" />
+
+  <main class="mx-auto max-w-3xl px-4 py-6 pb-16">
+    @if (loading()) {
+      <p class="text-surface-600">{{ 'notifications.loading' | transloco }}</p>
+    } @else if (loadError()) {
+      <div class="notifications-error rounded-2xl border border-red-200 bg-red-50 p-4 text-red-800">
+        {{ 'notifications.loadError' | transloco }}
+      </div>
+    } @else {
+      <form class="notifications-form flex flex-col gap-6" [formGroup]="form" (ngSubmit)="save()">
+        <section class="card flex items-start gap-4 p-5">
+          <div class="flex-1">
+            <label for="enabled" class="text-lg font-bold">{{
+              'notifications.enable' | transloco
+            }}</label>
+            <p class="text-sm text-surface-600">{{ 'notifications.enableHint' | transloco }}</p>
+          </div>
+          <p-toggleswitch inputId="enabled" formControlName="enabled" class="enable-switch" />
+        </section>
+
+        <section class="card flex flex-col gap-3 p-5">
+          <h2 class="text-lg font-bold">{{ 'notifications.zone' | transloco }}</h2>
+          <div class="flex flex-wrap items-center gap-2">
+            @if (profileZone(); as zone) {
+              <p-button
+                class="use-profile-zone"
+                [label]="'notifications.useProfileZone' | transloco: { name: zone.name }"
+                icon="pi pi-home"
+                severity="secondary"
+                size="small"
+                [outlined]="true"
+                (onClick)="useProfileZone()"
+              />
+            }
+            <p-button
+              class="use-location"
+              [label]="'profile.useLocation' | transloco"
+              icon="pi pi-map-marker"
+              severity="secondary"
+              size="small"
+              [outlined]="true"
+              [loading]="locating()"
+              (onClick)="useMyLocation()"
+            />
+          </div>
+          @if (hasZone()) {
+            <span class="zone-coordinates text-sm text-surface-600">
+              {{
+                'profile.approximate'
+                  | transloco
+                    : {
+                        latitude: form.controls.latitude.value,
+                        longitude: form.controls.longitude.value,
+                      }
+              }}
+            </span>
+          } @else {
+            <span class="text-sm text-surface-600">{{ 'notifications.noZone' | transloco }}</span>
+          }
+          <small class="text-surface-600">
+            <i class="pi pi-lock text-xs" aria-hidden="true"></i>
+            {{ 'notifications.zonePrivacy' | transloco }}
+          </small>
+
+          <span class="mt-2 font-semibold">{{ 'notifications.radius' | transloco }}</span>
+          <p-selectbutton
+            class="radius"
+            [options]="radiusOptions()"
+            formControlName="radiusMeters"
+            optionLabel="label"
+            optionValue="value"
+            [allowEmpty]="false"
+            size="small"
+          />
+        </section>
+
+        <section class="card flex flex-col gap-3 p-5">
+          <h2 class="text-lg font-bold">{{ 'notifications.activities' | transloco }}</h2>
+          <p class="text-sm text-surface-600">{{ 'notifications.activitiesHint' | transloco }}</p>
+          <div
+            class="activities flex flex-wrap gap-2"
+            role="group"
+            [attr.aria-label]="'notifications.activities' | transloco"
+          >
+            @for (activity of activities; track activity.code) {
+              <button
+                type="button"
+                class="activity-chip inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm transition-colors"
+                [class]="
+                  isChosen(activity.code)
+                    ? activity.tone + ' border-transparent font-semibold'
+                    : 'border-surface-200 bg-white text-surface-700 hover:border-surface-300'
+                "
+                [attr.aria-pressed]="isChosen(activity.code)"
+                (click)="toggleActivity(activity.code)"
+              >
+                <i class="pi {{ activity.icon }}" aria-hidden="true"></i>
+                {{ activityKey(activity.code) | transloco }}
+              </button>
+            }
+          </div>
+        </section>
+
+        <section class="card flex flex-col gap-3 p-5">
+          <div class="flex items-start gap-4">
+            <div class="flex-1">
+              <label for="quiet" class="text-lg font-bold">{{
+                'notifications.quiet' | transloco
+              }}</label>
+              <p class="text-sm text-surface-600">{{ 'notifications.quietHint' | transloco }}</p>
+            </div>
+            <p-toggleswitch inputId="quiet" formControlName="quiet" class="quiet-switch" />
+          </div>
+          @if (form.controls.quiet.value) {
+            <div class="quiet-hours flex flex-wrap items-center gap-2">
+              <label for="quietStart">{{ 'notifications.from' | transloco }}</label>
+              <input
+                id="quietStart"
+                type="time"
+                formControlName="quietStart"
+                class="rounded-lg border border-surface-300 px-3 py-2"
+              />
+              <label for="quietEnd">{{ 'notifications.to' | transloco }}</label>
+              <input
+                id="quietEnd"
+                type="time"
+                formControlName="quietEnd"
+                class="rounded-lg border border-surface-300 px-3 py-2"
+              />
+            </div>
+          }
+
+          <span class="mt-2 font-semibold">{{ 'notifications.maxPerDay' | transloco }}</span>
+          <p-selectbutton
+            class="per-day"
+            [options]="perDayOptions"
+            formControlName="maxPerDay"
+            optionLabel="label"
+            optionValue="value"
+            [allowEmpty]="false"
+            size="small"
+          />
+        </section>
+
+        @if (status(); as message) {
+          <p-message [severity]="message.severity" class="status-message">{{
+            message.key | transloco: message.params
+          }}</p-message>
+        }
+
+        <p-button
+          type="submit"
+          class="save-button"
+          [label]="'notifications.save' | transloco"
+          icon="pi pi-check"
+          styleClass="w-full"
+          [loading]="saving()"
+        />
+      </form>
+
+      <section class="push-card card mt-6 flex flex-col gap-3 p-5">
+        <h2 class="text-lg font-bold">{{ 'notifications.push' | transloco }}</h2>
+        <p class="push-state text-sm text-surface-600">
+          {{ 'notifications.pushState.' + push.state() | transloco }}
+        </p>
+        @if (push.state() === 'on' || push.state() === 'off') {
+          <p-button
+            class="push-button"
+            [label]="
+              (push.state() === 'on' ? 'notifications.pushDisable' : 'notifications.pushEnable')
+                | transloco
+            "
+            [icon]="push.state() === 'on' ? 'pi pi-bell-slash' : 'pi pi-bell'"
+            [severity]="push.state() === 'on' ? 'secondary' : 'primary'"
+            [outlined]="push.state() === 'on'"
+            [loading]="pushBusy()"
+            (onClick)="togglePush()"
+          />
+        }
+      </section>
+    }
+  </main>
+</div>
