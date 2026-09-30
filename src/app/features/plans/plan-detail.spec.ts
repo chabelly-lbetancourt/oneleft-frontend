@@ -9,6 +9,7 @@ import { Session } from '../../core/auth/session';
 import { UserEvents } from '../../core/realtime/user-events';
 import { Plan, PlanJoinedNotice, PlanLeftNotice } from '../../shared/model/published-plan';
 import { PlanDetail } from './plan-detail';
+import { NativePlatform } from '../../core/platform';
 
 const PLAN: Plan = {
   id: 'plan-1',
@@ -380,6 +381,22 @@ describe('PlanDetail', () => {
     expect(navigate).toHaveBeenCalledWith(['/login'], {
       queryParams: { returnUrl: '/plans/plan-1' },
     });
+  });
+
+  it('should share the plan with the Android share sheet inside the app', async () => {
+    await create(PLAN);
+    const platform = TestBed.inject(NativePlatform);
+    vi.spyOn(platform, 'isNative').mockReturnValue(true);
+    const share = vi.spyOn(platform, 'share').mockResolvedValue();
+
+    element().querySelector<HTMLButtonElement>('.share-button button')!.click();
+    await render();
+    expect(share).toHaveBeenCalledWith({
+      title: 'Partido de pádel, falta uno',
+      text: expect.stringMatching(/^Pádel a las \d{2}:\d{2} · Faltan 2\. ¿Te apuntas\?$/),
+      url: 'http://localhost:8080/share/plans/plan-1',
+    });
+    expect(element().querySelector('.copied-message')).toBeNull();
   });
 
   it('should share the plan with the native sheet or copy the link', async () => {

@@ -148,12 +148,54 @@ jobs:
             oneleft-frontend/e2e-results
           retention-days: 14
 
+  # Android app (Capacitor): the same Angular build packaged as a debug APK, uploaded as an artifact
+  android:
+    name: Android APK
+    needs: build-test
+    runs-on: ubuntu-24.04
+    env:
+      PRIMEUI_LICENSE: ${{ secrets.PRIMEUI_LICENSE }}
+      BUILD_CONFIGURATION: ${{ (github.ref == 'refs/heads/pre' || github.base_ref == 'pre') && 'pre' || 'production' }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: gradle
+
+      - name: Install dependencies
+        run: npm ci
+
+      # The build script passes the PrimeUI license (secret) to Angular
+      - name: Web build (${{ env.BUILD_CONFIGURATION }})
+        run: npm run build -- --configuration "$BUILD_CONFIGURATION"
+
+      - name: Copy the build into the Android project
+        run: npx cap sync android
+
+      - name: Debug APK
+        working-directory: android
+        run: ./gradlew assembleDebug --console=plain
+
+      - name: Upload the APK
+        uses: actions/upload-artifact@v7
+        with:
+          name: oneleft-android-${{ env.BUILD_CONFIGURATION }}
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+
   # Result of the CI in the project Slack channel, for pushes to dev/pre/main and for pull requests. The webhook URL
   # is a secret (SLACK_WEBHOOK_URL), never in the repository; without it the notification is skipped. Pull requests
   # from forks do not receive secrets, so they are skipped too.
   notify:
     name: Slack notification
-    needs: [build-test, e2e]
+    needs: [build-test, android, e2e]
     if: always()
     runs-on: ubuntu-24.04
     env:

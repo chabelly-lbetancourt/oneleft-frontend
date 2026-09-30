@@ -90,6 +90,36 @@ npx ng build --configuration pre                                        # web de
 npx ng build --configuration pre --define "ONELEFT_ORIGIN='https://…'"  # app Android contra pre
 ```
 
+## App Android
+
+La app de Android es la misma compilación de Angular empaquetada con **Capacitor 8** (`android/`,
+`es.upm.miw.oneleft`). Lo que cambia dentro de la app:
+
+- **Login en el navegador del sistema** (Custom Tabs): Keycloak, Google y el registro no se abren en el WebView,
+  porque Google no permite iniciar sesión en uno. Keycloak vuelve a la app por el *deep link* `oneleft://callback`.
+- **Compartir** abre la hoja nativa de Android (`@capacitor/share`); el WebView no tiene Web Share API.
+- La sesión se guarda en `localStorage` para que sobreviva al cerrar la app.
+
+Requisitos: Android Studio (o el SDK de Android con `ANDROID_HOME`) y Java 21.
+
+```bash
+npm run android:local   # build de desarrollo, copia al proyecto Android y adb reverse de 8080 y 8180
+npm run android:apk     # APK de depuración en android/app/build/outputs/apk/debug/
+npm run android:open    # abre el proyecto en Android Studio
+```
+
+En el emulador o en un móvil conectado por USB, `adb reverse` hace que `localhost:8080` (API) y `localhost:8180`
+(Keycloak) lleguen al Docker Compose del Mac. La CI genera el APK como artefacto en cada ejecución.
+
+El icono y la pantalla de arranque se generan a partir de `assets/`, que a su vez dibuja
+[`scripts/generate-app-assets.mjs`](scripts/generate-app-assets.mjs) con la identidad de OneLeft:
+
+```bash
+node scripts/generate-app-assets.mjs
+npx capacitor-assets generate --android --iconBackgroundColor '#fff6ed' \
+  --splashBackgroundColor '#fafaf9' --splashBackgroundColorDark '#1c1917'
+```
+
 ## Licencia de PrimeNG
 
 Desde la versión 22, PrimeNG necesita una clave de la **PrimeUI Community License** (gratuita para estudiantes
