@@ -1,0 +1,38 @@
+@use 'abstracts' as *;
+
+.page-header {
+  @include app-bar;
+}
+
+.page-header__inner {
+  @include container;
+  @include row(space(3));
+  padding-block: space(3);
+}
+
+.back-link {
+  @include center;
+  @include square(space(10));
+  @include radius(full);
+  @include hover-soft;
+  @include pressable(0.92, false);
+  @include focus-ring;
+  flex-shrink: 0;
+}
+
+// Going back: the arrow leans towards where it goes
+@include motion {
+  .back-link .pi {
+    transition: transform var(--ol-duration-base) var(--ol-ease-out);
+  }
+  .back-link:hover .pi {
+    transform: translateX(-0.2rem);
+  }
+}
+
+.page-header__title {
+  @include text(lg);
+  @include weight(semibold);
+  @include truncate;
+  flex: 1;
+}

@@ -18,7 +18,7 @@ import { Message } from 'primeng/message';
 import { Select } from 'primeng/select';
 import { SelectButton } from 'primeng/selectbutton';
 import { Textarea } from 'primeng/textarea';
-import { PageHeader } from '../../shared/ui/page-header';
+import { PageLayout } from '../../layout/page-layout/page-layout';
 import { PlansApi } from '../../core/api/plans-api';
 import {
   ApproximateLocation,
@@ -58,9 +58,10 @@ interface StatusMessage {
     SelectButton,
     Textarea,
     TranslocoPipe,
-    PageHeader,
+    PageLayout,
   ],
   templateUrl: './publish-plan.html',
+  styleUrl: './publish-plan.scss',
 })
 export class PublishPlan implements OnInit {
   private readonly api = inject(PlansApi);

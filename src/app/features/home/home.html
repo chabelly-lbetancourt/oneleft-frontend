@@ -1,128 +1,117 @@
-<div class="min-h-full flex flex-col">
-  <app-header />
+@if (session.isAuthenticated()) {
+  <app-main-layout [withBottomBar]="true">
+    <section class="greeting">
+      <h1 class="greeting__title">{{ 'home.hello' | transloco: { name: firstName() } }}</h1>
+      <p class="greeting__hint">{{ 'home.helloHint' | transloco }}</p>
+    </section>
 
-  @if (session.isAuthenticated()) {
-    <main class="page-container flex-1 pb-32">
-      <section class="py-7">
-        <h1 class="text-2xl font-bold leading-tight sm:text-3xl">
-          {{ 'home.hello' | transloco: { name: firstName() } }}
-        </h1>
-        <p class="mt-1 text-muted">{{ 'home.helloHint' | transloco }}</p>
+    <section aria-labelledby="nearby-title" class="entries">
+      <a
+        routerLink="/plans/nearby"
+        class="nearby-entry"
+        appEntryLink
+        variant="inverse"
+        icon="pi-map-marker"
+        titleId="nearby-title"
+        [title]="'home.nearby' | transloco"
+        [hint]="'home.nearbyHint' | transloco"
+      ></a>
+      <a
+        routerLink="/notifications"
+        class="notifications-entry"
+        appEntryLink
+        icon="pi-bell"
+        [title]="'home.notifications' | transloco"
+        [hint]="'home.notificationsHint' | transloco"
+      ></a>
+    </section>
+
+    @if (myPlans.isLoading() && !myPlans.hasValue()) {
+      <section class="my-plans-loading" role="status">
+        <span class="sr-only">{{ 'home.loadingPlans' | transloco }}</span>
+        <app-plan-ticket-skeleton />
+        <app-plan-ticket-skeleton />
       </section>
-
-      <section aria-labelledby="nearby-title" class="mb-8">
-        <a
-          routerLink="/plans/nearby"
-          class="nearby-entry"
-          appEntryLink
-          variant="inverse"
-          icon="pi-map-marker"
-          titleId="nearby-title"
-          [title]="'home.nearby' | transloco"
-          [hint]="'home.nearbyHint' | transloco"
-        ></a>
-        <a
-          routerLink="/notifications"
-          class="notifications-entry mt-3"
-          appEntryLink
-          icon="pi-bell"
-          [title]="'home.notifications' | transloco"
-          [hint]="'home.notificationsHint' | transloco"
-        ></a>
-      </section>
-
-      @if (myPlans.value()?.length) {
-        <section aria-labelledby="my-plans-title" class="my-plans">
-          <h2 id="my-plans-title" class="mb-3 text-xl font-bold">
-            {{ 'home.myPlans' | transloco }}
-          </h2>
-          <ul class="flex flex-col gap-4">
-            @for (plan of myPlans.value(); track plan.id) {
-              <li>
-                <a [routerLink]="['/plans', plan.id]" class="my-plan block">
-                  <app-plan-ticket [plan]="plan" />
-                </a>
-              </li>
-            }
-          </ul>
-        </section>
-      }
-    </main>
-
-    <div class="bottom-bar">
-      <div class="mx-auto max-w-3xl">
-        <p-button
-          [label]="'home.publish' | transloco"
-          icon="pi pi-plus"
-          styleClass="w-full"
-          size="large"
-          [rounded]="true"
-          routerLink="/plans/new"
-        />
-      </div>
-    </div>
-  } @else {
-    <main class="page-container flex-1 pb-16">
-      <!-- Signing up and signing in live in the header: the landing only tells what OneLeft is -->
-      <section class="hero pt-10 pb-8">
-        <p class="pill pill-md pill-brand">{{ 'home.kicker' | transloco }}</p>
-        <h1
-          class="mt-5 text-4xl font-bold leading-[1.1] tracking-tight sm:text-5xl"
-          [innerHTML]="'home.title' | transloco"
-        ></h1>
-        <p class="mt-4 max-w-md text-lg text-soft">{{ 'home.subtitle' | transloco }}</p>
-      </section>
-
-      <!-- An example plan: the empty spot waiting for the visitor -->
-      <section class="demo-plan card mb-14 p-5" aria-hidden="true">
-        <div class="flex items-center gap-3">
-          <app-icon-tile [icon]="demoActivity.icon" [tone]="demoActivity.tone" />
-          <div class="flex-1">
-            <p class="font-semibold leading-tight">
-              {{ 'home.demoTitle' | transloco }}
-            </p>
-            <p class="text-sm text-muted">{{ 'home.demoWhen' | transloco }}</p>
-          </div>
-          <span class="pill pill-sm pill-brand pill-outlined">
-            {{ 'spots.one' | transloco: { count: 1 } }}
-          </span>
-        </div>
-        <div class="mt-4 flex items-center gap-3">
-          <app-spot-slots [names]="demoPeople" [free]="1" size="md" />
-          <span class="text-sm font-medium text-brand">{{ 'home.demoYou' | transloco }}</span>
-        </div>
-      </section>
-
-      <section aria-labelledby="how-title" class="mb-12">
-        <h2 id="how-title" class="mb-4 text-xl font-semibold">
-          {{ 'home.howTitle' | transloco }}
-        </h2>
-        <ol class="grid gap-4 sm:grid-cols-3">
-          @for (step of steps; track step; let index = $index) {
-            <li class="card p-5">
-              <span class="step-number">{{ index + 1 }}</span>
-              <h3 class="mt-3 font-semibold leading-snug">
-                {{ 'home.' + step | transloco }}
-              </h3>
-              <p class="mt-1 text-sm text-muted">{{ 'home.' + step + 'Text' | transloco }}</p>
-            </li>
-          }
-        </ol>
-      </section>
-
-      <section aria-labelledby="activities-title">
-        <h2 id="activities-title" class="mb-4 text-xl font-semibold">
-          {{ 'home.activitiesTitle' | transloco }}
-        </h2>
-        <ul class="flex flex-wrap gap-2">
-          @for (activity of activities; track activity.code) {
-            <li [class]="'activity-chip font-medium ' + activity.tone">
-              <i class="pi {{ activity.icon }}" aria-hidden="true"></i>
-              {{ 'activities.' + activity.code | transloco }}
+    } @else if (myPlans.value()?.length) {
+      <section aria-labelledby="my-plans-title" class="my-plans">
+        <h2 id="my-plans-title" class="section-heading">{{ 'home.myPlans' | transloco }}</h2>
+        <ul class="list">
+          @for (plan of myPlans.value(); track plan.id) {
+            <li [style.--i]="$index">
+              <a [routerLink]="['/plans', plan.id]" class="my-plan">
+                <app-plan-ticket [plan]="plan" />
+              </a>
             </li>
           }
         </ul>
       </section>
-    </main>
-  }
-</div>
+    }
+
+    <app-bottom-bar>
+      <p-button
+        [label]="'home.publish' | transloco"
+        icon="pi pi-plus"
+        styleClass="button--block"
+        size="large"
+        [rounded]="true"
+        routerLink="/plans/new"
+      />
+    </app-bottom-bar>
+  </app-main-layout>
+} @else {
+  <app-main-layout>
+    <!-- Signing up and signing in live in the header: the landing only tells what OneLeft is -->
+    <section class="hero">
+      <p class="hero__kicker pill pill--md pill--brand">{{ 'home.kicker' | transloco }}</p>
+      <h1 class="hero__title" [innerHTML]="'home.title' | transloco"></h1>
+      <p class="hero__subtitle">{{ 'home.subtitle' | transloco }}</p>
+    </section>
+
+    <!-- An example plan: the empty spot waiting for the visitor -->
+    <section class="demo-plan" aria-hidden="true">
+      <div class="demo-plan__top">
+        <app-icon-tile [icon]="demoActivity.icon" [tone]="demoActivity.tone" />
+        <div class="demo-plan__text">
+          <p class="demo-plan__title">{{ 'home.demoTitle' | transloco }}</p>
+          <p class="hint">{{ 'home.demoWhen' | transloco }}</p>
+        </div>
+        <span class="pill pill--sm pill--brand pill--outlined">
+          {{ 'spots.one' | transloco: { count: 1 } }}
+        </span>
+      </div>
+      <div class="demo-plan__people">
+        <app-spot-slots [names]="demoPeople" [free]="1" size="md" />
+        <span class="demo-plan__you">{{ 'home.demoYou' | transloco }}</span>
+      </div>
+    </section>
+
+    <section aria-labelledby="how-title" class="how">
+      <h2 id="how-title" class="section-heading section-heading--light">
+        {{ 'home.howTitle' | transloco }}
+      </h2>
+      <ol class="steps">
+        @for (step of steps; track step; let index = $index) {
+          <li class="step" [style.--i]="index">
+            <span class="step__number">{{ index + 1 }}</span>
+            <h3 class="step__title">{{ 'home.' + step | transloco }}</h3>
+            <p class="hint">{{ 'home.' + step + 'Text' | transloco }}</p>
+          </li>
+        }
+      </ol>
+    </section>
+
+    <section aria-labelledby="activities-title">
+      <h2 id="activities-title" class="section-heading section-heading--light">
+        {{ 'home.activitiesTitle' | transloco }}
+      </h2>
+      <ul class="activities">
+        @for (activity of activities; track activity.code; let index = $index) {
+          <li [class]="'activity-chip activities__chip ' + activity.tone" [style.--i]="index">
+            <i class="pi {{ activity.icon }}" aria-hidden="true"></i>
+            {{ 'activities.' + activity.code | transloco }}
+          </li>
+        }
+      </ul>
+    </section>
+  </app-main-layout>
+}

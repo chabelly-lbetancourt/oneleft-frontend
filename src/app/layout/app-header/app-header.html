@@ -1,0 +1,31 @@
+<header class="app-header">
+  <div class="app-header__inner">
+    <app-brand-logo />
+    <div class="app-header__actions">
+      <app-language-switcher />
+      @if (session.isAuthenticated()) {
+        <a routerLink="/profile" class="user-menu">
+          <p-avatar [label]="session.initials()" shape="circle" class="avatar--user" />
+          <span class="user-menu__name">{{ session.userName() }}</span>
+        </a>
+      } @else {
+        <div class="app-header__access">
+          <p-button
+            [label]="'auth.register' | transloco"
+            [text]="true"
+            size="small"
+            severity="secondary"
+            routerLink="/register"
+          />
+          <p-button
+            [label]="'auth.login' | transloco"
+            icon="pi pi-user"
+            size="small"
+            [rounded]="true"
+            routerLink="/login"
+          />
+        </div>
+      }
+    </div>
+  </div>
+</header>

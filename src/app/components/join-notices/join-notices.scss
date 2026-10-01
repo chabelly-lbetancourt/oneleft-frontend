@@ -1,0 +1,27 @@
+@use 'abstracts' as *;
+
+.join-notice {
+  display: flex;
+  width: 100%;
+  gap: space(3);
+  text-align: left;
+}
+
+.join-notice__icon {
+  @include text(2xl);
+  color: var(--ol-accent);
+}
+
+.join-notice__text {
+  flex: 1;
+}
+
+.join-notice__title {
+  @include weight(semibold);
+  display: block;
+}
+
+.join-notice__detail {
+  @include text(sm);
+  display: block;
+}

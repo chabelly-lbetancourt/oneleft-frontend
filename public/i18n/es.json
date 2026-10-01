@@ -94,7 +94,8 @@
     "hello": "Hola, {{name}}",
     "helloHint": "¿Qué te apetece hacer hoy?",
     "notifications": "Avisos de planes cerca",
-    "notificationsHint": "Elige qué planes quieres que te avisemos y cuándo."
+    "notificationsHint": "Elige qué planes quieres que te avisemos y cuándo.",
+    "loadingPlans": "Cargando tus planes…"
   },
   "plan": {
     "title": "Plan",
@@ -268,7 +269,8 @@
     "newPlan": "Nuevo plan cerca: {{activity}} a {{distance}}",
     "open": "Ver plan",
     "you": "Estás aquí",
-    "privacy": "Tu ubicación solo se usa para buscar, con unos 100 m de precisión, y no se guarda."
+    "privacy": "Tu ubicación solo se usa para buscar, con unos 100 m de precisión, y no se guarda.",
+    "loading": "Buscando planes cerca…"
   },
   "notices": {
     "joinedTitle": "Alguien se ha apuntado",
