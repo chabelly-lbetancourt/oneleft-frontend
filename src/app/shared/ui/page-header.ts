@@ -7,11 +7,11 @@ import { TranslocoPipe } from '@jsverse/transloco';
   selector: 'app-page-header',
   imports: [RouterLink, TranslocoPipe],
   template: `
-    <header class="sticky top-0 z-10 border-b border-surface-200 bg-surface-50/90 backdrop-blur">
-      <div class="mx-auto flex max-w-3xl items-center gap-3 px-4 py-3">
+    <header class="app-bar">
+      <div class="page-container flex items-center gap-3 py-3">
         <a
           routerLink="/"
-          class="back-link grid size-10 shrink-0 place-items-center rounded-full transition-colors hover:bg-surface-100"
+          class="back-link grid size-10 shrink-0 place-items-center hover-soft rounded-full"
           [attr.aria-label]="'app.back' | transloco"
         >
           <i class="pi pi-arrow-left" aria-hidden="true"></i>
