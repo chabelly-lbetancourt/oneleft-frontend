@@ -1,0 +1,26 @@
+// Tones: background and text of the activities, the brand and the ink surface
+@use 'sass:list';
+@use 'sass:map';
+@use '../abstracts' as *;
+
+@each $name, $pair in $activity-tones {
+  .tone-#{$name} {
+    background-color: list.nth($pair, 1);
+    color: list.nth($pair, 2);
+  }
+}
+
+.tone-neutral {
+  background-color: var(--ol-surface-muted);
+  color: var(--ol-ink);
+}
+
+.tone-brand {
+  background-color: var(--ol-brand-soft);
+  color: var(--ol-accent);
+}
+
+.tone-inverse {
+  background-color: rgb(255 255 255 / 0.1);
+  color: var(--p-primary-300);
+}

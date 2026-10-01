@@ -1,0 +1,44 @@
+// Document defaults on top of the Tailwind reset (preflight)
+@use '../abstracts' as *;
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--ol-font-sans);
+  -webkit-font-smoothing: antialiased;
+  background-color: var(--ol-background);
+  color: var(--ol-ink);
+}
+
+h1,
+h2,
+h3 {
+  letter-spacing: -0.015em;
+  word-spacing: 0.04em;
+}
+
+::selection {
+  background-color: var(--p-primary-100);
+}
+
+// Changing page: the old page fades out and the new one rises a little (Router with view transitions)
+@include motion {
+  ::view-transition-old(root) {
+    animation: ol-fade-out var(--ol-duration-fast) var(--ol-ease) both;
+  }
+  ::view-transition-new(root) {
+    animation: ol-fade-up var(--ol-duration-base) var(--ol-ease-out) both;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}

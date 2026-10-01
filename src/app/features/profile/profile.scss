@@ -1,0 +1,90 @@
+@use 'abstracts' as *;
+
+.profile-loading {
+  @include stack(space(6));
+}
+
+.profile-card {
+  @include card;
+  @include enter;
+  padding: space(5);
+}
+
+.profile-card__identity {
+  @include row(space(4));
+}
+
+.profile-card__names {
+  min-width: 0;
+}
+
+.profile-card__name {
+  @include text(xl);
+  @include weight(bold);
+  @include truncate;
+}
+
+.profile-card__email {
+  @include truncate;
+  color: var(--ol-text-muted);
+}
+
+.profile-card__roles {
+  @include cluster(space(2));
+  margin-top: space(4);
+}
+
+.profile-notifications {
+  margin-top: space(4);
+}
+
+.profile-form {
+  @include stack(space(6));
+  @include stagger(ol-fade-up, 60ms);
+  margin-top: space(6);
+}
+
+.form-section--tight {
+  gap: space(2);
+}
+
+.zone-actions {
+  @include cluster(space(2));
+}
+
+.hobbies__head {
+  @include row;
+  justify-content: space-between;
+}
+
+.hobbies {
+  @include stack(space(3));
+}
+
+.hobby-row {
+  @include stack(space(2));
+  @include enter(ol-fade-up, 0ms, var(--ol-duration-base));
+  @include up(sm) {
+    flex-direction: row;
+    align-items: center;
+  }
+}
+
+.hobby-row__activity {
+  @include up(sm) {
+    width: 12rem;
+  }
+}
+
+.hobby-row__level {
+  @include row(space(2));
+  justify-content: space-between;
+  @include up(sm) {
+    flex: 1;
+  }
+}
+
+.logout-button {
+  display: block;
+  margin-top: space(4);
+}

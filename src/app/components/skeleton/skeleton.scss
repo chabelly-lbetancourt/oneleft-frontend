@@ -1,0 +1,30 @@
+@use 'abstracts' as *;
+
+:host {
+  display: block;
+  flex-shrink: 0;
+  height: 0.875rem;
+  background: linear-gradient(90deg, transparent 0%, rgb(255 255 255 / 0.7) 50%, transparent 100%)
+    var(--ol-surface-muted);
+  background-size: 200% 100%;
+  background-repeat: no-repeat;
+}
+
+:host(.skeleton--line) {
+  @include radius(full);
+}
+
+:host(.skeleton--circle) {
+  @include radius(full);
+  aspect-ratio: 1;
+}
+
+:host(.skeleton--block) {
+  @include radius(md);
+}
+
+@include motion {
+  :host {
+    animation: ol-shimmer 1.4s ease-in-out infinite;
+  }
+}

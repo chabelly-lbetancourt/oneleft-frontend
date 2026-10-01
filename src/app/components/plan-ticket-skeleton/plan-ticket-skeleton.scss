@@ -1,0 +1,24 @@
+@use 'abstracts' as *;
+
+:host {
+  @include card;
+  display: flex;
+  gap: space(4);
+  padding: space(4);
+}
+
+.plan-ticket-skeleton__body {
+  @include stack(space(2.5));
+  flex: 1;
+  min-width: 0;
+}
+
+.plan-ticket-skeleton__top,
+.plan-ticket-skeleton__bottom {
+  @include row(space(3));
+  justify-content: space-between;
+}
+
+.plan-ticket-skeleton__slots {
+  @include row(space(1));
+}

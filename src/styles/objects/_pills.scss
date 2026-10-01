@@ -1,0 +1,40 @@
+// Pills: free spots, labels and the kicker of the home screen
+@use '../abstracts' as *;
+
+.pill {
+  @include radius(full);
+  @include weight(semibold);
+  display: inline-flex;
+  align-items: center;
+  gap: space(2);
+  white-space: nowrap;
+}
+
+.pill--sm {
+  @include text(xs);
+  padding: space(0.5) space(2.5);
+}
+
+.pill--md {
+  @include text(sm);
+  padding: space(1) space(3);
+}
+
+.pill--brand {
+  background-color: var(--ol-brand-soft);
+  color: var(--ol-brand);
+}
+
+.pill--outlined {
+  box-shadow: 0 0 0 1px var(--ol-brand-ring);
+}
+
+/// An activity as a rounded chip: the list of the home screen and the choice of activities of the notices
+.activity-chip {
+  @include radius(full);
+  @include text(sm);
+  display: inline-flex;
+  align-items: center;
+  gap: space(2);
+  padding: space(1.5) space(3);
+}

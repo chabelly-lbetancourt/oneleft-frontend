@@ -1,0 +1,10 @@
+@if (variant() === 'inverse') {
+  <app-icon-tile [icon]="icon()" tone="tone-inverse" size="lg" iconSize="2xl" />
+} @else {
+  <app-icon-tile [icon]="icon()" tone="tone-brand" size="sm" iconSize="xl" />
+}
+<div class="entry-link__text">
+  <h2 [id]="titleId()" class="entry-link__title">{{ title() }}</h2>
+  <p class="entry-link__hint">{{ hint() }}</p>
+</div>
+<i class="entry-link__arrow pi pi-arrow-right" aria-hidden="true"></i>

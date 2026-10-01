@@ -1,0 +1,24 @@
+@use 'abstracts' as *;
+
+.google-login {
+  @include radius(full);
+  @include weight(semibold);
+  @include transition-colors;
+  @include pressable(0.98, false);
+  @include focus-ring;
+  display: inline-flex;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  gap: space(3);
+  padding: space(3) space(5);
+  border: 1px solid var(--ol-border-strong);
+  background-color: var(--ol-surface);
+  &:hover {
+    background-color: var(--ol-surface-muted);
+  }
+}
+
+.google-login__logo {
+  @include square(space(5));
+}

@@ -1,0 +1,176 @@
+// Mixins of the design system: every page and component builds its styles with them instead of repeating values.
+@use 'sass:list';
+@use 'sass:map';
+@use 'tokens' as *;
+
+/// From a breakpoint up (mobile first)
+@mixin up($breakpoint) {
+  @media (min-width: map.get($breakpoints, $breakpoint)) {
+    @content;
+  }
+}
+
+/// Only when the person has not asked for reduced motion
+@mixin motion {
+  @media (prefers-reduced-motion: no-preference) {
+    @content;
+  }
+}
+
+/// A step of the type scale, with its line height (or another one: tight, snug, none)
+@mixin text($size, $leading: null) {
+  $pair: map.get($font-sizes, $size);
+  font-size: list.nth($pair, 1);
+  @if $leading {
+    line-height: map.get($leading-scale, $leading);
+  } @else {
+    line-height: list.nth($pair, 2);
+  }
+}
+$leading-scale: $leading;
+
+@mixin weight($name) {
+  font-weight: map.get($font-weights, $name);
+}
+
+@mixin radius($name) {
+  border-radius: map.get($radii, $name);
+}
+
+/// The content column of every page
+@mixin container($width: $container-width) {
+  width: 100%;
+  max-width: $width;
+  margin-inline: auto;
+  padding-inline: space(4);
+}
+
+@mixin stack($gap: space(3)) {
+  display: flex;
+  flex-direction: column;
+  gap: $gap;
+}
+
+@mixin row($gap: space(3), $align: center) {
+  display: flex;
+  align-items: $align;
+  gap: $gap;
+}
+
+@mixin cluster($gap: space(2)) {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: $gap;
+}
+
+@mixin center {
+  display: grid;
+  place-items: center;
+}
+
+@mixin truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@mixin square($size) {
+  width: $size;
+  height: $size;
+}
+
+/// Content surface: thin border and a soft shadow
+@mixin card {
+  background-color: var(--ol-surface);
+  border: 1px solid var(--ol-border);
+  border-radius: map.get($radii, lg);
+  box-shadow: var(--ol-shadow-card);
+}
+
+/// A card that is a link or a button: it lifts a little on hover and sinks when pressed
+@mixin card-interactive {
+  transition:
+    border-color var(--ol-duration-fast) var(--ol-ease),
+    box-shadow var(--ol-duration-fast) var(--ol-ease),
+    transform var(--ol-duration-fast) var(--ol-ease);
+  &:hover {
+    border-color: var(--ol-border-strong);
+    box-shadow: var(--ol-shadow-raised);
+  }
+  @include motion {
+    &:hover {
+      transform: translateY(-1px);
+    }
+    &:active {
+      transform: translateY(0) scale(0.99);
+    }
+  }
+}
+
+@mixin transition-colors {
+  transition-property:
+    color, background-color, border-color, outline-color, fill, stroke, transform;
+  transition-duration: var(--ol-duration-fast);
+  transition-timing-function: var(--ol-ease);
+}
+
+/// Buttons and chips: a short press feedback (pass false when the element already has transition-colors)
+@mixin pressable($scale: 0.97, $with-transition: true) {
+  @include motion {
+    @if $with-transition {
+      transition: transform var(--ol-duration-fast) var(--ol-ease);
+    }
+    &:active {
+      transform: scale($scale);
+    }
+  }
+}
+
+/// Entrance of an element (see base/_animations.scss)
+@mixin enter($animation: ol-fade-up, $delay: 0ms, $duration: var(--ol-duration-slow)) {
+  @include motion {
+    animation: $animation $duration var(--ol-ease-out) both;
+    animation-delay: $delay;
+  }
+}
+
+/// Entrance of the children of a list, one after another (each child sets --i: its position)
+@mixin stagger($animation: ol-fade-up, $step: 45ms) {
+  > * {
+    @include enter($animation, calc(min(var(--i, 0), 8) * #{$step}));
+  }
+}
+
+/// The free spot: a discreet dashed ring in the brand orange
+@mixin spot {
+  border: 1.5px dashed var(--p-primary-400);
+  background-color: var(--p-primary-50);
+  color: var(--ol-brand);
+}
+
+/// Visible focus for custom controls
+@mixin focus-ring {
+  &:focus-visible {
+    outline: 2px solid var(--ol-ink);
+    outline-offset: 2px;
+  }
+}
+
+/// The bar on top of every page: it stays while scrolling, translucent over the content
+@mixin app-bar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  border-bottom: 1px solid var(--ol-border);
+  background-color: color-mix(in oklab, var(--ol-background) 90%, transparent);
+  backdrop-filter: blur(8px);
+}
+
+/// Round buttons and links without a background of their own: a soft background on hover
+@mixin hover-soft {
+  @include transition-colors;
+  &:hover {
+    background-color: var(--ol-surface-muted);
+  }
+}

@@ -1,0 +1,33 @@
+@use 'abstracts' as *;
+
+.app-header {
+  @include app-bar;
+}
+
+.app-header__inner {
+  @include container;
+  @include row(space(2));
+  justify-content: space-between;
+  padding-block: space(3);
+}
+
+.app-header__actions {
+  @include row(space(1));
+}
+
+.app-header__access {
+  display: flex;
+  gap: space(1);
+}
+
+.user-menu {
+  @include row(space(2));
+  @include radius(full);
+  @include hover-soft;
+  padding: space(1) space(3) space(1) space(1);
+}
+
+.user-menu__name {
+  @include text(sm);
+  @include weight(bold);
+}
