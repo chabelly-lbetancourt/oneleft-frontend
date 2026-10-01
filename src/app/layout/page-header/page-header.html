@@ -1,0 +1,9 @@
+<header class="page-header">
+  <div class="page-header__inner">
+    <a routerLink="/" class="back-link" [attr.aria-label]="'app.back' | transloco">
+      <i class="pi pi-arrow-left" aria-hidden="true"></i>
+    </a>
+    <h1 class="page-header__title">{{ title() }}</h1>
+    <ng-content />
+  </div>
+</header>

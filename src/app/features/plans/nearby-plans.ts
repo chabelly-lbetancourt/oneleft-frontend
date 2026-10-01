@@ -15,13 +15,16 @@ import {
   LocationError,
   MEETING_POINT_DECIMALS,
 } from '../../core/geo/approximate-location';
+import { EmptyState } from '../../components/empty-state/empty-state';
+import { PlanTicketSkeleton } from '../../components/plan-ticket-skeleton/plan-ticket-skeleton';
+import { PlanTicket } from '../../components/plan-ticket/plan-ticket';
 import { Language } from '../../core/i18n/language';
 import { NearbyStream } from '../../core/realtime/nearby-stream';
 import { formatDistance } from '../../shared/geo/distance';
 import { ACTIVITIES, activityKey } from '../../shared/model/activities';
+import { BottomBar } from '../../layout/bottom-bar/bottom-bar';
+import { PageLayout } from '../../layout/page-layout/page-layout';
 import { NearbyPlan, NearbyPlanEvent, nearbyParams, NearbyQuery } from '../../shared/model/nearby';
-import { PageHeader } from '../../shared/ui/page-header';
-import { PlanTicket } from '../../shared/ui/plan-ticket';
 import { NearbyMap } from './nearby-map';
 
 export const RADIUS_OPTIONS = [1000, 3000, 5000, 10000];
@@ -38,18 +41,22 @@ type View = 'list' | 'map';
 @Component({
   selector: 'app-nearby-plans',
   imports: [
-    FormsModule,
-    RouterLink,
+    BottomBar,
     Button,
+    EmptyState,
+    FormsModule,
     Message,
     MultiSelect,
     NearbyMap,
-    PageHeader,
+    PageLayout,
     PlanTicket,
+    PlanTicketSkeleton,
+    RouterLink,
     SelectButton,
     TranslocoPipe,
   ],
   templateUrl: './nearby-plans.html',
+  styleUrl: './nearby-plans.scss',
 })
 export class NearbyPlans {
   private readonly api = inject(PlansApi);
@@ -112,6 +119,10 @@ export class NearbyPlans {
     return query ? { url: this.api.nearbyUrl(), params: nearbyParams(query) } : undefined;
   });
   protected readonly plans = computed(() => (this.results.hasValue() ? this.results.value() : []));
+  /** The first search of some filters: the skeletons stand in for the list (a reload keeps the list shown) */
+  protected readonly searching = computed(
+    () => this.results.isLoading() && !this.results.hasValue(),
+  );
 
   constructor() {
     void this.locate();

@@ -1,0 +1,18 @@
+/*
+ * OneLeft visual identity: a calm, modern interface with its own details
+ * - One typeface (Plus Jakarta Sans) and warm neutrals; main actions in ink with white text (AA contrast)
+ * - The brand orange only as an accent: logo, free spots, active states
+ * - The free spot, the idea of the app, as a discreet dashed ring
+ *
+ * Structure: abstracts (tokens and mixins, no CSS output), base (custom properties, document, keyframes) and objects
+ * (classes shared by the templates). Each component and page has its own .scss built with the same mixins.
+ * Tailwind (tailwind.css) is only the reset and a few utilities such as sr-only.
+ */
+@use 'base/root';
+@use 'base/animations';
+@use 'base/base';
+@use 'objects/surfaces';
+@use 'objects/text';
+@use 'objects/pills';
+@use 'objects/tones';
+@use 'objects/primeng';

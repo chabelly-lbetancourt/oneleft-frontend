@@ -1,0 +1,23 @@
+@use 'abstracts' as *;
+
+:host {
+  @include center;
+  @include radius(md);
+  flex-shrink: 0;
+}
+
+:host(.icon-tile--sm) {
+  @include square(space(10));
+}
+:host(.icon-tile--md) {
+  @include square(space(11));
+}
+:host(.icon-tile--lg) {
+  @include square(space(12));
+}
+
+@each $size in (lg, xl, 2xl) {
+  :host(.icon-tile--icon-#{$size}) .pi {
+    @include text($size);
+  }
+}

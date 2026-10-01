@@ -1,0 +1,31 @@
+@use 'abstracts' as *;
+
+:host {
+  @include stack(space(3));
+  @include radius(xl);
+  @include enter(ol-scale-in);
+  align-items: center;
+  padding: space(8);
+  border: 1px dashed var(--ol-border-strong);
+  text-align: center;
+}
+
+.empty-state__spot {
+  @include spot;
+  @include center;
+  @include square(space(14));
+  @include radius(full);
+  @include text(xl);
+  @include weight(bold);
+}
+
+@include motion {
+  .empty-state__spot {
+    animation: ol-breathe 2.4s ease-in-out infinite;
+  }
+}
+
+.empty-state__message {
+  max-width: 20rem;
+  color: var(--ol-text-soft);
+}

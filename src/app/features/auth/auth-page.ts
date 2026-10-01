@@ -3,10 +3,9 @@ import { RouterLink } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { Button } from 'primeng/button';
 import { Session } from '../../core/auth/session';
-import { BrandLogo } from '../../shared/ui/brand-logo';
-import { GoogleButton } from '../../shared/ui/google-button';
-import { LanguageSwitcher } from '../../shared/ui/language-switcher';
-import { SpotSlots } from '../../shared/ui/spot-slots';
+import { GoogleButton } from '../../components/google-button/google-button';
+import { SpotSlots } from '../../components/spot-slots/spot-slots';
+import { AuthLayout } from '../../layout/auth-layout/auth-layout';
 
 export type AuthMode = 'login' | 'register';
 
@@ -16,16 +15,9 @@ export type AuthMode = 'login' | 'register';
  */
 @Component({
   selector: 'app-auth-page',
-  imports: [
-    BrandLogo,
-    Button,
-    GoogleButton,
-    LanguageSwitcher,
-    RouterLink,
-    SpotSlots,
-    TranslocoPipe,
-  ],
+  imports: [AuthLayout, Button, GoogleButton, RouterLink, SpotSlots, TranslocoPipe],
   templateUrl: './auth-page.html',
+  styleUrl: './auth-page.scss',
 })
 export class AuthPage {
   protected readonly session = inject(Session);

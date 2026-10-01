@@ -1,0 +1,17 @@
+@use 'abstracts' as *;
+
+:host {
+  @include card;
+  @include stack(space(3));
+  padding: space(5);
+}
+
+.card-skeleton__head {
+  @include row(space(4));
+  margin-bottom: space(1);
+}
+
+.card-skeleton__title {
+  @include stack(space(2));
+  flex: 1;
+}

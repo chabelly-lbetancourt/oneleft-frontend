@@ -1,0 +1,110 @@
+@use 'abstracts' as *;
+
+.plan-page,
+.plan-loading {
+  @include stack(space(5));
+}
+
+.plan-card {
+  @include card;
+  @include enter;
+  overflow: hidden;
+}
+
+.plan-card__head {
+  @include row(space(4));
+  padding: space(5);
+  border-bottom: 1px solid var(--ol-border);
+}
+
+.plan-card__when {
+  flex: 1;
+  min-width: 0;
+}
+
+.plan-card__activity {
+  @include text(sm);
+  @include weight(medium);
+  color: var(--ol-text-muted);
+}
+
+.plan-card__time {
+  @include text(2xl, tight);
+  @include weight(bold);
+}
+
+.plan-card__spots {
+  flex-shrink: 0;
+}
+
+.plan-card__body {
+  @include stack(space(4));
+  padding: space(5);
+}
+
+.plan-card__title {
+  @include text(xl, snug);
+  @include weight(bold);
+}
+
+.facts {
+  @include text(sm);
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: space(2.5) space(3);
+
+  dt {
+    color: var(--ol-text-muted);
+  }
+}
+
+.participants {
+  @include card;
+  @include stack(space(4));
+  @include enter(ol-fade-up, 80ms);
+  padding: space(5);
+}
+
+.participants__head {
+  @include row;
+  justify-content: space-between;
+}
+
+.participants__count {
+  @include weight(bold);
+}
+
+.waitlist-count {
+  margin-top: space(-2);
+}
+
+.people {
+  @include cluster(space(2));
+  @include stagger(ol-scale-in, 40ms);
+}
+
+.participant {
+  @include row(space(2));
+  @include radius(full);
+  padding: space(1) space(3) space(1) space(1);
+  border: 1px solid var(--ol-border);
+  background-color: var(--ol-surface);
+}
+
+.participant__name {
+  @include text(sm);
+}
+
+.leave-confirm {
+  @include stack(space(3));
+  @include enter(ol-scale-in, 0ms, var(--ol-duration-base));
+}
+
+.leave-confirm__text {
+  @include text(sm);
+}
+
+.leave-confirm__actions {
+  display: flex;
+  gap: space(2);
+}

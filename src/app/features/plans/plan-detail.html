@@ -1,19 +1,18 @@
-<div class="min-h-full">
-  <app-page-header [title]="'plan.title' | transloco">
-    @if (plan()) {
-      <p-button
-        class="share-button"
-        icon="pi pi-share-alt"
-        [label]="'plan.share' | transloco"
-        [text]="true"
-        [rounded]="true"
-        severity="secondary"
-        (onClick)="share()"
-      />
-    }
-  </app-page-header>
+<app-page-layout [title]="'plan.title' | transloco" [spaceAtEnd]="false">
+  @if (plan()) {
+    <p-button
+      pageActions
+      class="share-button"
+      icon="pi pi-share-alt"
+      [label]="'plan.share' | transloco"
+      [text]="true"
+      [rounded]="true"
+      severity="secondary"
+      (onClick)="share()"
+    />
+  }
 
-  <main class="page-container flex flex-col gap-5 py-6">
+  <div class="plan-page">
     @if (copied()) {
       <p-message
         severity="success"
@@ -30,49 +29,45 @@
     }
 
     @if (notFound()) {
-      <div class="plan-error alert-blocking">
-        {{ 'plan.notFound' | transloco }}
-      </div>
+      <div class="plan-error alert alert--blocking">{{ 'plan.notFound' | transloco }}</div>
     } @else if (plan(); as current) {
-      <section class="plan-card card overflow-hidden">
-        <div class="hairline-b flex items-center gap-4 p-5">
+      <section class="plan-card">
+        <div class="plan-card__head">
           <app-icon-tile [icon]="activity().icon" [tone]="activity().tone" size="lg" />
-          <div class="min-w-0 flex-1">
-            <p class="text-sm font-medium text-muted">
-              {{ activityKey() | transloco }}
-            </p>
+          <div class="plan-card__when">
+            <p class="plan-card__activity">{{ activityKey() | transloco }}</p>
             @if (startsAt(); as start) {
-              <p class="text-2xl font-bold leading-tight">{{ start.time }}</p>
+              <p class="plan-card__time">{{ start.time }}</p>
             }
           </div>
-          <span class="pill pill-md pill-brand pill-outlined shrink-0">
+          <span class="plan-card__spots pill pill--md pill--brand pill--outlined">
             {{ spotsKey(current.freeSpots) | transloco: { count: current.freeSpots } }}
           </span>
         </div>
-        <div class="flex flex-col gap-4 p-5">
-          <h2 class="text-xl font-bold leading-snug">{{ current.title }}</h2>
+        <div class="plan-card__body">
+          <h2 class="plan-card__title">{{ current.title }}</h2>
           @if (current.description) {
             <p>{{ current.description }}</p>
           }
 
-          <dl class="grid grid-cols-[auto_1fr] gap-x-3 gap-y-2.5 text-sm">
-            <dt class="text-muted"><i class="pi pi-clock" aria-hidden="true"></i></dt>
+          <dl class="facts">
+            <dt><i class="pi pi-clock" aria-hidden="true"></i></dt>
             <dd class="plan-time">
               @if (startsAt(); as start) {
                 {{ 'time.at' | transloco: { time: start.time } }} ·
                 {{ start.relative.key | transloco: start.relative.params }}
               }
             </dd>
-            <dt class="text-muted"><i class="pi pi-map-marker" aria-hidden="true"></i></dt>
+            <dt><i class="pi pi-map-marker" aria-hidden="true"></i></dt>
             <dd>
               {{ current.meetingPoint.name }} ·
               <a class="link-strong" [href]="mapUrl()" target="_blank" rel="noopener">
                 {{ 'plan.viewOnMap' | transloco }}
               </a>
             </dd>
-            <dt class="text-muted"><i class="pi pi-chart-bar" aria-hidden="true"></i></dt>
+            <dt><i class="pi pi-chart-bar" aria-hidden="true"></i></dt>
             <dd>{{ levelKey() | transloco }}</dd>
-            <dt class="text-muted"><i class="pi pi-user" aria-hidden="true"></i></dt>
+            <dt><i class="pi pi-user" aria-hidden="true"></i></dt>
             <dd>
               @if (current.organizerName) {
                 {{ 'plan.organizer' | transloco: { name: current.organizerName } }}
@@ -87,38 +82,38 @@
         </div>
       </section>
 
-      <section class="participants card flex flex-col gap-4 p-5">
-        <div class="flex items-center justify-between">
-          <h3 class="text-lg font-bold">{{ 'plan.participants' | transloco }}</h3>
-          <span class="font-bold">{{ current.occupied }}/{{ current.spots }}</span>
+      <section class="participants">
+        <div class="participants__head">
+          <h3 class="section-title">{{ 'plan.participants' | transloco }}</h3>
+          <span class="participants__count">{{ current.occupied }}/{{ current.spots }}</span>
         </div>
         @if (current.waitlist.length) {
-          <p class="waitlist-count -mt-2 text-sm text-muted">
-            <i class="pi pi-clock text-xs" aria-hidden="true"></i>
+          <p class="waitlist-count hint">
+            <i class="pi pi-clock icon-xs" aria-hidden="true"></i>
             {{ 'plan.waitlistCount' | transloco: { count: current.waitlist.length } }}
           </p>
         }
         <app-spot-slots [names]="people()" [free]="current.freeSpots" size="md" />
         @if (current.participants.length) {
-          <ul class="flex flex-wrap gap-2">
+          <ul class="people">
             @for (participant of current.participants; track participant.userId) {
-              <li class="participant person-chip">
+              <li class="participant" [style.--i]="$index">
                 <p-avatar
                   [label]="initials(participant.name)"
                   shape="circle"
-                  class="avatar-participant"
+                  class="avatar--participant"
                 />
-                <span class="text-sm">
+                <span class="participant__name">
                   {{ participant.name }}
                   @if (isMe(participant.userId)) {
-                    <span class="text-muted">({{ 'plan.you' | transloco }})</span>
+                    <span class="muted">({{ 'plan.you' | transloco }})</span>
                   }
                 </span>
               </li>
             }
           </ul>
         } @else if (!isGuest()) {
-          <p class="text-sm text-muted">{{ 'plan.noParticipants' | transloco }}</p>
+          <p class="hint">{{ 'plan.noParticipants' | transloco }}</p>
         }
 
         @switch (relation()) {
@@ -128,10 +123,10 @@
               [label]="'plan.join' | transloco"
               icon="pi pi-user-plus"
               size="large"
-              styleClass="w-full"
+              styleClass="button--block"
               (onClick)="signIn()"
             />
-            <p class="text-sm text-muted">{{ 'plan.guestHint' | transloco }}</p>
+            <p class="hint">{{ 'plan.guestHint' | transloco }}</p>
           }
           @case ('canJoin') {
             <p-button
@@ -139,7 +134,7 @@
               [label]="'plan.join' | transloco"
               icon="pi pi-user-plus"
               size="large"
-              styleClass="w-full"
+              styleClass="button--block"
               [loading]="joining()"
               (onClick)="join()"
             />
@@ -149,9 +144,9 @@
               {{ (justJoined() ? 'plan.justJoined' : 'plan.youAreIn') | transloco }}
             </p-message>
             @if (confirmingLeave()) {
-              <div class="leave-confirm panel-muted flex flex-col gap-3">
-                <p class="text-sm">{{ 'plan.leaveConfirm' | transloco }}</p>
-                <div class="flex gap-2">
+              <div class="leave-confirm panel-muted">
+                <p class="leave-confirm__text">{{ 'plan.leaveConfirm' | transloco }}</p>
+                <div class="leave-confirm__actions">
                   <p-button
                     class="leave-yes"
                     [label]="'plan.leaveYes' | transloco"
@@ -194,7 +189,7 @@
             />
           }
           @case ('organizer') {
-            <p class="organizer-hint text-sm text-muted">{{ 'plan.yourPlan' | transloco }}</p>
+            <p class="organizer-hint hint">{{ 'plan.yourPlan' | transloco }}</p>
           }
           @case ('full') {
             <p-tag
@@ -208,17 +203,17 @@
               [label]="'plan.waitlistJoin' | transloco"
               icon="pi pi-bell"
               size="large"
-              styleClass="w-full"
+              styleClass="button--block"
               [outlined]="true"
               [loading]="busy()"
               (onClick)="isGuest() ? signIn() : joinWaitlist()"
             />
-            <p class="text-sm text-muted">
+            <p class="hint">
               {{ (isGuest() ? 'plan.guestHint' : 'plan.waitlistHint') | transloco }}
             </p>
           }
           @case ('closed') {
-            <p class="text-sm text-muted">{{ 'plan.closed' | transloco }}</p>
+            <p class="hint">{{ 'plan.closed' | transloco }}</p>
           }
         }
         @if (justLeft()) {
@@ -231,7 +226,11 @@
         }
       </section>
     } @else {
-      <p class="text-muted">{{ 'plan.loading' | transloco }}</p>
+      <div class="plan-loading" role="status">
+        <span class="sr-only">{{ 'plan.loading' | transloco }}</span>
+        <app-card-skeleton media="block" [lines]="4" />
+        <app-card-skeleton [lines]="2" />
+      </div>
     }
-  </main>
-</div>
+  </div>
+</app-page-layout>

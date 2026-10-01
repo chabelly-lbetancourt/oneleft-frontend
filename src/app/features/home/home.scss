@@ -1,0 +1,154 @@
+@use 'abstracts' as *;
+
+// With a session
+.greeting {
+  @include enter;
+  padding-block: space(7);
+}
+
+.greeting__title {
+  @include text(2xl, tight);
+  @include weight(bold);
+  @include up(sm) {
+    @include text(3xl, tight);
+  }
+}
+
+.greeting__hint {
+  margin-top: space(1);
+  color: var(--ol-text-muted);
+}
+
+.entries {
+  @include stack(space(3));
+  @include stagger;
+  margin-bottom: space(8);
+}
+
+.section-heading {
+  @include text(xl);
+  @include weight(bold);
+  margin-bottom: space(3);
+}
+
+.section-heading--light {
+  @include weight(semibold);
+  margin-bottom: space(4);
+}
+
+.list,
+.my-plans-loading {
+  @include stack(space(4));
+}
+
+.list {
+  @include stagger;
+}
+
+.my-plan {
+  display: block;
+}
+
+// Without a session: the landing
+.hero {
+  @include enter;
+  padding-top: space(10);
+  padding-bottom: space(8);
+}
+
+.hero__title {
+  @include text(4xl);
+  @include weight(bold);
+  margin-top: space(5);
+  line-height: 1.1;
+  letter-spacing: -0.025em;
+  @include up(sm) {
+    @include text(5xl);
+    line-height: 1.1;
+  }
+}
+
+.hero__subtitle {
+  @include text(lg);
+  max-width: $narrow-width;
+  margin-top: space(4);
+  color: var(--ol-text-soft);
+}
+
+.demo-plan {
+  @include card;
+  @include enter(ol-scale-in, 150ms);
+  margin-bottom: space(14);
+  padding: space(5);
+}
+
+.demo-plan__top {
+  @include row(space(3));
+}
+
+.demo-plan__text {
+  flex: 1;
+}
+
+.demo-plan__title {
+  @include weight(semibold);
+  line-height: 1.25;
+}
+
+.demo-plan__people {
+  @include row(space(3));
+  margin-top: space(4);
+}
+
+.demo-plan__you {
+  @include text(sm);
+  @include weight(medium);
+  color: var(--ol-brand);
+}
+
+.how {
+  margin-bottom: space(12);
+}
+
+.steps {
+  @include stagger;
+  display: grid;
+  gap: space(4);
+  @include up(sm) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.step {
+  @include card;
+  padding: space(5);
+}
+
+.step__number {
+  @include center;
+  @include square(space(9));
+  @include radius(full);
+  @include text(sm);
+  @include weight(bold);
+  background-color: var(--ol-brand-soft);
+  color: var(--ol-brand);
+}
+
+.step__title {
+  @include weight(semibold);
+  margin-top: space(3);
+  line-height: 1.375;
+}
+
+.step .hint {
+  margin-top: space(1);
+}
+
+.activities {
+  @include cluster(space(2));
+  @include stagger(ol-scale-in, 30ms);
+}
+
+.activities__chip {
+  @include weight(medium);
+}

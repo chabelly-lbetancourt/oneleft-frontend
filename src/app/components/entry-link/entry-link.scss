@@ -1,0 +1,59 @@
+@use 'abstracts' as *;
+
+:host {
+  @include card;
+  @include card-interactive;
+  @include row(space(4));
+  padding: space(4);
+}
+
+:host(.entry-link--inverse) {
+  @include radius(lg);
+  padding: space(5);
+  border: 0;
+  background-color: var(--ol-ink);
+  box-shadow: none;
+  color: #fff;
+  &:hover {
+    background-color: var(--p-surface-800);
+    box-shadow: var(--ol-shadow-raised);
+  }
+}
+
+.entry-link__text {
+  flex: 1;
+  min-width: 0;
+}
+
+.entry-link__title {
+  @include weight(semibold);
+
+  :host(.entry-link--inverse) & {
+    @include text(lg);
+  }
+}
+
+.entry-link__hint {
+  @include text(sm);
+  color: var(--ol-text-muted);
+
+  :host(.entry-link--inverse) & {
+    color: var(--ol-on-inverse);
+  }
+}
+
+.entry-link__arrow {
+  color: var(--ol-text-subtle);
+  transition: transform var(--ol-duration-base) var(--ol-ease-out);
+
+  :host(.entry-link--inverse) & {
+    color: var(--ol-on-inverse);
+  }
+}
+
+// The arrow moves towards where the entry leads
+@include motion {
+  :host(:hover) .entry-link__arrow {
+    transform: translateX(0.25rem);
+  }
+}

@@ -1,0 +1,31 @@
+@use 'abstracts' as *;
+
+.publish-form {
+  @include stack(space(6));
+  @include stagger(ol-fade-up, 60ms);
+}
+
+.section-title--spaced {
+  margin-top: space(2);
+}
+
+.optional {
+  @include weight(regular);
+  color: var(--ol-text-muted);
+}
+
+.field-full {
+  width: 100%;
+}
+
+.start-options {
+  flex-wrap: wrap;
+}
+
+.custom-time {
+  width: 10rem;
+}
+
+.place-actions {
+  @include cluster(space(2));
+}

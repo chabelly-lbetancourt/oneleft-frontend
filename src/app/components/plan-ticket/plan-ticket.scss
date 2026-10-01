@@ -1,0 +1,65 @@
+@use 'abstracts' as *;
+
+:host {
+  display: block;
+}
+
+.plan-ticket {
+  @include card;
+  @include card-interactive;
+  display: flex;
+  gap: space(4);
+  padding: space(4);
+}
+
+.plan-ticket__body {
+  @include stack(space(1.5));
+  flex: 1;
+  min-width: 0;
+}
+
+.plan-ticket__top {
+  @include row(space(3), flex-start);
+  justify-content: space-between;
+}
+
+.plan-ticket__title {
+  @include text(base, snug);
+  @include weight(semibold);
+}
+
+.spots-left {
+  flex-shrink: 0;
+}
+
+.plan-ticket__meta {
+  @include text(sm);
+  color: var(--ol-text-muted);
+}
+
+.plan-ticket__strong {
+  @include weight(semibold);
+  color: var(--ol-ink);
+}
+
+.plan-ticket__bottom {
+  @include row(space(3));
+  justify-content: space-between;
+  margin-top: space(1);
+}
+
+.plan-ticket__place {
+  @include text(sm);
+  @include truncate;
+  min-width: 0;
+  color: var(--ol-text-muted);
+}
+
+.nearby-distance {
+  @include weight(medium);
+  color: var(--ol-ink);
+}
+
+.plan-ticket__slots {
+  flex-shrink: 0;
+}
