@@ -17,6 +17,7 @@ import { activityKey, activityOf } from '../../shared/model/activities';
 import { levelKey } from '../../shared/model/profile';
 import { Plan } from '../../shared/model/published-plan';
 import { clockTime, spotsKey, startsIn } from '../../shared/time/plan-time';
+import { IconTile } from '../../shared/ui/icon-tile';
 import { PageHeader } from '../../shared/ui/page-header';
 import { SpotSlots } from '../../shared/ui/spot-slots';
 
@@ -25,7 +26,7 @@ type Relation = 'guest' | 'organizer' | 'participant' | 'waiting' | 'canJoin' | 
 
 @Component({
   selector: 'app-plan-detail',
-  imports: [Avatar, Button, Message, PageHeader, SpotSlots, Tag, TranslocoPipe],
+  imports: [Avatar, Button, IconTile, Message, PageHeader, SpotSlots, Tag, TranslocoPipe],
   templateUrl: './plan-detail.html',
 })
 export class PlanDetail {

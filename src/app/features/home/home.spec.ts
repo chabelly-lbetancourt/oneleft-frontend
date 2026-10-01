@@ -73,19 +73,11 @@ describe('Home', () => {
     expect(element.querySelector('.user-menu')).toBeNull();
   });
 
-  it('should offer to continue with Google only without a session', async () => {
-    const google = element.querySelector<HTMLButtonElement>('.google-login');
-    expect(google?.textContent).toContain('Continuar con Google');
-    google?.click();
-    expect(session.loginWithGoogle).toHaveBeenCalled();
-
-    session.signIn('Ana Test');
-    fixture.detectChanges();
-    TestBed.inject(HttpTestingController)
-      .expectOne((r) => r.url.endsWith('/api/v1/plans/mine'))
-      .flush([]);
-    await fixture.whenStable();
+  it('should leave signing up and signing in to the header', () => {
+    // The landing only tells what OneLeft is: no second set of sign-up buttons
+    expect(element.querySelector('.hero p-button')).toBeNull();
     expect(element.querySelector('.google-login')).toBeNull();
+    expect(element.querySelectorAll('header p-button:not(.language-switcher)')).toHaveLength(2);
   });
 
   it('should show the user and a link to the profile with a session', async () => {
@@ -135,7 +127,7 @@ describe('Home', () => {
     fixture.detectChanges();
     await fixture.whenStable();
     expect(element.querySelector('h1')?.textContent).toContain('One short?');
-    expect(element.querySelector('.start-button')?.textContent).toContain('Create a free account');
+    expect(element.querySelector('header')?.textContent).toContain('Sign up');
     expect(document.documentElement.lang).toBe('en');
     (element.querySelector('.language-switcher button') as HTMLButtonElement).click();
     fixture.detectChanges();

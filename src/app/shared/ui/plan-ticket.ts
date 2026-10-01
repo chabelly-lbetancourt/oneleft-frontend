@@ -5,6 +5,7 @@ import { formatDistance } from '../geo/distance';
 import { activityKey, activityOf } from '../model/activities';
 import { Plan } from '../model/published-plan';
 import { clockTime, spotsKey, startsIn } from '../time/plan-time';
+import { IconTile } from './icon-tile';
 import { SpotSlots } from './spot-slots';
 
 /**
@@ -12,28 +13,25 @@ import { SpotSlots } from './spot-slots';
  */
 @Component({
   selector: 'app-plan-ticket',
-  imports: [SpotSlots, TranslocoPipe],
+  imports: [IconTile, SpotSlots, TranslocoPipe],
   template: `
     @let current = plan();
     <article class="plan-ticket card card-link flex gap-4 p-4">
-      <div [class]="'grid size-11 shrink-0 place-items-center rounded-xl ' + activity().tone">
-        <i class="pi {{ activity().icon }} text-lg" aria-hidden="true"></i>
-      </div>
+      <app-icon-tile [icon]="activity().icon" [tone]="activity().tone" iconSize="lg" />
       <div class="flex min-w-0 flex-1 flex-col gap-1.5">
         <div class="flex items-start justify-between gap-3">
           <h2 class="text-base font-semibold leading-snug">{{ current.title }}</h2>
-          <span
-            class="spots-left shrink-0 rounded-full bg-primary-50 px-2.5 py-0.5 text-xs font-semibold whitespace-nowrap text-primary-700 ring-1 ring-primary-200"
-            >{{ spotsKey(current.freeSpots) | transloco: { count: current.freeSpots } }}</span
-          >
+          <span class="spots-left pill pill-sm pill-brand pill-outlined shrink-0">{{
+            spotsKey(current.freeSpots) | transloco: { count: current.freeSpots }
+          }}</span>
         </div>
-        <p class="text-sm text-surface-600">
+        <p class="text-sm text-muted">
           {{ activityKey() | transloco }} ·
           <span class="font-semibold text-ink">{{ time() }}</span> ·
           {{ relative().key | transloco: relative().params }}
         </p>
         <div class="mt-1 flex items-center justify-between gap-3">
-          <p class="min-w-0 truncate text-sm text-surface-600">
+          <p class="min-w-0 truncate text-sm text-muted">
             <i class="pi pi-map-marker text-xs" aria-hidden="true"></i>
             {{ current.meetingPoint.name }}
             @if (distanceMeters() !== null) {

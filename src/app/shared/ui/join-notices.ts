@@ -26,7 +26,7 @@ import { clockTime, spotsKey } from '../time/plan-time';
           class="join-notice flex w-full gap-3 text-left"
           (click)="open(message.data)"
         >
-          <i class="pi {{ message.icon }} text-2xl text-primary-600" aria-hidden="true"></i>
+          <i class="pi {{ message.icon }} text-2xl text-accent" aria-hidden="true"></i>
           <span class="flex-1">
             <span class="block font-semibold">{{ message.summary }}</span>
             <span class="block text-sm">{{ message.detail }}</span>
