@@ -1,0 +1,55 @@
+// Small refinements of PrimeNG components (its styles live in the "primeng" layer, so these win)
+@use '../abstracts' as *;
+
+// Avatars with initials: signed-in user, profile and participants
+.avatar--user.p-avatar {
+  @include weight(semibold);
+  background-color: var(--p-primary-100);
+  color: var(--p-primary-800);
+}
+
+.avatar--profile.p-avatar {
+  @include weight(bold);
+  background-color: var(--p-primary-100);
+  color: var(--ol-brand);
+}
+
+.avatar--participant.p-avatar {
+  @include text(xs);
+  @include weight(bold);
+  background-color: var(--p-primary-200);
+  color: var(--ol-ink);
+}
+
+// Buttons sink a little when pressed
+@include motion {
+  .p-button {
+    transition:
+      background var(--p-button-transition-duration),
+      color var(--p-button-transition-duration),
+      border-color var(--p-button-transition-duration),
+      outline-color var(--p-button-transition-duration),
+      box-shadow var(--p-button-transition-duration),
+      transform var(--ol-duration-fast) var(--ol-ease);
+    &:active:not(:disabled) {
+      transform: scale(0.97);
+    }
+  }
+
+  // Messages appear instead of popping in
+  .p-message {
+    animation: ol-scale-in var(--ol-duration-base) var(--ol-ease-out) both;
+  }
+}
+
+/// Native inputs that sit next to PrimeNG fields (time)
+.input-native {
+  @include radius(sm);
+  padding: space(2) space(3);
+  border: 1px solid var(--ol-border-strong);
+}
+
+/// A PrimeNG button as wide as its container (styleClass="button--block")
+.button--block {
+  width: 100%;
+}

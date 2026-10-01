@@ -1,0 +1,45 @@
+// The design tokens as CSS custom properties, built on the PrimeNG theme. Components read these (var(--ol-…)).
+@use 'sass:map';
+@use '../abstracts' as *;
+
+:root {
+  --ol-font-sans:
+    'Plus Jakarta Sans Variable', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+
+  // Surfaces and text
+  --ol-ink: #1c1917;
+  --ol-background: var(--p-surface-50);
+  --ol-surface: #fff;
+  --ol-surface-muted: var(--p-surface-100);
+  --ol-border: var(--p-surface-200);
+  --ol-border-strong: var(--p-surface-300);
+  --ol-text-soft: var(--p-surface-700);
+  --ol-text-muted: var(--p-surface-600);
+  --ol-text-subtle: var(--p-surface-500);
+  --ol-on-inverse: rgb(255 255 255 / 0.7);
+
+  // Brand orange: highlights, links and free spots
+  --ol-brand: var(--p-primary-700);
+  --ol-accent: var(--p-primary-600);
+  --ol-brand-soft: var(--p-primary-50);
+  --ol-brand-ring: var(--p-primary-200);
+
+  // Errors
+  --ol-danger-soft: #{map.get($danger, 50)};
+  --ol-danger-soft-strong: #{map.get($danger, 100)};
+  --ol-danger-border: #{map.get($danger, 200)};
+  --ol-danger: #{map.get($danger, 600)};
+  --ol-danger-text: #{map.get($danger, 800)};
+  --ol-danger-text-strong: #{map.get($danger, 900)};
+
+  // Depth
+  --ol-shadow-card: 0 1px 2px rgb(28 25 23 / 0.04), 0 1px 3px rgb(28 25 23 / 0.06);
+  --ol-shadow-raised: 0 4px 12px rgb(28 25 23 / 0.08), 0 1px 3px rgb(28 25 23 / 0.06);
+
+  // Motion
+  --ol-ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --ol-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ol-duration-fast: 150ms;
+  --ol-duration-base: 240ms;
+  --ol-duration-slow: 420ms;
+}

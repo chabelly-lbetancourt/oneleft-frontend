@@ -1,0 +1,19 @@
+@use 'abstracts' as *;
+
+:host {
+  position: fixed;
+  inset: auto 0 0;
+  padding: space(8) space(4) space(4);
+  background-image: linear-gradient(
+    to top in oklab,
+    var(--ol-background) 0%,
+    color-mix(in oklab, var(--ol-background) 95%, transparent) 50%,
+    transparent 100%
+  );
+  @include enter(ol-slide-up, 120ms);
+}
+
+.bottom-bar__inner {
+  max-width: $container-width;
+  margin-inline: auto;
+}

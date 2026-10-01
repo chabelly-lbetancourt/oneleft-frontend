@@ -19,7 +19,6 @@ import {
 } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
-import { PageHeader } from '../../shared/ui/page-header';
 import { Avatar } from 'primeng/avatar';
 import { Button } from 'primeng/button';
 import { InputText } from 'primeng/inputtext';
@@ -28,13 +27,15 @@ import { Select } from 'primeng/select';
 import { SelectButton } from 'primeng/selectbutton';
 import { Tag } from 'primeng/tag';
 import { forkJoin } from 'rxjs';
+import { CardSkeleton } from '../../components/card-skeleton/card-skeleton';
+import { LanguageSwitcher } from '../../components/language-switcher/language-switcher';
 import { UsersApi } from '../../core/api/users-api';
 import { Session } from '../../core/auth/session';
 import { ApproximateLocation, LocationError } from '../../core/geo/approximate-location';
 import { apiErrorMessage } from '../../core/i18n/api-error';
+import { PageLayout } from '../../layout/page-layout/page-layout';
 import { activityKey } from '../../shared/model/activities';
 import { Catalog, Level, levelKey, MAX_HOBBIES, MyProfile } from '../../shared/model/profile';
-import { LanguageSwitcher } from '../../shared/ui/language-switcher';
 import { UserProfile } from '../../shared/model/user';
 
 type HobbyForm = FormGroup<{ activity: FormControl<string>; level: FormControl<Level> }>;
@@ -57,6 +58,7 @@ const zoneComplete = (group: AbstractControl): ValidationErrors | null => {
     ReactiveFormsModule,
     Avatar,
     Button,
+    CardSkeleton,
     InputText,
     LanguageSwitcher,
     Message,
@@ -64,10 +66,11 @@ const zoneComplete = (group: AbstractControl): ValidationErrors | null => {
     SelectButton,
     Tag,
     TranslocoPipe,
-    PageHeader,
+    PageLayout,
     RouterLink,
   ],
   templateUrl: './profile.html',
+  styleUrl: './profile.scss',
 })
 export class Profile implements OnInit {
   protected readonly session = inject(Session);

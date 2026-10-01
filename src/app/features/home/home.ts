@@ -10,25 +10,30 @@ import { Session } from '../../core/auth/session';
 import { UserEvents } from '../../core/realtime/user-events';
 import { ACTIVITIES, activityOf } from '../../shared/model/activities';
 import { Plan } from '../../shared/model/published-plan';
-import { AppHeader } from '../../shared/ui/app-header';
-import { EntryLink } from '../../shared/ui/entry-link';
-import { IconTile } from '../../shared/ui/icon-tile';
-import { PlanTicket } from '../../shared/ui/plan-ticket';
-import { SpotSlots } from '../../shared/ui/spot-slots';
+import { EntryLink } from '../../components/entry-link/entry-link';
+import { IconTile } from '../../components/icon-tile/icon-tile';
+import { PlanTicketSkeleton } from '../../components/plan-ticket-skeleton/plan-ticket-skeleton';
+import { PlanTicket } from '../../components/plan-ticket/plan-ticket';
+import { SpotSlots } from '../../components/spot-slots/spot-slots';
+import { BottomBar } from '../../layout/bottom-bar/bottom-bar';
+import { MainLayout } from '../../layout/main-layout/main-layout';
 
 @Component({
   selector: 'app-home',
   imports: [
-    AppHeader,
+    BottomBar,
     Button,
     EntryLink,
     IconTile,
+    MainLayout,
     PlanTicket,
+    PlanTicketSkeleton,
     RouterLink,
     SpotSlots,
     TranslocoPipe,
   ],
   templateUrl: './home.html',
+  styleUrl: './home.scss',
 })
 export class Home {
   protected readonly session = inject(Session);

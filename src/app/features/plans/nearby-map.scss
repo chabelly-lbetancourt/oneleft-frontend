@@ -1,0 +1,12 @@
+@use 'abstracts' as *;
+
+.nearby-map {
+  @include radius(lg);
+  @include enter(ol-fade-in);
+  position: relative;
+  z-index: 0;
+  width: 100%;
+  height: 60vh;
+  min-height: 20rem;
+  border: 1px solid var(--ol-border);
+}

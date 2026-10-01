@@ -1,0 +1,141 @@
+// Design tokens of OneLeft as Sass values. The colours point to the CSS custom properties of base/_root.scss, which
+// are built on the PrimeNG theme (core/theme/oneleft-preset.ts): one source of truth for the web and PrimeNG.
+@use 'sass:math';
+
+$breakpoints: (
+  sm: 40rem,
+  md: 48rem,
+  lg: 64rem,
+);
+
+/// Spacing step: space(4) = 1rem
+@function space($steps) {
+  @return $steps * 0.25rem;
+}
+
+/// Font size and line height of each step of the type scale
+$font-sizes: (
+  xs: (
+    0.75rem,
+    math.div(1, 0.75),
+  ),
+  sm: (
+    0.875rem,
+    math.div(1.25, 0.875),
+  ),
+  base: (
+    1rem,
+    1.5,
+  ),
+  lg: (
+    1.125rem,
+    math.div(1.75, 1.125),
+  ),
+  xl: (
+    1.25rem,
+    math.div(1.75, 1.25),
+  ),
+  2xl: (
+    1.5rem,
+    math.div(2, 1.5),
+  ),
+  3xl: (
+    1.875rem,
+    math.div(2.25, 1.875),
+  ),
+  4xl: (
+    2.25rem,
+    math.div(2.5, 2.25),
+  ),
+  5xl: (
+    3rem,
+    1,
+  ),
+);
+
+$font-weights: (
+  regular: 400,
+  medium: 500,
+  semibold: 600,
+  bold: 700,
+);
+
+$leading: (
+  none: 1,
+  tight: 1.25,
+  snug: 1.375,
+);
+
+$radii: (
+  sm: 0.5rem,
+  md: 0.75rem,
+  lg: 1rem,
+  xl: 1.5rem,
+  full: 9999px,
+);
+
+/// Width of the content column of the pages and of the sign-in pages
+$container-width: 48rem;
+$narrow-width: 28rem;
+
+/// Activity colours: background and text (the tone of each activity in shared/model/activities.ts)
+$activity-tones: (
+  'lime': (
+    oklch(96.7% 0.067 122.328),
+    oklch(53.2% 0.157 131.589),
+  ),
+  'emerald': (
+    oklch(95% 0.052 163.051),
+    oklch(50.8% 0.118 165.612),
+  ),
+  'orange': (
+    oklch(95.4% 0.038 75.164),
+    oklch(55.3% 0.195 38.402),
+  ),
+  'yellow': (
+    oklch(97.3% 0.071 103.193),
+    oklch(55.4% 0.135 66.442),
+  ),
+  'sky': (
+    oklch(95.1% 0.026 236.824),
+    oklch(50% 0.134 242.749),
+  ),
+  'teal': (
+    oklch(95.3% 0.051 180.801),
+    oklch(51.1% 0.096 186.391),
+  ),
+  'green': (
+    oklch(96.2% 0.044 156.743),
+    oklch(52.7% 0.154 150.069),
+  ),
+  'violet': (
+    oklch(94.3% 0.029 294.588),
+    oklch(49.1% 0.27 292.581),
+  ),
+  'rose': (
+    oklch(94.1% 0.03 12.58),
+    oklch(51.4% 0.222 16.935),
+  ),
+  'fuchsia': (
+    oklch(95.2% 0.037 318.852),
+    oklch(51.8% 0.253 323.949),
+  ),
+);
+
+/// Colours of the people of a plan (initials): a little stronger text than the activities
+$person-tones: (
+  (var(--p-primary-100), var(--p-primary-800)),
+  (oklch(95.1% 0.026 236.824), oklch(44.3% 0.11 240.79)),
+  (oklch(94.3% 0.029 294.588), oklch(43.2% 0.232 292.759)),
+  (oklch(95% 0.052 163.051), oklch(43.2% 0.095 166.913)),
+  (oklch(94.1% 0.03 12.58), oklch(45.5% 0.188 13.697))
+);
+
+$danger: (
+  50: oklch(97.1% 0.013 17.38),
+  100: oklch(93.6% 0.032 17.717),
+  200: oklch(88.5% 0.062 18.334),
+  600: oklch(57.7% 0.245 27.325),
+  800: oklch(44.4% 0.177 26.899),
+  900: oklch(39.6% 0.141 25.723),
+);

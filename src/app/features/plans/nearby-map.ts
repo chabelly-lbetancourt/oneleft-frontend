@@ -25,7 +25,8 @@ const BRAND = '#ea580c';
  */
 @Component({
   selector: 'app-nearby-map',
-  template: `<div #map class="nearby-map h-[60vh] min-h-80 w-full hairline rounded-2xl z-0"></div>`,
+  template: `<div #map class="nearby-map"></div>`,
+  styleUrl: './nearby-map.scss',
 })
 export class NearbyMap {
   readonly center = input.required<Coordinates>();

@@ -1,0 +1,59 @@
+// Keyframes shared by every component (global names, prefixed with ol-)
+@keyframes ol-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes ol-fade-out {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes ol-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(0.75rem);
+  }
+}
+
+@keyframes ol-scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+}
+
+@keyframes ol-slide-up {
+  from {
+    transform: translateY(100%);
+  }
+}
+
+/// The light that runs over the skeletons while the data arrives
+@keyframes ol-shimmer {
+  from {
+    background-position: 150% 0;
+  }
+  to {
+    background-position: -50% 0;
+  }
+}
+
+/// The free spot breathing: the loading screen of the app
+@keyframes ol-breathe {
+  50% {
+    transform: scale(1.08);
+    box-shadow: 0 0 0 0.6rem rgb(255 129 56 / 0.12);
+  }
+}
+
+@keyframes ol-progress {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(0.85);
+  }
+}

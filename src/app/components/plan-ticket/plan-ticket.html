@@ -1,0 +1,26 @@
+@let current = plan();
+<article class="plan-ticket">
+  <app-icon-tile [icon]="activity().icon" [tone]="activity().tone" iconSize="lg" />
+  <div class="plan-ticket__body">
+    <div class="plan-ticket__top">
+      <h2 class="plan-ticket__title">{{ current.title }}</h2>
+      <span class="spots-left pill pill--sm pill--brand pill--outlined">{{
+        spotsKey(current.freeSpots) | transloco: { count: current.freeSpots }
+      }}</span>
+    </div>
+    <p class="plan-ticket__meta">
+      {{ activityKey() | transloco }} · <span class="plan-ticket__strong">{{ time() }}</span> ·
+      {{ relative().key | transloco: relative().params }}
+    </p>
+    <div class="plan-ticket__bottom">
+      <p class="plan-ticket__place">
+        <i class="pi pi-map-marker icon-xs" aria-hidden="true"></i>
+        {{ current.meetingPoint.name }}
+        @if (distanceMeters() !== null) {
+          · <span class="nearby-distance">{{ distance() }}</span>
+        }
+      </p>
+      <app-spot-slots class="plan-ticket__slots" [names]="names()" [free]="current.freeSpots" />
+    </div>
+  </div>
+</article>

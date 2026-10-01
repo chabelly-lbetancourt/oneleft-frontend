@@ -1,0 +1,45 @@
+// Surfaces shared by the pages: cards, the sections of a form and the alerts
+@use '../abstracts' as *;
+
+.card {
+  @include card;
+}
+
+.card--interactive {
+  @include card-interactive;
+}
+
+/// A section of a form or a page: a card with its content in a column
+.form-section {
+  @include card;
+  @include stack(space(3));
+  padding: space(5);
+}
+
+.alert {
+  @include radius(lg);
+  padding: space(4);
+  border: 1px solid transparent;
+}
+
+.alert--error {
+  border-color: var(--ol-danger-border);
+  background-color: var(--ol-danger-soft);
+  color: var(--ol-danger-text);
+}
+
+/// An error that replaces the content of the page (a plan that does not exist)
+.alert--blocking {
+  @include radius(xl);
+  @include weight(semibold);
+  border-color: var(--ol-border);
+  background-color: var(--ol-danger-soft-strong);
+  color: var(--ol-danger-text-strong);
+}
+
+/// A quiet box inside a card: confirmations and secondary content
+.panel-muted {
+  @include radius(md);
+  padding: space(4);
+  background-color: var(--ol-surface-muted);
+}

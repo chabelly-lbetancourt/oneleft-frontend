@@ -1,0 +1,3 @@
+/* Tailwind only for what is indispensable: the reset (preflight) and a few utilities (sr-only). The look of the app
+   lives in styles.scss and in the .scss of each component. */
+@import 'tailwindcss';
