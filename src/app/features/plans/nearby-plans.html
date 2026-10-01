@@ -17,12 +17,10 @@
     </p-selectbutton>
   </app-page-header>
 
-  <main class="mx-auto flex max-w-3xl flex-col gap-4 px-4 py-5 pb-32">
+  <main class="page-container flex flex-col gap-4 py-5 pb-32">
     <section class="filters card flex flex-col gap-4 p-4">
       <div class="flex flex-col gap-1">
-        <span class="text-sm font-semibold text-surface-700">{{
-          'nearby.radius' | transloco
-        }}</span>
+        <span class="field-label">{{ 'nearby.radius' | transloco }}</span>
         <p-selectbutton
           class="radius-filter"
           [options]="radiusOptions()"
@@ -35,9 +33,7 @@
         />
       </div>
       <div class="flex flex-col gap-1">
-        <span class="text-sm font-semibold text-surface-700">{{
-          'nearby.within' | transloco
-        }}</span>
+        <span class="field-label">{{ 'nearby.within' | transloco }}</span>
         <p-selectbutton
           class="window-filter"
           [options]="windowOptions()"
@@ -61,7 +57,7 @@
         [placeholder]="'nearby.allActivities' | transloco"
         [ariaLabel]="'nearby.activities' | transloco"
       />
-      <small class="text-surface-600">
+      <small class="text-muted">
         <i class="pi pi-lock text-xs" aria-hidden="true"></i> {{ 'nearby.privacy' | transloco }}
       </small>
     </section>
@@ -92,9 +88,7 @@
     @if (locating()) {
       <p class="text-muted-color">{{ 'nearby.locating' | transloco }}</p>
     } @else if (locationError(); as key) {
-      <div
-        class="location-error rounded-2xl border border-red-200 bg-red-50 p-4 text-red-800 flex flex-col gap-3"
-      >
+      <div class="location-error alert-error flex flex-col gap-3">
         <span>{{ key | transloco }}</span>
         <p-button
           [label]="'nearby.retry' | transloco"
@@ -106,7 +100,7 @@
         />
       </div>
     } @else if (results.error()) {
-      <div class="results-error rounded-2xl border border-red-200 bg-red-50 p-4 text-red-800">
+      <div class="results-error alert-error">
         {{ 'nearby.loadError' | transloco }}
       </div>
     } @else if (position(); as center) {
@@ -117,13 +111,11 @@
       @if (view() === 'map') {
         <app-nearby-map [center]="center" [radius]="radius()" [plans]="plans()" />
       } @else if (plans().length === 0 && !results.isLoading()) {
-        <div
-          class="empty flex flex-col items-center gap-3 rounded-3xl border border-dashed border-surface-300 p-8 text-center"
-        >
+        <div class="empty empty-state">
           <span class="spot grid size-14 place-items-center rounded-full text-xl font-bold"
             >+1</span
           >
-          <p class="max-w-xs text-surface-700">{{ 'nearby.empty' | transloco }}</p>
+          <p class="max-w-xs text-soft">{{ 'nearby.empty' | transloco }}</p>
         </div>
       } @else {
         <ul class="flex flex-col gap-4">
@@ -139,7 +131,7 @@
     }
   </main>
 
-  <div class="fixed inset-x-0 bottom-0 bg-gradient-to-t from-surface-50 via-surface-50/95 p-4 pt-8">
+  <div class="bottom-bar">
     <div class="mx-auto max-w-3xl">
       <p-button
         [label]="'home.publish' | transloco"

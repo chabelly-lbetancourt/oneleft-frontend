@@ -3,11 +3,11 @@
     <app-language-switcher />
   </app-page-header>
 
-  <main class="mx-auto max-w-3xl px-4 py-6 pb-16">
+  <main class="page-container py-6 pb-16">
     @if (loading()) {
-      <p class="text-surface-600">{{ 'profile.loading' | transloco }}</p>
+      <p class="text-muted">{{ 'profile.loading' | transloco }}</p>
     } @else if (loadError()) {
-      <div class="profile-error rounded-2xl border border-red-200 bg-red-50 p-4 text-red-800">
+      <div class="profile-error alert-error">
         {{ 'profile.loadError' | transloco }}
       </div>
     } @else {
@@ -18,11 +18,11 @@
               [label]="session.initials()"
               shape="circle"
               size="xlarge"
-              class="bg-primary-100! text-primary-700! font-bold"
+              class="avatar-profile"
             />
             <div class="min-w-0">
               <h2 class="text-xl font-bold truncate">{{ account.name }}</h2>
-              <p class="text-surface-600 truncate">{{ account.email }}</p>
+              <p class="text-muted truncate">{{ account.email }}</p>
             </div>
           </div>
           <div class="mt-4 flex flex-wrap gap-2">
@@ -34,10 +34,7 @@
               />
             }
           </div>
-          <a
-            routerLink="/notifications"
-            class="profile-notifications mt-4 inline-flex items-center gap-2 text-sm font-semibold text-primary-700"
-          >
+          <a routerLink="/notifications" class="profile-notifications link-action mt-4">
             <i class="pi pi-bell" aria-hidden="true"></i>
             {{ 'profile.notifications' | transloco }}
           </a>
@@ -50,11 +47,9 @@
             'profile.displayName' | transloco
           }}</label>
           <input pInputText id="displayName" formControlName="displayName" maxlength="50" />
-          <small class="text-surface-600">{{ 'profile.displayNameHint' | transloco }}</small>
+          <small class="text-muted">{{ 'profile.displayNameHint' | transloco }}</small>
           @if (form.controls.displayName.invalid && form.controls.displayName.touched) {
-            <small class="field-error text-red-600">{{
-              'profile.displayNameError' | transloco
-            }}</small>
+            <small class="field-error">{{ 'profile.displayNameError' | transloco }}</small>
           }
         </section>
 
@@ -78,7 +73,7 @@
               (onClick)="useMyLocation()"
             />
             @if (form.controls.latitude.value !== null) {
-              <span class="zone-coordinates text-sm text-surface-600">
+              <span class="zone-coordinates text-sm text-muted">
                 {{
                   'profile.approximate'
                     | transloco
@@ -97,12 +92,12 @@
               />
             }
           </div>
-          <small class="text-surface-600">
+          <small class="text-muted">
             <i class="pi pi-lock text-xs" aria-hidden="true"></i>
             {{ 'profile.zonePrivacy' | transloco }}
           </small>
           @if (form.hasError('zoneIncomplete')) {
-            <small class="field-error text-red-600">
+            <small class="field-error">
               {{ 'profile.zoneError' | transloco }}
             </small>
           }
@@ -111,7 +106,7 @@
         <section class="card p-5 flex flex-col gap-3">
           <div class="flex items-center justify-between">
             <h3 class="text-lg font-bold">{{ 'profile.hobbies' | transloco }}</h3>
-            <span class="text-sm text-surface-600">{{ hobbies.length }}/10</span>
+            <span class="text-sm text-muted">{{ hobbies.length }}/10</span>
           </div>
 
           <div formArrayName="hobbies" class="flex flex-col gap-3">
@@ -148,7 +143,7 @@
                 </div>
               </div>
             } @empty {
-              <p class="text-sm text-surface-600">
+              <p class="text-sm text-muted">
                 {{ 'profile.noHobbies' | transloco }}
               </p>
             }
