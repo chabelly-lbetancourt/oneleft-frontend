@@ -16,7 +16,7 @@ import { RouterLink } from '@angular/router';
         >+1</span
       >
       <span [class]="'font-bold tracking-tight ' + (size() === 'lg' ? 'text-2xl' : 'text-lg')"
-        >One<span class="text-primary-600">Left</span></span
+        >One<span class="text-accent">Left</span></span
       >
     </a>
   `,

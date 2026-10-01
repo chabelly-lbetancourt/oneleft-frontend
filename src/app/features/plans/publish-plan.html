@@ -1,7 +1,7 @@
 <div class="min-h-full">
   <app-page-header [title]="'publish.title' | transloco" />
 
-  <main class="mx-auto max-w-3xl px-4 py-6 pb-16">
+  <main class="page-container py-6 pb-16">
     <form class="publish-form flex flex-col gap-6" [formGroup]="form" (ngSubmit)="publish()">
       <section class="card p-5 flex flex-col gap-3">
         <label for="activity" class="text-lg font-bold">{{ 'publish.what' | transloco }}</label>
@@ -25,11 +25,11 @@
           maxlength="80"
         />
         @if (form.controls.title.invalid && form.controls.title.touched) {
-          <small class="field-error text-red-600">{{ 'publish.titleError' | transloco }}</small>
+          <small class="field-error">{{ 'publish.titleError' | transloco }}</small>
         }
         <label for="description" class="text-lg font-bold mt-2">
           {{ 'publish.details' | transloco }}
-          <span class="text-surface-600 font-normal">{{ 'publish.optional' | transloco }}</span>
+          <span class="text-muted font-normal">{{ 'publish.optional' | transloco }}</span>
         </label>
         <textarea
           pTextarea
@@ -62,9 +62,7 @@
             [attr.aria-label]="'publish.startTime' | transloco"
           />
         }
-        <small class="text-surface-600">{{
-          'publish.horizon' | transloco: { hours: maxHours }
-        }}</small>
+        <small class="text-muted">{{ 'publish.horizon' | transloco: { hours: maxHours } }}</small>
       </section>
 
       <section class="card p-5 flex flex-col gap-3">
@@ -87,11 +85,11 @@
             (onClick)="useMyLocation()"
           />
           @if (form.controls.latitude.value !== null) {
-            <span class="meeting-coordinates text-sm text-surface-600">
+            <span class="meeting-coordinates text-sm text-muted">
               {{ form.controls.latitude.value }}, {{ form.controls.longitude.value }}
             </span>
           } @else if (form.controls.latitude.touched) {
-            <small class="field-error text-red-600">{{ 'publish.whereError' | transloco }}</small>
+            <small class="field-error">{{ 'publish.whereError' | transloco }}</small>
           }
         </div>
       </section>

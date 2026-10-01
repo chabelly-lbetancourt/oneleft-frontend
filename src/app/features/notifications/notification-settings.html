@@ -1,11 +1,11 @@
 <div class="min-h-full">
   <app-page-header [title]="'notifications.title' | transloco" />
 
-  <main class="mx-auto max-w-3xl px-4 py-6 pb-16">
+  <main class="page-container py-6 pb-16">
     @if (loading()) {
-      <p class="text-surface-600">{{ 'notifications.loading' | transloco }}</p>
+      <p class="text-muted">{{ 'notifications.loading' | transloco }}</p>
     } @else if (loadError()) {
-      <div class="notifications-error rounded-2xl border border-red-200 bg-red-50 p-4 text-red-800">
+      <div class="notifications-error alert-error">
         {{ 'notifications.loadError' | transloco }}
       </div>
     } @else {
@@ -15,7 +15,7 @@
             <label for="enabled" class="text-lg font-bold">{{
               'notifications.enable' | transloco
             }}</label>
-            <p class="text-sm text-surface-600">{{ 'notifications.enableHint' | transloco }}</p>
+            <p class="text-sm text-muted">{{ 'notifications.enableHint' | transloco }}</p>
           </div>
           <p-toggleswitch inputId="enabled" formControlName="enabled" class="enable-switch" />
         </section>
@@ -46,7 +46,7 @@
             />
           </div>
           @if (hasZone()) {
-            <span class="zone-coordinates text-sm text-surface-600">
+            <span class="zone-coordinates text-sm text-muted">
               {{
                 'profile.approximate'
                   | transloco
@@ -57,9 +57,9 @@
               }}
             </span>
           } @else {
-            <span class="text-sm text-surface-600">{{ 'notifications.noZone' | transloco }}</span>
+            <span class="text-sm text-muted">{{ 'notifications.noZone' | transloco }}</span>
           }
-          <small class="text-surface-600">
+          <small class="text-muted">
             <i class="pi pi-lock text-xs" aria-hidden="true"></i>
             {{ 'notifications.zonePrivacy' | transloco }}
           </small>
@@ -78,7 +78,7 @@
 
         <section class="card flex flex-col gap-3 p-5">
           <h2 class="text-lg font-bold">{{ 'notifications.activities' | transloco }}</h2>
-          <p class="text-sm text-surface-600">{{ 'notifications.activitiesHint' | transloco }}</p>
+          <p class="text-sm text-muted">{{ 'notifications.activitiesHint' | transloco }}</p>
           <div
             class="activities flex flex-wrap gap-2"
             role="group"
@@ -87,11 +87,11 @@
             @for (activity of activities; track activity.code) {
               <button
                 type="button"
-                class="activity-chip inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm transition-colors"
+                class="activity-chip border transition-colors"
                 [class]="
                   isChosen(activity.code)
                     ? activity.tone + ' border-transparent font-semibold'
-                    : 'border-surface-200 bg-white text-surface-700 hover:border-surface-300'
+                    : 'choice-idle'
                 "
                 [attr.aria-pressed]="isChosen(activity.code)"
                 (click)="toggleActivity(activity.code)"
@@ -109,7 +109,7 @@
               <label for="quiet" class="text-lg font-bold">{{
                 'notifications.quiet' | transloco
               }}</label>
-              <p class="text-sm text-surface-600">{{ 'notifications.quietHint' | transloco }}</p>
+              <p class="text-sm text-muted">{{ 'notifications.quietHint' | transloco }}</p>
             </div>
             <p-toggleswitch inputId="quiet" formControlName="quiet" class="quiet-switch" />
           </div>
@@ -120,15 +120,10 @@
                 id="quietStart"
                 type="time"
                 formControlName="quietStart"
-                class="rounded-lg border border-surface-300 px-3 py-2"
+                class="input-native"
               />
               <label for="quietEnd">{{ 'notifications.to' | transloco }}</label>
-              <input
-                id="quietEnd"
-                type="time"
-                formControlName="quietEnd"
-                class="rounded-lg border border-surface-300 px-3 py-2"
-              />
+              <input id="quietEnd" type="time" formControlName="quietEnd" class="input-native" />
             </div>
           }
 
@@ -162,7 +157,7 @@
 
       <section class="push-card card mt-6 flex flex-col gap-3 p-5">
         <h2 class="text-lg font-bold">{{ 'notifications.push' | transloco }}</h2>
-        <p class="push-state text-sm text-surface-600">
+        <p class="push-state text-sm text-muted">
           {{ 'notifications.pushState.' + push.state() | transloco }}
         </p>
         @if (push.state() === 'on' || push.state() === 'off') {
