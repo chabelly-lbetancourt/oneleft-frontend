@@ -4,6 +4,7 @@ import { MessageService } from 'primeng/api';
 import { Subject } from 'rxjs';
 import { translocoTesting } from '../../../testing/transloco-testing';
 import { UserEvents } from '../../core/realtime/user-events';
+import { PlanNearbyNotice } from '../model/notifications';
 import { PlanJoinedNotice, PlanLeftNotice, SpotFreedNotice } from '../model/published-plan';
 import { JoinNotices } from './join-notices';
 
@@ -12,6 +13,7 @@ describe('JoinNotices', () => {
     const notices = new Subject<PlanJoinedNotice>();
     const left = new Subject<PlanLeftNotice>();
     const spots = new Subject<SpotFreedNotice>();
+    const nearby = new Subject<PlanNearbyNotice>();
     TestBed.configureTestingModule({
       imports: [JoinNotices, translocoTesting()],
       providers: [
@@ -22,6 +24,7 @@ describe('JoinNotices', () => {
             joined$: notices.asObservable(),
             left$: left.asObservable(),
             spotFreed$: spots.asObservable(),
+            nearby$: nearby.asObservable(),
           },
         },
       ],
@@ -87,6 +90,24 @@ describe('JoinNotices', () => {
       severity: 'success',
       data: 'p2',
     });
+
+    nearby.next({
+      planId: 'p3',
+      activity: 'PADEL',
+      title: 'Pádel 2 contra 2',
+      placeName: 'Pistas de la Albufera',
+      startsAt: '2026-11-16T17:20:00Z',
+      freeSpots: 1,
+      distanceMeters: 700,
+    });
+    expect(add.mock.calls[5][0]).toMatchObject({
+      summary: 'Plan cerca de ti',
+      icon: 'pi-map-marker',
+      data: 'p3',
+    });
+    expect(add.mock.calls[5][0].detail).toMatch(
+      /^«Pádel 2 contra 2» · Pádel a las \d{2}:\d{2} · Pistas de la Albufera · a 0,7 km · Falta 1$/,
+    );
 
     (fixture.componentInstance as unknown as { open: (id: string) => void }).open('p1');
     expect(navigate).toHaveBeenCalledWith(['/plans', 'p1']);

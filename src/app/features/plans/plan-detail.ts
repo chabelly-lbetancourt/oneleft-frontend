@@ -11,6 +11,7 @@ import { PlansApi } from '../../core/api/plans-api';
 import { Session } from '../../core/auth/session';
 import { ApiErrorMessage, apiErrorMessage } from '../../core/i18n/api-error';
 import { Language } from '../../core/i18n/language';
+import { NativePlatform } from '../../core/platform';
 import { UserEvents } from '../../core/realtime/user-events';
 import { activityKey, activityOf } from '../../shared/model/activities';
 import { levelKey } from '../../shared/model/profile';
@@ -33,6 +34,7 @@ export class PlanDetail {
   private readonly session = inject(Session);
   private readonly transloco = inject(TranslocoService);
   private readonly router = inject(Router);
+  private readonly platform = inject(NativePlatform);
 
   /** Route parameters (withComponentInputBinding) */
   readonly id = input.required<string>();
@@ -147,7 +149,7 @@ export class PlanDetail {
     void this.router.navigate(['/login'], { queryParams: { returnUrl: `/plans/${this.id()}` } });
   }
 
-  /** Native share sheet (Web Share API); where there is none, the link is copied. */
+  /** Share sheet (Android app or Web Share API); where there is none, the link is copied. */
   protected async share(): Promise<void> {
     const plan = this.plan();
     if (!plan) {
@@ -159,9 +161,15 @@ export class PlanDetail {
       time: this.startsAt()?.time,
       spots: this.transloco.translate(spotsKey(plan.freeSpots), { count: plan.freeSpots }),
     });
-    if (typeof navigator.share === 'function') {
+    const content = { title: plan.title, text, url };
+    const sheet = this.platform.isNative()
+      ? () => this.platform.share(content)
+      : typeof navigator.share === 'function'
+        ? () => navigator.share(content)
+        : null;
+    if (sheet) {
       try {
-        await navigator.share({ title: plan.title, text, url });
+        await sheet();
       } catch {
         // The user closed the sheet: nothing to do
       }
