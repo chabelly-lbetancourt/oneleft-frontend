@@ -15,3 +15,6 @@ services:
   plans:
     image: ${ONELEFT_IMAGES:-ghcr.io/chabelly-lbetancourt/oneleft-}plans:${ONELEFT_IMAGE_TAG:-pre}
     environment: *e2e-env
+  notifications:
+    image: ${ONELEFT_IMAGES:-ghcr.io/chabelly-lbetancourt/oneleft-}notifications:${ONELEFT_IMAGE_TAG:-pre}
+    environment: *e2e-env

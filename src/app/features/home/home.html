@@ -65,6 +65,21 @@
           </div>
           <i class="pi pi-arrow-right text-white/70" aria-hidden="true"></i>
         </a>
+        <a
+          routerLink="/notifications"
+          class="notifications-entry card card-link mt-3 flex items-center gap-4 p-4"
+        >
+          <div
+            class="grid size-10 shrink-0 place-items-center rounded-xl bg-primary-50 text-primary-600"
+          >
+            <i class="pi pi-bell text-xl" aria-hidden="true"></i>
+          </div>
+          <div class="min-w-0 flex-1">
+            <h2 class="font-semibold">{{ 'home.notifications' | transloco }}</h2>
+            <p class="text-sm text-surface-600">{{ 'home.notificationsHint' | transloco }}</p>
+          </div>
+          <i class="pi pi-arrow-right text-surface-500" aria-hidden="true"></i>
+        </a>
       </section>
 
       @if (myPlans.value()?.length) {

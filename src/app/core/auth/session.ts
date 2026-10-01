@@ -3,6 +3,7 @@ import { NavigationEnd, Router } from '@angular/router';
 import { OidcSecurityService } from 'angular-auth-oidc-client';
 import { filter, firstValueFrom } from 'rxjs';
 import { Language } from '../i18n/language';
+import { NativePlatform } from '../platform';
 
 const RETURN_URL_KEY = 'oneleft.returnUrl';
 
@@ -19,6 +20,7 @@ export class Session {
   private readonly oidc = inject(OidcSecurityService);
   private readonly language = inject(Language);
   private readonly router = inject(Router);
+  private readonly platform = inject(NativePlatform);
 
   constructor() {
     // Back from Keycloak: once the router has handled the callback, open the page that asked for the login
@@ -52,7 +54,10 @@ export class Session {
   /** The Keycloak pages use the language of the app (ui_locales). */
   login(returnUrl?: string): void {
     this.keepReturnUrl(returnUrl);
-    this.oidc.authorize(undefined, { customParams: { ui_locales: this.language.current() } });
+    this.oidc.authorize(undefined, {
+      customParams: { ui_locales: this.language.current() },
+      ...this.urlHandler(),
+    });
   }
 
   /** Skips the Keycloak form and goes straight to Google (identity provider brokered by Keycloak). */
@@ -60,6 +65,7 @@ export class Session {
     this.keepReturnUrl(returnUrl);
     this.oidc.authorize(undefined, {
       customParams: { kc_idp_hint: 'google', ui_locales: this.language.current() },
+      ...this.urlHandler(),
     });
   }
 
@@ -68,6 +74,7 @@ export class Session {
     this.keepReturnUrl(returnUrl);
     this.oidc.authorize(undefined, {
       customParams: { prompt: 'create', ui_locales: this.language.current() },
+      ...this.urlHandler(),
     });
   }
 
@@ -100,6 +107,16 @@ export class Session {
   }
 
   logout(): void {
-    this.oidc.logoffAndRevokeTokens().subscribe();
+    this.oidc.logoffAndRevokeTokens(undefined, this.urlHandler()).subscribe();
+  }
+
+  /**
+   * In the Android app the Keycloak pages open in the system browser (Custom Tabs), not in the WebView: Google does
+   * not allow signing in inside an embedded WebView, and the user sees the real address of the login page.
+   */
+  private urlHandler(): { urlHandler?: (url: string) => void } {
+    return this.platform.isNative()
+      ? { urlHandler: (url: string) => void this.platform.openBrowser(url) }
+      : {};
   }
 }

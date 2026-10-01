@@ -16,7 +16,8 @@
     "plan": "OneLeft · Plan",
     "nearby": "OneLeft · Nearby plans",
     "login": "OneLeft · Sign in",
-    "register": "OneLeft · Sign up"
+    "register": "OneLeft · Sign up",
+    "notifications": "OneLeft · Notices"
   },
   "auth": {
     "login": "Sign in",
@@ -93,7 +94,9 @@
     "step3Text": "We let you know as soon as someone joins. No endless group chats.",
     "activitiesTitle": "For whatever you feel like",
     "hello": "Hi, {{name}}",
-    "helloHint": "What do you feel like doing today?"
+    "helloHint": "What do you feel like doing today?",
+    "notifications": "Notices of plans nearby",
+    "notificationsHint": "Choose which plans we tell you about, and when."
   },
   "plan": {
     "title": "Plan",
@@ -177,7 +180,8 @@
     "noHobbies": "Add the activities you like to get plans that suit you.",
     "addHobby": "Add hobby",
     "save": "Save profile",
-    "saved": "Profile saved"
+    "saved": "Profile saved",
+    "notifications": "Notices of plans nearby"
   },
   "errors": {
     "generic": "Something went wrong. Please try again.",
@@ -234,7 +238,18 @@
       "limited": "You are going too fast. Please try again in {{ minutes }} min."
     },
     "leaveFailed": "You could not leave the plan",
-    "waitlistFailed": "The waiting list could not be updated"
+    "waitlistFailed": "The waiting list could not be updated",
+    "notificationsSaveFailed": "Your notices could not be saved",
+    "pushFailed": "Notices could not be turned on in this browser",
+    "notifications": {
+      "zoneRequired": "Choose a zone to get notices",
+      "zone": "The zone is not valid",
+      "radius": "The distance must be between 0.5 and 20 km",
+      "maxPerDay": "The maximum notices a day must be between 1 and 20",
+      "quietHours": "Quiet hours need a start and a different end",
+      "pushEndpoint": "The browser subscription is not valid",
+      "pushKeys": "The browser subscription is not valid"
+    }
   },
   "nearby": {
     "title": "Nearby plans",
@@ -265,6 +280,41 @@
     "left": "{{name}} has left “{{title}}”",
     "leftAndIn": "{{name}} has left “{{title}}” and {{promoted}} is in",
     "spotTitle": "You have a spot!",
-    "spot": "A spot opened up in “{{title}}” and it is yours"
+    "spot": "A spot opened up in “{{title}}” and it is yours",
+    "nearbyTitle": "A plan near you",
+    "nearby": "\"{{title}}\" · {{activity}} at {{time}} · {{place}} · {{km}} km away · {{spots}}"
+  },
+  "notifications": {
+    "title": "Notices of plans nearby",
+    "loading": "Loading your notices…",
+    "loadError": "Your notices could not be loaded. Please try again.",
+    "enable": "Tell me about plans nearby",
+    "enableHint": "When someone nearby publishes a plan that suits you, we tell you right away.",
+    "zone": "Around where?",
+    "useProfileZone": "Use my zone ({{name}})",
+    "noZone": "Choose a zone to get notices.",
+    "zonePrivacy": "Only an approximate zone (about 1 km) is kept, never your address.",
+    "radius": "Maximum distance",
+    "km": "{{km}} km",
+    "activities": "Activities",
+    "activitiesHint": "If you pick none, we tell you about all of them.",
+    "quiet": "Quiet hours",
+    "quietHint": "We will not disturb you during these hours.",
+    "from": "From",
+    "to": "to",
+    "maxPerDay": "Maximum notices a day",
+    "save": "Save notices",
+    "saved": "Done: we will tell you about the plans that suit you.",
+    "savedOff": "Saved. Notices are off.",
+    "push": "Notices in this browser",
+    "pushEnable": "Get notices even with OneLeft closed",
+    "pushDisable": "Stop getting them in this browser",
+    "pushState": {
+      "on": "This browser shows you the notices even with OneLeft closed.",
+      "off": "For now they only reach you with OneLeft open.",
+      "denied": "You blocked OneLeft notifications in this browser. Allow them in its settings.",
+      "unavailable": "Browser notifications are off on this server: they will reach you with OneLeft open.",
+      "unsupported": "This browser does not support notifications: they will reach you with OneLeft open."
+    }
   }
 }

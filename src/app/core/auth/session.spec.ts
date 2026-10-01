@@ -4,6 +4,7 @@ import { NavigationEnd, Router } from '@angular/router';
 import { OidcSecurityService } from 'angular-auth-oidc-client';
 import { of, Subject } from 'rxjs';
 import { Language } from '../i18n/language';
+import { NativePlatform } from '../platform';
 import { Session } from './session';
 
 describe('Session', () => {
@@ -19,6 +20,7 @@ describe('Session', () => {
     logoffAndRevokeTokens: vi.fn(() => of(null)),
     getAccessToken: vi.fn(() => of('token-1')),
   };
+  const platform = { isNative: vi.fn(() => false), openBrowser: vi.fn() };
   const routerEvents = new Subject<unknown>();
   const router = { events: routerEvents, navigateByUrl: vi.fn(() => Promise.resolve(true)) };
   const navigationEnd = () => routerEvents.next(new NavigationEnd(1, '/', '/'));
@@ -33,6 +35,7 @@ describe('Session', () => {
       providers: [
         { provide: OidcSecurityService, useValue: oidc },
         { provide: Language, useValue: { current: signal('en') } },
+        { provide: NativePlatform, useValue: platform },
         { provide: Router, useValue: router },
       ],
     });
@@ -120,12 +123,33 @@ describe('Session', () => {
     getItem.mockRestore();
   });
 
+  it('should open the Keycloak pages in the system browser inside the Android app', () => {
+    platform.isNative.mockReturnValue(true);
+    session.login();
+    const options = oidc.authorize.mock.calls.at(-1)![1] as { urlHandler: (url: string) => void };
+    options.urlHandler('http://localhost:8180/realms/oneleft/protocol/openid-connect/auth?x=1');
+    expect(platform.openBrowser).toHaveBeenCalledWith(
+      'http://localhost:8180/realms/oneleft/protocol/openid-connect/auth?x=1',
+    );
+    // Google does not allow signing in inside a WebView: it also goes through the system browser
+    session.loginWithGoogle();
+    expect(oidc.authorize).toHaveBeenLastCalledWith(undefined, {
+      customParams: { kc_idp_hint: 'google', ui_locales: 'en' },
+      urlHandler: expect.any(Function),
+    });
+    session.logout();
+    expect(oidc.logoffAndRevokeTokens).toHaveBeenLastCalledWith(undefined, {
+      urlHandler: expect.any(Function),
+    });
+    platform.isNative.mockReturnValue(false);
+  });
+
   it('should give the access token for streams opened with fetch', async () => {
     await expect(session.accessToken()).resolves.toBe('token-1');
   });
 
   it('should log out revoking the tokens', () => {
     session.logout();
-    expect(oidc.logoffAndRevokeTokens).toHaveBeenCalled();
+    expect(oidc.logoffAndRevokeTokens).toHaveBeenCalledWith(undefined, {});
   });
 });
