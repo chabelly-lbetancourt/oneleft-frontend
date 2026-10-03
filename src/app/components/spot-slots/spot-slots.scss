@@ -1,0 +1,61 @@
+@use 'sass:list';
+@use 'abstracts' as *;
+
+:host {
+  display: flex;
+  align-items: center;
+}
+
+.slot {
+  @include center;
+  @include radius(full);
+  @include weight(semibold);
+  @include square(space(7));
+  font-size: 0.65rem;
+  line-height: inherit;
+
+  :host(.spot-slots--md) & {
+    @include square(space(10));
+    @include text(sm);
+  }
+}
+
+// People overlap a little, like a group; free spots stay apart
+.person-slot {
+  box-shadow: 0 0 0 2px #fff;
+  & + & {
+    margin-left: -0.25rem;
+    :host(.spot-slots--md) & {
+      margin-left: -0.4rem;
+    }
+  }
+}
+
+@for $index from 1 through list.length($person-tones) {
+  $pair: list.nth($person-tones, $index);
+  .person-slot--tone-#{$index - 1} {
+    background-color: list.nth($pair, 1);
+    color: list.nth($pair, 2);
+  }
+}
+
+.free-slot {
+  @include spot;
+  * + & {
+    margin-left: 0.25rem;
+  }
+}
+
+// The free spots pop in after the people, as an invitation
+@include motion {
+  .free-slot {
+    animation: ol-scale-in var(--ol-duration-slow) var(--ol-ease-out) both;
+    animation-delay: calc(var(--i, 0) * 60ms + 120ms);
+  }
+}
+
+.spot-slots__more {
+  @include text(xs);
+  @include weight(bold);
+  margin-left: space(1);
+}

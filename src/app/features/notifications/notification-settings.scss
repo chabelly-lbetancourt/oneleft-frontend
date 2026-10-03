@@ -1,0 +1,68 @@
+@use 'abstracts' as *;
+
+.notifications-loading,
+.notifications-form {
+  @include stack(space(6));
+}
+
+.notifications-form {
+  @include stagger(ol-fade-up, 60ms);
+}
+
+// A setting with its switch on the right
+.form-section--switch {
+  flex-direction: row;
+  align-items: flex-start;
+  gap: space(4);
+}
+
+.switch-row {
+  @include row(space(4), flex-start);
+}
+
+.switch-text {
+  flex: 1;
+}
+
+.zone-actions,
+.quiet-hours {
+  @include cluster(space(2));
+}
+
+.quiet-hours {
+  @include enter(ol-fade-up, 0ms, var(--ol-duration-base));
+}
+
+.option-label {
+  @include weight(semibold);
+  margin-top: space(2);
+}
+
+.activities {
+  @include cluster(space(2));
+}
+
+// The activities to be told about: each one lights up with its colour when chosen
+.choice {
+  @include transition-colors;
+  @include pressable(0.95, false);
+  @include focus-ring;
+  border: 1px solid transparent;
+}
+
+.choice--off {
+  border-color: var(--ol-border);
+  background-color: var(--ol-surface);
+  color: var(--ol-text-soft);
+  &:hover {
+    border-color: var(--ol-border-strong);
+  }
+}
+
+.choice--on {
+  @include weight(semibold);
+}
+
+.push-card {
+  margin-top: space(6);
+}

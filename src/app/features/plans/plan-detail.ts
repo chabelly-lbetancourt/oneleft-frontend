@@ -15,18 +15,31 @@ import { NativePlatform } from '../../core/platform';
 import { UserEvents } from '../../core/realtime/user-events';
 import { activityKey, activityOf } from '../../shared/model/activities';
 import { levelKey } from '../../shared/model/profile';
+import { CardSkeleton } from '../../components/card-skeleton/card-skeleton';
+import { IconTile } from '../../components/icon-tile/icon-tile';
+import { SpotSlots } from '../../components/spot-slots/spot-slots';
+import { PageLayout } from '../../layout/page-layout/page-layout';
 import { Plan } from '../../shared/model/published-plan';
 import { clockTime, spotsKey, startsIn } from '../../shared/time/plan-time';
-import { PageHeader } from '../../shared/ui/page-header';
-import { SpotSlots } from '../../shared/ui/spot-slots';
 
 /** What the signed-in person can do with the plan. */
 type Relation = 'guest' | 'organizer' | 'participant' | 'waiting' | 'canJoin' | 'full' | 'closed';
 
 @Component({
   selector: 'app-plan-detail',
-  imports: [Avatar, Button, Message, PageHeader, SpotSlots, Tag, TranslocoPipe],
+  imports: [
+    Avatar,
+    Button,
+    CardSkeleton,
+    IconTile,
+    Message,
+    PageLayout,
+    SpotSlots,
+    Tag,
+    TranslocoPipe,
+  ],
   templateUrl: './plan-detail.html',
+  styleUrl: './plan-detail.scss',
 })
 export class PlanDetail {
   private readonly api = inject(PlansApi);

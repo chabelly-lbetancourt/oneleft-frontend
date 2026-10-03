@@ -6,7 +6,12 @@ import {
   provideAppInitializer,
   provideBrowserGlobalErrorListeners,
 } from '@angular/core';
-import { provideRouter, TitleStrategy, withComponentInputBinding } from '@angular/router';
+import {
+  provideRouter,
+  TitleStrategy,
+  withComponentInputBinding,
+  withViewTransitions,
+} from '@angular/router';
 import { provideTransloco } from '@jsverse/transloco';
 import {
   AbstractSecurityStorage,
@@ -30,7 +35,12 @@ import { OneLeftPreset } from './core/theme/oneleft-preset';
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
-    provideRouter(routes, withComponentInputBinding()),
+    // Changing page fades between the pages (styles/base/_base.scss), where the browser supports it
+    provideRouter(
+      routes,
+      withComponentInputBinding(),
+      withViewTransitions({ skipInitialTransition: true }),
+    ),
     // Checks the session on startup (return from the Keycloak login or a stored session)
     provideAuth(authConfig, withAppInitializerAuthCheck()),
     // Android app: the session survives closing the app (sessionStorage is lost) and the login returns by deep link

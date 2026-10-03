@@ -27,7 +27,8 @@ import {
   RADIUS_OPTIONS,
 } from '../../shared/model/notifications';
 import { Zone } from '../../shared/model/profile';
-import { PageHeader } from '../../shared/ui/page-header';
+import { CardSkeleton } from '../../components/card-skeleton/card-skeleton';
+import { PageLayout } from '../../layout/page-layout/page-layout';
 
 /** "23:00:00" (API) → "23:00" (time input). */
 const hhmm = (time: string | undefined, fallback: string): string => time?.slice(0, 5) ?? fallback;
@@ -40,15 +41,17 @@ const hhmm = (time: string | undefined, fallback: string): string => time?.slice
   selector: 'app-notification-settings',
   imports: [
     Button,
+    CardSkeleton,
     FormsModule,
     Message,
-    PageHeader,
+    PageLayout,
     ReactiveFormsModule,
     SelectButton,
     ToggleSwitch,
     TranslocoPipe,
   ],
   templateUrl: './notification-settings.html',
+  styleUrl: './notification-settings.scss',
 })
 export class NotificationSettings implements OnInit {
   private readonly api = inject(NotificationsApi);

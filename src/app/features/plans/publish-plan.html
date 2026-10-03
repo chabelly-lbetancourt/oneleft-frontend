@@ -1,138 +1,132 @@
-<div class="min-h-full">
-  <app-page-header [title]="'publish.title' | transloco" />
-
-  <main class="mx-auto max-w-3xl px-4 py-6 pb-16">
-    <form class="publish-form flex flex-col gap-6" [formGroup]="form" (ngSubmit)="publish()">
-      <section class="card p-5 flex flex-col gap-3">
-        <label for="activity" class="text-lg font-bold">{{ 'publish.what' | transloco }}</label>
-        <p-select
-          inputId="activity"
-          formControlName="activity"
-          [options]="activities()"
-          optionLabel="name"
-          optionValue="code"
-          [placeholder]="'publish.chooseActivity' | transloco"
-          class="w-full"
-        />
-        <label for="title" class="text-lg font-bold mt-2">{{
-          'publish.planTitle' | transloco
-        }}</label>
-        <input
-          pInputText
-          id="title"
-          formControlName="title"
-          [placeholder]="'publish.planTitlePlaceholder' | transloco"
-          maxlength="80"
-        />
-        @if (form.controls.title.invalid && form.controls.title.touched) {
-          <small class="field-error text-red-600">{{ 'publish.titleError' | transloco }}</small>
-        }
-        <label for="description" class="text-lg font-bold mt-2">
-          {{ 'publish.details' | transloco }}
-          <span class="text-surface-600 font-normal">{{ 'publish.optional' | transloco }}</span>
-        </label>
-        <textarea
-          pTextarea
-          id="description"
-          formControlName="description"
-          rows="2"
-          maxlength="280"
-          [placeholder]="'publish.detailsPlaceholder' | transloco"
-        ></textarea>
-      </section>
-
-      <section class="card p-5 flex flex-col gap-3">
-        <span class="text-lg font-bold">{{ 'publish.when' | transloco }}</span>
-        <p-selectbutton
-          formControlName="start"
-          [options]="startOptions()"
-          optionLabel="label"
-          optionValue="value"
-          [allowEmpty]="false"
-          size="small"
-          class="flex-wrap"
-        />
-        @if (form.controls.start.value === 'custom') {
-          <input
-            pInputText
-            type="time"
-            id="customTime"
-            formControlName="customTime"
-            class="w-40"
-            [attr.aria-label]="'publish.startTime' | transloco"
-          />
-        }
-        <small class="text-surface-600">{{
-          'publish.horizon' | transloco: { hours: maxHours }
-        }}</small>
-      </section>
-
-      <section class="card p-5 flex flex-col gap-3">
-        <label for="placeName" class="text-lg font-bold">{{ 'publish.where' | transloco }}</label>
-        <input
-          pInputText
-          id="placeName"
-          formControlName="placeName"
-          [placeholder]="'publish.wherePlaceholder' | transloco"
-          maxlength="100"
-        />
-        <div class="flex flex-wrap items-center gap-2">
-          <p-button
-            [label]="'publish.here' | transloco"
-            icon="pi pi-map-marker"
-            severity="secondary"
-            size="small"
-            [outlined]="true"
-            [loading]="locating()"
-            (onClick)="useMyLocation()"
-          />
-          @if (form.controls.latitude.value !== null) {
-            <span class="meeting-coordinates text-sm text-surface-600">
-              {{ form.controls.latitude.value }}, {{ form.controls.longitude.value }}
-            </span>
-          } @else if (form.controls.latitude.touched) {
-            <small class="field-error text-red-600">{{ 'publish.whereError' | transloco }}</small>
-          }
-        </div>
-      </section>
-
-      <section class="card p-5 flex flex-col gap-3">
-        <label for="spots" class="text-lg font-bold">{{ 'publish.spots' | transloco }}</label>
-        <p-inputnumber
-          inputId="spots"
-          formControlName="spots"
-          [showButtons]="true"
-          buttonLayout="horizontal"
-          [min]="1"
-          [max]="20"
-          incrementButtonIcon="pi pi-plus"
-          decrementButtonIcon="pi pi-minus"
-        />
-        <span class="text-lg font-bold mt-2">{{ 'publish.level' | transloco }}</span>
-        <p-selectbutton
-          formControlName="level"
-          [options]="levelOptions()"
-          optionLabel="label"
-          optionValue="value"
-          [allowEmpty]="false"
-          size="small"
-        />
-      </section>
-
-      @if (error(); as message) {
-        <p-message severity="error" class="status-message">{{
-          message.key | transloco: message.params
-        }}</p-message>
-      }
-
-      <p-button
-        type="submit"
-        [label]="'publish.submit' | transloco"
-        icon="pi pi-send"
-        [loading]="publishing()"
-        styleClass="w-full"
-        size="large"
+<app-page-layout [title]="'publish.title' | transloco">
+  <form class="publish-form" [formGroup]="form" (ngSubmit)="publish()">
+    <section class="form-section">
+      <label for="activity" class="section-title">{{ 'publish.what' | transloco }}</label>
+      <p-select
+        inputId="activity"
+        formControlName="activity"
+        [options]="activities()"
+        optionLabel="name"
+        optionValue="code"
+        [placeholder]="'publish.chooseActivity' | transloco"
+        class="field-full"
       />
-    </form>
-  </main>
-</div>
+      <label for="title" class="section-title section-title--spaced">{{
+        'publish.planTitle' | transloco
+      }}</label>
+      <input
+        pInputText
+        id="title"
+        formControlName="title"
+        [placeholder]="'publish.planTitlePlaceholder' | transloco"
+        maxlength="80"
+      />
+      @if (form.controls.title.invalid && form.controls.title.touched) {
+        <small class="field-error">{{ 'publish.titleError' | transloco }}</small>
+      }
+      <label for="description" class="section-title section-title--spaced">
+        {{ 'publish.details' | transloco }}
+        <span class="optional">{{ 'publish.optional' | transloco }}</span>
+      </label>
+      <textarea
+        pTextarea
+        id="description"
+        formControlName="description"
+        rows="2"
+        maxlength="280"
+        [placeholder]="'publish.detailsPlaceholder' | transloco"
+      ></textarea>
+    </section>
+
+    <section class="form-section">
+      <span class="section-title">{{ 'publish.when' | transloco }}</span>
+      <p-selectbutton
+        formControlName="start"
+        [options]="startOptions()"
+        optionLabel="label"
+        optionValue="value"
+        [allowEmpty]="false"
+        size="small"
+        class="start-options"
+      />
+      @if (form.controls.start.value === 'custom') {
+        <input
+          pInputText
+          type="time"
+          id="customTime"
+          formControlName="customTime"
+          class="custom-time"
+          [attr.aria-label]="'publish.startTime' | transloco"
+        />
+      }
+      <small class="muted">{{ 'publish.horizon' | transloco: { hours: maxHours } }}</small>
+    </section>
+
+    <section class="form-section">
+      <label for="placeName" class="section-title">{{ 'publish.where' | transloco }}</label>
+      <input
+        pInputText
+        id="placeName"
+        formControlName="placeName"
+        [placeholder]="'publish.wherePlaceholder' | transloco"
+        maxlength="100"
+      />
+      <div class="place-actions">
+        <p-button
+          [label]="'publish.here' | transloco"
+          icon="pi pi-map-marker"
+          severity="secondary"
+          size="small"
+          [outlined]="true"
+          [loading]="locating()"
+          (onClick)="useMyLocation()"
+        />
+        @if (form.controls.latitude.value !== null) {
+          <span class="meeting-coordinates hint">
+            {{ form.controls.latitude.value }}, {{ form.controls.longitude.value }}
+          </span>
+        } @else if (form.controls.latitude.touched) {
+          <small class="field-error">{{ 'publish.whereError' | transloco }}</small>
+        }
+      </div>
+    </section>
+
+    <section class="form-section">
+      <label for="spots" class="section-title">{{ 'publish.spots' | transloco }}</label>
+      <p-inputnumber
+        inputId="spots"
+        formControlName="spots"
+        [showButtons]="true"
+        buttonLayout="horizontal"
+        [min]="1"
+        [max]="20"
+        incrementButtonIcon="pi pi-plus"
+        decrementButtonIcon="pi pi-minus"
+      />
+      <span class="section-title section-title--spaced">{{ 'publish.level' | transloco }}</span>
+      <p-selectbutton
+        formControlName="level"
+        [options]="levelOptions()"
+        optionLabel="label"
+        optionValue="value"
+        [allowEmpty]="false"
+        size="small"
+      />
+    </section>
+
+    @if (error(); as message) {
+      <p-message severity="error" class="status-message">{{
+        message.key | transloco: message.params
+      }}</p-message>
+    }
+
+    <p-button
+      type="submit"
+      [label]="'publish.submit' | transloco"
+      icon="pi pi-send"
+      [loading]="publishing()"
+      styleClass="button--block"
+      size="large"
+    />
+  </form>
+</app-page-layout>

@@ -1,0 +1,11 @@
+@for (person of people(); track $index) {
+  <span [class]="'slot person-slot ' + person.tone" [style.--i]="$index">{{
+    person.initials
+  }}</span>
+}
+@for (free of freeSlots(); track $index) {
+  <span class="slot free-slot" [style.--i]="people().length + $index">+</span>
+}
+@if (hiddenFree() > 0) {
+  <span class="spot-slots__more">+{{ hiddenFree() }}</span>
+}

@@ -1,0 +1,42 @@
+@use 'abstracts' as *;
+
+:host {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 50;
+  height: 3px;
+  pointer-events: none;
+}
+
+.route-progress__bar {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, var(--p-primary-400), var(--ol-accent));
+  transform: scaleX(0);
+  transform-origin: left;
+  opacity: 0;
+}
+
+:host(.route-progress--loading) .route-progress__bar {
+  opacity: 1;
+  animation: ol-progress 8s var(--ol-ease-out) forwards;
+}
+
+:host(.route-progress--done) .route-progress__bar {
+  animation: complete 400ms var(--ol-ease) forwards;
+}
+
+@keyframes complete {
+  0% {
+    opacity: 1;
+    transform: scaleX(0.85);
+  }
+  50% {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scaleX(1);
+  }
+}

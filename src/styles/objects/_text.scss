@@ -1,0 +1,56 @@
+// Text roles: the templates name what a text is, not its colour or size
+@use '../abstracts' as *;
+
+.section-title {
+  @include text(lg);
+  @include weight(bold);
+}
+
+.field-label {
+  @include text(sm);
+  @include weight(semibold);
+  color: var(--ol-text-soft);
+}
+
+.muted {
+  color: var(--ol-text-muted);
+}
+
+/// Short help under a field or a title
+.hint {
+  @include text(sm);
+  color: var(--ol-text-muted);
+}
+
+.field-error {
+  @include text(sm);
+  color: var(--ol-danger);
+}
+
+.link-strong {
+  @include weight(bold);
+  color: var(--ol-brand);
+  text-decoration: underline;
+}
+
+/// A text link with an icon, in the brand colour
+.link-action {
+  @include text(sm);
+  @include weight(semibold);
+  display: inline-flex;
+  align-items: center;
+  gap: space(2);
+  color: var(--ol-brand);
+}
+
+/// The word of the headline that is still missing
+.missing-word {
+  color: var(--ol-accent);
+  text-decoration: underline dashed var(--p-primary-300);
+  text-decoration-thickness: 3px;
+  text-underline-offset: 0.14em;
+}
+
+.icon-xs {
+  @include text(xs);
+}
