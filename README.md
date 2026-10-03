@@ -81,14 +81,39 @@ public/i18n/        traducciones es.json y en.json
 
 | Rama | Entorno | Configuración de build | API y Keycloak |
 |---|---|---|---|
-| `dev` | dev (local) | `development` / `production` | `environment.ts`: `localhost:8080` y `localhost:8180` |
+| `dev` | dev (local) | `development` | `environment.ts`: `localhost:8080` y `localhost:8180` |
 | `pre` | pre (*staging*) | `pre` | `environment.pre.ts`: mismo origen que la web (`/api`, `/auth`) |
-| `main` | pro | `production` (se completará con el despliegue en AWS) | — |
+| `main` | pro | `production` | `environment.pro.ts`: mismo origen que la web (`/api`, `/auth`) |
 
 ```bash
 npx ng build --configuration pre                                        # web de pre
 npx ng build --configuration pre --define "ONELEFT_ORIGIN='https://…'"  # app Android contra pre
 ```
+
+## Imagen Docker
+
+La web se publica como imagen, igual que los microservicios: **nginx sin privilegios** (puerto 8080) sirviendo la
+build. En AWS Lightsail va detrás de Caddy, que da HTTPS y envía `/api` al gateway y `/auth` a Keycloak en el mismo
+origen.
+
+- **Rutas de la app:** cualquier ruta que no sea un fichero (`/plans/…`, `/profile`) abre la app.
+- **Caché:** de un año para los ficheros con *hash*; sin caché para `index.html`, las traducciones y el
+  *service worker* de los avisos, para que una versión nueva llegue a todos a la vez.
+- **Cabeceras y salud:** cabeceras de seguridad y `/healthz` para las comprobaciones de salud.
+
+La build se hace antes, porque necesita la licencia de PrimeUI y así la clave nunca entra en una capa de Docker:
+
+```bash
+npm run build -- --configuration pre
+docker build -t oneleft/web:dev .
+docker run --rm -p 8088:8080 oneleft/web:dev   # http://localhost:8088
+```
+
+La CI construye y prueba la imagen en cada ejecución, y publica `ghcr.io/chabelly-lbetancourt/oneleft-web` con
+`:pre` desde `pre` y `:latest` desde `main` (además de `:sha-…`).
+
+Si se ejecuta sola, sin Caddy delante, se ve la web, pero sin API ni inicio de sesión: en el mismo origen no hay
+`/api` ni `/auth`.
 
 ## App Android
 

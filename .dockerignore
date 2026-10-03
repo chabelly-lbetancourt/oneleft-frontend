@@ -1,0 +1,4 @@
+# Only the build of the app and the nginx configuration go into the image
+*
+!dist/oneleft/browser
+!docker/nginx.conf
