@@ -168,6 +168,23 @@
       />
     </form>
 
+    <!-- Light or dark theme (HU-032): it lives in the device, not in the profile -->
+    <section class="appearance form-section form-section--tight">
+      <span class="section-title" id="appearance-title">{{ 'theme.title' | transloco }}</span>
+      <p-selectbutton
+        class="theme-mode"
+        [options]="themeOptions()"
+        [ngModel]="theme.mode()"
+        (ngModelChange)="theme.use($event)"
+        optionLabel="label"
+        optionValue="value"
+        [allowEmpty]="false"
+        size="small"
+        ariaLabelledBy="appearance-title"
+      />
+      <small class="muted">{{ 'theme.hint' | transloco }}</small>
+    </section>
+
     <p-button
       [label]="'auth.logout' | transloco"
       icon="pi pi-sign-out"

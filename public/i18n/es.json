@@ -326,5 +326,14 @@
       "unavailable": "Este servidor no tiene activadas las notificaciones del navegador: te llegarán con OneLeft abierto.",
       "unsupported": "Este navegador no admite notificaciones: te llegarán con OneLeft abierto."
     }
+  },
+  "theme": {
+    "toDark": "Cambiar al modo oscuro",
+    "toLight": "Cambiar al modo claro",
+    "title": "Apariencia",
+    "system": "Sistema",
+    "light": "Claro",
+    "dark": "Oscuro",
+    "hint": "«Sistema» sigue la configuración de tu dispositivo."
   }
 }

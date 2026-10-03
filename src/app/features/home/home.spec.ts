@@ -62,7 +62,7 @@ describe('Home', () => {
     const router = TestBed.inject(Router);
     const navigate = vi.spyOn(router, 'navigateByUrl').mockResolvedValue(true);
     const buttons = element.querySelectorAll<HTMLButtonElement>(
-      'header p-button:not(.language-switcher) button',
+      'header p-button:not(.language-switcher):not(.theme-switcher) button',
     );
     buttons[0].click();
     buttons[1].click();
@@ -77,7 +77,9 @@ describe('Home', () => {
     // The landing only tells what OneLeft is: no second set of sign-up buttons
     expect(element.querySelector('.hero p-button')).toBeNull();
     expect(element.querySelector('.google-login')).toBeNull();
-    expect(element.querySelectorAll('header p-button:not(.language-switcher)')).toHaveLength(2);
+    expect(
+      element.querySelectorAll('header p-button:not(.language-switcher):not(.theme-switcher)'),
+    ).toHaveLength(2);
   });
 
   it('should show the user and a link to the profile with a session', async () => {

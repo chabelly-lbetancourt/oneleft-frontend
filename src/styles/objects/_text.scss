@@ -46,7 +46,7 @@
 /// The word of the headline that is still missing
 .missing-word {
   color: var(--ol-accent);
-  text-decoration: underline dashed var(--p-primary-300);
+  text-decoration: underline dashed var(--ol-missing-underline);
   text-decoration-thickness: 3px;
   text-underline-offset: 0.14em;
 }
