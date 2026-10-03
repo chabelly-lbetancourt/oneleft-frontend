@@ -3,9 +3,7 @@
   "version": 1,
   "cli": {
     "packageManager": "npm",
-    "schematicCollections": [
-      "angular-eslint"
-    ]
+    "schematicCollections": ["angular-eslint"]
   },
   "newProjectRoot": "projects",
   "projects": {
@@ -38,14 +36,10 @@
               "src/styles/tailwind.css",
               "src/styles/styles.scss"
             ],
-            "allowedCommonJsDependencies": [
-              "leaflet"
-            ],
+            "allowedCommonJsDependencies": ["leaflet"],
             "inlineStyleLanguage": "scss",
             "stylePreprocessorOptions": {
-              "includePaths": [
-                "src/styles"
-              ]
+              "includePaths": ["src/styles"]
             }
           },
           "configurations": {
@@ -62,7 +56,13 @@
                   "maximumError": "8kB"
                 }
               ],
-              "outputHashing": "all"
+              "outputHashing": "all",
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.pro.ts"
+                }
+              ]
             },
             "development": {
               "optimization": false,
@@ -111,19 +111,13 @@
         "test": {
           "builder": "@angular/build:unit-test",
           "options": {
-            "coverageInclude": [
-              "src/app/**/*.ts"
-            ],
+            "coverageInclude": ["src/app/**/*.ts"],
             "coverageExclude": [
               "src/app/**/*.spec.ts",
               "src/app/app.config.ts",
               "src/app/app.routes.ts"
             ],
-            "coverageReporters": [
-              "text-summary",
-              "html",
-              "lcov"
-            ],
+            "coverageReporters": ["text-summary", "html", "lcov"],
             "coverageThresholds": {
               "statements": 80,
               "branches": 80,
@@ -135,10 +129,7 @@
         "lint": {
           "builder": "@angular-eslint/builder:lint",
           "options": {
-            "lintFilePatterns": [
-              "src/**/*.ts",
-              "src/**/*.html"
-            ]
+            "lintFilePatterns": ["src/**/*.ts", "src/**/*.html"]
           }
         }
       }

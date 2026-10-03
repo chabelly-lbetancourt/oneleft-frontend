@@ -190,12 +190,88 @@ jobs:
           name: oneleft-android-${{ env.BUILD_CONFIGURATION }}
           path: android/app/build/outputs/apk/debug/app-debug.apk
 
+  # Image of the web app (nginx serving the build of build-test). Built and tried in every run; published from pre
+  # (staging, tag :pre) and main (production, tag :latest), like the backend images.
+  docker:
+    name: Docker image · web
+    needs: build-test
+    if: github.event_name != 'workflow_dispatch'
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      packages: write
+    env:
+      PUBLISH: ${{ github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/pre') }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Download the build
+        uses: actions/download-artifact@v8
+        with:
+          name: frontend
+          # The artifact keeps the paths from the root of the repository (dist/oneleft/browser and coverage/)
+          path: .
+
+      - uses: docker/setup-buildx-action@v4
+
+      - name: Log in to GitHub Container Registry
+        if: env.PUBLISH == 'true'
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Image tags
+        id: meta
+        uses: docker/metadata-action@v6
+        with:
+          images: ghcr.io/${{ github.repository_owner }}/oneleft-web
+          tags: |
+            type=sha
+            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
+            type=raw,value=pre,enable=${{ github.ref == 'refs/heads/pre' }}
+
+      - name: Build
+        uses: docker/build-push-action@v7
+        env:
+          DOCKER_BUILD_RECORD_UPLOAD: false
+        with:
+          context: .
+          load: true
+          tags: oneleft/web:ci
+          cache-from: type=gha,scope=web
+          cache-to: type=gha,mode=max,scope=web
+
+      - name: Try the image (page, routes of the app, health and headers)
+        run: |
+          docker run -d --name web -p 8080:8080 oneleft/web:ci
+          for i in $(seq 1 20); do curl -fs http://localhost:8080/healthz && break; sleep 1; done
+          curl -fs http://localhost:8080/ | grep -q '<app-root'
+          curl -fs http://localhost:8080/plans/any-plan | grep -q '<app-root'
+          curl -fs http://localhost:8080/i18n/es.json > /dev/null
+          curl -fsI http://localhost:8080/ | grep -qi 'x-content-type-options: nosniff'
+          curl -fsI http://localhost:8080/push-sw.js | grep -qi 'cache-control: no-cache'
+          docker rm -f web
+
+      - name: Publish (pre and main)
+        if: env.PUBLISH == 'true'
+        uses: docker/build-push-action@v7
+        env:
+          DOCKER_BUILD_RECORD_UPLOAD: false
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha,scope=web
+
   # Result of the CI in the project Slack channel, for pushes to dev/pre/main and for pull requests. The webhook URL
   # is a secret (SLACK_WEBHOOK_URL), never in the repository; without it the notification is skipped. Pull requests
   # from forks do not receive secrets, so they are skipped too.
   notify:
     name: Slack notification
-    needs: [build-test, android, e2e]
+    needs: [build-test, android, docker, e2e]
     if: always()
     runs-on: ubuntu-24.04
     env:
