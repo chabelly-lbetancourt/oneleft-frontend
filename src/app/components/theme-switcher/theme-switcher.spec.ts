@@ -5,7 +5,8 @@ import { ThemeSwitcher } from './theme-switcher';
 
 describe('ThemeSwitcher', () => {
   it('should offer the opposite theme and switch to it', () => {
-    localStorage.clear();
+    // Light by hand, whatever the system of the test runner says
+    localStorage.setItem('oneleft.theme', 'light');
     TestBed.configureTestingModule({ imports: [ThemeSwitcher, translocoTesting()] });
     const fixture = TestBed.createComponent(ThemeSwitcher);
     fixture.detectChanges();
