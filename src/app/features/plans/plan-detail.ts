@@ -23,7 +23,11 @@ import { Plan } from '../../shared/model/published-plan';
 import { clockTime, spotsKey, startsIn } from '../../shared/time/plan-time';
 
 /** What the signed-in person can do with the plan. */
-type Relation = 'guest' | 'organizer' | 'participant' | 'waiting' | 'canJoin' | 'full' | 'closed';
+type Relation =
+  'guest' | 'organizer' | 'participant' | 'waiting' | 'canJoin' | 'full' | 'closed' | 'ended';
+
+/** States after the start (HU-007): nobody joins or leaves any more */
+const ENDED: Plan['status'][] = ['IN_PROGRESS', 'FINISHED', 'CANCELLED'];
 
 @Component({
   selector: 'app-plan-detail',
@@ -98,6 +102,9 @@ export class PlanDetail {
     if (!plan) {
       return null;
     }
+    if (ENDED.includes(plan.status)) {
+      return 'ended';
+    }
     const upcoming = new Date(plan.startsAt).getTime() > Date.now();
     if (this.isGuest()) {
       if (plan.status === 'OPEN' && plan.freeSpots > 0 && upcoming) {
@@ -126,6 +133,15 @@ export class PlanDetail {
       1,
   );
   protected readonly isMe = (userId: string) => userId === this.session.userId();
+  /** The plan has started, finished or been cancelled (HU-007) */
+  protected readonly ended = computed(() => ENDED.includes(this.plan()?.status ?? 'OPEN'));
+  protected readonly endedHintKey = computed(() => {
+    const status = this.plan()?.status;
+    if (status === 'IN_PROGRESS') {
+      return 'plan.startedHint';
+    }
+    return status === 'FINISHED' ? 'plan.finishedHint' : 'plan.cancelledHint';
+  });
 
   constructor() {
     effect(() => this.load(this.id()));

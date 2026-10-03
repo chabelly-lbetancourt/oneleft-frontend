@@ -201,6 +201,32 @@ describe('PlanDetail', () => {
     expect(element().textContent).toContain('ya no admite gente');
   });
 
+  it('should show that a plan has started or finished and offer nothing (HU-007)', async () => {
+    const past = new Date(Date.now() - 60_000).toISOString();
+    await create({
+      ...PLAN,
+      startsAt: past,
+      status: 'IN_PROGRESS',
+      participants: [{ ...LUCIA, userId: 'me' }],
+    });
+    expect(element().querySelector('.plan-state')?.textContent).toContain('En curso');
+    expect(element().querySelector('.ended-hint')?.textContent).toContain('Ya ha empezado');
+    expect(element().querySelector('.leave-button')).toBeNull();
+    expect(element().querySelector('.join-button')).toBeNull();
+
+    const component = fixture.componentInstance as unknown as {
+      plan: { set: (plan: unknown) => void };
+    };
+    component.plan.set({ ...PLAN, startsAt: past, status: 'FINISHED' });
+    fixture.detectChanges();
+    expect(element().querySelector('.plan-state')?.textContent).toContain('Terminado');
+    expect(element().querySelector('.ended-hint')?.textContent).toContain('ya terminó');
+
+    component.plan.set({ ...PLAN, status: 'CANCELLED' });
+    fixture.detectChanges();
+    expect(element().querySelector('.ended-hint')?.textContent).toContain('se canceló');
+  });
+
   it('should reload the plan when someone joins it', async () => {
     await create(PLAN, undefined, 'org');
     api.plan.mockReturnValue(of({ ...PLAN, occupied: 1, freeSpots: 1, participants: [LUCIA] }));
