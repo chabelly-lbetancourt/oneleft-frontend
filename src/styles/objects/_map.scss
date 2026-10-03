@@ -1,0 +1,28 @@
+// The Leaflet map (HU-004) in the dark theme (HU-032). Leaflet creates its own elements, outside Angular's
+// templates, so these styles are global. OpenStreetMap only has light tiles: they are inverted and their hues turned
+// back, a common way to get a readable dark map without another tile provider.
+.app-dark {
+  .leaflet-tile-pane {
+    filter: invert(1) hue-rotate(180deg) brightness(0.85) contrast(0.9) saturate(0.6);
+  }
+
+  .leaflet-container {
+    background-color: var(--ol-background);
+  }
+
+  .leaflet-popup-content-wrapper,
+  .leaflet-popup-tip,
+  .leaflet-bar a {
+    background-color: var(--ol-surface);
+    color: var(--ol-ink);
+  }
+
+  .leaflet-control-attribution {
+    background-color: rgb(28 25 23 / 0.8);
+    color: var(--ol-text-muted);
+
+    a {
+      color: var(--ol-brand);
+    }
+  }
+}

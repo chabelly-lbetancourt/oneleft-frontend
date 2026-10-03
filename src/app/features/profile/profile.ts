@@ -12,6 +12,7 @@ import {
   AbstractControl,
   FormControl,
   FormGroup,
+  FormsModule,
   NonNullableFormBuilder,
   ReactiveFormsModule,
   ValidationErrors,
@@ -30,6 +31,7 @@ import { forkJoin } from 'rxjs';
 import { CardSkeleton } from '../../components/card-skeleton/card-skeleton';
 import { LanguageSwitcher } from '../../components/language-switcher/language-switcher';
 import { UsersApi } from '../../core/api/users-api';
+import { Theme, THEME_MODES } from '../../core/theme/theme';
 import { Session } from '../../core/auth/session';
 import { ApproximateLocation, LocationError } from '../../core/geo/approximate-location';
 import { apiErrorMessage } from '../../core/i18n/api-error';
@@ -55,6 +57,7 @@ const zoneComplete = (group: AbstractControl): ValidationErrors | null => {
 @Component({
   selector: 'app-profile',
   imports: [
+    FormsModule,
     ReactiveFormsModule,
     Avatar,
     Button,
@@ -103,6 +106,10 @@ export class Profile implements OnInit {
     return this.transloco.translate(key);
   };
 
+  protected readonly theme = inject(Theme);
+  protected readonly themeOptions = computed(() =>
+    THEME_MODES.map((value) => ({ label: this.translate(`theme.${value}`), value })),
+  );
   protected readonly levelOptions = computed(() =>
     (this.catalog()?.levels ?? []).map((level) => ({
       label: this.translate(levelKey(level)),

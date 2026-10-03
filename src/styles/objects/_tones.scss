@@ -8,6 +8,12 @@
     background-color: list.nth($pair, 1);
     color: list.nth($pair, 2);
   }
+
+  // Dark theme: the colour mixed with the dark surface as the background, and the pastel as the text
+  .app-dark .tone-#{$name} {
+    background-color: color-mix(in oklab, list.nth($pair, 2) 32%, var(--ol-surface));
+    color: list.nth($pair, 1);
+  }
 }
 
 .tone-neutral {
@@ -21,6 +27,6 @@
 }
 
 .tone-inverse {
-  background-color: rgb(255 255 255 / 0.1);
-  color: var(--p-primary-300);
+  background-color: var(--ol-inverse-tile);
+  color: var(--ol-inverse-accent);
 }

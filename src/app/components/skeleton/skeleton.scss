@@ -4,7 +4,7 @@
   display: block;
   flex-shrink: 0;
   height: 0.875rem;
-  background: linear-gradient(90deg, transparent 0%, rgb(255 255 255 / 0.7) 50%, transparent 100%)
+  background: linear-gradient(90deg, transparent 0%, var(--ol-skeleton-shine) 50%, transparent 100%)
     var(--ol-surface-muted);
   background-size: 200% 100%;
   background-repeat: no-repeat;
