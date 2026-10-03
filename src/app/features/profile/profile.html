@@ -1,194 +1,181 @@
-<div class="min-h-full">
-  <app-page-header [title]="'profile.title' | transloco">
-    <app-language-switcher />
-  </app-page-header>
+<app-page-layout [title]="'profile.title' | transloco">
+  <app-language-switcher pageActions />
 
-  <main class="mx-auto max-w-3xl px-4 py-6 pb-16">
-    @if (loading()) {
-      <p class="text-surface-600">{{ 'profile.loading' | transloco }}</p>
-    } @else if (loadError()) {
-      <div class="profile-error rounded-2xl border border-red-200 bg-red-50 p-4 text-red-800">
-        {{ 'profile.loadError' | transloco }}
-      </div>
-    } @else {
-      @if (user(); as account) {
-        <section class="profile-card card p-5">
-          <div class="flex items-center gap-4">
-            <p-avatar
-              [label]="session.initials()"
-              shape="circle"
-              size="xlarge"
-              class="bg-primary-100! text-primary-700! font-bold"
-            />
-            <div class="min-w-0">
-              <h2 class="text-xl font-bold truncate">{{ account.name }}</h2>
-              <p class="text-surface-600 truncate">{{ account.email }}</p>
-            </div>
-          </div>
-          <div class="mt-4 flex flex-wrap gap-2">
-            @for (role of account.roles; track role) {
-              <p-tag
-                [value]="roleKey(role) | transloco"
-                [severity]="role === 'ADMIN' ? 'danger' : 'info'"
-                [rounded]="true"
-              />
-            }
-          </div>
-          <a
-            routerLink="/notifications"
-            class="profile-notifications mt-4 inline-flex items-center gap-2 text-sm font-semibold text-primary-700"
-          >
-            <i class="pi pi-bell" aria-hidden="true"></i>
-            {{ 'profile.notifications' | transloco }}
-          </a>
-        </section>
-      }
-
-      <form class="profile-form mt-6 flex flex-col gap-6" [formGroup]="form" (ngSubmit)="save()">
-        <section class="card p-5 flex flex-col gap-2">
-          <label for="displayName" class="text-lg font-bold">{{
-            'profile.displayName' | transloco
-          }}</label>
-          <input pInputText id="displayName" formControlName="displayName" maxlength="50" />
-          <small class="text-surface-600">{{ 'profile.displayNameHint' | transloco }}</small>
-          @if (form.controls.displayName.invalid && form.controls.displayName.touched) {
-            <small class="field-error text-red-600">{{
-              'profile.displayNameError' | transloco
-            }}</small>
-          }
-        </section>
-
-        <section class="card p-5 flex flex-col gap-2">
-          <label for="zoneName" class="text-lg font-bold">{{ 'profile.zone' | transloco }}</label>
-          <input
-            pInputText
-            id="zoneName"
-            formControlName="zoneName"
-            [placeholder]="'profile.zonePlaceholder' | transloco"
-            maxlength="60"
+  @if (loading()) {
+    <div class="profile-loading" role="status">
+      <span class="sr-only">{{ 'profile.loading' | transloco }}</span>
+      <app-card-skeleton media="circle" [lines]="1" />
+      <app-card-skeleton [lines]="2" />
+      <app-card-skeleton [lines]="3" />
+    </div>
+  } @else if (loadError()) {
+    <div class="profile-error alert alert--error">{{ 'profile.loadError' | transloco }}</div>
+  } @else {
+    @if (user(); as account) {
+      <section class="profile-card">
+        <div class="profile-card__identity">
+          <p-avatar
+            [label]="session.initials()"
+            shape="circle"
+            size="xlarge"
+            class="avatar--profile"
           />
-          <div class="flex flex-wrap items-center gap-2">
-            <p-button
-              [label]="'profile.useLocation' | transloco"
-              icon="pi pi-map-marker"
-              severity="secondary"
-              size="small"
-              [outlined]="true"
-              [loading]="locating()"
-              (onClick)="useMyLocation()"
+          <div class="profile-card__names">
+            <h2 class="profile-card__name">{{ account.name }}</h2>
+            <p class="profile-card__email">{{ account.email }}</p>
+          </div>
+        </div>
+        <div class="profile-card__roles">
+          @for (role of account.roles; track role) {
+            <p-tag
+              [value]="roleKey(role) | transloco"
+              [severity]="role === 'ADMIN' ? 'danger' : 'info'"
+              [rounded]="true"
             />
-            @if (form.controls.latitude.value !== null) {
-              <span class="zone-coordinates text-sm text-surface-600">
-                {{
-                  'profile.approximate'
-                    | transloco
-                      : {
-                          latitude: form.controls.latitude.value,
-                          longitude: form.controls.longitude.value,
-                        }
-                }}
-              </span>
-              <p-button
-                [label]="'profile.removeZone' | transloco"
-                size="small"
-                [text]="true"
-                severity="secondary"
-                (onClick)="clearZone()"
-              />
-            }
-          </div>
-          <small class="text-surface-600">
-            <i class="pi pi-lock text-xs" aria-hidden="true"></i>
-            {{ 'profile.zonePrivacy' | transloco }}
-          </small>
-          @if (form.hasError('zoneIncomplete')) {
-            <small class="field-error text-red-600">
-              {{ 'profile.zoneError' | transloco }}
-            </small>
           }
-        </section>
+        </div>
+        <a routerLink="/notifications" class="profile-notifications link-action">
+          <i class="pi pi-bell" aria-hidden="true"></i>
+          {{ 'profile.notifications' | transloco }}
+        </a>
+      </section>
+    }
 
-        <section class="card p-5 flex flex-col gap-3">
-          <div class="flex items-center justify-between">
-            <h3 class="text-lg font-bold">{{ 'profile.hobbies' | transloco }}</h3>
-            <span class="text-sm text-surface-600">{{ hobbies.length }}/10</span>
-          </div>
-
-          <div formArrayName="hobbies" class="flex flex-col gap-3">
-            @for (hobby of hobbies.controls; track hobby; let i = $index) {
-              <div
-                class="hobby-row flex flex-col gap-2 sm:flex-row sm:items-center"
-                [formGroupName]="i"
-              >
-                <p-select
-                  formControlName="activity"
-                  [options]="activityOptions(i)"
-                  optionLabel="name"
-                  optionValue="code"
-                  class="sm:w-48"
-                  [ariaLabel]="'profile.activity' | transloco"
-                />
-                <div class="flex items-center justify-between gap-2 sm:flex-1">
-                  <p-selectbutton
-                    formControlName="level"
-                    [options]="levelOptions()"
-                    optionLabel="label"
-                    optionValue="value"
-                    [allowEmpty]="false"
-                    size="small"
-                  />
-                  <p-button
-                    icon="pi pi-trash"
-                    severity="danger"
-                    [text]="true"
-                    [rounded]="true"
-                    [ariaLabel]="'profile.removeHobby' | transloco"
-                    (onClick)="removeHobby(i)"
-                  />
-                </div>
-              </div>
-            } @empty {
-              <p class="text-sm text-surface-600">
-                {{ 'profile.noHobbies' | transloco }}
-              </p>
-            }
-          </div>
-
-          <p-button
-            [label]="'profile.addHobby' | transloco"
-            icon="pi pi-plus"
-            severity="secondary"
-            [outlined]="true"
-            size="small"
-            [disabled]="!canAddHobby()"
-            (onClick)="addHobby()"
-          />
-        </section>
-
-        @if (status(); as message) {
-          <p-message [severity]="message.severity" class="status-message">{{
-            message.key | transloco: message.params
-          }}</p-message>
+    <form class="profile-form" [formGroup]="form" (ngSubmit)="save()">
+      <section class="form-section form-section--tight">
+        <label for="displayName" class="section-title">{{
+          'profile.displayName' | transloco
+        }}</label>
+        <input pInputText id="displayName" formControlName="displayName" maxlength="50" />
+        <small class="muted">{{ 'profile.displayNameHint' | transloco }}</small>
+        @if (form.controls.displayName.invalid && form.controls.displayName.touched) {
+          <small class="field-error">{{ 'profile.displayNameError' | transloco }}</small>
         }
+      </section>
+
+      <section class="form-section form-section--tight">
+        <label for="zoneName" class="section-title">{{ 'profile.zone' | transloco }}</label>
+        <input
+          pInputText
+          id="zoneName"
+          formControlName="zoneName"
+          [placeholder]="'profile.zonePlaceholder' | transloco"
+          maxlength="60"
+        />
+        <div class="zone-actions">
+          <p-button
+            [label]="'profile.useLocation' | transloco"
+            icon="pi pi-map-marker"
+            severity="secondary"
+            size="small"
+            [outlined]="true"
+            [loading]="locating()"
+            (onClick)="useMyLocation()"
+          />
+          @if (form.controls.latitude.value !== null) {
+            <span class="zone-coordinates hint">
+              {{
+                'profile.approximate'
+                  | transloco
+                    : {
+                        latitude: form.controls.latitude.value,
+                        longitude: form.controls.longitude.value,
+                      }
+              }}
+            </span>
+            <p-button
+              [label]="'profile.removeZone' | transloco"
+              size="small"
+              [text]="true"
+              severity="secondary"
+              (onClick)="clearZone()"
+            />
+          }
+        </div>
+        <small class="muted">
+          <i class="pi pi-lock icon-xs" aria-hidden="true"></i>
+          {{ 'profile.zonePrivacy' | transloco }}
+        </small>
+        @if (form.hasError('zoneIncomplete')) {
+          <small class="field-error">{{ 'profile.zoneError' | transloco }}</small>
+        }
+      </section>
+
+      <section class="form-section">
+        <div class="hobbies__head">
+          <h3 class="section-title">{{ 'profile.hobbies' | transloco }}</h3>
+          <span class="hint">{{ hobbies.length }}/10</span>
+        </div>
+
+        <div formArrayName="hobbies" class="hobbies">
+          @for (hobby of hobbies.controls; track hobby; let i = $index) {
+            <div class="hobby-row" [formGroupName]="i">
+              <p-select
+                formControlName="activity"
+                [options]="activityOptions(i)"
+                optionLabel="name"
+                optionValue="code"
+                class="hobby-row__activity"
+                [ariaLabel]="'profile.activity' | transloco"
+              />
+              <div class="hobby-row__level">
+                <p-selectbutton
+                  formControlName="level"
+                  [options]="levelOptions()"
+                  optionLabel="label"
+                  optionValue="value"
+                  [allowEmpty]="false"
+                  size="small"
+                />
+                <p-button
+                  icon="pi pi-trash"
+                  severity="danger"
+                  [text]="true"
+                  [rounded]="true"
+                  [ariaLabel]="'profile.removeHobby' | transloco"
+                  (onClick)="removeHobby(i)"
+                />
+              </div>
+            </div>
+          } @empty {
+            <p class="hint">{{ 'profile.noHobbies' | transloco }}</p>
+          }
+        </div>
 
         <p-button
-          type="submit"
-          [label]="'profile.save' | transloco"
-          icon="pi pi-check"
-          [loading]="saving()"
-          styleClass="w-full"
+          [label]="'profile.addHobby' | transloco"
+          icon="pi pi-plus"
+          severity="secondary"
+          [outlined]="true"
+          size="small"
+          [disabled]="!canAddHobby()"
+          (onClick)="addHobby()"
         />
-      </form>
+      </section>
+
+      @if (status(); as message) {
+        <p-message [severity]="message.severity" class="status-message">{{
+          message.key | transloco: message.params
+        }}</p-message>
+      }
 
       <p-button
-        [label]="'auth.logout' | transloco"
-        icon="pi pi-sign-out"
-        severity="secondary"
-        [outlined]="true"
-        class="logout-button block mt-4"
-        styleClass="w-full"
-        (onClick)="session.logout()"
+        type="submit"
+        [label]="'profile.save' | transloco"
+        icon="pi pi-check"
+        [loading]="saving()"
+        styleClass="button--block"
       />
-    }
-  </main>
-</div>
+    </form>
+
+    <p-button
+      [label]="'auth.logout' | transloco"
+      icon="pi pi-sign-out"
+      severity="secondary"
+      [outlined]="true"
+      class="logout-button"
+      styleClass="button--block"
+      (onClick)="session.logout()"
+    />
+  }
+</app-page-layout>

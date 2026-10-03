@@ -1,28 +1,25 @@
-<div class="min-h-full">
-  <app-page-header [title]="'nearby.title' | transloco">
-    <p-selectbutton
-      class="view-switch"
-      [options]="viewOptions()"
-      [ngModel]="view()"
-      (ngModelChange)="view.set($event)"
-      optionLabel="label"
-      optionValue="value"
-      [allowEmpty]="false"
-      size="small"
-    >
-      <ng-template #item let-option>
-        <i [class]="option.icon" aria-hidden="true"></i>
-        <span class="sr-only sm:not-sr-only sm:ml-1">{{ option.label }}</span>
-      </ng-template>
-    </p-selectbutton>
-  </app-page-header>
+<app-page-layout [title]="'nearby.title' | transloco" [withBottomBar]="true" [compact]="true">
+  <p-selectbutton
+    pageActions
+    class="view-switch"
+    [options]="viewOptions()"
+    [ngModel]="view()"
+    (ngModelChange)="view.set($event)"
+    optionLabel="label"
+    optionValue="value"
+    [allowEmpty]="false"
+    size="small"
+  >
+    <ng-template #item let-option>
+      <i [class]="option.icon" aria-hidden="true"></i>
+      <span class="view-switch__label">{{ option.label }}</span>
+    </ng-template>
+  </p-selectbutton>
 
-  <main class="mx-auto flex max-w-3xl flex-col gap-4 px-4 py-5 pb-32">
-    <section class="filters card flex flex-col gap-4 p-4">
-      <div class="flex flex-col gap-1">
-        <span class="text-sm font-semibold text-surface-700">{{
-          'nearby.radius' | transloco
-        }}</span>
+  <div class="nearby-page">
+    <section class="filters">
+      <div class="filters__group">
+        <span class="field-label">{{ 'nearby.radius' | transloco }}</span>
         <p-selectbutton
           class="radius-filter"
           [options]="radiusOptions()"
@@ -34,10 +31,8 @@
           size="small"
         />
       </div>
-      <div class="flex flex-col gap-1">
-        <span class="text-sm font-semibold text-surface-700">{{
-          'nearby.within' | transloco
-        }}</span>
+      <div class="filters__group">
+        <span class="field-label">{{ 'nearby.within' | transloco }}</span>
         <p-selectbutton
           class="window-filter"
           [options]="windowOptions()"
@@ -50,7 +45,7 @@
         />
       </div>
       <p-multiselect
-        class="activity-filter w-full"
+        class="activity-filter"
         [options]="activityOptions()"
         [ngModel]="activities()"
         (ngModelChange)="activities.set($event)"
@@ -61,8 +56,8 @@
         [placeholder]="'nearby.allActivities' | transloco"
         [ariaLabel]="'nearby.activities' | transloco"
       />
-      <small class="text-surface-600">
-        <i class="pi pi-lock text-xs" aria-hidden="true"></i> {{ 'nearby.privacy' | transloco }}
+      <small class="muted">
+        <i class="pi pi-lock icon-xs" aria-hidden="true"></i> {{ 'nearby.privacy' | transloco }}
       </small>
     </section>
 
@@ -83,18 +78,21 @@
                   }
           }}
         </span>
-        <a class="ml-2 underline font-semibold" [routerLink]="['/plans', notice.planId]">{{
+        <a class="new-plan-message__open" [routerLink]="['/plans', notice.planId]">{{
           'nearby.open' | transloco
         }}</a>
       </p-message>
     }
 
     @if (locating()) {
-      <p class="text-muted-color">{{ 'nearby.locating' | transloco }}</p>
+      <div class="results-loading" role="status">
+        <p class="locating muted">{{ 'nearby.locating' | transloco }}</p>
+        <app-plan-ticket-skeleton />
+        <app-plan-ticket-skeleton />
+        <app-plan-ticket-skeleton />
+      </div>
     } @else if (locationError(); as key) {
-      <div
-        class="location-error rounded-2xl border border-red-200 bg-red-50 p-4 text-red-800 flex flex-col gap-3"
-      >
+      <div class="location-error alert alert--error">
         <span>{{ key | transloco }}</span>
         <p-button
           [label]="'nearby.retry' | transloco"
@@ -106,30 +104,30 @@
         />
       </div>
     } @else if (results.error()) {
-      <div class="results-error rounded-2xl border border-red-200 bg-red-50 p-4 text-red-800">
-        {{ 'nearby.loadError' | transloco }}
-      </div>
+      <div class="results-error alert alert--error">{{ 'nearby.loadError' | transloco }}</div>
     } @else if (position(); as center) {
-      <p class="results-count text-lg font-bold">
-        {{ 'nearby.count' | transloco: { count: plans().length, distance: distance(radius()) } }}
-      </p>
+      @if (!searching()) {
+        <p class="results-count">
+          {{ 'nearby.count' | transloco: { count: plans().length, distance: distance(radius()) } }}
+        </p>
+      }
 
       @if (view() === 'map') {
         <app-nearby-map [center]="center" [radius]="radius()" [plans]="plans()" />
-      } @else if (plans().length === 0 && !results.isLoading()) {
-        <div
-          class="empty flex flex-col items-center gap-3 rounded-3xl border border-dashed border-surface-300 p-8 text-center"
-        >
-          <span class="spot grid size-14 place-items-center rounded-full text-xl font-bold"
-            >+1</span
-          >
-          <p class="max-w-xs text-surface-700">{{ 'nearby.empty' | transloco }}</p>
+      } @else if (searching()) {
+        <div class="results-loading" role="status">
+          <span class="sr-only">{{ 'nearby.loading' | transloco }}</span>
+          <app-plan-ticket-skeleton />
+          <app-plan-ticket-skeleton />
+          <app-plan-ticket-skeleton />
         </div>
+      } @else if (plans().length === 0) {
+        <app-empty-state class="empty" [message]="'nearby.empty' | transloco" />
       } @else {
-        <ul class="flex flex-col gap-4">
+        <ul class="results">
           @for (nearby of plans(); track nearby.plan.id) {
-            <li>
-              <a [routerLink]="['/plans', nearby.plan.id]" class="nearby-card block">
+            <li [style.--i]="$index">
+              <a [routerLink]="['/plans', nearby.plan.id]" class="nearby-card">
                 <app-plan-ticket [plan]="nearby.plan" [distanceMeters]="nearby.distanceMeters" />
               </a>
             </li>
@@ -137,18 +135,16 @@
         </ul>
       }
     }
-  </main>
-
-  <div class="fixed inset-x-0 bottom-0 bg-gradient-to-t from-surface-50 via-surface-50/95 p-4 pt-8">
-    <div class="mx-auto max-w-3xl">
-      <p-button
-        [label]="'home.publish' | transloco"
-        icon="pi pi-plus"
-        styleClass="w-full"
-        size="large"
-        [rounded]="true"
-        routerLink="/plans/new"
-      />
-    </div>
   </div>
-</div>
+
+  <app-bottom-bar>
+    <p-button
+      [label]="'home.publish' | transloco"
+      icon="pi pi-plus"
+      styleClass="button--block"
+      size="large"
+      [rounded]="true"
+      routerLink="/plans/new"
+    />
+  </app-bottom-bar>
+</app-page-layout>

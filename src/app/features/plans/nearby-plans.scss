@@ -1,0 +1,62 @@
+@use 'abstracts' as *;
+
+.nearby-page {
+  @include stack(space(4));
+}
+
+// The labels of the list and map switch only fit from the small breakpoint up
+.view-switch__label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  @include up(sm) {
+    position: static;
+    width: auto;
+    height: auto;
+    margin-left: space(1);
+    overflow: visible;
+    clip-path: none;
+  }
+}
+
+.filters {
+  @include card;
+  @include stack(space(4));
+  @include enter;
+  padding: space(4);
+}
+
+.filters__group {
+  @include stack(space(1));
+}
+
+.activity-filter {
+  width: 100%;
+}
+
+.new-plan-message__open {
+  @include weight(semibold);
+  margin-left: space(2);
+  text-decoration: underline;
+}
+
+.results-loading,
+.results {
+  @include stack(space(4));
+}
+
+.results {
+  @include stagger;
+}
+
+.results-count {
+  @include text(lg);
+  @include weight(bold);
+}
+
+.nearby-card {
+  display: block;
+}

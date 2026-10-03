@@ -1,15 +1,73 @@
 <!doctype html>
 <html lang="es">
-<head>
-  <meta charset="utf-8">
-  <title>OneLeft</title>
-  <base href="/">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#fff8f0">
-  <meta name="description" content="OneLeft: completa tu plan para ya con gente cerca de ti">
-  <link rel="icon" type="image/x-icon" href="favicon.ico">
-</head>
-<body>
-  <app-root></app-root>
-</body>
+  <head>
+    <meta charset="utf-8" />
+    <title>OneLeft</title>
+    <base href="/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#fff8f0" />
+    <meta name="description" content="OneLeft: completa tu plan para ya con gente cerca de ti" />
+    <link rel="icon" type="image/x-icon" href="favicon.ico" />
+    <!-- Loading screen while the app starts (session check and translations): Angular replaces it inside app-root -->
+    <style>
+      .app-splash {
+        position: fixed;
+        inset: 0;
+        display: grid;
+        place-content: center;
+        justify-items: center;
+        gap: 1rem;
+        background: #fafaf9;
+        color: #1c1917;
+        font:
+          700 1.5rem/1 system-ui,
+          -apple-system,
+          'Segoe UI',
+          Roboto,
+          sans-serif;
+        letter-spacing: -0.025em;
+        animation: app-splash-in 400ms ease-out both;
+      }
+      .app-splash__spot {
+        display: grid;
+        place-items: center;
+        width: 3.5rem;
+        height: 3.5rem;
+        border: 2px dashed #ff8138;
+        border-radius: 50%;
+        background: #fff6ed;
+        color: #b93709;
+        font-size: 1rem;
+        animation: app-splash-breathe 1.6s ease-in-out infinite;
+      }
+      .app-splash__accent {
+        color: #e04a08;
+      }
+      @keyframes app-splash-in {
+        from {
+          opacity: 0;
+        }
+      }
+      @keyframes app-splash-breathe {
+        50% {
+          transform: scale(1.08) rotate(-8deg);
+          box-shadow: 0 0 0 0.6rem rgb(255 129 56 / 0.12);
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .app-splash,
+        .app-splash__spot {
+          animation: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <app-root>
+      <div class="app-splash" role="status" aria-label="OneLeft">
+        <span class="app-splash__spot" aria-hidden="true">+1</span>
+        <span>One<span class="app-splash__accent">Left</span></span>
+      </div>
+    </app-root>
+  </body>
 </html>

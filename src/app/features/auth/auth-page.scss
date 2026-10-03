@@ -1,0 +1,75 @@
+@use 'abstracts' as *;
+
+.auth-card {
+  @include card;
+  @include enter(ol-scale-in);
+  padding: space(6);
+  @include up(sm) {
+    padding: space(8);
+  }
+}
+
+.auth-card__title {
+  @include text(3xl, tight);
+  @include weight(bold);
+  margin-top: space(5);
+}
+
+.auth-card__subtitle {
+  margin-top: space(2);
+  color: var(--ol-text-soft);
+}
+
+.auth-card__options {
+  @include stack(space(3));
+  margin-top: space(7);
+}
+
+.divider {
+  @include row(space(3));
+  @include text(sm);
+  @include weight(bold);
+  color: var(--ol-text-muted);
+}
+
+.divider__line {
+  flex: 1;
+  height: 1px;
+  background-color: var(--ol-border);
+}
+
+.auth-card__switch {
+  @include text(sm);
+  margin-top: space(6);
+  text-align: center;
+}
+
+.perks {
+  @include stack(space(2));
+  @include stagger(ol-fade-up, 80ms);
+  margin-top: space(6);
+}
+
+.perk {
+  @include row(space(3));
+  @include weight(semibold);
+}
+
+.perk__check {
+  @include spot;
+  @include center;
+  @include square(space(7));
+  @include radius(full);
+  @include text(xs);
+  @include weight(bold);
+  flex-shrink: 0;
+}
+
+.secure-note {
+  @include row(space(2));
+  @include text(xs);
+  justify-content: center;
+  margin-top: space(6);
+  color: var(--ol-text-muted);
+  text-align: center;
+}

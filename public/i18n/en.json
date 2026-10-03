@@ -80,8 +80,6 @@
     "publish": "Publish a plan",
     "nearbyHint": "See the plans starting soon near you, in a list or on the map.",
     "kicker": "Plans for right now, near you",
-    "start": "Create a free account",
-    "haveAccount": "I already have an account",
     "demoTitle": "Padel in Vallecas",
     "demoWhen": "Today · 7:30 pm",
     "demoYou": "That spot could be yours!",
@@ -96,7 +94,8 @@
     "hello": "Hi, {{name}}",
     "helloHint": "What do you feel like doing today?",
     "notifications": "Notices of plans nearby",
-    "notificationsHint": "Choose which plans we tell you about, and when."
+    "notificationsHint": "Choose which plans we tell you about, and when.",
+    "loadingPlans": "Loading your plans…"
   },
   "plan": {
     "title": "Plan",
@@ -270,7 +269,8 @@
     "newPlan": "New plan nearby: {{activity}} {{distance}} away",
     "open": "View plan",
     "you": "You are here",
-    "privacy": "Your location is only used to search, with about 100 m precision, and it is not stored."
+    "privacy": "Your location is only used to search, with about 100 m precision, and it is not stored.",
+    "loading": "Looking for plans nearby…"
   },
   "notices": {
     "joinedTitle": "Someone joined",

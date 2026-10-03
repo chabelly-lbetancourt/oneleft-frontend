@@ -1,0 +1,54 @@
+// Shared by the layouts (main, page and auth): the page fills the screen and the content is a centred column
+@use 'abstracts' as *;
+
+:host {
+  display: flex;
+  min-height: 100%;
+  flex-direction: column;
+}
+
+.layout__content {
+  @include container;
+  flex: 1;
+  padding-bottom: space(16);
+}
+
+.layout__content--page {
+  padding-top: space(6);
+  padding-bottom: space(6);
+}
+
+.layout__content--compact {
+  padding-top: space(5);
+}
+
+.layout__content--end {
+  padding-bottom: space(16);
+}
+
+.layout__content--with-bar {
+  padding-bottom: space(32);
+}
+
+:host(.layout--auth) {
+  position: relative;
+  overflow: hidden;
+}
+
+.layout__auth-header {
+  @include container($narrow-width);
+  @include row(space(3));
+  position: relative;
+  z-index: 10;
+  justify-content: space-between;
+  padding-block: space(4);
+}
+
+.layout__content--auth {
+  @include container($narrow-width);
+  @include stack(0);
+  position: relative;
+  z-index: 10;
+  justify-content: center;
+  padding-bottom: space(12);
+}

@@ -1,0 +1,44 @@
+@use 'abstracts' as *;
+
+.brand-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: space(2);
+}
+
+.brand-logo__spot {
+  @include spot;
+  @include center;
+  @include square(space(8));
+  @include text(xs, none);
+  @include radius(full);
+  @include weight(bold);
+  letter-spacing: -0.025em;
+  transition: transform var(--ol-duration-base) var(--ol-ease-out);
+
+  .brand-logo--lg & {
+    @include square(space(10));
+    @include text(sm, none);
+  }
+}
+
+// The free spot turns a little, as if inviting
+@include motion {
+  .brand-logo:hover .brand-logo__spot {
+    transform: rotate(-12deg) scale(1.06);
+  }
+}
+
+.brand-logo__word {
+  @include text(lg);
+  @include weight(bold);
+  letter-spacing: -0.025em;
+
+  .brand-logo--lg & {
+    @include text(2xl);
+  }
+}
+
+.brand-logo__accent {
+  color: var(--ol-accent);
+}
