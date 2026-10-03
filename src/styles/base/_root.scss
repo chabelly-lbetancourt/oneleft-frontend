@@ -1,4 +1,5 @@
 // The design tokens as CSS custom properties, built on the PrimeNG theme. Components read these (var(--ol-…)).
+// Light by default; the dark theme (HU-032) redefines them under .app-dark, the selector of PrimeNG's dark scheme.
 @use 'sass:map';
 @use '../abstracts' as *;
 
@@ -17,12 +18,28 @@
   --ol-text-muted: var(--p-surface-600);
   --ol-text-subtle: var(--p-surface-500);
   --ol-on-inverse: rgb(255 255 255 / 0.7);
+  // The ink surface with white text (main entry of the home screen)
+  --ol-inverse: #1c1917;
+  --ol-inverse-hover: var(--p-surface-800);
+  --ol-inverse-accent: var(--p-primary-300);
+  --ol-inverse-tile: rgb(255 255 255 / 0.1);
 
   // Brand orange: highlights, links and free spots
   --ol-brand: var(--p-primary-700);
   --ol-accent: var(--p-primary-600);
   --ol-brand-soft: var(--p-primary-50);
   --ol-brand-ring: var(--p-primary-200);
+  // The free spot (dashed ring), the missing word of the headline and selected text
+  --ol-spot-border: var(--p-primary-400);
+  --ol-spot-background: var(--p-primary-50);
+  --ol-missing-underline: var(--p-primary-300);
+  --ol-selection: var(--p-primary-100);
+  // Avatars with initials
+  --ol-avatar: var(--p-primary-100);
+  --ol-avatar-text: var(--p-primary-800);
+  --ol-avatar-strong: var(--p-primary-200);
+  // The light that runs over the skeletons
+  --ol-skeleton-shine: rgb(255 255 255 / 0.7);
 
   // Errors
   --ol-danger-soft: #{map.get($danger, 50)};
@@ -42,4 +59,47 @@
   --ol-duration-fast: 150ms;
   --ol-duration-base: 240ms;
   --ol-duration-slow: 420ms;
+}
+
+// Dark theme (HU-032): warm neutrals as in the light one; text and accents lighter to keep AA contrast
+:root.app-dark {
+  color-scheme: dark;
+
+  --ol-ink: #f5f5f4;
+  --ol-background: #0c0a09;
+  --ol-surface: #1c1917;
+  --ol-surface-muted: #292524;
+  --ol-border: #34302c;
+  --ol-border-strong: #4a4541;
+  --ol-text-soft: #d6d3d1;
+  --ol-text-muted: #a8a29e;
+  --ol-text-subtle: #8c857f;
+  --ol-on-inverse: rgb(255 255 255 / 0.75);
+  --ol-inverse: color-mix(in oklab, var(--p-primary-500) 20%, #1c1917);
+  --ol-inverse-hover: color-mix(in oklab, var(--p-primary-500) 28%, #1c1917);
+  --ol-inverse-accent: var(--p-primary-300);
+  --ol-inverse-tile: rgb(255 255 255 / 0.08);
+
+  --ol-brand: var(--p-primary-400);
+  --ol-accent: var(--p-primary-400);
+  --ol-brand-soft: color-mix(in oklab, var(--p-primary-500) 16%, transparent);
+  --ol-brand-ring: color-mix(in oklab, var(--p-primary-400) 45%, transparent);
+  --ol-spot-border: var(--p-primary-400);
+  --ol-spot-background: color-mix(in oklab, var(--p-primary-500) 14%, transparent);
+  --ol-missing-underline: var(--p-primary-500);
+  --ol-selection: color-mix(in oklab, var(--p-primary-500) 35%, transparent);
+  --ol-avatar: color-mix(in oklab, var(--p-primary-500) 24%, #1c1917);
+  --ol-avatar-text: var(--p-primary-200);
+  --ol-avatar-strong: color-mix(in oklab, var(--p-primary-500) 34%, #1c1917);
+  --ol-skeleton-shine: rgb(255 255 255 / 0.06);
+
+  --ol-danger-soft: color-mix(in oklab, #ef4444 14%, transparent);
+  --ol-danger-soft-strong: color-mix(in oklab, #ef4444 22%, transparent);
+  --ol-danger-border: color-mix(in oklab, #ef4444 40%, transparent);
+  --ol-danger: #f87171;
+  --ol-danger-text: #fca5a5;
+  --ol-danger-text-strong: #fecaca;
+
+  --ol-shadow-card: 0 1px 2px rgb(0 0 0 / 0.5), 0 1px 3px rgb(0 0 0 / 0.35);
+  --ol-shadow-raised: 0 6px 16px rgb(0 0 0 / 0.55), 0 1px 3px rgb(0 0 0 / 0.4);
 }

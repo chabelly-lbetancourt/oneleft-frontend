@@ -144,8 +144,8 @@ $leading-scale: $leading;
 
 /// The free spot: a discreet dashed ring in the brand orange
 @mixin spot {
-  border: 1.5px dashed var(--p-primary-400);
-  background-color: var(--p-primary-50);
+  border: 1.5px dashed var(--ol-spot-border);
+  background-color: var(--ol-spot-background);
   color: var(--ol-brand);
 }
 

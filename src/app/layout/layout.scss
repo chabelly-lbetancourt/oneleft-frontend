@@ -44,6 +44,10 @@
   padding-block: space(4);
 }
 
+.layout__auth-actions {
+  @include row(space(1));
+}
+
 .layout__content--auth {
   @include container($narrow-width);
   @include stack(0);
