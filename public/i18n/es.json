@@ -127,7 +127,15 @@
     "linkCopied": "Enlace copiado: pégalo donde quieras.",
     "shareText": "{{activity}} a las {{time}} · {{spots}}. ¿Te apuntas?",
     "guestHint": "Entra o crea tu cuenta para apuntarte; volverás a este plan.",
-    "spotsTaken": "{{occupied}} de {{spots}} plazas ocupadas"
+    "spotsTaken": "{{occupied}} de {{spots}} plazas ocupadas",
+    "status": {
+      "IN_PROGRESS": "En curso",
+      "FINISHED": "Terminado",
+      "CANCELLED": "Cancelado"
+    },
+    "startedHint": "Ya ha empezado: no admite a nadie más.",
+    "finishedHint": "Este plan ya terminó.",
+    "cancelledHint": "Este plan se canceló."
   },
   "publish": {
     "title": "Publicar un plan",
@@ -282,7 +290,9 @@
     "spotTitle": "¡Tienes plaza!",
     "spot": "Se ha liberado una plaza en «{{title}}» y es para ti",
     "nearbyTitle": "Plan cerca de ti",
-    "nearby": "«{{title}}» · {{activity}} a las {{time}} · {{place}} · a {{km}} km · {{spots}}"
+    "nearby": "«{{title}}» · {{activity}} a las {{time}} · {{place}} · a {{km}} km · {{spots}}",
+    "reminderTitle": "Tu plan empieza pronto",
+    "reminder": "«{{title}}» empieza a las {{time}} en {{place}}"
   },
   "notifications": {
     "title": "Avisos de planes cerca",
