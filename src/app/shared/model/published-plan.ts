@@ -47,6 +47,14 @@ export interface SpotFreedNotice {
   title: string;
 }
 
+/** A plan I am in is about to start (HU-007). */
+export interface PlanReminderNotice {
+  planId: string;
+  title: string;
+  placeName: string;
+  startsAt: string;
+}
+
 /** A plan from a shared link, without a session (HU-024) */
 export interface PublicPlan extends PublishPlan {
   id: string;

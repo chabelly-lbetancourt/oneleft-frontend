@@ -65,7 +65,13 @@ interface Fixtures {
   /** A new mobile browser (its own session) with the app language chosen and the device location granted. */
   openPage: () => Promise<Page>;
   /** Publishes a plan through the gateway as a user, 70 minutes from now and about 600 m from the device. */
-  publishPlan: (user: TestUser, title: string, spots?: number) => Promise<PublishedPlan>;
+  /** Publishes a plan through the gateway; it starts in 70 minutes unless told otherwise. */
+  publishPlan: (
+    user: TestUser,
+    title: string,
+    spots?: number,
+    startsInSeconds?: number,
+  ) => Promise<PublishedPlan>;
   /** Takes a spot of a plan (POST) or gives it back (DELETE) through the gateway as a user. */
   participate: (user: TestUser, planId: string, method: 'POST' | 'DELETE') => Promise<void>;
 }
@@ -129,7 +135,9 @@ export const test = base.extend<E2eOptions & Fixtures>({
   },
 
   publishPlan: async ({ request }, use) => {
-    await use((user, title, spots = 2) => publish(request, user, title, spots));
+    await use((user, title, spots = 2, startsInSeconds = 70 * 60) =>
+      publish(request, user, title, spots, startsInSeconds),
+    );
   },
 
   participate: async ({ request }, use) => {
@@ -186,6 +194,7 @@ const publish = async (
   user: TestUser,
   title: string,
   spots: number,
+  startsInSeconds: number,
 ): Promise<PublishedPlan> => {
   const response = await request.post(`${API_URL}/api/v1/plans`, {
     headers: { Authorization: `Bearer ${await token(request, user)}` },
@@ -193,7 +202,7 @@ const publish = async (
       activity: 'PADEL',
       title,
       meetingPoint: { name: 'Pistas de la Albufera', latitude: 40.3964, longitude: -3.6297 },
-      startsAt: new Date(Date.now() + 70 * 60_000).toISOString(),
+      startsAt: new Date(Date.now() + startsInSeconds * 1000).toISOString(),
       spots,
     },
   });

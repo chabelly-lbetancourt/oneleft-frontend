@@ -127,7 +127,15 @@
     "linkCopied": "Link copied: paste it anywhere.",
     "shareText": "{{activity}} at {{time}} · {{spots}}. Are you in?",
     "guestHint": "Sign in or create an account to join; you will come back to this plan.",
-    "spotsTaken": "{{occupied}} of {{spots}} spots taken"
+    "spotsTaken": "{{occupied}} of {{spots}} spots taken",
+    "status": {
+      "IN_PROGRESS": "In progress",
+      "FINISHED": "Finished",
+      "CANCELLED": "Cancelled"
+    },
+    "startedHint": "It has started: nobody else can join.",
+    "finishedHint": "This plan is over.",
+    "cancelledHint": "This plan was cancelled."
   },
   "publish": {
     "title": "Publish a plan",
@@ -282,7 +290,9 @@
     "spotTitle": "You have a spot!",
     "spot": "A spot opened up in “{{title}}” and it is yours",
     "nearbyTitle": "A plan near you",
-    "nearby": "\"{{title}}\" · {{activity}} at {{time}} · {{place}} · {{km}} km away · {{spots}}"
+    "nearby": "\"{{title}}\" · {{activity}} at {{time}} · {{place}} · {{km}} km away · {{spots}}",
+    "reminderTitle": "Your plan starts soon",
+    "reminder": "«{{title}}» starts at {{time}} at {{place}}"
   },
   "notifications": {
     "title": "Notices of plans nearby",
