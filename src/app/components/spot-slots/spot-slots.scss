@@ -22,7 +22,7 @@
 
 // People overlap a little, like a group; free spots stay apart
 .person-slot {
-  box-shadow: 0 0 0 2px #fff;
+  box-shadow: 0 0 0 2px var(--ol-surface);
   & + & {
     margin-left: -0.25rem;
     :host(.spot-slots--md) & {
@@ -36,6 +36,11 @@
   .person-slot--tone-#{$index - 1} {
     background-color: list.nth($pair, 1);
     color: list.nth($pair, 2);
+  }
+
+  :host-context(.app-dark) .person-slot--tone-#{$index - 1} {
+    background-color: color-mix(in oklab, list.nth($pair, 2) 35%, var(--ol-surface));
+    color: list.nth($pair, 1);
   }
 }
 

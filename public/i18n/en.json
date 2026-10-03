@@ -326,5 +326,14 @@
       "unavailable": "Browser notifications are off on this server: they will reach you with OneLeft open.",
       "unsupported": "This browser does not support notifications: they will reach you with OneLeft open."
     }
+  },
+  "theme": {
+    "toDark": "Switch to dark mode",
+    "toLight": "Switch to light mode",
+    "title": "Appearance",
+    "system": "System",
+    "light": "Light",
+    "dark": "Dark",
+    "hint": "«System» follows the settings of your device."
   }
 }

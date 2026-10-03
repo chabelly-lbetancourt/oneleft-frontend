@@ -11,11 +11,11 @@
   @include radius(lg);
   padding: space(5);
   border: 0;
-  background-color: var(--ol-ink);
+  background-color: var(--ol-inverse);
   box-shadow: none;
   color: #fff;
   &:hover {
-    background-color: var(--p-surface-800);
+    background-color: var(--ol-inverse-hover);
     box-shadow: var(--ol-shadow-raised);
   }
 }

@@ -31,6 +31,7 @@ import { TranslocoHttpLoader } from './core/i18n/transloco-loader';
 import { isNativeApp } from './core/platform';
 import { primeUiLicense } from './core/primeui-license';
 import { OneLeftPreset } from './core/theme/oneleft-preset';
+import { Theme } from './core/theme/theme';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -66,6 +67,10 @@ export const appConfig: ApplicationConfig = {
     // The session exists from the start: it opens the page that asked for the login when coming back from Keycloak
     provideAppInitializer(() => {
       inject(Session);
+    }),
+    // Light or dark theme from the start, following the system unless the person chose one (HU-032)
+    provideAppInitializer(() => {
+      inject(Theme);
     }),
     { provide: TitleStrategy, useClass: TranslatedTitleStrategy },
     providePrimeNG({

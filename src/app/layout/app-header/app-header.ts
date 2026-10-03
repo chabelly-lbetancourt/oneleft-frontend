@@ -5,6 +5,7 @@ import { Avatar } from 'primeng/avatar';
 import { Button } from 'primeng/button';
 import { BrandLogo } from '../../components/brand-logo/brand-logo';
 import { LanguageSwitcher } from '../../components/language-switcher/language-switcher';
+import { ThemeSwitcher } from '../../components/theme-switcher/theme-switcher';
 import { Session } from '../../core/auth/session';
 
 /**
@@ -13,7 +14,7 @@ import { Session } from '../../core/auth/session';
  */
 @Component({
   selector: 'app-header',
-  imports: [Avatar, BrandLogo, Button, LanguageSwitcher, RouterLink, TranslocoPipe],
+  imports: [Avatar, BrandLogo, Button, LanguageSwitcher, RouterLink, ThemeSwitcher, TranslocoPipe],
   templateUrl: './app-header.html',
   styleUrl: './app-header.scss',
 })

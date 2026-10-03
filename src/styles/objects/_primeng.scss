@@ -4,20 +4,20 @@
 // Avatars with initials: signed-in user, profile and participants
 .avatar--user.p-avatar {
   @include weight(semibold);
-  background-color: var(--p-primary-100);
-  color: var(--p-primary-800);
+  background-color: var(--ol-avatar);
+  color: var(--ol-avatar-text);
 }
 
 .avatar--profile.p-avatar {
   @include weight(bold);
-  background-color: var(--p-primary-100);
+  background-color: var(--ol-avatar);
   color: var(--ol-brand);
 }
 
 .avatar--participant.p-avatar {
   @include text(xs);
   @include weight(bold);
-  background-color: var(--p-primary-200);
+  background-color: var(--ol-avatar-strong);
   color: var(--ol-ink);
 }
 
