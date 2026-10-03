@@ -32,6 +32,14 @@ describe('Theme', () => {
     TestBed.configureTestingModule({});
   });
 
+  // Other tests must not see the fake system, the class or the stored choice
+  const realMatchMedia = window.matchMedia;
+  afterEach(() => {
+    window.matchMedia = realMatchMedia;
+    localStorage.clear();
+    html().classList.remove(DARK_CLASS);
+  });
+
   it('should follow the system by default, also when it changes', () => {
     systemDark = true;
     const theme = create();
