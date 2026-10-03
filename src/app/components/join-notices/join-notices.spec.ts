@@ -8,6 +8,7 @@ import { PlanNearbyNotice } from '../../shared/model/notifications';
 import {
   PlanJoinedNotice,
   PlanLeftNotice,
+  PlanReminderNotice,
   SpotFreedNotice,
 } from '../../shared/model/published-plan';
 import { JoinNotices } from './join-notices';
@@ -18,6 +19,7 @@ describe('JoinNotices', () => {
     const left = new Subject<PlanLeftNotice>();
     const spots = new Subject<SpotFreedNotice>();
     const nearby = new Subject<PlanNearbyNotice>();
+    const reminders = new Subject<PlanReminderNotice>();
     TestBed.configureTestingModule({
       imports: [JoinNotices, translocoTesting()],
       providers: [
@@ -29,6 +31,7 @@ describe('JoinNotices', () => {
             left$: left.asObservable(),
             spotFreed$: spots.asObservable(),
             nearby$: nearby.asObservable(),
+            reminder$: reminders.asObservable(),
           },
         },
       ],
@@ -111,6 +114,21 @@ describe('JoinNotices', () => {
     });
     expect(add.mock.calls[5][0].detail).toMatch(
       /^«Pádel 2 contra 2» · Pádel a las \d{2}:\d{2} · Pistas de la Albufera · a 0,7 km · Falta 1$/,
+    );
+
+    reminders.next({
+      planId: 'p4',
+      title: 'Pádel 2 contra 2',
+      placeName: 'Pistas de la Albufera',
+      startsAt: '2026-11-16T17:20:00Z',
+    });
+    expect(add.mock.calls[6][0]).toMatchObject({
+      summary: 'Tu plan empieza pronto',
+      icon: 'pi-clock',
+      data: 'p4',
+    });
+    expect(add.mock.calls[6][0].detail).toMatch(
+      /^«Pádel 2 contra 2» empieza a las \d{2}:\d{2} en Pistas de la Albufera$/,
     );
 
     (fixture.componentInstance as unknown as { open: (id: string) => void }).open('p1');

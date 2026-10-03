@@ -5,6 +5,7 @@ import { PlanNearbyNotice } from '../../shared/model/notifications';
 import {
   PlanJoinedNotice,
   PlanLeftNotice,
+  PlanReminderNotice,
   SpotFreedNotice,
 } from '../../shared/model/published-plan';
 import { PlansApi } from '../api/plans-api';
@@ -15,11 +16,12 @@ const PLAN_JOINED = 'plan-joined';
 const PLAN_LEFT = 'plan-left';
 const SPOT_FREED = 'plan-spot';
 const PLAN_NEARBY = 'plan-nearby';
+const PLAN_REMINDER = 'plan-reminder';
 
 /**
  * Personal events of the signed-in user while the app is open: someone has joined (HU-005) or left (HU-023) one of
- * my plans, a spot I was waiting for is now mine, or a plan I like has been published nearby (HU-006). A single connection is shared by every subscriber and closed
- * when the user signs out.
+ * my plans, a spot I was waiting for is now mine, a plan I like has been published nearby (HU-006) or a plan I am in
+ * is about to start (HU-007). A single connection is shared by every subscriber and closed when the user signs out.
  */
 @Injectable({ providedIn: 'root' })
 export class UserEvents {
@@ -37,6 +39,7 @@ export class UserEvents {
             PLAN_LEFT,
             SPOT_FREED,
             PLAN_NEARBY,
+            PLAN_REMINDER,
           ])
         : EMPTY,
     ),
@@ -47,6 +50,7 @@ export class UserEvents {
   readonly left$ = this.of<PlanLeftNotice>(PLAN_LEFT);
   readonly spotFreed$ = this.of<SpotFreedNotice>(SPOT_FREED);
   readonly nearby$ = this.of<PlanNearbyNotice>(PLAN_NEARBY);
+  readonly reminder$ = this.of<PlanReminderNotice>(PLAN_REMINDER);
 
   private of<T>(name: string): Observable<T> {
     return this.events$.pipe(

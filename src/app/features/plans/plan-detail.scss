@@ -37,6 +37,12 @@
   flex-shrink: 0;
 }
 
+// Started, finished or cancelled (HU-007): a neutral label instead of the free spots
+.plan-state {
+  background-color: var(--ol-surface-muted);
+  color: var(--ol-text-soft);
+}
+
 .plan-card__body {
   @include stack(space(4));
   padding: space(5);

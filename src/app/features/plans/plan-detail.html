@@ -40,9 +40,15 @@
               <p class="plan-card__time">{{ start.time }}</p>
             }
           </div>
-          <span class="plan-card__spots pill pill--md pill--brand pill--outlined">
-            {{ spotsKey(current.freeSpots) | transloco: { count: current.freeSpots } }}
-          </span>
+          @if (ended()) {
+            <span class="plan-card__spots plan-state pill pill--md">
+              {{ 'plan.status.' + current.status | transloco }}
+            </span>
+          } @else {
+            <span class="plan-card__spots pill pill--md pill--brand pill--outlined">
+              {{ spotsKey(current.freeSpots) | transloco: { count: current.freeSpots } }}
+            </span>
+          }
         </div>
         <div class="plan-card__body">
           <h2 class="plan-card__title">{{ current.title }}</h2>
@@ -214,6 +220,9 @@
           }
           @case ('closed') {
             <p class="hint">{{ 'plan.closed' | transloco }}</p>
+          }
+          @case ('ended') {
+            <p class="ended-hint hint">{{ endedHintKey() | transloco }}</p>
           }
         }
         @if (justLeft()) {
