@@ -454,6 +454,62 @@ describe('PlanDetail', () => {
     expect(element().querySelector('.copied-message')?.textContent).toContain('Enlace copiado');
   });
 
+  it('should offer the calendar to the organizer and the participants of an upcoming plan', async () => {
+    await create(PLAN, undefined, 'org');
+    expect(element().querySelector('.calendar-button')?.textContent).toContain(
+      'Añadir al calendario',
+    );
+
+    await create({ ...PLAN, participants: [{ ...LUCIA, userId: 'me' }] });
+    expect(element().querySelector('.calendar-button')).not.toBeNull();
+
+    await create(PLAN);
+    expect(element().querySelector('.calendar-button')).toBeNull();
+
+    await create({ ...PLAN, status: 'IN_PROGRESS' }, undefined, 'org');
+    expect(element().querySelector('.calendar-button')).toBeNull();
+  });
+
+  it('should download the plan as an iCalendar file', async () => {
+    await create(PLAN, undefined, 'org');
+    const createObjectURL = vi.fn().mockReturnValue('blob:plan');
+    const revokeObjectURL = vi.fn();
+    Object.assign(URL, { createObjectURL, revokeObjectURL });
+    const click = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockReturnValue(undefined);
+
+    element().querySelector<HTMLButtonElement>('.calendar-button button')!.click();
+    await render();
+
+    const file = createObjectURL.mock.calls[0][0] as Blob;
+    expect(file.type).toBe('text/calendar;charset=utf-8');
+    const ics = await file.text();
+    expect(ics).toContain('UID:plan-plan-1@oneleft');
+    expect(ics).toContain('SUMMARY:Partido de pádel\\, falta uno');
+    expect(ics).toContain('LOCATION:Pistas del polideportivo');
+    expect(ics).toContain('URL:http://localhost:8080/share/plans/plan-1');
+    expect(click).toHaveBeenCalled();
+    expect((click.mock.contexts[0] as HTMLAnchorElement).download).toBe(
+      'partido-de-padel-falta-uno.ics',
+    );
+    expect(revokeObjectURL).toHaveBeenCalledWith('blob:plan');
+    click.mockRestore();
+  });
+
+  it('should open Google Calendar inside the Android app', async () => {
+    await create(PLAN, undefined, 'org');
+    const platform = TestBed.inject(NativePlatform);
+    vi.spyOn(platform, 'isNative').mockReturnValue(true);
+    const open = vi.spyOn(platform, 'openBrowser').mockResolvedValue();
+
+    element().querySelector<HTMLButtonElement>('.calendar-button button')!.click();
+    await render();
+
+    const url = new URL(open.mock.calls[0][0]);
+    expect(url.host).toBe('calendar.google.com');
+    expect(url.searchParams.get('text')).toBe('Partido de pádel, falta uno');
+    expect(url.searchParams.get('details')).toContain('Ver el plan en OneLeft');
+  });
+
   it('should show the plan in English', async () => {
     await create(PLAN);
     TestBed.inject(TranslocoService).setActiveLang('en');

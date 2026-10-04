@@ -21,6 +21,12 @@ import { SpotSlots } from '../../components/spot-slots/spot-slots';
 import { PageLayout } from '../../layout/page-layout/page-layout';
 import { Plan } from '../../shared/model/published-plan';
 import { clockTime, spotsKey, startsIn } from '../../shared/time/plan-time';
+import {
+  CalendarEvent,
+  googleCalendarUrl,
+  icsFileName,
+  planIcs,
+} from '../../shared/calendar/plan-calendar';
 
 /** What the signed-in person can do with the plan. */
 type Relation =
@@ -133,6 +139,10 @@ export class PlanDetail {
       1,
   );
   protected readonly isMe = (userId: string) => userId === this.session.userId();
+  /** The organizer and the participants can add an upcoming plan to their calendar (HU-027) */
+  protected readonly canAddToCalendar = computed(() =>
+    ['organizer', 'participant'].includes(this.relation() ?? ''),
+  );
   /** The plan has started, finished or been cancelled (HU-007) */
   protected readonly ended = computed(() => ENDED.includes(this.plan()?.status ?? 'OPEN'));
   protected readonly endedHintKey = computed(() => {
@@ -206,6 +216,40 @@ export class PlanDetail {
     }
     await navigator.clipboard.writeText(`${text} ${url}`);
     this.copied.set(true);
+  }
+
+  /**
+   * iCalendar file for Google Calendar, Apple Calendar and Outlook. The WebView of the Android app cannot download
+   * files, so there it opens Google Calendar with the event filled in.
+   */
+  protected async addToCalendar(): Promise<void> {
+    const plan = this.plan();
+    if (!plan) {
+      return;
+    }
+    const url = this.api.shareUrl(plan.id);
+    const event: CalendarEvent = {
+      id: plan.id,
+      title: plan.title,
+      description: [plan.description, this.transloco.translate('plan.calendarLink', { url })]
+        .filter(Boolean)
+        .join('\n\n'),
+      location: plan.meetingPoint.name,
+      latitude: plan.meetingPoint.latitude,
+      longitude: plan.meetingPoint.longitude,
+      startsAt: new Date(plan.startsAt),
+      url,
+    };
+    if (this.platform.isNative()) {
+      await this.platform.openBrowser(googleCalendarUrl(event));
+      return;
+    }
+    const file = new Blob([planIcs(event, new Date())], { type: 'text/calendar;charset=utf-8' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(file);
+    link.download = icsFileName(plan.title);
+    link.click();
+    URL.revokeObjectURL(link.href);
   }
 
   protected leave(): void {
