@@ -225,6 +225,17 @@
             <p class="ended-hint hint">{{ endedHintKey() | transloco }}</p>
           }
         }
+        @if (canAddToCalendar()) {
+          <p-button
+            class="calendar-button"
+            [label]="'plan.addToCalendar' | transloco"
+            icon="pi pi-calendar-plus"
+            [outlined]="true"
+            severity="secondary"
+            styleClass="button--block"
+            (onClick)="addToCalendar()"
+          />
+        }
         @if (justLeft()) {
           <p-message severity="info" class="left-message">{{ 'plan.left' | transloco }}</p-message>
         }
