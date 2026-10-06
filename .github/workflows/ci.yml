@@ -190,8 +190,8 @@ jobs:
           name: oneleft-android-${{ env.BUILD_CONFIGURATION }}
           path: android/app/build/outputs/apk/debug/app-debug.apk
 
-  # Image of the web app (nginx serving the build of build-test). Built and tried in every run; published from pre
-  # (staging, tag :pre) and main (production, tag :latest), like the backend images.
+  # Image of the web app: the Dockerfile builds the app (licence as a BuildKit secret) and nginx serves it. Built and
+  # tried in every run; published from pre (staging, tag :pre) and main (production, tag :latest), like the backend.
   docker:
     name: Docker image · web
     needs: build-test
@@ -202,15 +202,9 @@ jobs:
       packages: write
     env:
       PUBLISH: ${{ github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/pre') }}
+      BUILD_CONFIGURATION: ${{ (github.ref == 'refs/heads/pre' || github.base_ref == 'pre') && 'pre' || 'production' }}
     steps:
       - uses: actions/checkout@v7
-
-      - name: Download the build
-        uses: actions/download-artifact@v8
-        with:
-          name: frontend
-          # The artifact keeps the paths from the root of the repository (dist/oneleft/browser and coverage/)
-          path: .
 
       - uses: docker/setup-buildx-action@v4
 
@@ -232,7 +226,7 @@ jobs:
             type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
             type=raw,value=pre,enable=${{ github.ref == 'refs/heads/pre' }}
 
-      - name: Build
+      - name: Build (${{ env.BUILD_CONFIGURATION }})
         uses: docker/build-push-action@v7
         env:
           DOCKER_BUILD_RECORD_UPLOAD: false
@@ -240,6 +234,8 @@ jobs:
           context: .
           load: true
           tags: oneleft/web:ci
+          build-args: CONFIGURATION=${{ env.BUILD_CONFIGURATION }}
+          secrets: primeui=${{ secrets.PRIMEUI_LICENSE }}
           cache-from: type=gha,scope=web
           cache-to: type=gha,mode=max,scope=web
 
@@ -264,6 +260,8 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          build-args: CONFIGURATION=${{ env.BUILD_CONFIGURATION }}
+          secrets: primeui=${{ secrets.PRIMEUI_LICENSE }}
           cache-from: type=gha,scope=web
 
   # Result of the CI in the project Slack channel, for pushes to dev/pre/main and for pull requests. The webhook URL
