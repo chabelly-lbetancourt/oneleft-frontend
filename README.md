@@ -101,19 +101,22 @@ origen.
   *service worker* de los avisos, para que una versión nueva llegue a todos a la vez.
 - **Cabeceras y salud:** cabeceras de seguridad y `/healthz` para las comprobaciones de salud.
 
-La build se hace antes, porque necesita la licencia de PrimeUI y así la clave nunca entra en una capa de Docker:
+El `Dockerfile` compila la web en una primera etapa y nginx la sirve en la segunda. `CONFIGURATION` elige la
+configuración de Angular: `development` (stack local, API en `localhost:8080`), `pre` o `production` (mismo origen que
+`/api` y `/auth`, detrás de Caddy). La licencia de PrimeUI entra como **secreto de BuildKit**, así que nunca queda en
+una capa de la imagen: vale el `.env` (`PRIMEUI_LICENSE=…`) o un fichero con la clave sola. Sin ella, la imagen se
+construye igual pero la app muestra el aviso de licencia de PrimeNG.
 
 ```bash
-npm run build -- --configuration pre
-docker build -t oneleft/web:dev .
-docker run --rm -p 8088:8080 oneleft/web:dev   # http://localhost:8088
+docker build --build-arg CONFIGURATION=development --secret id=primeui,src=.env -t oneleft/web:dev .
+docker run --rm -p 4200:8080 oneleft/web:dev   # http://localhost:4200, con el stack local arrancado
 ```
 
-La CI construye y prueba la imagen en cada ejecución, y publica `ghcr.io/chabelly-lbetancourt/oneleft-web` con
-`:pre` desde `pre` y `:latest` desde `main` (además de `:sha-…`).
+La CI construye la imagen con el secreto `PRIMEUI_LICENSE` del repositorio, la prueba en cada ejecución y publica
+`ghcr.io/chabelly-lbetancourt/oneleft-web` con `:pre` desde `pre` y `:latest` desde `main` (además de `:sha-…`).
 
-Si se ejecuta sola, sin Caddy delante, se ve la web, pero sin API ni inicio de sesión: en el mismo origen no hay
-`/api` ni `/auth`.
+Con `pre` o `production` y sin Caddy delante se ve la web, pero sin API ni inicio de sesión: en el mismo origen no
+hay `/api` ni `/auth`.
 
 ## App Android
 
