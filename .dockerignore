@@ -1,4 +1,10 @@
-# Only the build of the app and the nginx configuration go into the image
-*
-!dist/oneleft/browser
-!docker/nginx.conf
+# The image builds the app from the sources: no local builds, dependencies, secrets or Android project
+node_modules
+dist
+.angular
+android
+coverage
+e2e-results
+.git
+.env
+*.log
