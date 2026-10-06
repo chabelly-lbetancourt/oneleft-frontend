@@ -1,6 +1,7 @@
+import { readFileSync } from 'node:fs';
 import { ADMIN, ANA, API_URL, expect, signIn, test, uniqueTitle } from './support/fixtures';
 
-test('a shared link previews the plan, opens it without a session and brings the guest back after signing in', async ({
+test('a shared link previews the plan, opens it without a session, brings the guest back after signing in and adds it to the calendar', async ({
   openPage,
   publishPlan,
   request,
@@ -28,4 +29,14 @@ test('a shared link previews the plan, opens it without a session and brings the
   await guest.waitForURL(`**/plans/${plan.id}`);
   await guest.locator('.join-button button').click();
   await expect(guest.locator('.joined-message')).toContainText(t('plan.justJoined'));
+
+  // HU-027: once in, the plan can be added to the calendar as an iCalendar file (same plan, no new data)
+  const download = guest.waitForEvent('download');
+  await guest.locator('.calendar-button button').click();
+  const file = await download;
+  expect(file.suggestedFilename()).toMatch(/^e2e-share.*\.ics$/);
+  const ics = readFileSync(await file.path(), 'utf8');
+  expect(ics).toContain(`UID:plan-${plan.id}@oneleft`);
+  expect(ics).toMatch(/^DTSTART:\d{8}T\d{6}Z\r$/m);
+  expect(ics).toContain('TRIGGER:-PT30M');
 });

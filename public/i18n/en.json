@@ -124,6 +124,8 @@
     "waitlistLeave": "Leave the list",
     "waitlistCount": "{{count}} on the waiting list",
     "share": "Share",
+    "addToCalendar": "Add to calendar",
+    "calendarLink": "See the plan on OneLeft: {{url}}",
     "linkCopied": "Link copied: paste it anywhere.",
     "shareText": "{{activity}} at {{time}} · {{spots}}. Are you in?",
     "guestHint": "Sign in or create an account to join; you will come back to this plan.",
