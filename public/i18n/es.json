@@ -17,7 +17,8 @@
     "nearby": "OneLeft · Planes cerca",
     "login": "OneLeft · Entrar",
     "register": "OneLeft · Crear cuenta",
-    "notifications": "OneLeft · Avisos"
+    "notifications": "OneLeft · Avisos",
+    "alerts": "OneLeft · Alertas guardadas"
   },
   "auth": {
     "login": "Entrar",
@@ -276,7 +277,16 @@
       "quietHours": "El horario sin avisos necesita una hora de inicio y otra de fin distintas",
       "pushEndpoint": "La suscripción del navegador no es válida",
       "pushKeys": "La suscripción del navegador no es válida"
-    }
+    },
+    "alerts": {
+      "name": "El nombre de la alerta debe tener entre 1 y 40 caracteres.",
+      "zone": "La zona de la alerta no es válida.",
+      "radius": "La distancia debe estar entre 0,5 y 20 km.",
+      "hours": "La hora de inicio debe ser anterior a la de fin, el mismo día.",
+      "limit": "Ya tienes el máximo de alertas: borra una para crear otra.",
+      "notFound": "Esta alerta ya no existe."
+    },
+    "alertsFailed": "No se ha podido guardar la alerta."
   },
   "nearby": {
     "title": "Planes cerca",
@@ -347,7 +357,9 @@
       "denied": "Has bloqueado las notificaciones de OneLeft en este navegador. Actívalas en sus ajustes.",
       "unavailable": "Este servidor no tiene activadas las notificaciones del navegador: te llegarán con OneLeft abierto.",
       "unsupported": "Este navegador no admite notificaciones: te llegarán con OneLeft abierto."
-    }
+    },
+    "alertsLink": "Alertas guardadas",
+    "alertsLinkHint": "Búsquedas concretas que te avisan cuando aparece un plan así."
   },
   "theme": {
     "toDark": "Cambiar al modo oscuro",
@@ -357,5 +369,55 @@
     "light": "Claro",
     "dark": "Oscuro",
     "hint": "«Sistema» sigue la configuración de tu dispositivo."
+  },
+  "alerts": {
+    "title": "Alertas guardadas",
+    "intro": "Guarda las búsquedas que te interesan y te avisamos en cuanto se publique un plan así cerca.",
+    "loading": "Cargando tus alertas…",
+    "loadError": "No se han podido cargar tus alertas. Inténtalo de nuevo.",
+    "empty": "Aún no tienes alertas. Por ejemplo: «pádel intermedio a menos de 3 km entre semana por la tarde».",
+    "new": "Nueva alerta",
+    "edit": "Editar",
+    "delete": "Borrar",
+    "cancel": "Cancelar",
+    "save": "Guardar alerta",
+    "saved": "Alerta guardada.",
+    "deleted": "Alerta borrada.",
+    "limit": "Puedes guardar hasta {{max}} alertas: borra una para crear otra.",
+    "name": "Nombre",
+    "namePlaceholder": "Pádel al salir del trabajo",
+    "activities": "Actividades",
+    "activitiesHint": "Si no marcas ninguna, cualquier actividad.",
+    "level": "Nivel",
+    "zone": "¿Alrededor de dónde?",
+    "radius": "Distancia máxima",
+    "days": "Días",
+    "daysHint": "Si no marcas ninguno, cualquier día.",
+    "anyTime": "A cualquier hora",
+    "from": "Desde",
+    "to": "Hasta",
+    "chooseZone": "Elige una zona para la alerta.",
+    "anyActivity": "Cualquier actividad",
+    "everyDay": "Todos los días",
+    "summaryHours": "de {{from}} a {{to}}",
+    "summaryKm": "a {{km}} km",
+    "day": {
+      "MONDAY": "L",
+      "TUESDAY": "M",
+      "WEDNESDAY": "X",
+      "THURSDAY": "J",
+      "FRIDAY": "V",
+      "SATURDAY": "S",
+      "SUNDAY": "D"
+    },
+    "dayName": {
+      "MONDAY": "Lunes",
+      "TUESDAY": "Martes",
+      "WEDNESDAY": "Miércoles",
+      "THURSDAY": "Jueves",
+      "FRIDAY": "Viernes",
+      "SATURDAY": "Sábado",
+      "SUNDAY": "Domingo"
+    }
   }
 }

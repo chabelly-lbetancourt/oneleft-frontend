@@ -38,6 +38,13 @@ export const routes: Routes = [
     title: 'titles.notifications',
   },
   {
+    // Saved alerts (HU-036)
+    path: 'notifications/alerts',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/notifications/saved-alerts').then((m) => m.SavedAlerts),
+    title: 'titles.alerts',
+  },
+  {
     path: 'plans/new',
     canActivate: [authGuard],
     loadComponent: () => import('./features/plans/publish-plan').then((m) => m.PublishPlan),

@@ -40,6 +40,30 @@ describe('NotificationsApi', () => {
     save.flush(preferences);
   });
 
+  it('should list, create, edit and delete my saved alerts (HU-036)', () => {
+    const alert = {
+      name: 'Pádel',
+      activities: ['PADEL'],
+      level: null,
+      latitude: 40.39,
+      longitude: -3.63,
+      radiusMeters: 3000,
+      days: [],
+      from: null,
+      to: null,
+    };
+    api.alerts().subscribe();
+    http.expectOne({ method: 'GET', url: `${base}/alerts` }).flush([]);
+    api.createAlert(alert).subscribe();
+    const post = http.expectOne({ method: 'POST', url: `${base}/alerts` });
+    expect(post.request.body).toEqual(alert);
+    post.flush({ ...alert, id: 'a1' });
+    api.updateAlert('a1', alert).subscribe();
+    http.expectOne({ method: 'PUT', url: `${base}/alerts/a1` }).flush({ ...alert, id: 'a1' });
+    api.deleteAlert('a1').subscribe();
+    http.expectOne({ method: 'DELETE', url: `${base}/alerts/a1` }).flush(null);
+  });
+
   it('should give the Web Push key, or null when the server has it off', async () => {
     const key = firstValueFrom(api.pushPublicKey());
     http.expectOne(`${base}/push/public-key`).flush({ publicKey: 'BKey' });
