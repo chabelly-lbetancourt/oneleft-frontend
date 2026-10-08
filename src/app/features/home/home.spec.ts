@@ -5,7 +5,11 @@ import { provideRouter, Router, UrlTree } from '@angular/router';
 import { FakeSession } from '../../../testing/fake-session';
 import { Session } from '../../core/auth/session';
 import { UserEvents } from '../../core/realtime/user-events';
-import { PlanJoinedNotice, PlanLeftNotice } from '../../shared/model/published-plan';
+import {
+  PlanCancelledNotice,
+  PlanJoinedNotice,
+  PlanLeftNotice,
+} from '../../shared/model/published-plan';
 import { EMPTY, Subject } from 'rxjs';
 import { Home } from './home';
 import { translocoTesting } from '../../../testing/transloco-testing';
@@ -16,6 +20,7 @@ describe('Home', () => {
   let session: FakeSession;
   const notices = new Subject<PlanJoinedNotice>();
   const left = new Subject<PlanLeftNotice>();
+  const cancelled = new Subject<PlanCancelledNotice>();
 
   beforeEach(async () => {
     session = new FakeSession();
@@ -32,6 +37,7 @@ describe('Home', () => {
             joined$: notices.asObservable(),
             left$: left.asObservable(),
             spotFreed$: EMPTY,
+            cancelled$: cancelled.asObservable(),
           },
         },
       ],
@@ -137,7 +143,7 @@ describe('Home', () => {
     expect(element.querySelector('h1')?.textContent).toContain('¿Te falta uno?');
   });
 
-  it('should refresh my plans when someone joins or leaves one of them', async () => {
+  it('should refresh my plans when someone joins or leaves one of them or one is cancelled', async () => {
     session.signIn('Ana Test');
     fixture.detectChanges();
     const http = TestBed.inject(HttpTestingController);
@@ -162,6 +168,17 @@ describe('Home', () => {
       promotedName: null,
       freeSpots: 1,
       full: false,
+    });
+    fixture.detectChanges();
+    http.expectOne((r) => r.url.endsWith('/api/v1/plans/mine')).flush([]);
+    await fixture.whenStable();
+
+    cancelled.next({
+      planId: 'p1',
+      title: 'Pádel',
+      placeName: 'Pistas',
+      startsAt: '2026-11-16T17:20:00Z',
+      reason: 'MINIMUM_NOT_REACHED',
     });
     fixture.detectChanges();
     http.expectOne((r) => r.url.endsWith('/api/v1/plans/mine')).flush([]);

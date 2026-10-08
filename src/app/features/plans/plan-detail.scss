@@ -64,6 +64,10 @@
   }
 }
 
+.plan-minimum--confirmed {
+  @include weight(bold);
+}
+
 .participants {
   @include card;
   @include stack(space(4));

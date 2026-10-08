@@ -14,6 +14,17 @@ export interface PublishPlan {
   startsAt: string;
   spots: number;
   level: Level | null;
+  /** Optional minimum of participants and its deadline (HU-039): both or neither */
+  minParticipants?: number | null;
+  minimumDeadline?: string | null;
+}
+
+/** If fewer people have joined by the deadline, the plan is cancelled (HU-039). */
+export interface PlanMinimum {
+  participants: number;
+  deadline: string;
+  /** Reached at the deadline: the plan goes ahead */
+  confirmed: boolean;
 }
 
 export interface Participant {
@@ -55,12 +66,22 @@ export interface PlanReminderNotice {
   startsAt: string;
 }
 
+/** A plan I am in has been cancelled because it did not reach its minimum (HU-039). */
+export interface PlanCancelledNotice {
+  planId: string;
+  title: string;
+  placeName: string;
+  startsAt: string;
+  reason: 'MINIMUM_NOT_REACHED';
+}
+
 /** A plan from a shared link, without a session (HU-024) */
 export interface PublicPlan extends PublishPlan {
   id: string;
   occupied: number;
   freeSpots: number;
   status: Plan['status'];
+  minimum?: PlanMinimum | null;
 }
 
 export interface Plan extends PublishPlan {
@@ -74,4 +95,6 @@ export interface Plan extends PublishPlan {
   participants: Participant[];
   /** People waiting for a spot, first to last (HU-023) */
   waitlist: Participant[];
+  /** Null when the plan goes ahead with anyone (HU-039) */
+  minimum?: PlanMinimum | null;
 }
