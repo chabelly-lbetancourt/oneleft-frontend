@@ -6,7 +6,7 @@ import { Avatar } from 'primeng/avatar';
 import { Button } from 'primeng/button';
 import { Message } from 'primeng/message';
 import { Tag } from 'primeng/tag';
-import { filter, merge, Observable } from 'rxjs';
+import { catchError, filter, merge, Observable, of } from 'rxjs';
 import { PlansApi } from '../../core/api/plans-api';
 import { Session } from '../../core/auth/session';
 import { ApiErrorMessage, apiErrorMessage } from '../../core/i18n/api-error';
@@ -19,7 +19,7 @@ import { CardSkeleton } from '../../components/card-skeleton/card-skeleton';
 import { IconTile } from '../../components/icon-tile/icon-tile';
 import { SpotSlots } from '../../components/spot-slots/spot-slots';
 import { PageLayout } from '../../layout/page-layout/page-layout';
-import { Forecast, Plan } from '../../shared/model/published-plan';
+import { Forecast, FreePerson, Plan } from '../../shared/model/published-plan';
 import { clockTime, spotsKey, startsIn } from '../../shared/time/plan-time';
 import {
   CalendarEvent,
@@ -68,6 +68,22 @@ export class PlanDetail {
   protected readonly forecast = signal<Forecast | null>(null);
   /** Plan whose forecast has been asked for */
   private forecastOf: string | null = null;
+  /** Free people near my upcoming plan (HU-035); null until known, and for anyone but the organizer */
+  protected readonly freePeople = signal<FreePerson[] | null>(null);
+  protected readonly freePeopleView = computed(() => {
+    const people = this.freePeople();
+    if (!people || this.relation() !== 'organizer') {
+      return null;
+    }
+    const locale = this.language.locale();
+    return people.map((person) => ({
+      km: (person.distanceMeters / 1000).toLocaleString(locale),
+      levelKey: levelKey(person.level),
+      activities: person.activities
+        .map((code) => this.transloco.translate(activityKey(code)))
+        .join(', '),
+    }));
+  });
   protected readonly weather = computed(() => {
     const forecast = this.forecast();
     if (!forecast || this.ended()) {
@@ -344,6 +360,13 @@ export class PlanDetail {
         if (this.forecastOf !== plan.id && !this.isGuest() && !ENDED.includes(plan.status)) {
           this.forecastOf = plan.id;
           this.api.weather(plan.id).subscribe((forecast) => this.forecast.set(forecast));
+          // Only the organizer sees who is free nearby (HU-035)
+          if (plan.organizerId === this.session.userId()) {
+            this.api
+              .freePeople(plan.id)
+              .pipe(catchError(() => of([])))
+              .subscribe((people) => this.freePeople.set(people));
+          }
         }
       },
       error: () => this.notFound.set(true),
