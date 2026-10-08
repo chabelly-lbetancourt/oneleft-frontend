@@ -34,6 +34,8 @@ export class FreeNow implements OnInit {
   private readonly transloco = inject(TranslocoService);
 
   protected readonly availability = signal<Availability | null>(null);
+  /** Whether my free mode is known: until then the card is not shown, so that it never says the opposite */
+  protected readonly loaded = signal(false);
   protected readonly choosing = signal(false);
   protected readonly busy = signal(false);
   protected readonly error = signal<string | null>(null);
@@ -65,7 +67,10 @@ export class FreeNow implements OnInit {
     this.plans
       .myAvailability()
       .pipe(catchError(() => of(null)))
-      .subscribe((availability) => this.availability.set(availability));
+      .subscribe((availability) => {
+        this.availability.set(availability);
+        this.loaded.set(true);
+      });
     this.users
       .myProfile()
       .pipe(catchError(() => of(null)))
