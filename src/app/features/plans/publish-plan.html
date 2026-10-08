@@ -114,6 +114,45 @@
       />
     </section>
 
+    <section class="form-section minimum-section">
+      <div class="switch-row">
+        <div class="switch-text">
+          <label for="hasMinimum" class="section-title">{{
+            'publish.minimumToggle' | transloco
+          }}</label>
+          <p class="hint">{{ 'publish.minimumHint' | transloco }}</p>
+        </div>
+        <p-toggleswitch inputId="hasMinimum" formControlName="hasMinimum" class="minimum-switch" />
+      </div>
+      @if (form.controls.hasMinimum.value) {
+        <label for="minParticipants" class="section-title section-title--spaced">{{
+          'publish.minimumParticipants' | transloco
+        }}</label>
+        <p-inputnumber
+          inputId="minParticipants"
+          formControlName="minParticipants"
+          [showButtons]="true"
+          buttonLayout="horizontal"
+          [min]="1"
+          [max]="form.controls.spots.value"
+          incrementButtonIcon="pi pi-plus"
+          decrementButtonIcon="pi pi-minus"
+        />
+        <span class="section-title section-title--spaced">{{
+          'publish.minimumDeadline' | transloco
+        }}</span>
+        <p-selectbutton
+          formControlName="minimumLead"
+          [options]="deadlineOptions()"
+          optionLabel="label"
+          optionValue="value"
+          [allowEmpty]="false"
+          size="small"
+          class="deadline-options"
+        />
+      }
+    </section>
+
     @if (error(); as message) {
       <p-message severity="error" class="status-message">{{
         message.key | transloco: message.params

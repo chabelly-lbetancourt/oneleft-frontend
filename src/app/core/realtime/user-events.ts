@@ -3,6 +3,7 @@ import { toObservable } from '@angular/core/rxjs-interop';
 import { EMPTY, filter, map, Observable, share, switchMap } from 'rxjs';
 import { PlanNearbyNotice } from '../../shared/model/notifications';
 import {
+  PlanCancelledNotice,
   PlanJoinedNotice,
   PlanLeftNotice,
   PlanReminderNotice,
@@ -17,11 +18,12 @@ const PLAN_LEFT = 'plan-left';
 const SPOT_FREED = 'plan-spot';
 const PLAN_NEARBY = 'plan-nearby';
 const PLAN_REMINDER = 'plan-reminder';
+const PLAN_CANCELLED = 'plan-cancelled';
 
 /**
  * Personal events of the signed-in user while the app is open: someone has joined (HU-005) or left (HU-023) one of
- * my plans, a spot I was waiting for is now mine, a plan I like has been published nearby (HU-006) or a plan I am in
- * is about to start (HU-007). A single connection is shared by every subscriber and closed when the user signs out.
+ * my plans, a spot I was waiting for is now mine, a plan I like has been published nearby (HU-006), a plan I am in
+ * is about to start (HU-007) or has been cancelled for not reaching its minimum (HU-039). A single connection is shared by every subscriber and closed when the user signs out.
  */
 @Injectable({ providedIn: 'root' })
 export class UserEvents {
@@ -40,6 +42,7 @@ export class UserEvents {
             SPOT_FREED,
             PLAN_NEARBY,
             PLAN_REMINDER,
+            PLAN_CANCELLED,
           ])
         : EMPTY,
     ),
@@ -51,6 +54,7 @@ export class UserEvents {
   readonly spotFreed$ = this.of<SpotFreedNotice>(SPOT_FREED);
   readonly nearby$ = this.of<PlanNearbyNotice>(PLAN_NEARBY);
   readonly reminder$ = this.of<PlanReminderNotice>(PLAN_REMINDER);
+  readonly cancelled$ = this.of<PlanCancelledNotice>(PLAN_CANCELLED);
 
   private of<T>(name: string): Observable<T> {
     return this.events$.pipe(

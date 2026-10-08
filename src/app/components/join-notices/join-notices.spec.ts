@@ -8,6 +8,7 @@ import { PlanNearbyNotice } from '../../shared/model/notifications';
 import {
   PlanJoinedNotice,
   PlanLeftNotice,
+  PlanCancelledNotice,
   PlanReminderNotice,
   SpotFreedNotice,
 } from '../../shared/model/published-plan';
@@ -20,6 +21,7 @@ describe('JoinNotices', () => {
     const spots = new Subject<SpotFreedNotice>();
     const nearby = new Subject<PlanNearbyNotice>();
     const reminders = new Subject<PlanReminderNotice>();
+    const cancelled = new Subject<PlanCancelledNotice>();
     TestBed.configureTestingModule({
       imports: [JoinNotices, translocoTesting()],
       providers: [
@@ -32,6 +34,7 @@ describe('JoinNotices', () => {
             spotFreed$: spots.asObservable(),
             nearby$: nearby.asObservable(),
             reminder$: reminders.asObservable(),
+            cancelled$: cancelled.asObservable(),
           },
         },
       ],
@@ -129,6 +132,23 @@ describe('JoinNotices', () => {
     });
     expect(add.mock.calls[6][0].detail).toMatch(
       /^«Pádel 2 contra 2» empieza a las \d{2}:\d{2} en Pistas de la Albufera$/,
+    );
+
+    cancelled.next({
+      planId: 'p5',
+      title: 'Pádel 2 contra 2',
+      placeName: 'Pistas de la Albufera',
+      startsAt: '2026-11-16T17:20:00Z',
+      reason: 'MINIMUM_NOT_REACHED',
+    });
+    expect(add.mock.calls[7][0]).toMatchObject({
+      summary: 'Plan cancelado',
+      icon: 'pi-times-circle',
+      severity: 'warn',
+      data: 'p5',
+    });
+    expect(add.mock.calls[7][0].detail).toMatch(
+      /^«Pádel 2 contra 2» de las \d{2}:\d{2} se ha cancelado: no se llegó al mínimo de participantes$/,
     );
 
     (fixture.componentInstance as unknown as { open: (id: string) => void }).open('p1');

@@ -82,6 +82,18 @@ export class JoinNotices {
         notice.planId,
       ),
     );
+    events.cancelled$.pipe(takeUntilDestroyed(destroyRef)).subscribe((notice) =>
+      this.show(
+        'pi-times-circle',
+        'notices.cancelledTitle',
+        this.transloco.translate('notices.cancelled', {
+          title: notice.title,
+          time: clockTime(new Date(notice.startsAt), this.language.locale()),
+        }),
+        notice.planId,
+        'warn',
+      ),
+    );
     events.nearby$
       .pipe(takeUntilDestroyed(destroyRef))
       .subscribe((notice) =>

@@ -13,7 +13,8 @@ describe('PublishPlan', () => {
   const api = { publish: vi.fn() };
   const location = { current: vi.fn() };
   const element = () => fixture.nativeElement as HTMLElement;
-  const call = <T>(name: string, ...args: unknown[]) => (component[name] as (...a: unknown[]) => T)(...args);
+  const call = <T>(name: string, ...args: unknown[]) =>
+    (component[name] as (...a: unknown[]) => T)(...args);
   const form = () => component['form'] as unknown as { patchValue: (value: object) => void };
   const render = async () => {
     fixture.detectChanges();
@@ -71,6 +72,56 @@ describe('PublishPlan', () => {
     expect(navigate).toHaveBeenCalledWith(['/plans', 'plan-1'], { queryParams: { published: 1 } });
   });
 
+  it('should publish a plan with a minimum of participants and its deadline (HU-039)', async () => {
+    api.publish.mockReturnValue(of({ id: 'plan-1' }));
+    vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
+    fillValidPlan();
+    form().patchValue({ start: '120', spots: 3 });
+    await render();
+    expect(element().querySelector('.deadline-options')).toBeNull();
+
+    form().patchValue({ hasMinimum: true, minParticipants: 2, minimumLead: 60 });
+    await render();
+    expect(element().querySelector('.deadline-options')?.textContent).toContain('1 h antes');
+    call('publish');
+
+    const sent = api.publish.mock.calls[0][0];
+    expect(sent.minParticipants).toBe(2);
+    expect(new Date(sent.startsAt).getTime() - new Date(sent.minimumDeadline).getTime()).toBe(
+      60 * 60_000,
+    );
+  });
+
+  it('should only offer the deadlines still possible and keep the minimum within the spots', async () => {
+    fillValidPlan();
+    form().patchValue({ start: '30', spots: 3, hasMinimum: true, minParticipants: 3 });
+    await render();
+    const options = () =>
+      (component['deadlineOptions'] as () => { value: number }[])().map(({ value }) => value);
+    // A plan in 30 minutes can only be checked at its start
+    expect(options()).toEqual([0]);
+    expect(
+      (component['form'] as unknown as { value: { minimumLead: number } }).value.minimumLead,
+    ).toBe(0);
+
+    form().patchValue({ start: '180' });
+    expect(options()).toEqual([120, 60, 30, 0]);
+
+    form().patchValue({ spots: 2 });
+    expect(
+      (component['form'] as unknown as { value: { minParticipants: number } }).value
+        .minParticipants,
+    ).toBe(2);
+  });
+
+  it('should not send a deadline that is no longer possible', async () => {
+    fillValidPlan();
+    form().patchValue({ hasMinimum: true, minimumLead: 60 });
+    // Checked in the component: the start (in 60 minutes) leaves no room for «1 h before»
+    expect(call<Date | null>('minimumDeadline', new Date(Date.now() + 60 * 60_000))).toBeNull();
+    expect(call<Date>('minimumDeadline', new Date(Date.now() + 120 * 60_000))).toBeInstanceOf(Date);
+  });
+
   it('should not publish an incomplete plan', async () => {
     call('publish');
     await render();
@@ -104,17 +155,26 @@ describe('PublishPlan', () => {
     await call<Promise<void>>('useMyLocation');
     await render();
     expect(location.current).toHaveBeenCalledWith(3);
-    expect(element().querySelector('.meeting-coordinates')?.textContent).toContain('40.391, -3.629');
+    expect(element().querySelector('.meeting-coordinates')?.textContent).toContain(
+      '40.391, -3.629',
+    );
   });
 
   it('should show why the location or the publication failed', async () => {
     location.current.mockRejectedValue(new LocationError('denied'));
     await call<Promise<void>>('useMyLocation');
     await render();
-    expect(element().querySelector('.status-message')?.textContent).toContain('No se ha podido obtener tu ubicación');
+    expect(element().querySelector('.status-message')?.textContent).toContain(
+      'No se ha podido obtener tu ubicación',
+    );
 
     api.publish.mockReturnValue(
-      throwError(() => ({ error: { code: 'plan.startsTooLate', detail: 'The plan must start within the next 12 hours' } })),
+      throwError(() => ({
+        error: {
+          code: 'plan.startsTooLate',
+          detail: 'The plan must start within the next 12 hours',
+        },
+      })),
     );
     fillValidPlan();
     call('publish');
@@ -124,12 +184,16 @@ describe('PublishPlan', () => {
     api.publish.mockReturnValue(throwError(() => ({})));
     call('publish');
     await render();
-    expect(element().querySelector('.status-message')?.textContent).toContain('No se ha podido publicar el plan');
+    expect(element().querySelector('.status-message')?.textContent).toContain(
+      'No se ha podido publicar el plan',
+    );
 
     location.current.mockRejectedValue(new Error('unexpected'));
     await call<Promise<void>>('useMyLocation');
     await render();
-    expect(element().querySelector('.status-message')?.textContent).toContain('No se ha podido obtener tu ubicación');
+    expect(element().querySelector('.status-message')?.textContent).toContain(
+      'No se ha podido obtener tu ubicación',
+    );
   });
 
   it('should ask to wait when the publication limit is reached and keep the form', async () => {
@@ -143,7 +207,9 @@ describe('PublishPlan', () => {
     expect(element().querySelector('.status-message')?.textContent).toContain(
       'Vas demasiado rápido. Vuelve a intentarlo en 11 min.',
     );
-    expect((component['form'] as unknown as { value: { title: string } }).value.title).toBe('  Partido de pádel  ');
+    expect((component['form'] as unknown as { value: { title: string } }).value.title).toBe(
+      '  Partido de pádel  ',
+    );
   });
 
   it('should translate the options when the language changes', async () => {
