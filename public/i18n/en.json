@@ -140,7 +140,10 @@
     "cancelledHint": "This plan was cancelled.",
     "minimumPending": "Goes ahead if at least {{count}} join · you will know at {{time}}",
     "minimumConfirmed": "Confirmed: the minimum of {{count}} was reached",
-    "cancelledMinimumHint": "It was cancelled because not enough people joined."
+    "cancelledMinimumHint": "It was cancelled because not enough people joined.",
+    "weatherTitle": "The weather at that time",
+    "weather": "{{temperature}} °C · {{rain}} % chance of rain · wind {{wind}} km/h",
+    "rainLikely": "Rain is likely: check with the group before going."
   },
   "publish": {
     "title": "Publish a plan",

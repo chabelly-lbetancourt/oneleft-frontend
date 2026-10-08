@@ -1,13 +1,14 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import { TranslocoService } from '@jsverse/transloco';
-import { EMPTY, of, Subject, throwError } from 'rxjs';
+import { EMPTY, Observable, of, Subject, throwError } from 'rxjs';
 import { FakeSession } from '../../../testing/fake-session';
 import { translocoTesting } from '../../../testing/transloco-testing';
 import { PlansApi } from '../../core/api/plans-api';
 import { Session } from '../../core/auth/session';
 import { UserEvents } from '../../core/realtime/user-events';
 import {
+  Forecast,
   Plan,
   PlanCancelledNotice,
   PlanJoinedNotice,
@@ -47,6 +48,7 @@ describe('PlanDetail', () => {
     plan: vi.fn(),
     publicPlan: vi.fn(),
     shareUrl: vi.fn((id: string) => `http://localhost:8080/share/plans/${id}`),
+    weather: vi.fn((): Observable<Forecast | null> => of(null)),
     join: vi.fn(),
     leave: vi.fn(),
     joinWaitlist: vi.fn(),
@@ -72,6 +74,8 @@ describe('PlanDetail', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    // No forecast unless a test gives one (HU-026)
+    api.weather.mockReturnValue(of(null));
     session = new FakeSession();
     notices = new Subject();
     left = new Subject();
@@ -580,6 +584,42 @@ describe('PlanDetail', () => {
 
     await create({ ...PLAN, status: 'CANCELLED' });
     expect(element().querySelector('.ended-hint')?.textContent).toContain('Este plan se canceló.');
+  });
+
+  it('should show the weather of an outdoor plan and highlight likely rain (HU-026)', async () => {
+    const forecast = {
+      time: PLAN.startsAt,
+      temperature: 17.4,
+      precipitationProbability: 20,
+      windSpeed: 12.6,
+      rainLikely: false,
+    };
+    api.weather.mockReturnValue(of(forecast));
+    await create(PLAN);
+    expect(api.weather).toHaveBeenCalledWith('plan-1');
+    expect(element().querySelector('.weather')?.textContent).toContain(
+      '17 °C · 20 % de lluvia · viento 13 km/h',
+    );
+    expect(element().querySelector('.weather .pi-sun')).not.toBeNull();
+    expect(element().querySelector('.weather__rain')).toBeNull();
+
+    api.weather.mockReturnValue(
+      of({ ...forecast, precipitationProbability: 70, rainLikely: true }),
+    );
+    await create(PLAN);
+    expect(element().querySelector('.weather--rain .pi-cloud')).not.toBeNull();
+    expect(element().querySelector('.weather__rain')?.textContent).toContain(
+      'Es probable que llueva',
+    );
+  });
+
+  it('should show no weather without a forecast, for guests or for ended plans', async () => {
+    await create(PLAN);
+    expect(element().querySelector('.weather')).toBeNull();
+
+    api.weather.mockClear();
+    await create({ ...PLAN, status: 'FINISHED' });
+    expect(api.weather).not.toHaveBeenCalled();
   });
 
   it('should show the plan in English', async () => {
