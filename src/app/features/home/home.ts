@@ -52,7 +52,8 @@ export class Home {
   constructor() {
     // Free spots of my plans change when someone joins or leaves: refresh the list with each notice
     const events = inject(UserEvents);
-    merge(events.joined$, events.left$)
+    // A cancelled plan (HU-039) leaves the list at once
+    merge(events.joined$, events.left$, events.cancelled$)
       .pipe(takeUntilDestroyed(inject(DestroyRef)))
       .subscribe(() => this.myPlans.reload());
   }

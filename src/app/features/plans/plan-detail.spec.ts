@@ -574,6 +574,9 @@ describe('PlanDetail', () => {
     );
     expect(element().querySelector('.plan-minimum')).toBeNull();
     expect(element().querySelector('.join-button')).toBeNull();
+    // Neither «has already started» nor an invitation to join
+    expect(element().querySelector('.plan-time')?.textContent).not.toContain('·');
+    expect(element().textContent).not.toContain('Aún no se ha apuntado nadie');
 
     await create({ ...PLAN, status: 'CANCELLED' });
     expect(element().querySelector('.ended-hint')?.textContent).toContain('Este plan se canceló.');
