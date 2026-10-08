@@ -1,0 +1,95 @@
+@use 'abstracts' as *;
+
+.alerts-page {
+  @include stack(space(4));
+}
+
+.alerts-loading,
+.alert-form {
+  @include stack(space(6));
+}
+
+.alert-form {
+  @include stagger(ol-fade-up, 60ms);
+}
+
+.alert-list {
+  @include stack(space(3));
+}
+
+.saved-alert {
+  @include card;
+  @include row(space(3), center);
+  @include enter(ol-fade-up, calc(var(--i, 0) * 50ms));
+  padding: space(4);
+}
+
+.saved-alert__text {
+  flex: 1;
+  min-width: 0;
+}
+
+.saved-alert__name {
+  @include weight(bold);
+}
+
+.saved-alert__actions {
+  @include row(space(1), center);
+}
+
+.section-title--spaced {
+  margin-top: space(2);
+}
+
+.field-full {
+  width: 100%;
+}
+
+.chips,
+.zone-actions,
+.alert-hours {
+  @include cluster(space(2));
+}
+
+.wrap-options {
+  flex-wrap: wrap;
+}
+
+.day-chip {
+  min-width: 2.5rem;
+  justify-content: center;
+}
+
+// The activities and days of the search: each one lights up when chosen
+.choice {
+  @include transition-colors;
+  @include pressable(0.95, false);
+  @include focus-ring;
+  border: 1px solid transparent;
+}
+
+.choice--off {
+  border-color: var(--ol-border);
+  background-color: var(--ol-surface);
+  color: var(--ol-text-soft);
+  &:hover {
+    border-color: var(--ol-border-strong);
+  }
+}
+
+.choice--on {
+  @include weight(semibold);
+}
+
+.switch-row {
+  @include row(space(4), center);
+  margin-top: space(2);
+}
+
+.switch-text {
+  flex: 1;
+}
+
+.form-actions {
+  @include stack(space(2));
+}
