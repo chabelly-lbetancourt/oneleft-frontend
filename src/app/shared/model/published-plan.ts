@@ -19,6 +19,18 @@ export interface PublishPlan {
   minimumDeadline?: string | null;
 }
 
+/** Weather forecast at the time and place of an outdoor plan (HU-026). */
+export interface Forecast {
+  time: string;
+  /** °C */
+  temperature: number;
+  /** Chance of rain, % */
+  precipitationProbability: number;
+  /** km/h */
+  windSpeed: number;
+  rainLikely: boolean;
+}
+
 /** If fewer people have joined by the deadline, the plan is cancelled (HU-039). */
 export interface PlanMinimum {
   participants: number;

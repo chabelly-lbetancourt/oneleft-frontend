@@ -140,7 +140,10 @@
     "cancelledHint": "Este plan se canceló.",
     "minimumPending": "Sale si se apuntan al menos {{count}} · lo sabrás a las {{time}}",
     "minimumConfirmed": "Confirmado: se llegó al mínimo de {{count}}",
-    "cancelledMinimumHint": "Se canceló porque no se llegó al mínimo de participantes."
+    "cancelledMinimumHint": "Se canceló porque no se llegó al mínimo de participantes.",
+    "weatherTitle": "El tiempo a esa hora",
+    "weather": "{{temperature}} °C · {{rain}} % de lluvia · viento {{wind}} km/h",
+    "rainLikely": "Es probable que llueva: confirma con el grupo antes de ir."
   },
   "publish": {
     "title": "Publicar un plan",

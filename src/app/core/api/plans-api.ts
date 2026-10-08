@@ -1,9 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { map, Observable } from 'rxjs';
+import { catchError, map, Observable, of } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { nearbyParams, NearbyQuery, toQueryString } from '../../shared/model/nearby';
-import { Plan, PublicPlan, PublishPlan } from '../../shared/model/published-plan';
+import { Forecast, Plan, PublicPlan, PublishPlan } from '../../shared/model/published-plan';
 
 /** Client of the plans service through the API Gateway. */
 @Injectable({ providedIn: 'root' })
@@ -34,6 +34,16 @@ export class PlansApi {
         waitlist: [],
       })),
     );
+  }
+
+  /**
+   * Weather forecast of an upcoming outdoor plan (HU-026). Null when there is none (204: indoor, started or the
+   * weather service did not answer) and on any error: the plan is shown the same.
+   */
+  weather(id: string): Observable<Forecast | null> {
+    return this.http
+      .get<Forecast | null>(`${this.base}/${id}/weather`)
+      .pipe(catchError(() => of(null)));
   }
 
   /** Link to share a plan: its page gives messaging apps a preview and then opens the plan (HU-024). */
