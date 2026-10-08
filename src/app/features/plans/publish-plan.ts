@@ -3,6 +3,7 @@ import {
   Component,
   computed,
   DestroyRef,
+  effect,
   inject,
   OnInit,
   signal,
@@ -18,6 +19,7 @@ import { Message } from 'primeng/message';
 import { Select } from 'primeng/select';
 import { SelectButton } from 'primeng/selectbutton';
 import { Textarea } from 'primeng/textarea';
+import { ToggleSwitch } from 'primeng/toggleswitch';
 import { PageLayout } from '../../layout/page-layout/page-layout';
 import { PlansApi } from '../../core/api/plans-api';
 import {
@@ -28,7 +30,12 @@ import {
 import { apiErrorMessage } from '../../core/i18n/api-error';
 import { ACTIVITIES, activityKey } from '../../shared/model/activities';
 import { Level, LEVELS, levelKey } from '../../shared/model/profile';
-import { MAX_HORIZON_HOURS, nextOccurrence, startsInRange } from '../../shared/time/plan-time';
+import {
+  MAX_HORIZON_HOURS,
+  MIN_LEAD_MINUTES,
+  nextOccurrence,
+  startsInRange,
+} from '../../shared/time/plan-time';
 
 type StartOption = '30' | '60' | '120' | '180' | 'custom';
 
@@ -38,6 +45,14 @@ const START_OPTIONS: { key: string; value: StartOption }[] = [
   { key: 'publish.in120', value: '120' },
   { key: 'publish.in180', value: '180' },
   { key: 'publish.custom', value: 'custom' },
+];
+
+/** Deadline of the minimum (HU-039): how long before the start it is checked. */
+const DEADLINE_OPTIONS: { key: string; minutes: number }[] = [
+  { key: 'publish.deadline120', minutes: 120 },
+  { key: 'publish.deadline60', minutes: 60 },
+  { key: 'publish.deadline30', minutes: 30 },
+  { key: 'publish.deadlineAtStart', minutes: 0 },
 ];
 
 /** Message shown under the form: a translation key and its parameters. */
@@ -57,6 +72,7 @@ interface StatusMessage {
     Select,
     SelectButton,
     Textarea,
+    ToggleSwitch,
     TranslocoPipe,
     PageLayout,
   ],
@@ -108,13 +124,61 @@ export class PublishPlan implements OnInit {
     customTime: [''],
     spots: this.fb.control<number>(1, [Validators.required, Validators.min(1), Validators.max(20)]),
     level: this.fb.control<Level | null>(null),
+    hasMinimum: this.fb.control(false),
+    minParticipants: this.fb.control<number>(1, [Validators.min(1), Validators.max(20)]),
+    minimumLead: this.fb.control<number>(30),
   });
+
+  /** Form values as a signal, so that the deadline options follow the chosen start */
+  private readonly values = toSignal(this.form.valueChanges, {
+    initialValue: this.form.getRawValue(),
+  });
+  /**
+   * Deadlines that are still possible for the chosen start: at least 5 minutes from now, like the service asks. A
+   * plan that starts soon only offers «at the start».
+   */
+  protected readonly deadlineOptions = computed(() => {
+    this.values();
+    const startsAt = this.startsAt();
+    const earliest = Date.now() + MIN_LEAD_MINUTES * 60_000;
+    return DEADLINE_OPTIONS.filter(
+      ({ minutes }) => !startsAt || startsAt.getTime() - minutes * 60_000 >= earliest,
+    ).map(({ key, minutes }) => ({ label: this.translate(key), value: minutes }));
+  });
+
+  constructor() {
+    // If the chosen deadline is no longer possible (the start moved closer), the latest possible one is taken
+    effect(() => {
+      const options = this.deadlineOptions();
+      const lead = this.form.controls.minimumLead;
+      if (options.length && !options.some(({ value }) => value === lead.value)) {
+        lead.setValue(options[0].value);
+      }
+    });
+  }
 
   ngOnInit(): void {
     // Without Zone.js, form changes do not refresh the view on their own
     this.form.valueChanges
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(() => this.changeDetector.markForCheck());
+    // The minimum can never be more than the spots: it follows them down
+    this.form.controls.spots.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((spots) => {
+        if (this.form.controls.minParticipants.value > spots) {
+          this.form.controls.minParticipants.setValue(spots);
+        }
+      });
+  }
+
+  /**
+   * Deadline of the minimum for the chosen start (HU-039), or null if the chosen one is no longer possible (the
+   * start moved too close).
+   */
+  protected minimumDeadline(startsAt: Date, now = new Date()): Date | null {
+    const deadline = new Date(startsAt.getTime() - this.form.controls.minimumLead.value * 60_000);
+    return deadline.getTime() >= now.getTime() + MIN_LEAD_MINUTES * 60_000 ? deadline : null;
   }
 
   /** Chosen start time, or null if the custom time is not within the next hours. */
@@ -157,6 +221,11 @@ export class PublishPlan implements OnInit {
       return;
     }
     const value = this.form.getRawValue();
+    const deadline = value.hasMinimum ? this.minimumDeadline(startsAt) : null;
+    if (value.hasMinimum && !deadline) {
+      this.error.set({ key: 'publish.chooseDeadline' });
+      return;
+    }
     this.publishing.set(true);
     this.error.set(null);
     this.api
@@ -172,6 +241,8 @@ export class PublishPlan implements OnInit {
         startsAt: startsAt.toISOString(),
         spots: value.spots,
         level: value.level,
+        minParticipants: deadline ? Math.min(value.minParticipants, value.spots) : null,
+        minimumDeadline: deadline?.toISOString() ?? null,
       })
       .subscribe({
         next: (plan) =>

@@ -137,7 +137,10 @@
     },
     "startedHint": "It has started: nobody else can join.",
     "finishedHint": "This plan is over.",
-    "cancelledHint": "This plan was cancelled."
+    "cancelledHint": "This plan was cancelled.",
+    "minimumPending": "Goes ahead if at least {{count}} join · you will know at {{time}}",
+    "minimumConfirmed": "Confirmed: the minimum of {{count}} was reached",
+    "cancelledMinimumHint": "It was cancelled because not enough people joined."
   },
   "publish": {
     "title": "Publish a plan",
@@ -166,7 +169,16 @@
     "anyLevel": "Any",
     "submit": "Publish plan",
     "checkFields": "Check the highlighted fields",
-    "chooseTime": "Choose a time within the next {{hours}} hours"
+    "chooseTime": "Choose a time within the next {{hours}} hours",
+    "minimumToggle": "Cancel if a minimum is not reached",
+    "minimumHint": "If not enough people have joined by the deadline, the plan is cancelled and everyone is told.",
+    "minimumParticipants": "Minimum of participants",
+    "minimumDeadline": "Deadline",
+    "deadlineAtStart": "At the start",
+    "deadline30": "30 min before",
+    "deadline60": "1 h before",
+    "deadline120": "2 h before",
+    "chooseDeadline": "Choose a deadline at least 5 minutes away."
   },
   "profile": {
     "title": "My profile",
@@ -218,7 +230,10 @@
       "notFull": "There are still free spots: join directly.",
       "alreadyWaiting": "You are already on the waiting list.",
       "notWaiting": "You are not on the waiting list.",
-      "waitlistFull": "The waiting list is full."
+      "waitlistFull": "The waiting list is full.",
+      "minimum": "The minimum of participants must be between 1 and the spots of the plan.",
+      "minimumDeadline": "The deadline of the minimum cannot be after the start of the plan.",
+      "minimumDeadlineTooSoon": "The deadline of the minimum must be at least 5 minutes away."
     },
     "meetingPoint": {
       "name": "The meeting point needs a name of up to 100 characters"
@@ -294,7 +309,9 @@
     "nearbyTitle": "A plan near you",
     "nearby": "\"{{title}}\" · {{activity}} at {{time}} · {{place}} · {{km}} km away · {{spots}}",
     "reminderTitle": "Your plan starts soon",
-    "reminder": "«{{title}}» starts at {{time}} at {{place}}"
+    "reminder": "«{{title}}» starts at {{time}} at {{place}}",
+    "cancelledTitle": "Plan cancelled",
+    "cancelled": "«{{title}}» at {{time}} has been cancelled: not enough people joined"
   },
   "notifications": {
     "title": "Notices of plans nearby",

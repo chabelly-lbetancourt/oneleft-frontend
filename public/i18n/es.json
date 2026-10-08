@@ -137,7 +137,10 @@
     },
     "startedHint": "Ya ha empezado: no admite a nadie más.",
     "finishedHint": "Este plan ya terminó.",
-    "cancelledHint": "Este plan se canceló."
+    "cancelledHint": "Este plan se canceló.",
+    "minimumPending": "Sale si se apuntan al menos {{count}} · lo sabrás a las {{time}}",
+    "minimumConfirmed": "Confirmado: se llegó al mínimo de {{count}}",
+    "cancelledMinimumHint": "Se canceló porque no se llegó al mínimo de participantes."
   },
   "publish": {
     "title": "Publicar un plan",
@@ -166,7 +169,16 @@
     "anyLevel": "Cualquiera",
     "submit": "Publicar plan",
     "checkFields": "Revisa los campos marcados",
-    "chooseTime": "Elige una hora dentro de las próximas {{hours}} horas"
+    "chooseTime": "Elige una hora dentro de las próximas {{hours}} horas",
+    "minimumToggle": "Cancelar si no se llega a un mínimo",
+    "minimumHint": "Si a la hora límite no se ha apuntado suficiente gente, el plan se cancela y avisamos a todos.",
+    "minimumParticipants": "Mínimo de participantes",
+    "minimumDeadline": "Hora límite",
+    "deadlineAtStart": "Al empezar",
+    "deadline30": "30 min antes",
+    "deadline60": "1 h antes",
+    "deadline120": "2 h antes",
+    "chooseDeadline": "Elige una hora límite que quede al menos a 5 minutos."
   },
   "profile": {
     "title": "Mi perfil",
@@ -218,7 +230,10 @@
       "notFull": "Aún quedan plazas: apúntate directamente.",
       "alreadyWaiting": "Ya estás en la lista de espera.",
       "notWaiting": "No estás en la lista de espera.",
-      "waitlistFull": "La lista de espera está completa."
+      "waitlistFull": "La lista de espera está completa.",
+      "minimum": "El mínimo de participantes debe estar entre 1 y las plazas del plan.",
+      "minimumDeadline": "La hora límite del mínimo no puede ser después de que empiece el plan.",
+      "minimumDeadlineTooSoon": "La hora límite del mínimo debe quedar al menos a 5 minutos."
     },
     "meetingPoint": {
       "name": "El lugar necesita un nombre de hasta 100 caracteres"
@@ -294,7 +309,9 @@
     "nearbyTitle": "Plan cerca de ti",
     "nearby": "«{{title}}» · {{activity}} a las {{time}} · {{place}} · a {{km}} km · {{spots}}",
     "reminderTitle": "Tu plan empieza pronto",
-    "reminder": "«{{title}}» empieza a las {{time}} en {{place}}"
+    "reminder": "«{{title}}» empieza a las {{time}} en {{place}}",
+    "cancelledTitle": "Plan cancelado",
+    "cancelled": "«{{title}}» de las {{time}} se ha cancelado: no se llegó al mínimo de participantes"
   },
   "notifications": {
     "title": "Avisos de planes cerca",

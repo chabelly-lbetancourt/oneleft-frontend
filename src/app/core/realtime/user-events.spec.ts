@@ -8,7 +8,7 @@ import {
   SpotFreedNotice,
 } from '../../shared/model/published-plan';
 import { PlanNearbyNotice } from '../../shared/model/notifications';
-import { PlanReminderNotice } from '../../shared/model/published-plan';
+import { PlanCancelledNotice, PlanReminderNotice } from '../../shared/model/published-plan';
 import { Session } from '../auth/session';
 import { EventStream, StreamEvent } from './event-stream';
 import { UserEvents } from './user-events';
@@ -31,12 +31,14 @@ describe('UserEvents', () => {
     const spots: SpotFreedNotice[] = [];
     const nearby: PlanNearbyNotice[] = [];
     const reminders: PlanReminderNotice[] = [];
+    const cancelled: PlanCancelledNotice[] = [];
     events.joined$.subscribe((notice) => joined.push(notice));
     events.joined$.subscribe((notice) => joinedToo.push(notice));
     events.left$.subscribe((notice) => left.push(notice));
     events.spotFreed$.subscribe((notice) => spots.push(notice));
     events.nearby$.subscribe((notice) => nearby.push(notice));
     events.reminder$.subscribe((notice) => reminders.push(notice));
+    events.cancelled$.subscribe((notice) => cancelled.push(notice));
     TestBed.tick();
     expect(stream.openEvents).not.toHaveBeenCalled();
 
@@ -78,11 +80,13 @@ describe('UserEvents', () => {
       startsAt: '2026-11-16T17:20:00Z',
     };
     source.next({ event: 'plan-reminder', data: soon });
+    const off: PlanCancelledNotice = { ...soon, planId: 'p5', reason: 'MINIMUM_NOT_REACHED' };
+    source.next({ event: 'plan-cancelled', data: off });
 
     expect(stream.openEvents).toHaveBeenCalledOnce();
     expect(stream.openEvents).toHaveBeenCalledWith(
       `${environment.apiUrl}/api/v1/plans/events/stream`,
-      ['plan-joined', 'plan-left', 'plan-spot', 'plan-nearby', 'plan-reminder'],
+      ['plan-joined', 'plan-left', 'plan-spot', 'plan-nearby', 'plan-reminder', 'plan-cancelled'],
     );
     expect(joined).toEqual([join]);
     expect(joinedToo).toEqual([join]);
@@ -90,6 +94,7 @@ describe('UserEvents', () => {
     expect(spots).toEqual([spot]);
     expect(nearby).toEqual([near]);
     expect(reminders).toEqual([soon]);
+    expect(cancelled).toEqual([off]);
 
     authenticated.set(false);
     TestBed.tick();
