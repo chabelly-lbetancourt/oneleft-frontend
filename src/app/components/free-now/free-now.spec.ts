@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { of, throwError } from 'rxjs';
+import { of, Subject, throwError } from 'rxjs';
 import { translocoTesting } from '../../../testing/transloco-testing';
 import { PlansApi } from '../../core/api/plans-api';
 import { UsersApi } from '../../core/api/users-api';
@@ -125,6 +125,13 @@ describe('FreeNow', () => {
 
     await click('.cancel-free');
     expect(element().querySelector('.start-free')).not.toBeNull();
+  });
+
+  it('should show nothing until it knows whether I am free', async () => {
+    plans.myAvailability.mockReturnValue(new Subject<Availability | null>());
+    fixture = TestBed.createComponent(FreeNow);
+    await render();
+    expect(element().querySelector('.free-now')).toBeNull();
   });
 
   it('should show until when and turn free mode off', async () => {

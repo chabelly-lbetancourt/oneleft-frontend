@@ -1,97 +1,99 @@
-<section class="free-now" [class.free-now--on]="availability()" aria-labelledby="free-now-title">
-  @if (availability(); as free) {
-    <div class="free-now__head">
-      <span class="free-now__dot" aria-hidden="true"></span>
-      <h2 id="free-now-title" class="free-now__title">
-        {{ 'freeNow.on' | transloco: { time: until() } }}
-      </h2>
-    </div>
-    <p class="hint">{{ 'freeNow.onHint' | transloco }}</p>
-    @if (free.interests.length) {
-      <ul class="free-now__interests">
-        @for (interest of free.interests; track interest.activity) {
-          <li class="pill pill--sm" [class]="activityOf(interest.activity).tone">
-            {{ activityKey(interest.activity) | transloco }} ·
-            {{ levelKey(interest.level) | transloco }}
-          </li>
-        }
-      </ul>
-    }
-    <p-button
-      class="stop-free"
-      [label]="'freeNow.stop' | transloco"
-      icon="pi pi-times"
-      [text]="true"
-      severity="secondary"
-      [loading]="busy()"
-      (onClick)="stop()"
-    />
-  } @else if (choosing()) {
-    <h2 id="free-now-title" class="free-now__title">{{ 'freeNow.title' | transloco }}</h2>
-    <span class="section-title">{{ 'freeNow.hours' | transloco }}</span>
-    <p-selectbutton
-      class="free-hours"
-      [options]="hourOptions()"
-      [(ngModel)]="hours"
-      optionLabel="label"
-      optionValue="value"
-      [allowEmpty]="false"
-      size="small"
-    />
-    @if (hobbies().length) {
-      <span class="section-title">{{ 'freeNow.activities' | transloco }}</span>
-      <p class="hint">{{ 'freeNow.activitiesHint' | transloco }}</p>
-      <div
-        class="free-now__chips"
-        role="group"
-        [attr.aria-label]="'freeNow.activities' | transloco"
-      >
-        @for (hobby of hobbies(); track hobby.activity) {
-          <button
-            type="button"
-            class="activity-chip choice"
-            [class]="
-              isChosen(hobby.activity)
-                ? 'choice--on ' + activityOf(hobby.activity).tone
-                : 'choice--off'
-            "
-            [attr.aria-pressed]="isChosen(hobby.activity)"
-            (click)="toggle(hobby.activity)"
-          >
-            <i class="pi {{ activityOf(hobby.activity).icon }}" aria-hidden="true"></i>
-            {{ activityKey(hobby.activity) | transloco }}
-          </button>
-        }
+@if (loaded()) {
+  <section class="free-now" [class.free-now--on]="availability()" aria-labelledby="free-now-title">
+    @if (availability(); as free) {
+      <div class="free-now__head">
+        <span class="free-now__dot" aria-hidden="true"></span>
+        <h2 id="free-now-title" class="free-now__title">
+          {{ 'freeNow.on' | transloco: { time: until() } }}
+        </h2>
       </div>
-    }
-    @if (error(); as key) {
-      <p-message severity="error" class="free-now__error">{{ key | transloco }}</p-message>
-    }
-    <div class="free-now__actions">
+      <p class="hint">{{ 'freeNow.onHint' | transloco }}</p>
+      @if (free.interests.length) {
+        <ul class="free-now__interests">
+          @for (interest of free.interests; track interest.activity) {
+            <li class="pill pill--sm" [class]="activityOf(interest.activity).tone">
+              {{ activityKey(interest.activity) | transloco }} ·
+              {{ levelKey(interest.level) | transloco }}
+            </li>
+          }
+        </ul>
+      }
       <p-button
-        class="confirm-free"
-        [label]="'freeNow.confirm' | transloco"
-        icon="pi pi-check"
-        [loading]="busy()"
-        (onClick)="start()"
-      />
-      <p-button
-        class="cancel-free"
-        [label]="'freeNow.cancel' | transloco"
+        class="stop-free"
+        [label]="'freeNow.stop' | transloco"
+        icon="pi pi-times"
         [text]="true"
         severity="secondary"
-        (onClick)="choosing.set(false)"
+        [loading]="busy()"
+        (onClick)="stop()"
       />
-    </div>
-  } @else {
-    <h2 id="free-now-title" class="free-now__title">{{ 'freeNow.title' | transloco }}</h2>
-    <p class="hint">{{ 'freeNow.hint' | transloco }}</p>
-    <p-button
-      class="start-free"
-      [label]="'freeNow.start' | transloco"
-      icon="pi pi-bolt"
-      [outlined]="true"
-      (onClick)="open()"
-    />
-  }
-</section>
+    } @else if (choosing()) {
+      <h2 id="free-now-title" class="free-now__title">{{ 'freeNow.title' | transloco }}</h2>
+      <span class="section-title">{{ 'freeNow.hours' | transloco }}</span>
+      <p-selectbutton
+        class="free-hours"
+        [options]="hourOptions()"
+        [(ngModel)]="hours"
+        optionLabel="label"
+        optionValue="value"
+        [allowEmpty]="false"
+        size="small"
+      />
+      @if (hobbies().length) {
+        <span class="section-title">{{ 'freeNow.activities' | transloco }}</span>
+        <p class="hint">{{ 'freeNow.activitiesHint' | transloco }}</p>
+        <div
+          class="free-now__chips"
+          role="group"
+          [attr.aria-label]="'freeNow.activities' | transloco"
+        >
+          @for (hobby of hobbies(); track hobby.activity) {
+            <button
+              type="button"
+              class="activity-chip choice"
+              [class]="
+                isChosen(hobby.activity)
+                  ? 'choice--on ' + activityOf(hobby.activity).tone
+                  : 'choice--off'
+              "
+              [attr.aria-pressed]="isChosen(hobby.activity)"
+              (click)="toggle(hobby.activity)"
+            >
+              <i class="pi {{ activityOf(hobby.activity).icon }}" aria-hidden="true"></i>
+              {{ activityKey(hobby.activity) | transloco }}
+            </button>
+          }
+        </div>
+      }
+      @if (error(); as key) {
+        <p-message severity="error" class="free-now__error">{{ key | transloco }}</p-message>
+      }
+      <div class="free-now__actions">
+        <p-button
+          class="confirm-free"
+          [label]="'freeNow.confirm' | transloco"
+          icon="pi pi-check"
+          [loading]="busy()"
+          (onClick)="start()"
+        />
+        <p-button
+          class="cancel-free"
+          [label]="'freeNow.cancel' | transloco"
+          [text]="true"
+          severity="secondary"
+          (onClick)="choosing.set(false)"
+        />
+      </div>
+    } @else {
+      <h2 id="free-now-title" class="free-now__title">{{ 'freeNow.title' | transloco }}</h2>
+      <p class="hint">{{ 'freeNow.hint' | transloco }}</p>
+      <p-button
+        class="start-free"
+        [label]="'freeNow.start' | transloco"
+        icon="pi pi-bolt"
+        [outlined]="true"
+        (onClick)="open()"
+      />
+    }
+  </section>
+}
