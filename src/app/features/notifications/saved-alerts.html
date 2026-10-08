@@ -1,213 +1,219 @@
 <app-page-layout [title]="'alerts.title' | transloco">
-  <p class="alerts-intro hint">{{ 'alerts.intro' | transloco }}</p>
+  <div class="alerts-page">
+    <p class="alerts-intro hint">{{ 'alerts.intro' | transloco }}</p>
 
-  @if (status(); as message) {
-    <p-message [severity]="message.severity" class="status-message">{{
-      message.key | transloco: message.params
-    }}</p-message>
-  }
+    @if (status(); as message) {
+      <p-message [severity]="message.severity" class="status-message">{{
+        message.key | transloco: message.params
+      }}</p-message>
+    }
 
-  @if (loading()) {
-    <div class="alerts-loading" role="status">
-      <span class="sr-only">{{ 'alerts.loading' | transloco }}</span>
-      <app-card-skeleton [lines]="2" />
-      <app-card-skeleton [lines]="2" />
-    </div>
-  } @else if (loadError()) {
-    <div class="alerts-error alert alert--error">{{ 'alerts.loadError' | transloco }}</div>
-  } @else {
-    @if (editing() === null) {
-      @if (alerts().length) {
-        <ul class="alert-list">
-          @for (alert of alerts(); track alert.id) {
-            <li class="saved-alert" [style.--i]="$index">
-              <div class="saved-alert__text">
-                <p class="saved-alert__name">{{ alert.name }}</p>
-                <p class="saved-alert__summary hint">{{ summary(alert) }}</p>
-              </div>
-              <div class="saved-alert__actions">
-                <p-button
-                  class="edit-alert"
-                  icon="pi pi-pencil"
-                  [text]="true"
-                  severity="secondary"
-                  [ariaLabel]="('alerts.edit' | transloco) + ': ' + alert.name"
-                  (onClick)="startEdit(alert)"
-                />
-                <p-button
-                  class="delete-alert"
-                  icon="pi pi-trash"
-                  [text]="true"
-                  severity="danger"
-                  [ariaLabel]="('alerts.delete' | transloco) + ': ' + alert.name"
-                  (onClick)="remove(alert)"
-                />
-              </div>
-            </li>
-          }
-        </ul>
-      } @else {
-        <p class="alerts-empty panel-muted">{{ 'alerts.empty' | transloco }}</p>
-      }
-
-      @if (atLimit()) {
-        <p class="alerts-limit hint">{{ 'alerts.limit' | transloco: { max: maxAlerts } }}</p>
-      } @else {
-        <p-button
-          class="new-alert"
-          [label]="'alerts.new' | transloco"
-          icon="pi pi-plus"
-          styleClass="button--block"
-          (onClick)="startNew()"
-        />
-      }
+    @if (loading()) {
+      <div class="alerts-loading" role="status">
+        <span class="sr-only">{{ 'alerts.loading' | transloco }}</span>
+        <app-card-skeleton [lines]="2" />
+        <app-card-skeleton [lines]="2" />
+      </div>
+    } @else if (loadError()) {
+      <div class="alerts-error alert alert--error">{{ 'alerts.loadError' | transloco }}</div>
     } @else {
-      <form class="alert-form" [formGroup]="form" (ngSubmit)="save()">
-        <section class="form-section">
-          <label for="alertName" class="section-title">{{ 'alerts.name' | transloco }}</label>
-          <input
-            pInputText
-            id="alertName"
-            formControlName="name"
-            maxlength="40"
-            class="field-full"
-            [placeholder]="'alerts.namePlaceholder' | transloco"
-          />
-        </section>
-
-        <section class="form-section">
-          <h2 class="section-title">{{ 'alerts.activities' | transloco }}</h2>
-          <p class="hint">{{ 'alerts.activitiesHint' | transloco }}</p>
-          <div class="chips" role="group" [attr.aria-label]="'alerts.activities' | transloco">
-            @for (activity of activities; track activity.code) {
-              <button
-                type="button"
-                class="activity-chip choice"
-                [class]="
-                  isChosen('activities', activity.code)
-                    ? 'choice--on ' + activity.tone
-                    : 'choice--off'
-                "
-                [attr.aria-pressed]="isChosen('activities', activity.code)"
-                (click)="toggle('activities', activity.code)"
-              >
-                <i class="pi {{ activity.icon }}" aria-hidden="true"></i>
-                {{ activityKey(activity.code) | transloco }}
-              </button>
+      @if (editing() === null) {
+        @if (alerts().length) {
+          <ul class="alert-list">
+            @for (alert of alerts(); track alert.id) {
+              <li class="saved-alert" [style.--i]="$index">
+                <div class="saved-alert__text">
+                  <p class="saved-alert__name">{{ alert.name }}</p>
+                  <p class="saved-alert__summary hint">{{ summary(alert) }}</p>
+                </div>
+                <div class="saved-alert__actions">
+                  <p-button
+                    class="edit-alert"
+                    icon="pi pi-pencil"
+                    [text]="true"
+                    severity="secondary"
+                    [ariaLabel]="('alerts.edit' | transloco) + ': ' + alert.name"
+                    (onClick)="startEdit(alert)"
+                  />
+                  <p-button
+                    class="delete-alert"
+                    icon="pi pi-trash"
+                    [text]="true"
+                    severity="danger"
+                    [ariaLabel]="('alerts.delete' | transloco) + ': ' + alert.name"
+                    (onClick)="remove(alert)"
+                  />
+                </div>
+              </li>
             }
-          </div>
-          <span class="section-title section-title--spaced">{{ 'alerts.level' | transloco }}</span>
-          <p-selectbutton
-            formControlName="level"
-            [options]="levelOptions()"
-            optionLabel="label"
-            optionValue="value"
-            [allowEmpty]="false"
-            size="small"
-            class="wrap-options"
-          />
-        </section>
+          </ul>
+        } @else {
+          <p class="alerts-empty panel-muted">{{ 'alerts.empty' | transloco }}</p>
+        }
 
-        <section class="form-section">
-          <h2 class="section-title">{{ 'alerts.zone' | transloco }}</h2>
-          <div class="zone-actions">
-            @if (profileZone(); as zone) {
+        @if (atLimit()) {
+          <p class="alerts-limit hint">{{ 'alerts.limit' | transloco: { max: maxAlerts } }}</p>
+        } @else {
+          <p-button
+            class="new-alert"
+            [label]="'alerts.new' | transloco"
+            icon="pi pi-plus"
+            styleClass="button--block"
+            (onClick)="startNew()"
+          />
+        }
+      } @else {
+        <form class="alert-form" [formGroup]="form" (ngSubmit)="save()">
+          <section class="form-section">
+            <label for="alertName" class="section-title">{{ 'alerts.name' | transloco }}</label>
+            <input
+              pInputText
+              id="alertName"
+              formControlName="name"
+              maxlength="40"
+              class="field-full"
+              [placeholder]="'alerts.namePlaceholder' | transloco"
+            />
+          </section>
+
+          <section class="form-section">
+            <h2 class="section-title">{{ 'alerts.activities' | transloco }}</h2>
+            <p class="hint">{{ 'alerts.activitiesHint' | transloco }}</p>
+            <div class="chips" role="group" [attr.aria-label]="'alerts.activities' | transloco">
+              @for (activity of activities; track activity.code) {
+                <button
+                  type="button"
+                  class="activity-chip choice"
+                  [class]="
+                    isChosen('activities', activity.code)
+                      ? 'choice--on ' + activity.tone
+                      : 'choice--off'
+                  "
+                  [attr.aria-pressed]="isChosen('activities', activity.code)"
+                  (click)="toggle('activities', activity.code)"
+                >
+                  <i class="pi {{ activity.icon }}" aria-hidden="true"></i>
+                  {{ activityKey(activity.code) | transloco }}
+                </button>
+              }
+            </div>
+            <span class="section-title section-title--spaced">{{
+              'alerts.level' | transloco
+            }}</span>
+            <p-selectbutton
+              formControlName="level"
+              [options]="levelOptions()"
+              optionLabel="label"
+              optionValue="value"
+              [allowEmpty]="false"
+              size="small"
+              class="wrap-options"
+            />
+          </section>
+
+          <section class="form-section">
+            <h2 class="section-title">{{ 'alerts.zone' | transloco }}</h2>
+            <div class="zone-actions">
+              @if (profileZone(); as zone) {
+                <p-button
+                  class="use-profile-zone"
+                  [label]="'notifications.useProfileZone' | transloco: { name: zone.name }"
+                  icon="pi pi-home"
+                  severity="secondary"
+                  size="small"
+                  [outlined]="true"
+                  (onClick)="useProfileZone()"
+                />
+              }
               <p-button
-                class="use-profile-zone"
-                [label]="'notifications.useProfileZone' | transloco: { name: zone.name }"
-                icon="pi pi-home"
+                class="use-location"
+                [label]="'profile.useLocation' | transloco"
+                icon="pi pi-map-marker"
                 severity="secondary"
                 size="small"
                 [outlined]="true"
-                (onClick)="useProfileZone()"
+                [loading]="locating()"
+                (onClick)="useMyLocation()"
               />
+            </div>
+            @if (hasZone()) {
+              <span class="zone-coordinates hint">{{
+                'profile.approximate'
+                  | transloco
+                    : {
+                        latitude: form.controls.latitude.value,
+                        longitude: form.controls.longitude.value,
+                      }
+              }}</span>
+            } @else {
+              <span class="hint">{{ 'alerts.chooseZone' | transloco }}</span>
             }
-            <p-button
-              class="use-location"
-              [label]="'profile.useLocation' | transloco"
-              icon="pi pi-map-marker"
-              severity="secondary"
+            <span class="section-title section-title--spaced">{{
+              'alerts.radius' | transloco
+            }}</span>
+            <p-selectbutton
+              formControlName="radiusMeters"
+              [options]="radiusOptions()"
+              optionLabel="label"
+              optionValue="value"
+              [allowEmpty]="false"
               size="small"
-              [outlined]="true"
-              [loading]="locating()"
-              (onClick)="useMyLocation()"
+              class="wrap-options"
+            />
+          </section>
+
+          <section class="form-section">
+            <h2 class="section-title">{{ 'alerts.days' | transloco }}</h2>
+            <p class="hint">{{ 'alerts.daysHint' | transloco }}</p>
+            <div class="chips" role="group" [attr.aria-label]="'alerts.days' | transloco">
+              @for (day of days; track day) {
+                <button
+                  type="button"
+                  class="activity-chip day-chip choice"
+                  [class]="isChosen('days', day) ? 'choice--on tone-brand' : 'choice--off'"
+                  [attr.aria-pressed]="isChosen('days', day)"
+                  [attr.aria-label]="'alerts.dayName.' + day | transloco"
+                  (click)="toggle('days', day)"
+                >
+                  {{ 'alerts.day.' + day | transloco }}
+                </button>
+              }
+            </div>
+            <div class="switch-row">
+              <label for="anyTime" class="section-title switch-text">{{
+                'alerts.anyTime' | transloco
+              }}</label>
+              <p-toggleswitch inputId="anyTime" formControlName="anyTime" class="any-time-switch" />
+            </div>
+            @if (!form.controls.anyTime.value) {
+              <div class="alert-hours">
+                <label for="alertFrom">{{ 'alerts.from' | transloco }}</label>
+                <input id="alertFrom" type="time" formControlName="from" class="input-native" />
+                <label for="alertTo">{{ 'alerts.to' | transloco }}</label>
+                <input id="alertTo" type="time" formControlName="to" class="input-native" />
+              </div>
+            }
+          </section>
+
+          <div class="form-actions">
+            <p-button
+              type="submit"
+              class="save-alert"
+              [label]="'alerts.save' | transloco"
+              icon="pi pi-check"
+              [loading]="saving()"
+              styleClass="button--block"
+            />
+            <p-button
+              class="cancel-alert"
+              [label]="'alerts.cancel' | transloco"
+              [text]="true"
+              severity="secondary"
+              (onClick)="cancel()"
             />
           </div>
-          @if (hasZone()) {
-            <span class="zone-coordinates hint">{{
-              'profile.approximate'
-                | transloco
-                  : {
-                      latitude: form.controls.latitude.value,
-                      longitude: form.controls.longitude.value,
-                    }
-            }}</span>
-          } @else {
-            <span class="hint">{{ 'alerts.chooseZone' | transloco }}</span>
-          }
-          <span class="section-title section-title--spaced">{{ 'alerts.radius' | transloco }}</span>
-          <p-selectbutton
-            formControlName="radiusMeters"
-            [options]="radiusOptions()"
-            optionLabel="label"
-            optionValue="value"
-            [allowEmpty]="false"
-            size="small"
-            class="wrap-options"
-          />
-        </section>
-
-        <section class="form-section">
-          <h2 class="section-title">{{ 'alerts.days' | transloco }}</h2>
-          <p class="hint">{{ 'alerts.daysHint' | transloco }}</p>
-          <div class="chips" role="group" [attr.aria-label]="'alerts.days' | transloco">
-            @for (day of days; track day) {
-              <button
-                type="button"
-                class="activity-chip day-chip choice"
-                [class]="isChosen('days', day) ? 'choice--on tone-brand' : 'choice--off'"
-                [attr.aria-pressed]="isChosen('days', day)"
-                [attr.aria-label]="'alerts.dayName.' + day | transloco"
-                (click)="toggle('days', day)"
-              >
-                {{ 'alerts.day.' + day | transloco }}
-              </button>
-            }
-          </div>
-          <div class="switch-row">
-            <label for="anyTime" class="section-title switch-text">{{
-              'alerts.anyTime' | transloco
-            }}</label>
-            <p-toggleswitch inputId="anyTime" formControlName="anyTime" class="any-time-switch" />
-          </div>
-          @if (!form.controls.anyTime.value) {
-            <div class="alert-hours">
-              <label for="alertFrom">{{ 'alerts.from' | transloco }}</label>
-              <input id="alertFrom" type="time" formControlName="from" class="input-native" />
-              <label for="alertTo">{{ 'alerts.to' | transloco }}</label>
-              <input id="alertTo" type="time" formControlName="to" class="input-native" />
-            </div>
-          }
-        </section>
-
-        <div class="form-actions">
-          <p-button
-            type="submit"
-            class="save-alert"
-            [label]="'alerts.save' | transloco"
-            icon="pi pi-check"
-            [loading]="saving()"
-            styleClass="button--block"
-          />
-          <p-button
-            class="cancel-alert"
-            [label]="'alerts.cancel' | transloco"
-            [text]="true"
-            severity="secondary"
-            (onClick)="cancel()"
-          />
-        </div>
-      </form>
+        </form>
+      }
     }
-  }
+  </div>
 </app-page-layout>
