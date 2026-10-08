@@ -3,7 +3,15 @@ import { inject, Injectable } from '@angular/core';
 import { catchError, map, Observable, of } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { nearbyParams, NearbyQuery, toQueryString } from '../../shared/model/nearby';
-import { Forecast, Plan, PublicPlan, PublishPlan } from '../../shared/model/published-plan';
+import {
+  Availability,
+  Forecast,
+  FreePerson,
+  Interest,
+  Plan,
+  PublicPlan,
+  PublishPlan,
+} from '../../shared/model/published-plan';
 
 /** Client of the plans service through the API Gateway. */
 @Injectable({ providedIn: 'root' })
@@ -44,6 +52,30 @@ export class PlansApi {
     return this.http
       .get<Forecast | null>(`${this.base}/${id}/weather`)
       .pipe(catchError(() => of(null)));
+  }
+
+  /** My free mode (HU-035), or null when it is off. */
+  myAvailability(): Observable<Availability | null> {
+    return this.http.get<Availability | null>(`${this.base}/availability/me`);
+  }
+
+  /** I'm free now for 1 to 3 hours (HU-035). */
+  startAvailability(request: {
+    hours: number;
+    latitude: number;
+    longitude: number;
+    interests: Interest[];
+  }): Observable<Availability> {
+    return this.http.put<Availability>(`${this.base}/availability/me`, request);
+  }
+
+  stopAvailability(): Observable<void> {
+    return this.http.delete<void>(`${this.base}/availability/me`);
+  }
+
+  /** Free people near my upcoming plan (HU-035): empty for anyone but its organizer. */
+  freePeople(id: string): Observable<FreePerson[]> {
+    return this.http.get<FreePerson[]>(`${this.base}/${id}/free-people`);
   }
 
   /** Link to share a plan: its page gives messaging apps a preview and then opens the plan (HU-024). */

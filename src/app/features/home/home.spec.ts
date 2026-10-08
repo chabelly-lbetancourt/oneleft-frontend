@@ -10,7 +10,9 @@ import {
   PlanJoinedNotice,
   PlanLeftNotice,
 } from '../../shared/model/published-plan';
-import { EMPTY, Subject } from 'rxjs';
+import { EMPTY, of, Subject } from 'rxjs';
+import { PlansApi } from '../../core/api/plans-api';
+import { UsersApi } from '../../core/api/users-api';
 import { Home } from './home';
 import { translocoTesting } from '../../../testing/transloco-testing';
 
@@ -31,6 +33,9 @@ describe('Home', () => {
         provideHttpClient(),
         provideHttpClientTesting(),
         { provide: Session, useValue: session },
+        // The «I'm free now» card has its own tests (HU-035)
+        { provide: PlansApi, useValue: { myAvailability: () => of(null) } },
+        { provide: UsersApi, useValue: { myProfile: () => of(null) } },
         {
           provide: UserEvents,
           useValue: {

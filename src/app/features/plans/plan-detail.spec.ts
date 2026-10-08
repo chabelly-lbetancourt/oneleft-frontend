@@ -9,6 +9,7 @@ import { Session } from '../../core/auth/session';
 import { UserEvents } from '../../core/realtime/user-events';
 import {
   Forecast,
+  FreePerson,
   Plan,
   PlanCancelledNotice,
   PlanJoinedNotice,
@@ -49,6 +50,7 @@ describe('PlanDetail', () => {
     publicPlan: vi.fn(),
     shareUrl: vi.fn((id: string) => `http://localhost:8080/share/plans/${id}`),
     weather: vi.fn((): Observable<Forecast | null> => of(null)),
+    freePeople: vi.fn((): Observable<FreePerson[]> => of([])),
     join: vi.fn(),
     leave: vi.fn(),
     joinWaitlist: vi.fn(),
@@ -74,8 +76,9 @@ describe('PlanDetail', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    // No forecast unless a test gives one (HU-026)
+    // No forecast nor free people unless a test gives them (HU-026, HU-035)
     api.weather.mockReturnValue(of(null));
+    api.freePeople.mockReturnValue(of([]));
     session = new FakeSession();
     notices = new Subject();
     left = new Subject();
@@ -620,6 +623,33 @@ describe('PlanDetail', () => {
     api.weather.mockClear();
     await create({ ...PLAN, status: 'FINISHED' });
     expect(api.weather).not.toHaveBeenCalled();
+  });
+
+  it('should show the organizer who is free nearby, without names (HU-035)', async () => {
+    api.freePeople.mockReturnValue(
+      of([
+        { distanceMeters: 500, level: null, activities: [] },
+        { distanceMeters: 1500, level: 'INTERMEDIATE', activities: ['PADEL', 'TENNIS'] },
+      ]),
+    );
+    await create(PLAN, undefined, 'org');
+
+    expect(api.freePeople).toHaveBeenCalledWith('plan-1');
+    const free = element().querySelector('.free-people')!;
+    expect(free.textContent).toContain('Gente libre cerca · 2');
+    expect(free.textContent).toContain('a 0,5 km · Cualquier nivel');
+    expect(free.textContent).toContain('a 1,5 km · Intermedio');
+    expect(free.textContent).toContain('También: Pádel, Tenis');
+  });
+
+  it('should tell the organizer when nobody is free, and ask nothing for other people', async () => {
+    await create(PLAN, undefined, 'org');
+    expect(element().querySelector('.free-people')?.textContent).toContain('no hay nadie libre');
+
+    api.freePeople.mockClear();
+    await create(PLAN);
+    expect(api.freePeople).not.toHaveBeenCalled();
+    expect(element().querySelector('.free-people')).toBeNull();
   });
 
   it('should show the plan in English', async () => {

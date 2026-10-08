@@ -26,6 +26,8 @@
       ></a>
     </section>
 
+    <app-free-now />
+
     @if (myPlans.isLoading() && !myPlans.hasValue()) {
       <section class="my-plans-loading" role="status">
         <span class="sr-only">{{ 'home.loadingPlans' | transloco }}</span>

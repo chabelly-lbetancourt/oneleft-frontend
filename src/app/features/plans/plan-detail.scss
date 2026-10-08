@@ -93,6 +93,20 @@
   margin-top: space(1);
 }
 
+// Free people near my plan (HU-035)
+.free-people {
+  @include stack(space(2));
+  @include text(sm);
+}
+
+.free-people__title {
+  @include weight(bold);
+}
+
+.free-people__list {
+  @include stack(space(1));
+}
+
 .plan-minimum--confirmed {
   @include weight(bold);
 }
