@@ -36,6 +36,18 @@ describe('PlansApi', () => {
     http.expectOne({ method: 'GET', url: `${base}/abc` }).flush({});
     http.expectOne({ method: 'GET', url: `${base}/mine` }).flush([]);
     http.expectOne({ method: 'POST', url: `${base}/abc/participants` }).flush({});
+    // Free mode and the free people near my plan (HU-035)
+    api.myAvailability().subscribe();
+    http.expectOne({ method: 'GET', url: `${base}/availability/me` }).flush(null);
+    const request = { hours: 2, latitude: 40.39, longitude: -3.63, interests: [] };
+    api.startAvailability(request).subscribe();
+    const put = http.expectOne({ method: 'PUT', url: `${base}/availability/me` });
+    expect(put.request.body).toEqual(request);
+    put.flush({});
+    api.stopAvailability().subscribe();
+    http.expectOne({ method: 'DELETE', url: `${base}/availability/me` }).flush(null);
+    api.freePeople('abc').subscribe();
+    http.expectOne({ method: 'GET', url: `${base}/abc/free-people` }).flush([]);
     // A forecast, and none (204 or an error) without breaking the page (HU-026)
     const weather = http.match({ method: 'GET', url: `${base}/abc/weather` });
     weather[0].flush({ temperature: 17 });

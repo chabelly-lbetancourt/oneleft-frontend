@@ -19,6 +19,29 @@ export interface PublishPlan {
   minimumDeadline?: string | null;
 }
 
+/** An activity someone free would do and their level in it (HU-035). */
+export interface Interest {
+  activity: string;
+  level: Level | null;
+}
+
+/** «I'm free now» (HU-035): until when, around an approximate zone, for which activities (none: any). */
+export interface Availability {
+  until: string;
+  latitude: number;
+  longitude: number;
+  interests: Interest[];
+}
+
+/** Someone free near my plan: no name and no place (HU-035). */
+export interface FreePerson {
+  /** Rounded to 500 m */
+  distanceMeters: number;
+  /** In the activity of the plan; null if they did not say */
+  level: Level | null;
+  activities: string[];
+}
+
 /** Weather forecast at the time and place of an outdoor plan (HU-026). */
 export interface Forecast {
   time: string;
