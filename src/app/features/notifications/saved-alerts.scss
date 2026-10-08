@@ -1,5 +1,9 @@
 @use 'abstracts' as *;
 
+.alerts-page {
+  @include stack(space(4));
+}
+
 .alerts-loading,
 .alert-form {
   @include stack(space(6));

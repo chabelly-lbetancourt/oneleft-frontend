@@ -203,6 +203,18 @@ describe('SavedAlerts', () => {
     expect(element().querySelector('.alert-form')).toBeNull();
   });
 
+  it('should summarise all seven days as every day', async () => {
+    await create([
+      {
+        ...AFTER_WORK,
+        days: ['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY'],
+      },
+    ]);
+    expect(element().querySelector('.saved-alert__summary')?.textContent).toContain(
+      'Todos los días',
+    );
+  });
+
   it('should show the summary in English', async () => {
     await create();
     TestBed.inject(TranslocoService).setActiveLang('en');

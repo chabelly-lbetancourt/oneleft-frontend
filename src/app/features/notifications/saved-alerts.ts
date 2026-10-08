@@ -145,11 +145,13 @@ export class SavedAlerts implements OnInit {
     const activities = alert.activities.length
       ? alert.activities.map((code) => t(activityKey(code))).join(', ')
       : t('alerts.anyActivity');
-    const days = alert.days.length
-      ? DAYS.filter((day) => alert.days.includes(day))
-          .map((day) => t(`alerts.dayName.${day}`))
-          .join(', ')
-      : t('alerts.everyDay');
+    // None or all seven: every day
+    const days =
+      alert.days.length && alert.days.length < DAYS.length
+        ? DAYS.filter((day) => alert.days.includes(day))
+            .map((day) => t(`alerts.dayName.${day}`))
+            .join(', ')
+        : t('alerts.everyDay');
     const hours =
       alert.from && alert.to
         ? t('alerts.summaryHours', { from: hhmm(alert.from), to: hhmm(alert.to) })
