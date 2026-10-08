@@ -64,6 +64,35 @@
   }
 }
 
+// Weather forecast of an outdoor plan (HU-026), highlighted when rain is likely
+.weather {
+  @include row(space(3), flex-start);
+  @include text(sm);
+  margin-top: space(4);
+  padding: space(3) space(4);
+  @include radius(md);
+  background: var(--ol-surface-muted);
+}
+
+.weather--rain {
+  background: var(--ol-danger-soft);
+  color: var(--ol-danger-text);
+}
+
+.weather__icon {
+  @include text(lg);
+  margin-top: space(0.5);
+}
+
+.weather__title {
+  @include weight(bold);
+}
+
+.weather__rain {
+  @include weight(bold);
+  margin-top: space(1);
+}
+
 .plan-minimum--confirmed {
   @include weight(bold);
 }

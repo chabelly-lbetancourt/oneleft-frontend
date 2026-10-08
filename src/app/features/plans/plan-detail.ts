@@ -19,7 +19,7 @@ import { CardSkeleton } from '../../components/card-skeleton/card-skeleton';
 import { IconTile } from '../../components/icon-tile/icon-tile';
 import { SpotSlots } from '../../components/spot-slots/spot-slots';
 import { PageLayout } from '../../layout/page-layout/page-layout';
-import { Plan } from '../../shared/model/published-plan';
+import { Forecast, Plan } from '../../shared/model/published-plan';
 import { clockTime, spotsKey, startsIn } from '../../shared/time/plan-time';
 import {
   CalendarEvent,
@@ -64,6 +64,27 @@ export class PlanDetail {
   readonly published = input<string>();
 
   protected readonly plan = signal<Plan | null>(null);
+  /** Weather forecast of an upcoming outdoor plan (HU-026); null without one */
+  protected readonly forecast = signal<Forecast | null>(null);
+  /** Plan whose forecast has been asked for */
+  private forecastOf: string | null = null;
+  protected readonly weather = computed(() => {
+    const forecast = this.forecast();
+    if (!forecast || this.ended()) {
+      return null;
+    }
+    const locale = this.language.locale();
+    const number = (value: number) => Math.round(value).toLocaleString(locale);
+    return {
+      params: {
+        temperature: number(forecast.temperature),
+        rain: number(forecast.precipitationProbability),
+        wind: number(forecast.windSpeed),
+      },
+      icon: forecast.precipitationProbability >= 30 ? 'pi-cloud' : 'pi-sun',
+      rainLikely: forecast.rainLikely,
+    };
+  });
   protected readonly notFound = signal(false);
   protected readonly joining = signal(false);
   protected readonly joinError = signal<ApiErrorMessage | null>(null);
@@ -316,7 +337,15 @@ export class PlanDetail {
 
   private load(id: string): void {
     (this.isGuest() ? this.api.publicPlan(id) : this.api.plan(id)).subscribe({
-      next: (plan) => this.plan.set(plan),
+      next: (plan) => {
+        this.plan.set(plan);
+        // The forecast is asked once per plan, and not by guests (it needs a session). A plain field, not the plan
+        // signal: the effect that loads the plan must not depend on it
+        if (this.forecastOf !== plan.id && !this.isGuest() && !ENDED.includes(plan.status)) {
+          this.forecastOf = plan.id;
+          this.api.weather(plan.id).subscribe((forecast) => this.forecast.set(forecast));
+        }
+      },
       error: () => this.notFound.set(true),
     });
   }

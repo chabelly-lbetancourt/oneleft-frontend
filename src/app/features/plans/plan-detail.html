@@ -103,6 +103,19 @@
               }
             </dd>
           </dl>
+
+          @if (weather(); as w) {
+            <div class="weather" [class.weather--rain]="w.rainLikely">
+              <i class="weather__icon pi {{ w.icon }}" aria-hidden="true"></i>
+              <div>
+                <p class="weather__title">{{ 'plan.weatherTitle' | transloco }}</p>
+                <p class="weather__values">{{ 'plan.weather' | transloco: w.params }}</p>
+                @if (w.rainLikely) {
+                  <p class="weather__rain" role="status">{{ 'plan.rainLikely' | transloco }}</p>
+                }
+              </div>
+            </div>
+          }
         </div>
       </section>
 
