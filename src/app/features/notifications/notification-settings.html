@@ -146,6 +146,15 @@
       />
     </form>
 
+    <a class="alerts-link" routerLink="/notifications/alerts">
+      <i class="pi pi-bookmark alerts-link__icon" aria-hidden="true"></i>
+      <span class="alerts-link__text">
+        <span class="section-title">{{ 'notifications.alertsLink' | transloco }}</span>
+        <span class="hint">{{ 'notifications.alertsLinkHint' | transloco }}</span>
+      </span>
+      <i class="pi pi-arrow-right" aria-hidden="true"></i>
+    </a>
+
     <section class="push-card form-section">
       <h2 class="section-title">{{ 'notifications.push' | transloco }}</h2>
       <p class="push-state hint">

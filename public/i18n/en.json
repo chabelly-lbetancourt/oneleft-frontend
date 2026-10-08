@@ -17,7 +17,8 @@
     "nearby": "OneLeft · Nearby plans",
     "login": "OneLeft · Sign in",
     "register": "OneLeft · Sign up",
-    "notifications": "OneLeft · Notices"
+    "notifications": "OneLeft · Notices",
+    "alerts": "OneLeft · Saved alerts"
   },
   "auth": {
     "login": "Sign in",
@@ -276,7 +277,16 @@
       "quietHours": "Quiet hours need a start and a different end",
       "pushEndpoint": "The browser subscription is not valid",
       "pushKeys": "The browser subscription is not valid"
-    }
+    },
+    "alerts": {
+      "name": "The name of the alert must have 1 to 40 characters.",
+      "zone": "The zone of the alert is not valid.",
+      "radius": "The distance must be between 0.5 and 20 km.",
+      "hours": "The start hour must be before the end hour, on the same day.",
+      "limit": "You already have the maximum of alerts: delete one to create another.",
+      "notFound": "This alert no longer exists."
+    },
+    "alertsFailed": "The alert could not be saved."
   },
   "nearby": {
     "title": "Nearby plans",
@@ -347,7 +357,9 @@
       "denied": "You blocked OneLeft notifications in this browser. Allow them in its settings.",
       "unavailable": "Browser notifications are off on this server: they will reach you with OneLeft open.",
       "unsupported": "This browser does not support notifications: they will reach you with OneLeft open."
-    }
+    },
+    "alertsLink": "Saved alerts",
+    "alertsLinkHint": "Specific searches that tell you when a plan like that appears."
   },
   "theme": {
     "toDark": "Switch to dark mode",
@@ -357,5 +369,55 @@
     "light": "Light",
     "dark": "Dark",
     "hint": "«System» follows the settings of your device."
+  },
+  "alerts": {
+    "title": "Saved alerts",
+    "intro": "Save the searches you care about and we will tell you as soon as a plan like that is published nearby.",
+    "loading": "Loading your alerts…",
+    "loadError": "Your alerts could not be loaded. Please try again.",
+    "empty": "You have no alerts yet. For example: “intermediate padel less than 3 km away on weekday afternoons”.",
+    "new": "New alert",
+    "edit": "Edit",
+    "delete": "Delete",
+    "cancel": "Cancel",
+    "save": "Save alert",
+    "saved": "Alert saved.",
+    "deleted": "Alert deleted.",
+    "limit": "You can keep up to {{max}} alerts: delete one to create another.",
+    "name": "Name",
+    "namePlaceholder": "Padel after work",
+    "activities": "Activities",
+    "activitiesHint": "If you choose none, any activity.",
+    "level": "Level",
+    "zone": "Around where?",
+    "radius": "Maximum distance",
+    "days": "Days",
+    "daysHint": "If you choose none, any day.",
+    "anyTime": "At any time",
+    "from": "From",
+    "to": "To",
+    "chooseZone": "Choose a zone for the alert.",
+    "anyActivity": "Any activity",
+    "everyDay": "Every day",
+    "summaryHours": "from {{from}} to {{to}}",
+    "summaryKm": "{{km}} km away",
+    "day": {
+      "MONDAY": "M",
+      "TUESDAY": "T",
+      "WEDNESDAY": "W",
+      "THURSDAY": "T",
+      "FRIDAY": "F",
+      "SATURDAY": "S",
+      "SUNDAY": "S"
+    },
+    "dayName": {
+      "MONDAY": "Monday",
+      "TUESDAY": "Tuesday",
+      "WEDNESDAY": "Wednesday",
+      "THURSDAY": "Thursday",
+      "FRIDAY": "Friday",
+      "SATURDAY": "Saturday",
+      "SUNDAY": "Sunday"
+    }
   }
 }

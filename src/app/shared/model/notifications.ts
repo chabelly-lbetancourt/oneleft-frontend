@@ -1,3 +1,5 @@
+import { Level } from './profile';
+
 /** Hours without notices, local time (HH:mm or HH:mm:ss, as the API returns them). */
 export interface QuietHours {
   start: string;
@@ -35,6 +37,40 @@ export interface PushSubscriptionRequest {
   keys: { p256dh: string; auth: string };
   language: string;
 }
+
+/** Days of the week as the API names them (java.time.DayOfWeek), Monday first. */
+export const DAYS = [
+  'MONDAY',
+  'TUESDAY',
+  'WEDNESDAY',
+  'THURSDAY',
+  'FRIDAY',
+  'SATURDAY',
+  'SUNDAY',
+] as const;
+export type Day = (typeof DAYS)[number];
+
+/** A saved search (HU-036): when a plan like it is published nearby, its owner gets a notice. */
+export interface SavedAlert {
+  id?: string;
+  name: string;
+  /** Empty: every activity */
+  activities: string[];
+  /** Null: any level */
+  level: Level | null;
+  /** Centre of the search, rounded to about 1 km */
+  latitude: number;
+  longitude: number;
+  radiusMeters: number;
+  /** Empty: every day */
+  days: Day[];
+  /** Hours of the start (HH:mm or HH:mm:ss); both null for any time */
+  from: string | null;
+  to: string | null;
+}
+
+/** Most alerts a person can keep (the service says the same). */
+export const MAX_ALERTS = 5;
 
 export const RADIUS_OPTIONS = [1000, 3000, 5000, 10000] as const;
 export const MAX_PER_DAY = 20;

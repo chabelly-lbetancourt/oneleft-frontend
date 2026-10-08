@@ -9,6 +9,7 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule, NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { Button } from 'primeng/button';
 import { Message } from 'primeng/message';
@@ -46,6 +47,7 @@ const hhmm = (time: string | undefined, fallback: string): string => time?.slice
     Message,
     PageLayout,
     ReactiveFormsModule,
+    RouterLink,
     SelectButton,
     ToggleSwitch,
     TranslocoPipe,
