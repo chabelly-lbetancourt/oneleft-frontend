@@ -144,7 +144,12 @@
     "cancelledMinimumHint": "Se canceló porque no se llegó al mínimo de participantes.",
     "weatherTitle": "El tiempo a esa hora",
     "weather": "{{temperature}} °C · {{rain}} % de lluvia · viento {{wind}} km/h",
-    "rainLikely": "Es probable que llueva: confirma con el grupo antes de ir."
+    "rainLikely": "Es probable que llueva: confirma con el grupo antes de ir.",
+    "freePeople": "Gente libre cerca",
+    "freePeopleNone": "Ahora no hay nadie libre cerca para este plan.",
+    "freePeopleHint": "Personas que han dicho que están libres a menos de 5 km. No verás quiénes son ni dónde están.",
+    "freePerson": "a {{km}} km · {{level}}",
+    "freePersonActivities": "También: {{activities}}"
   },
   "publish": {
     "title": "Publicar un plan",
@@ -419,5 +424,21 @@
       "SATURDAY": "Sábado",
       "SUNDAY": "Domingo"
     }
+  },
+  "freeNow": {
+    "title": "¿Estás libre ahora?",
+    "hint": "Dinos durante cuánto tiempo y te verá quien organice un plan cerca, sin tu nombre ni dónde estás.",
+    "start": "Estoy libre ahora",
+    "hours": "¿Durante cuánto tiempo?",
+    "hoursOption": "{{count}} h",
+    "activities": "¿Para qué?",
+    "activitiesHint": "Tus aficiones del perfil, con tu nivel. Si no marcas ninguna, para cualquier plan.",
+    "confirm": "Activar",
+    "cancel": "Cancelar",
+    "on": "Estás libre hasta las {{time}}",
+    "onHint": "Quien organice un plan cerca verá que hay alguien libre. Se desactiva solo al apuntarte a un plan.",
+    "stop": "Ya no estoy libre",
+    "noZone": "Activa la ubicación o guarda una zona en tu perfil para decir que estás libre.",
+    "failed": "No se ha podido activar. Inténtalo de nuevo."
   }
 }

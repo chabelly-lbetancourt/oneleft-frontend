@@ -227,6 +227,41 @@
           }
           @case ('organizer') {
             <p class="organizer-hint hint">{{ 'plan.yourPlan' | transloco }}</p>
+            @if (freePeopleView(); as people) {
+              <div class="free-people panel-muted">
+                <p class="free-people__title">
+                  <i class="pi pi-bolt" aria-hidden="true"></i>
+                  {{ 'plan.freePeople' | transloco }} · {{ people.length }}
+                </p>
+                @if (people.length) {
+                  <ul class="free-people__list">
+                    @for (person of people; track $index) {
+                      <li>
+                        {{
+                          'plan.freePerson'
+                            | transloco: { km: person.km, level: (person.levelKey | transloco) }
+                        }}
+                        @if (person.activities) {
+                          <span class="hint">
+                            ·
+                            {{
+                              'plan.freePersonActivities'
+                                | transloco: { activities: person.activities }
+                            }}
+                          </span>
+                        }
+                      </li>
+                    }
+                  </ul>
+                } @else {
+                  <p class="hint">{{ 'plan.freePeopleNone' | transloco }}</p>
+                }
+                <p class="free-people__privacy hint">
+                  <i class="pi pi-lock icon-xs" aria-hidden="true"></i>
+                  {{ 'plan.freePeopleHint' | transloco }}
+                </p>
+              </div>
+            }
           }
           @case ('full') {
             <p-tag
