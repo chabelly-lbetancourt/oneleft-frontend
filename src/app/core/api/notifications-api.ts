@@ -2,7 +2,11 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { catchError, map, Observable, of } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { NotificationPreferences, PushSubscriptionRequest } from '../../shared/model/notifications';
+import {
+  NotificationPreferences,
+  PushSubscriptionRequest,
+  SavedAlert,
+} from '../../shared/model/notifications';
 
 /** Client of the notifications service through the API Gateway (HU-006). */
 @Injectable({ providedIn: 'root' })
@@ -16,6 +20,23 @@ export class NotificationsApi {
 
   savePreferences(preferences: NotificationPreferences): Observable<NotificationPreferences> {
     return this.http.put<NotificationPreferences>(`${this.base}/preferences`, preferences);
+  }
+
+  /** My saved alerts (HU-036), oldest first. */
+  alerts(): Observable<SavedAlert[]> {
+    return this.http.get<SavedAlert[]>(`${this.base}/alerts`);
+  }
+
+  createAlert(alert: SavedAlert): Observable<SavedAlert> {
+    return this.http.post<SavedAlert>(`${this.base}/alerts`, alert);
+  }
+
+  updateAlert(id: string, alert: SavedAlert): Observable<SavedAlert> {
+    return this.http.put<SavedAlert>(`${this.base}/alerts/${id}`, alert);
+  }
+
+  deleteAlert(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.base}/alerts/${id}`);
   }
 
   /** Server key for Web Push, or null when the server has Web Push off. */
