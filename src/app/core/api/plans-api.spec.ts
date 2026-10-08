@@ -25,6 +25,9 @@ describe('PlansApi', () => {
     api.publish(plan).subscribe();
     api.plan('abc').subscribe();
     api.mine().subscribe();
+    const forecasts: unknown[] = [];
+    api.weather('abc').subscribe((forecast) => forecasts.push(forecast));
+    api.weather('abc').subscribe((forecast) => forecasts.push(forecast));
     api.join('abc').subscribe();
 
     const post = http.expectOne({ method: 'POST', url: base });
@@ -33,6 +36,11 @@ describe('PlansApi', () => {
     http.expectOne({ method: 'GET', url: `${base}/abc` }).flush({});
     http.expectOne({ method: 'GET', url: `${base}/mine` }).flush([]);
     http.expectOne({ method: 'POST', url: `${base}/abc/participants` }).flush({});
+    // A forecast, and none (204 or an error) without breaking the page (HU-026)
+    const weather = http.match({ method: 'GET', url: `${base}/abc/weather` });
+    weather[0].flush({ temperature: 17 });
+    weather[1].flush('down', { status: 503, statusText: 'Service Unavailable' });
+    expect(forecasts).toEqual([{ temperature: 17 }, null]);
     expect(api.eventsStreamUrl()).toBe(`${base}/events/stream`);
     http.verify();
   });
