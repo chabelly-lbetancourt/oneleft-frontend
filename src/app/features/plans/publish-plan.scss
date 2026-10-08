@@ -26,6 +26,19 @@
   width: 10rem;
 }
 
+// The minimum of participants (HU-039): a setting with its switch on the right
+.switch-row {
+  @include row(space(4), flex-start);
+}
+
+.switch-text {
+  flex: 1;
+}
+
+.deadline-options {
+  flex-wrap: wrap;
+}
+
 .place-actions {
   @include cluster(space(2));
 }

@@ -146,18 +146,37 @@ export class PlanDetail {
   /** The plan has started, finished or been cancelled (HU-007) */
   protected readonly ended = computed(() => ENDED.includes(this.plan()?.status ?? 'OPEN'));
   protected readonly endedHintKey = computed(() => {
-    const status = this.plan()?.status;
-    if (status === 'IN_PROGRESS') {
+    const plan = this.plan();
+    if (plan?.status === 'IN_PROGRESS') {
       return 'plan.startedHint';
     }
-    return status === 'FINISHED' ? 'plan.finishedHint' : 'plan.cancelledHint';
+    if (plan?.status === 'FINISHED') {
+      return 'plan.finishedHint';
+    }
+    return plan?.minimum ? 'plan.cancelledMinimumHint' : 'plan.cancelledHint';
+  });
+  /** Minimum of participants (HU-039), while the plan is upcoming: pending with its deadline, or confirmed */
+  protected readonly minimum = computed(() => {
+    const plan = this.plan();
+    const minimum = plan?.minimum;
+    if (!minimum || ENDED.includes(plan.status)) {
+      return null;
+    }
+    return {
+      key: minimum.confirmed ? 'plan.minimumConfirmed' : 'plan.minimumPending',
+      params: {
+        count: minimum.participants,
+        time: clockTime(new Date(minimum.deadline), this.language.locale()),
+      },
+      confirmed: minimum.confirmed,
+    };
   });
 
   constructor() {
     effect(() => this.load(this.id()));
     // The plan is refreshed at once when a notice about it arrives: someone joined or left, or my spot came up
     const events = inject(UserEvents);
-    merge(events.joined$, events.left$, events.spotFreed$)
+    merge(events.joined$, events.left$, events.spotFreed$, events.cancelled$)
       .pipe(
         filter((notice) => notice.planId === this.id()),
         takeUntilDestroyed(inject(DestroyRef)),

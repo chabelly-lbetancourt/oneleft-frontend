@@ -7,7 +7,12 @@ import { translocoTesting } from '../../../testing/transloco-testing';
 import { PlansApi } from '../../core/api/plans-api';
 import { Session } from '../../core/auth/session';
 import { UserEvents } from '../../core/realtime/user-events';
-import { Plan, PlanJoinedNotice, PlanLeftNotice } from '../../shared/model/published-plan';
+import {
+  Plan,
+  PlanCancelledNotice,
+  PlanJoinedNotice,
+  PlanLeftNotice,
+} from '../../shared/model/published-plan';
 import { PlanDetail } from './plan-detail';
 import { NativePlatform } from '../../core/platform';
 
@@ -37,6 +42,7 @@ describe('PlanDetail', () => {
   let session: FakeSession;
   let notices: Subject<PlanJoinedNotice>;
   let left: Subject<PlanLeftNotice>;
+  let cancelled: Subject<PlanCancelledNotice>;
   const api = {
     plan: vi.fn(),
     publicPlan: vi.fn(),
@@ -69,6 +75,7 @@ describe('PlanDetail', () => {
     session = new FakeSession();
     notices = new Subject();
     left = new Subject();
+    cancelled = new Subject();
     TestBed.configureTestingModule({
       imports: [PlanDetail, translocoTesting()],
       providers: [
@@ -81,6 +88,7 @@ describe('PlanDetail', () => {
             joined$: notices.asObservable(),
             left$: left.asObservable(),
             spotFreed$: EMPTY,
+            cancelled$: cancelled.asObservable(),
           },
         },
       ],
@@ -173,6 +181,7 @@ describe('PlanDetail', () => {
             joined$: notices.asObservable(),
             left$: left.asObservable(),
             spotFreed$: EMPTY,
+            cancelled$: EMPTY,
           },
         },
       ],
@@ -193,6 +202,7 @@ describe('PlanDetail', () => {
             joined$: notices.asObservable(),
             left$: left.asObservable(),
             spotFreed$: EMPTY,
+            cancelled$: EMPTY,
           },
         },
       ],
@@ -508,6 +518,68 @@ describe('PlanDetail', () => {
     expect(url.host).toBe('calendar.google.com');
     expect(url.searchParams.get('text')).toBe('Partido de pádel, falta uno');
     expect(url.searchParams.get('details')).toContain('Ver el plan en OneLeft');
+  });
+
+  it('should show the minimum of participants until the deadline and once confirmed (HU-039)', async () => {
+    const minimum = { participants: 2, deadline: PLAN.startsAt, confirmed: false };
+    await create({ ...PLAN, minimum });
+    expect(element().querySelector('.plan-minimum')?.textContent).toMatch(
+      /Sale si se apuntan al menos 2 · lo sabrás a las \d{2}:\d{2}/,
+    );
+    expect(element().querySelector('.plan-minimum--confirmed')).toBeNull();
+
+    await create({ ...PLAN, minimum: { ...minimum, confirmed: true } });
+    expect(element().querySelector('.plan-minimum--confirmed')?.textContent).toContain(
+      'Confirmado: se llegó al mínimo de 2',
+    );
+
+    await create(PLAN);
+    expect(element().querySelector('.plan-minimum')).toBeNull();
+  });
+
+  it('should explain a cancellation for not reaching the minimum and reload on the notice', async () => {
+    await create({
+      ...PLAN,
+      minimum: { participants: 2, deadline: PLAN.startsAt, confirmed: false },
+    });
+    api.plan.mockReturnValue(
+      of({
+        ...PLAN,
+        status: 'CANCELLED',
+        minimum: { participants: 2, deadline: PLAN.startsAt, confirmed: false },
+      }),
+    );
+
+    cancelled.next({
+      planId: 'other',
+      title: 'Otro',
+      placeName: 'Pistas',
+      startsAt: PLAN.startsAt,
+      reason: 'MINIMUM_NOT_REACHED',
+    });
+    expect(api.plan).toHaveBeenCalledTimes(1);
+    cancelled.next({
+      planId: 'plan-1',
+      title: PLAN.title,
+      placeName: 'Pistas',
+      startsAt: PLAN.startsAt,
+      reason: 'MINIMUM_NOT_REACHED',
+    });
+    await render();
+
+    expect(api.plan).toHaveBeenCalledTimes(2);
+    expect(element().querySelector('.plan-state')?.textContent).toContain('Cancelado');
+    expect(element().querySelector('.ended-hint')?.textContent).toContain(
+      'no se llegó al mínimo de participantes',
+    );
+    expect(element().querySelector('.plan-minimum')).toBeNull();
+    expect(element().querySelector('.join-button')).toBeNull();
+    // Neither «has already started» nor an invitation to join
+    expect(element().querySelector('.plan-time')?.textContent).not.toContain('·');
+    expect(element().textContent).not.toContain('Aún no se ha apuntado nadie');
+
+    await create({ ...PLAN, status: 'CANCELLED' });
+    expect(element().querySelector('.ended-hint')?.textContent).toContain('Este plan se canceló.');
   });
 
   it('should show the plan in English', async () => {
