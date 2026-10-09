@@ -93,6 +93,31 @@
   margin-top: space(1);
 }
 
+// «On my way» and «running late» of the group (HU-040)
+.arrivals {
+  @include stack(space(3));
+  @include text(sm);
+}
+
+.arrivals__title,
+.arrival__name {
+  @include weight(bold);
+}
+
+.arrivals__list {
+  @include stack(space(1));
+}
+
+.arrival--late {
+  color: var(--ol-danger-text);
+}
+
+.arrivals__actions,
+.arrivals__late {
+  @include cluster(space(2));
+  align-items: center;
+}
+
 // Free people near my plan (HU-035)
 .free-people {
   @include stack(space(2));

@@ -36,6 +36,13 @@ describe('PlansApi', () => {
     http.expectOne({ method: 'GET', url: `${base}/abc` }).flush({});
     http.expectOne({ method: 'GET', url: `${base}/mine` }).flush([]);
     http.expectOne({ method: 'POST', url: `${base}/abc/participants` }).flush({});
+    // On my way, running late and taking it back (HU-040)
+    api.announceArrival('abc', 'LATE', 10).subscribe();
+    const arrival = http.expectOne({ method: 'PUT', url: `${base}/abc/arrivals/me` });
+    expect(arrival.request.body).toEqual({ status: 'LATE', minutesLate: 10 });
+    arrival.flush({});
+    api.clearArrival('abc').subscribe();
+    http.expectOne({ method: 'DELETE', url: `${base}/abc/arrivals/me` }).flush({});
     // Free mode and the free people near my plan (HU-035)
     api.myAvailability().subscribe();
     http.expectOne({ method: 'GET', url: `${base}/availability/me` }).flush(null);

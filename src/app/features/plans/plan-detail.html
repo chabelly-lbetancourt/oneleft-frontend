@@ -302,6 +302,65 @@
             (onClick)="addToCalendar()"
           />
         }
+        @if (canAnnounce()) {
+          <div class="arrivals panel-muted">
+            <p class="arrivals__title">{{ 'plan.arrivalsTitle' | transloco }}</p>
+            @if (arrivals().length) {
+              <ul class="arrivals__list">
+                @for (arrival of arrivals(); track arrival.userId) {
+                  <li class="arrival" [class.arrival--late]="arrival.status === 'LATE'">
+                    <i
+                      class="pi"
+                      [class.pi-directions]="arrival.status === 'ON_THE_WAY'"
+                      [class.pi-clock]="arrival.status === 'LATE'"
+                      aria-hidden="true"
+                    ></i>
+                    <span class="arrival__name">{{
+                      arrival.mine ? ('plan.arrivalYou' | transloco) : arrival.name
+                    }}</span>
+                    · {{ arrival.key | transloco: { minutes: arrival.minutesLate } }}
+                  </li>
+                }
+              </ul>
+            }
+            <div class="arrivals__actions">
+              <p-button
+                class="on-the-way"
+                [label]="'plan.onTheWay' | transloco"
+                icon="pi pi-directions"
+                size="small"
+                [outlined]="myArrival()?.status !== 'ON_THE_WAY'"
+                [loading]="busy()"
+                (onClick)="announce('ON_THE_WAY')"
+              />
+              <span class="arrivals__late" role="group" [attr.aria-label]="'plan.late' | transloco">
+                <span class="hint">{{ 'plan.late' | transloco }}</span>
+                @for (minutes of lateOptions; track minutes) {
+                  <p-button
+                    class="late-{{ minutes }}"
+                    [label]="'plan.lateMinutes' | transloco: { minutes }"
+                    size="small"
+                    severity="secondary"
+                    [outlined]="myArrival()?.minutesLate !== minutes"
+                    [disabled]="busy()"
+                    (onClick)="announce('LATE', minutes)"
+                  />
+                }
+              </span>
+              @if (myArrival()) {
+                <p-button
+                  class="clear-arrival"
+                  [label]="'plan.clearArrival' | transloco"
+                  [text]="true"
+                  size="small"
+                  severity="secondary"
+                  (onClick)="clearArrival()"
+                />
+              }
+            </div>
+            <p class="hint">{{ 'plan.arrivalsHint' | transloco }}</p>
+          </div>
+        }
         @if (justLeft()) {
           <p-message severity="info" class="left-message">{{ 'plan.left' | transloco }}</p-message>
         }

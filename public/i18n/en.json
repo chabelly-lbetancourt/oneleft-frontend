@@ -149,7 +149,16 @@
     "freePeopleNone": "Nobody nearby is free for this plan right now.",
     "freePeopleHint": "People who said they are free less than 5 km away. You will not see who they are or where.",
     "freePerson": "{{km}} km away · {{level}}",
-    "freePersonActivities": "Also: {{activities}}"
+    "freePersonActivities": "Also: {{activities}}",
+    "arrivalsTitle": "How are you doing?",
+    "arrivalsHint": "Tell the group; it disappears when the plan starts.",
+    "onTheWay": "I'm on my way",
+    "late": "I'm running late",
+    "lateMinutes": "+{{minutes}} min",
+    "clearArrival": "Take back my notice",
+    "arrivalOnTheWay": "On the way",
+    "arrivalLate": "{{minutes}} min late",
+    "arrivalYou": "You"
   },
   "publish": {
     "title": "Publish a plan",
@@ -291,7 +300,11 @@
       "limit": "You already have the maximum of alerts: delete one to create another.",
       "notFound": "This alert no longer exists."
     },
-    "alertsFailed": "The alert could not be saved."
+    "alertsFailed": "The alert could not be saved.",
+    "arrivalFailed": "The group could not be told. Please try again.",
+    "arrival": {
+      "minutes": "Choose 5, 10, 15 or 30 minutes."
+    }
   },
   "nearby": {
     "title": "Nearby plans",
@@ -329,7 +342,10 @@
     "reminderTitle": "Your plan starts soon",
     "reminder": "«{{title}}» starts at {{time}} at {{place}}",
     "cancelledTitle": "Plan cancelled",
-    "cancelled": "«{{title}}» at {{time}} has been cancelled: not enough people joined"
+    "cancelled": "«{{title}}» at {{time}} has been cancelled: not enough people joined",
+    "arrivalTitle": "News of your plan",
+    "onTheWay": "{{name}} is on the way to «{{title}}»",
+    "late": "{{name}} will be {{minutes}} min late to «{{title}}»"
   },
   "notifications": {
     "title": "Notices of plans nearby",

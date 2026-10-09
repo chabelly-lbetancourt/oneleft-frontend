@@ -8,6 +8,7 @@ import { PlanNearbyNotice } from '../../shared/model/notifications';
 import {
   PlanJoinedNotice,
   PlanLeftNotice,
+  PlanArrivalNotice,
   PlanCancelledNotice,
   PlanReminderNotice,
   SpotFreedNotice,
@@ -22,6 +23,7 @@ describe('JoinNotices', () => {
     const nearby = new Subject<PlanNearbyNotice>();
     const reminders = new Subject<PlanReminderNotice>();
     const cancelled = new Subject<PlanCancelledNotice>();
+    const arrivals = new Subject<PlanArrivalNotice>();
     TestBed.configureTestingModule({
       imports: [JoinNotices, translocoTesting()],
       providers: [
@@ -35,6 +37,7 @@ describe('JoinNotices', () => {
             nearby$: nearby.asObservable(),
             reminder$: reminders.asObservable(),
             cancelled$: cancelled.asObservable(),
+            arrival$: arrivals.asObservable(),
           },
         },
       ],
@@ -150,6 +153,25 @@ describe('JoinNotices', () => {
     expect(add.mock.calls[7][0].detail).toMatch(
       /^«Pádel 2 contra 2» de las \d{2}:\d{2} se ha cancelado: no se llegó al mínimo de participantes$/,
     );
+
+    arrivals.next({ planId: 'p6', title: 'Pádel', name: 'Lucía', status: 'LATE', minutesLate: 10 });
+    expect(add.mock.calls[8][0]).toMatchObject({
+      summary: 'Novedades de tu plan',
+      icon: 'pi-clock',
+      detail: 'Lucía llegará 10 min tarde a «Pádel»',
+      data: 'p6',
+    });
+    arrivals.next({
+      planId: 'p6',
+      title: 'Pádel',
+      name: 'Diego',
+      status: 'ON_THE_WAY',
+      minutesLate: null,
+    });
+    expect(add.mock.calls[9][0]).toMatchObject({
+      icon: 'pi-directions',
+      detail: 'Diego va de camino a «Pádel»',
+    });
 
     (fixture.componentInstance as unknown as { open: (id: string) => void }).open('p1');
     expect(navigate).toHaveBeenCalledWith(['/plans', 'p1']);

@@ -149,7 +149,16 @@
     "freePeopleNone": "Ahora no hay nadie libre cerca para este plan.",
     "freePeopleHint": "Personas que han dicho que están libres a menos de 5 km. No verás quiénes son ni dónde están.",
     "freePerson": "a {{km}} km · {{level}}",
-    "freePersonActivities": "También: {{activities}}"
+    "freePersonActivities": "También: {{activities}}",
+    "arrivalsTitle": "¿Cómo vas?",
+    "arrivalsHint": "Avisa al grupo; desaparece cuando empieza el plan.",
+    "onTheWay": "Voy de camino",
+    "late": "Llego tarde",
+    "lateMinutes": "+{{minutes}} min",
+    "clearArrival": "Quitar mi aviso",
+    "arrivalOnTheWay": "De camino",
+    "arrivalLate": "Llega {{minutes}} min tarde",
+    "arrivalYou": "Tú"
   },
   "publish": {
     "title": "Publicar un plan",
@@ -291,7 +300,11 @@
       "limit": "Ya tienes el máximo de alertas: borra una para crear otra.",
       "notFound": "Esta alerta ya no existe."
     },
-    "alertsFailed": "No se ha podido guardar la alerta."
+    "alertsFailed": "No se ha podido guardar la alerta.",
+    "arrivalFailed": "No se ha podido avisar al grupo. Inténtalo de nuevo.",
+    "arrival": {
+      "minutes": "Elige 5, 10, 15 o 30 minutos."
+    }
   },
   "nearby": {
     "title": "Planes cerca",
@@ -329,7 +342,10 @@
     "reminderTitle": "Tu plan empieza pronto",
     "reminder": "«{{title}}» empieza a las {{time}} en {{place}}",
     "cancelledTitle": "Plan cancelado",
-    "cancelled": "«{{title}}» de las {{time}} se ha cancelado: no se llegó al mínimo de participantes"
+    "cancelled": "«{{title}}» de las {{time}} se ha cancelado: no se llegó al mínimo de participantes",
+    "arrivalTitle": "Novedades de tu plan",
+    "onTheWay": "{{name}} va de camino a «{{title}}»",
+    "late": "{{name}} llegará {{minutes}} min tarde a «{{title}}»"
   },
   "notifications": {
     "title": "Avisos de planes cerca",
