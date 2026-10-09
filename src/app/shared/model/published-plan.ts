@@ -19,6 +19,30 @@ export interface PublishPlan {
   minimumDeadline?: string | null;
 }
 
+/** How someone of the group is getting to the plan (HU-040). */
+export type ArrivalStatus = 'ON_THE_WAY' | 'LATE';
+
+/** «On my way» or «running late (N min)» of someone of the group, until the plan starts (HU-040). */
+export interface Arrival {
+  userId: string;
+  name: string;
+  status: ArrivalStatus;
+  minutesLate: number | null;
+  at: string;
+}
+
+/** Someone of the group of my plan is on the way or running late (personal real-time stream). */
+export interface PlanArrivalNotice {
+  planId: string;
+  title: string;
+  name: string;
+  status: ArrivalStatus;
+  minutesLate: number | null;
+}
+
+/** Delays that can be announced, in minutes. */
+export const LATE_OPTIONS = [5, 10, 15, 30] as const;
+
 /** An activity someone free would do and their level in it (HU-035). */
 export interface Interest {
   activity: string;
@@ -132,4 +156,6 @@ export interface Plan extends PublishPlan {
   waitlist: Participant[];
   /** Null when the plan goes ahead with anyone (HU-039) */
   minimum?: PlanMinimum | null;
+  /** Only for the group of the plan, until it starts (HU-040) */
+  arrivals?: Arrival[];
 }

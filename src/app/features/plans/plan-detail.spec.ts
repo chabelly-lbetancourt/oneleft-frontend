@@ -11,6 +11,7 @@ import {
   Forecast,
   FreePerson,
   Plan,
+  PlanArrivalNotice,
   PlanCancelledNotice,
   PlanJoinedNotice,
   PlanLeftNotice,
@@ -45,12 +46,15 @@ describe('PlanDetail', () => {
   let notices: Subject<PlanJoinedNotice>;
   let left: Subject<PlanLeftNotice>;
   let cancelled: Subject<PlanCancelledNotice>;
+  let arrivals: Subject<PlanArrivalNotice>;
   const api = {
     plan: vi.fn(),
     publicPlan: vi.fn(),
     shareUrl: vi.fn((id: string) => `http://localhost:8080/share/plans/${id}`),
     weather: vi.fn((): Observable<Forecast | null> => of(null)),
     freePeople: vi.fn((): Observable<FreePerson[]> => of([])),
+    announceArrival: vi.fn(),
+    clearArrival: vi.fn(),
     join: vi.fn(),
     leave: vi.fn(),
     joinWaitlist: vi.fn(),
@@ -83,6 +87,7 @@ describe('PlanDetail', () => {
     notices = new Subject();
     left = new Subject();
     cancelled = new Subject();
+    arrivals = new Subject();
     TestBed.configureTestingModule({
       imports: [PlanDetail, translocoTesting()],
       providers: [
@@ -96,6 +101,7 @@ describe('PlanDetail', () => {
             left$: left.asObservable(),
             spotFreed$: EMPTY,
             cancelled$: cancelled.asObservable(),
+            arrival$: arrivals.asObservable(),
           },
         },
       ],
@@ -189,6 +195,7 @@ describe('PlanDetail', () => {
             left$: left.asObservable(),
             spotFreed$: EMPTY,
             cancelled$: EMPTY,
+            arrival$: EMPTY,
           },
         },
       ],
@@ -210,6 +217,7 @@ describe('PlanDetail', () => {
             left$: left.asObservable(),
             spotFreed$: EMPTY,
             cancelled$: EMPTY,
+            arrival$: EMPTY,
           },
         },
       ],
@@ -650,6 +658,58 @@ describe('PlanDetail', () => {
     await create(PLAN);
     expect(api.freePeople).not.toHaveBeenCalled();
     expect(element().querySelector('.free-people')).toBeNull();
+  });
+
+  it('should let the group say how they are getting there and show it (HU-040)', async () => {
+    const joined = { ...PLAN, participants: [{ ...LUCIA, userId: 'me', name: 'Me' }] };
+    await create(joined);
+    expect(element().querySelector('.arrivals')).not.toBeNull();
+    expect(element().querySelector('.arrival')).toBeNull();
+
+    const at = new Date().toISOString();
+    api.announceArrival.mockReturnValue(
+      of({
+        ...joined,
+        arrivals: [
+          { userId: 'org', name: 'Ana Test', status: 'ON_THE_WAY', minutesLate: null, at },
+          { userId: 'me', name: 'Me', status: 'LATE', minutesLate: 10, at },
+        ],
+      }),
+    );
+    element().querySelector<HTMLButtonElement>('.late-10 button')!.click();
+    await render();
+
+    expect(api.announceArrival).toHaveBeenCalledWith('plan-1', 'LATE', 10);
+    const items = element().querySelectorAll('.arrival');
+    expect(items[0].textContent).toContain('Tú · Llega 10 min tarde');
+    expect(items[1].textContent).toContain('Ana Test · De camino');
+
+    api.clearArrival.mockReturnValue(of({ ...joined, arrivals: [] }));
+    element().querySelector<HTMLButtonElement>('.clear-arrival button')!.click();
+    await render();
+    expect(api.clearArrival).toHaveBeenCalledWith('plan-1');
+    expect(element().querySelector('.arrival')).toBeNull();
+  });
+
+  it('should offer nothing to people outside the group and reload on a notice of the group', async () => {
+    await create(PLAN);
+    expect(element().querySelector('.arrivals')).toBeNull();
+
+    await create({ ...PLAN, status: 'IN_PROGRESS' }, undefined, 'org');
+    expect(element().querySelector('.arrivals')).toBeNull();
+
+    await create(PLAN, undefined, 'org');
+    const before = api.plan.mock.calls.length;
+    arrivals.next({
+      planId: 'plan-1',
+      title: PLAN.title,
+      name: 'Lucía',
+      status: 'ON_THE_WAY',
+      minutesLate: null,
+    });
+    await render();
+    // Every detail still open in this test reloads its plan
+    expect(api.plan.mock.calls.length).toBeGreaterThan(before);
   });
 
   it('should show the plan in English', async () => {

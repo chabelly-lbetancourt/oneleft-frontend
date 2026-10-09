@@ -1,6 +1,10 @@
 import { ADMIN, ANA, expect, signIn, test, uniqueTitle } from './support/fixtures';
 
-test('joins a plan and the organizer is told in real time', async ({ openPage, publishPlan }) => {
+test('joins a plan, the organizer is told in real time, and hears that the newcomer is on the way', async ({
+  openPage,
+  publishPlan,
+  t,
+}) => {
   const plan = await publishPlan(ANA, uniqueTitle('E2E join'));
 
   // The organizer has the app open: the personal event stream is connected
@@ -22,4 +26,11 @@ test('joins a plan and the organizer is told in real time', async ({ openPage, p
   await expect(joiner.locator('.participant')).not.toHaveCount(0);
 
   await expect(organizer.locator('.join-notice')).toBeVisible();
+
+  // HU-040: the newcomer says they are on the way and the organizer hears it (same plan, no new data)
+  await joiner.locator('.on-the-way button').click();
+  await expect(joiner.locator('.arrival')).toBeVisible();
+  await expect(
+    organizer.locator('.join-notice', { hasText: t('notices.arrivalTitle') }),
+  ).toBeVisible();
 });
