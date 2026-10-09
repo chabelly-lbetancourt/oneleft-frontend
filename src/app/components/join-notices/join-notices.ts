@@ -94,6 +94,18 @@ export class JoinNotices {
         'warn',
       ),
     );
+    events.arrival$.pipe(takeUntilDestroyed(destroyRef)).subscribe((notice) =>
+      this.show(
+        notice.status === 'LATE' ? 'pi-clock' : 'pi-directions',
+        'notices.arrivalTitle',
+        this.transloco.translate(notice.status === 'LATE' ? 'notices.late' : 'notices.onTheWay', {
+          name: notice.name,
+          title: notice.title,
+          minutes: notice.minutesLate,
+        }),
+        notice.planId,
+      ),
+    );
     events.nearby$
       .pipe(takeUntilDestroyed(destroyRef))
       .subscribe((notice) =>

@@ -3,6 +3,7 @@ import { toObservable } from '@angular/core/rxjs-interop';
 import { EMPTY, filter, map, Observable, share, switchMap } from 'rxjs';
 import { PlanNearbyNotice } from '../../shared/model/notifications';
 import {
+  PlanArrivalNotice,
   PlanCancelledNotice,
   PlanJoinedNotice,
   PlanLeftNotice,
@@ -19,6 +20,7 @@ const SPOT_FREED = 'plan-spot';
 const PLAN_NEARBY = 'plan-nearby';
 const PLAN_REMINDER = 'plan-reminder';
 const PLAN_CANCELLED = 'plan-cancelled';
+const PLAN_ARRIVAL = 'plan-arrival';
 
 /**
  * Personal events of the signed-in user while the app is open: someone has joined (HU-005) or left (HU-023) one of
@@ -43,6 +45,7 @@ export class UserEvents {
             PLAN_NEARBY,
             PLAN_REMINDER,
             PLAN_CANCELLED,
+            PLAN_ARRIVAL,
           ])
         : EMPTY,
     ),
@@ -55,6 +58,8 @@ export class UserEvents {
   readonly nearby$ = this.of<PlanNearbyNotice>(PLAN_NEARBY);
   readonly reminder$ = this.of<PlanReminderNotice>(PLAN_REMINDER);
   readonly cancelled$ = this.of<PlanCancelledNotice>(PLAN_CANCELLED);
+  /** Someone of the group of my plan is on the way or running late (HU-040) */
+  readonly arrival$ = this.of<PlanArrivalNotice>(PLAN_ARRIVAL);
 
   private of<T>(name: string): Observable<T> {
     return this.events$.pipe(

@@ -19,7 +19,13 @@ import { CardSkeleton } from '../../components/card-skeleton/card-skeleton';
 import { IconTile } from '../../components/icon-tile/icon-tile';
 import { SpotSlots } from '../../components/spot-slots/spot-slots';
 import { PageLayout } from '../../layout/page-layout/page-layout';
-import { Forecast, FreePerson, Plan } from '../../shared/model/published-plan';
+import {
+  ArrivalStatus,
+  Forecast,
+  FreePerson,
+  LATE_OPTIONS,
+  Plan,
+} from '../../shared/model/published-plan';
 import { clockTime, spotsKey, startsIn } from '../../shared/time/plan-time';
 import {
   CalendarEvent,
@@ -68,6 +74,25 @@ export class PlanDetail {
   protected readonly forecast = signal<Forecast | null>(null);
   /** Plan whose forecast has been asked for */
   private forecastOf: string | null = null;
+  /** The organizer and the participants can say how they are getting there until the start (HU-040) */
+  protected readonly canAnnounce = computed(() =>
+    ['organizer', 'participant'].includes(this.relation() ?? ''),
+  );
+  protected readonly lateOptions = LATE_OPTIONS;
+  /** Statuses of the group, mine first */
+  protected readonly arrivals = computed(() => {
+    const me = this.session.userId();
+    return [...(this.plan()?.arrivals ?? [])]
+      .sort((a, b) => Number(b.userId === me) - Number(a.userId === me))
+      .map((arrival) => ({
+        ...arrival,
+        mine: arrival.userId === me,
+        key: arrival.status === 'LATE' ? 'plan.arrivalLate' : 'plan.arrivalOnTheWay',
+      }));
+  });
+  protected readonly myArrival = computed(
+    () => this.arrivals().find((arrival) => arrival.mine) ?? null,
+  );
   /** Free people near my upcoming plan (HU-035); null until known, and for anyone but the organizer */
   protected readonly freePeople = signal<FreePerson[] | null>(null);
   protected readonly freePeopleView = computed(() => {
@@ -213,7 +238,7 @@ export class PlanDetail {
     effect(() => this.load(this.id()));
     // The plan is refreshed at once when a notice about it arrives: someone joined or left, or my spot came up
     const events = inject(UserEvents);
-    merge(events.joined$, events.left$, events.spotFreed$, events.cancelled$)
+    merge(events.joined$, events.left$, events.spotFreed$, events.cancelled$, events.arrival$)
       .pipe(
         filter((notice) => notice.planId === this.id()),
         takeUntilDestroyed(inject(DestroyRef)),
@@ -306,6 +331,15 @@ export class PlanDetail {
     link.download = icsFileName(plan.title);
     link.click();
     URL.revokeObjectURL(link.href);
+  }
+
+  /** «On my way» or «running late» (HU-040): the plan comes back with the statuses of the group. */
+  protected announce(status: ArrivalStatus, minutesLate: number | null = null): void {
+    this.change(this.api.announceArrival(this.id(), status, minutesLate), 'errors.arrivalFailed');
+  }
+
+  protected clearArrival(): void {
+    this.change(this.api.clearArrival(this.id()), 'errors.arrivalFailed');
   }
 
   protected leave(): void {

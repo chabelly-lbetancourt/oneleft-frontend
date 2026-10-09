@@ -4,6 +4,7 @@ import { catchError, map, Observable, of } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { nearbyParams, NearbyQuery, toQueryString } from '../../shared/model/nearby';
 import {
+  ArrivalStatus,
   Availability,
   Forecast,
   FreePerson,
@@ -52,6 +53,20 @@ export class PlansApi {
     return this.http
       .get<Forecast | null>(`${this.base}/${id}/weather`)
       .pipe(catchError(() => of(null)));
+  }
+
+  /** I'm on my way, or running late by some minutes (HU-040). */
+  announceArrival(
+    id: string,
+    status: ArrivalStatus,
+    minutesLate: number | null = null,
+  ): Observable<Plan> {
+    return this.http.put<Plan>(`${this.base}/${id}/arrivals/me`, { status, minutesLate });
+  }
+
+  /** Takes back my status of arrival (HU-040). */
+  clearArrival(id: string): Observable<Plan> {
+    return this.http.delete<Plan>(`${this.base}/${id}/arrivals/me`);
   }
 
   /** My free mode (HU-035), or null when it is off. */
