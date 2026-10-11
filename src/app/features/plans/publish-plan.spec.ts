@@ -1,7 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
-import { of, throwError } from 'rxjs';
+import { of, Subject, throwError } from 'rxjs';
 import { PlansApi } from '../../core/api/plans-api';
+import { UsersApi } from '../../core/api/users-api';
 import { ApproximateLocation, LocationError } from '../../core/geo/approximate-location';
 import { TranslocoService } from '@jsverse/transloco';
 import { PublishPlan } from './publish-plan';
@@ -10,12 +11,17 @@ import { translocoTesting } from '../../../testing/transloco-testing';
 describe('PublishPlan', () => {
   let fixture: ComponentFixture<PublishPlan>;
   let component: PublishPlan & Record<string, unknown>;
-  const api = { publish: vi.fn() };
+  const api = { publish: vi.fn(), suggestPlaces: vi.fn() };
+  const users = { myProfile: vi.fn() };
   const location = { current: vi.fn() };
   const element = () => fixture.nativeElement as HTMLElement;
   const call = <T>(name: string, ...args: unknown[]) =>
     (component[name] as (...a: unknown[]) => T)(...args);
-  const form = () => component['form'] as unknown as { patchValue: (value: object) => void };
+  const form = () =>
+    component['form'] as unknown as {
+      patchValue: (value: object) => void;
+      getRawValue: () => Record<string, unknown>;
+    };
   const render = async () => {
     fixture.detectChanges();
     await fixture.whenStable();
@@ -34,6 +40,8 @@ describe('PublishPlan', () => {
       level: 'INTERMEDIATE',
     });
 
+  afterEach(() => vi.unstubAllGlobals());
+
   beforeEach(async () => {
     vi.clearAllMocks();
     TestBed.configureTestingModule({
@@ -42,6 +50,7 @@ describe('PublishPlan', () => {
         provideRouter([]),
         { provide: PlansApi, useValue: api },
         { provide: ApproximateLocation, useValue: location },
+        { provide: UsersApi, useValue: users },
       ],
     });
     fixture = TestBed.createComponent(PublishPlan);
@@ -70,6 +79,111 @@ describe('PublishPlan', () => {
     expect(startsIn).toBeGreaterThanOrEqual(59 * 60_000);
     expect(startsIn).toBeLessThanOrEqual(61 * 60_000);
     expect(navigate).toHaveBeenCalledWith(['/plans', 'plan-1'], { queryParams: { published: 1 } });
+  });
+
+  it('should suggest nearby places and fill the meeting point with the chosen one (HU-071)', async () => {
+    const campus = {
+      name: 'Polideportivo Campus Sur',
+      address: 'Avenida del Campus Sur, Madrid',
+      latitude: 40.38853,
+      longitude: -3.62699,
+      distanceMeters: 350,
+    };
+    // jsdom has no matchMedia, which the list of PrimeNG reads
+    vi.stubGlobal(
+      'matchMedia',
+      vi
+        .fn()
+        .mockReturnValue({
+          matches: false,
+          addEventListener: vi.fn(),
+          removeEventListener: vi.fn(),
+        }),
+    );
+    location.current.mockResolvedValue({ latitude: 40.39, longitude: -3.63 });
+    api.suggestPlaces.mockReturnValue(of([campus]));
+    const field = element().querySelector('#placeName');
+    expect(field?.getAttribute('role')).toBe('combobox');
+
+    await call<Promise<void>>('searchPlaces', ' polideportivo ');
+    await call<Promise<void>>('searchPlaces', 'polideportivo campus');
+
+    // The approximate location of the device (rounded on it), asked once for every search
+    expect(location.current).toHaveBeenCalledTimes(1);
+    expect(location.current).toHaveBeenCalledWith();
+    expect(api.suggestPlaces).toHaveBeenCalledWith('polideportivo', {
+      latitude: 40.39,
+      longitude: -3.63,
+    });
+    expect(call<unknown[]>('placeSuggestions')).toEqual([campus]);
+    await render();
+    expect(document.querySelectorAll('[role="option"]')).toHaveLength(1);
+    expect(document.querySelector('[role="option"]')?.textContent).toContain(
+      'Avenida del Campus Sur, Madrid · 350 m',
+    );
+    expect(call('distance', 350)).toBe('350 m');
+    expect(call('distance', 1240)).toBe('1,2 km');
+
+    call('choosePlace', campus);
+    await render();
+    expect(form().getRawValue()).toMatchObject({
+      placeName: 'Polideportivo Campus Sur',
+      latitude: 40.3885,
+      longitude: -3.627,
+    });
+    expect(element().querySelector('.meeting-coordinates')?.textContent).toContain(
+      '40.3885, -3.627',
+    );
+  });
+
+  it('should keep the answer of the last search when an older one arrives later', async () => {
+    const place = (name: string) => ({
+      name,
+      address: '',
+      latitude: 40.39,
+      longitude: -3.63,
+      distanceMeters: 0,
+    });
+    location.current.mockResolvedValue({ latitude: 40.39, longitude: -3.63 });
+    const slow = new Subject<unknown[]>();
+    api.suggestPlaces.mockReturnValueOnce(slow).mockReturnValueOnce(of([place('Polideportivo')]));
+
+    const older = call<Promise<void>>('searchPlaces', 'pol');
+    await call<Promise<void>>('searchPlaces', 'polideportivo');
+    slow.next([place('Pollería')]);
+    slow.complete();
+    await older;
+
+    expect(call<{ name: string }[]>('placeSuggestions').map(({ name }) => name)).toEqual([
+      'Polideportivo',
+    ]);
+  });
+
+  it('should search around the zone of the profile without location, and suggest nothing without either', async () => {
+    location.current.mockRejectedValue(new LocationError('denied'));
+    users.myProfile.mockReturnValue(
+      of({
+        userId: 'ana',
+        displayName: 'Ana',
+        zone: { name: 'Vallecas', latitude: 40.39, longitude: -3.63 },
+      }),
+    );
+    api.suggestPlaces.mockReturnValue(of([]));
+
+    await call<Promise<void>>('searchPlaces', 'padel');
+    expect(api.suggestPlaces).toHaveBeenCalledWith(
+      'padel',
+      expect.objectContaining({ latitude: 40.39, longitude: -3.63 }),
+    );
+
+    users.myProfile.mockReturnValue(throwError(() => new Error('down')));
+    fixture = TestBed.createComponent(PublishPlan);
+    component = fixture.componentInstance as PublishPlan & Record<string, unknown>;
+    await render();
+    api.suggestPlaces.mockClear();
+    await call<Promise<void>>('searchPlaces', 'padel');
+    expect(api.suggestPlaces).not.toHaveBeenCalled();
+    expect(call<unknown[]>('placeSuggestions')).toEqual([]);
   });
 
   it('should publish a plan with a minimum of participants and its deadline (HU-039)', async () => {

@@ -64,6 +64,31 @@ describe('PlansApi', () => {
     http.verify();
   });
 
+  it('should suggest places near the device, and none on an error (HU-071)', () => {
+    TestBed.configureTestingModule({
+      providers: [provideHttpClient(), provideHttpClientTesting()],
+    });
+    const api = TestBed.inject(PlansApi);
+    const http = TestBed.inject(HttpTestingController);
+    const found: unknown[] = [];
+    const near = { latitude: 40.39, longitude: -3.63 };
+
+    api.suggestPlaces('padel', near).subscribe((places) => found.push(places));
+    api.suggestPlaces('padel', near).subscribe((places) => found.push(places));
+
+    const searches = http.match(
+      (request) =>
+        request.url === `${environment.apiUrl}/api/v1/places` && request.method === 'GET',
+    );
+    expect(searches[0].request.params.toString()).toBe(
+      'query=padel&latitude=40.39&longitude=-3.63',
+    );
+    searches[0].flush([{ name: 'Pistas de pádel' }]);
+    searches[1].flush({ code: 'rate.limited' }, { status: 429, statusText: 'Too Many Requests' });
+    expect(found).toEqual([[{ name: 'Pistas de pádel' }], []]);
+    http.verify();
+  });
+
   it('should read a shared plan without a session and build its share link (HU-024)', () => {
     TestBed.configureTestingModule({
       providers: [provideHttpClient(), provideHttpClientTesting()],

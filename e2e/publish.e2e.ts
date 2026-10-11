@@ -6,6 +6,11 @@ test('publishes a plan with a minimum of participants and finds it in its page a
 }) => {
   const title = uniqueTitle('E2E publish');
   const page = await openPage();
+  // No place suggestions (HU-071): the place is written and located by hand, without the geocoder
+  await page.route(
+    (url) => url.pathname === '/api/v1/places',
+    (route) => route.fulfill({ json: [] }),
+  );
   await page.goto('/plans/new');
   await signIn(page, ADMIN);
   await expect(page.locator('.publish-form')).toBeVisible();
