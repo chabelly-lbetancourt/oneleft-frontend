@@ -129,6 +129,7 @@
     "calendarLink": "Ver el plan en OneLeft: {{url}}",
     "linkCopied": "Enlace copiado: pégalo donde quieras.",
     "shareText": "{{activity}} a las {{time}} · {{spots}}. ¿Te apuntas?",
+    "shareTextStarted": "{{activity}} a las {{time}} · {{status}}",
     "guestHint": "Entra o crea tu cuenta para apuntarte; volverás a este plan.",
     "spotsTaken": "{{occupied}} de {{spots}} plazas ocupadas",
     "status": {

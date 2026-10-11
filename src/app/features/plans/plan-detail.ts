@@ -276,11 +276,7 @@ export class PlanDetail {
       return;
     }
     const url = this.api.shareUrl(plan.id);
-    const text = this.transloco.translate('plan.shareText', {
-      activity: this.transloco.translate(this.activityKey()),
-      time: this.startsAt()?.time,
-      spots: this.transloco.translate(spotsKey(plan.freeSpots), { count: plan.freeSpots }),
-    });
+    const text = this.shareText(plan);
     const content = { title: plan.title, text, url };
     const sheet = this.platform.isNative()
       ? () => this.platform.share(content)
@@ -297,6 +293,27 @@ export class PlanDetail {
     }
     await navigator.clipboard.writeText(`${text} ${url}`);
     this.copied.set(true);
+  }
+
+  /** Once the plan has started nobody can join: the text says how it is instead of inviting */
+  private shareText(plan: Plan): string {
+    const params = {
+      activity: this.transloco.translate(this.activityKey()),
+      time: this.startsAt()?.time,
+    };
+    const started = new Date(plan.startsAt).getTime() <= Date.now();
+    if (ENDED.includes(plan.status) || started) {
+      // The service marks the start within a minute: until then, an open plan that has started is in progress
+      const status = ENDED.includes(plan.status) ? plan.status : 'IN_PROGRESS';
+      return this.transloco.translate('plan.shareTextStarted', {
+        ...params,
+        status: this.transloco.translate(`plan.status.${status}`),
+      });
+    }
+    return this.transloco.translate('plan.shareText', {
+      ...params,
+      spots: this.transloco.translate(spotsKey(plan.freeSpots), { count: plan.freeSpots }),
+    });
   }
 
   /**
