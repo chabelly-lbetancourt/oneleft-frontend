@@ -1,6 +1,8 @@
 @use 'abstracts' as *;
 
-.page-header {
+// The host is the sticky bar: the <header> inside is exactly as tall as the host, so it would have no room to stay
+:host {
+  display: block;
   @include app-bar;
 }
 
