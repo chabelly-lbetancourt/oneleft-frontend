@@ -39,6 +39,25 @@
   flex-wrap: wrap;
 }
 
+// HU-071: the meeting point suggests nearby places
+.place-field {
+  display: block;
+}
+
+.place-option {
+  @include stack(space(0.5));
+  min-width: 0;
+}
+
+.place-option__name {
+  @include weight(semibold);
+}
+
+.place-option__detail {
+  @include text(sm);
+  color: var(--ol-text-muted);
+}
+
 .place-actions {
   @include cluster(space(2));
 }

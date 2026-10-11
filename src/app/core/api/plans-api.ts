@@ -2,7 +2,9 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { catchError, map, Observable, of } from 'rxjs';
 import { environment } from '../../../environments/environment';
+import { Coordinates } from '../geo/approximate-location';
 import { nearbyParams, NearbyQuery, toQueryString } from '../../shared/model/nearby';
+import { PlaceSuggestion } from '../../shared/model/places';
 import {
   ArrivalStatus,
   Availability,
@@ -53,6 +55,17 @@ export class PlansApi {
     return this.http
       .get<Forecast | null>(`${this.base}/${id}/weather`)
       .pipe(catchError(() => of(null)));
+  }
+
+  /**
+   * Places for the meeting point that match what is typed, closest to the device first (HU-071). Empty on any error
+   * (the geocoder, the rate limit): the place is then written by hand and publishing goes on.
+   */
+  suggestPlaces(query: string, near: Coordinates): Observable<PlaceSuggestion[]> {
+    const params = { query, latitude: near.latitude, longitude: near.longitude };
+    return this.http
+      .get<PlaceSuggestion[]>(`${environment.apiUrl}/api/v1/places`, { params })
+      .pipe(catchError(() => of([])));
   }
 
   /** I'm on my way, or running late by some minutes (HU-040). */

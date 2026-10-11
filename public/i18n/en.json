@@ -181,6 +181,8 @@
     "horizon": "OneLeft is for plans in the next {{hours}} hours.",
     "where": "Where do you meet?",
     "wherePlaceholder": "Vallecas sports centre courts",
+    "placesFound": "{0} places nearby. Use the arrow keys to choose one",
+    "noPlaces": "No place nearby with that name: type it and use «I'm here»",
     "here": "I'm here",
     "whereError": "Set the meeting point with \"I'm here\".",
     "spots": "How many spots are left?",
