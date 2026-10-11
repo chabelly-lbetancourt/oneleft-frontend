@@ -479,6 +479,34 @@ describe('PlanDetail', () => {
     expect(element().querySelector('.copied-message')?.textContent).toContain('Enlace copiado');
   });
 
+  it('should not invite anyone to a plan that has already started', async () => {
+    const past = new Date(Date.now() - 60_000).toISOString();
+    await create({ ...PLAN, startsAt: past, status: 'FINISHED' });
+    const share = vi.fn().mockResolvedValue(undefined);
+    Object.defineProperty(navigator, 'share', { value: share, configurable: true });
+    const shareAndRead = async () => {
+      element().querySelector<HTMLButtonElement>('.share-button button')!.click();
+      await render();
+      return (share.mock.lastCall![0] as { text: string }).text;
+    };
+
+    expect(await shareAndRead()).toMatch(/^Pádel a las \d{2}:\d{2} · Terminado$/);
+
+    // Started a moment ago: the service has not marked it as in progress yet
+    const component = fixture.componentInstance as unknown as {
+      plan: { set: (plan: unknown) => void };
+    };
+    component.plan.set({ ...PLAN, startsAt: past });
+    expect(await shareAndRead()).toMatch(/^Pádel a las \d{2}:\d{2} · En curso$/);
+
+    component.plan.set({ ...PLAN, status: 'CANCELLED' });
+    expect(await shareAndRead()).toMatch(/· Cancelado$/);
+
+    TestBed.inject(TranslocoService).setActiveLang('en');
+    expect(await shareAndRead()).toMatch(/^Padel at .+ · Cancelled$/);
+    Object.defineProperty(navigator, 'share', { value: undefined, configurable: true });
+  });
+
   it('should offer the calendar to the organizer and the participants of an upcoming plan', async () => {
     await create(PLAN, undefined, 'org');
     expect(element().querySelector('.calendar-button')?.textContent).toContain(
