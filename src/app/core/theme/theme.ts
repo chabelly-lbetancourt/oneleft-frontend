@@ -1,4 +1,5 @@
 import { computed, DestroyRef, DOCUMENT, inject, Injectable, signal } from '@angular/core';
+import { NativePlatform } from '../platform';
 
 export type ThemeMode = 'system' | 'light' | 'dark';
 export const THEME_MODES: readonly ThemeMode[] = ['system', 'light', 'dark'];
@@ -19,6 +20,7 @@ const isMode = (value: string | null): value is ThemeMode =>
 @Injectable({ providedIn: 'root' })
 export class Theme {
   private readonly document = inject(DOCUMENT);
+  private readonly platform = inject(NativePlatform);
   private readonly media = this.document.defaultView?.matchMedia?.('(prefers-color-scheme: dark)');
   private readonly systemDark = signal(this.media?.matches ?? false);
 
@@ -56,6 +58,8 @@ export class Theme {
     this.document
       .querySelector('meta[name="theme-color"]')
       ?.setAttribute('content', BAR_COLOURS[dark ? 'dark' : 'light']);
+    // Android app: the clock and icons of the system bars follow the theme
+    void this.platform.setSystemBarsDark(dark);
   }
 
   // Storage can be missing or blocked (private mode, WebView settings): the app works without it

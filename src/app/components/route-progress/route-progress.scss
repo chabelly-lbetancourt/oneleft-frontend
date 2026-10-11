@@ -2,7 +2,8 @@
 
 :host {
   position: fixed;
-  inset: 0 0 auto;
+  // Right below the status bar of the Android app
+  inset: safe-area(top) 0 auto;
   z-index: 50;
   height: 3px;
   pointer-events: none;
