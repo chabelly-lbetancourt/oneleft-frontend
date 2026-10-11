@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { App, URLOpenListenerEvent } from '@capacitor/app';
 import { Browser } from '@capacitor/browser';
-import { Capacitor } from '@capacitor/core';
+import { Capacitor, SystemBars, SystemBarsStyle } from '@capacitor/core';
 import { Share } from '@capacitor/share';
 
 /** True inside the Android app (Capacitor), false in the browser. */
@@ -32,6 +32,21 @@ export class NativePlatform {
   /** Android share sheet: the WebView has no Web Share API. */
   async share(content: { title: string; text: string; url: string }): Promise<void> {
     await Share.share({ ...content, dialogTitle: content.title });
+  }
+
+  /**
+   * Clock and icons of the system bars of the Android app (it draws edge to edge, under them): light over the dark
+   * theme and dark over the light one. Nothing in the browser.
+   */
+  async setSystemBarsDark(dark: boolean): Promise<void> {
+    if (!this.isNative()) {
+      return;
+    }
+    try {
+      await SystemBars.setStyle({ style: dark ? SystemBarsStyle.Dark : SystemBarsStyle.Light });
+    } catch {
+      // An Android without the plugin: the system decides
+    }
   }
 
   onAppUrlOpen(listener: (event: URLOpenListenerEvent) => void): Promise<unknown> {

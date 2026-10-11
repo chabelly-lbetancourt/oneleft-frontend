@@ -7,4 +7,8 @@ describe('NativePlatform', () => {
     expect(TestBed.inject(NativePlatform).isNative()).toBe(false);
     expect(NATIVE_AUTH_CALLBACK).toBe('oneleft://callback');
   });
+
+  it('should leave the system bars alone in the browser', async () => {
+    await expect(TestBed.inject(NativePlatform).setSystemBarsDark(true)).resolves.toBeUndefined();
+  });
 });
