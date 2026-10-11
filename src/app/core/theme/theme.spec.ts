@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import { NativePlatform } from '../platform';
 import { DARK_CLASS, Theme, THEME_STORAGE_KEY } from './theme';
 
 describe('Theme', () => {
@@ -90,5 +91,14 @@ describe('Theme', () => {
     expect(theme.dark()).toBe(true);
     getItem.mockRestore();
     setItem.mockRestore();
+  });
+
+  it('should give the system bars of the Android app the colour of the theme', () => {
+    const bars = vi.spyOn(TestBed.inject(NativePlatform), 'setSystemBarsDark').mockResolvedValue();
+    const theme = create();
+    expect(bars).toHaveBeenLastCalledWith(false);
+
+    theme.use('dark');
+    expect(bars).toHaveBeenLastCalledWith(true);
   });
 });

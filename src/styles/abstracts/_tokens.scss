@@ -13,6 +13,12 @@ $breakpoints: (
   @return $steps * 0.25rem;
 }
 
+/// Safe area of a side of the screen: the Android app draws edge to edge, under the status bar and the navigation bar
+/// (from Android 15). Capacitor gives their size in --safe-area-inset-*; browsers and iOS in env(); 0 elsewhere.
+@function safe-area($side) {
+  @return var(--safe-area-inset-#{$side}, env(safe-area-inset-#{$side}, 0px));
+}
+
 /// Font size and line height of each step of the type scale
 $font-sizes: (
   xs: (

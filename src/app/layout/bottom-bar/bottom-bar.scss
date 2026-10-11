@@ -3,7 +3,9 @@
 :host {
   position: fixed;
   inset: auto 0 0;
-  padding: space(8) space(4) space(4);
+  // Above the navigation bar of the Android app
+  padding: space(8) calc(space(4) + safe-area(right)) calc(space(4) + safe-area(bottom))
+    calc(space(4) + safe-area(left));
   background-image: linear-gradient(
     to top in oklab,
     var(--ol-background) 0%,

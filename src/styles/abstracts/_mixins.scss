@@ -157,11 +157,13 @@ $leading-scale: $leading;
   }
 }
 
-/// The bar on top of every page: it stays while scrolling, translucent over the content
+/// The bar on top of every page: it stays while scrolling, translucent over the content. In the Android app it
+/// reaches under the status bar, with its content below it
 @mixin app-bar {
   position: sticky;
   top: 0;
   z-index: 10;
+  padding-top: safe-area(top);
   border-bottom: 1px solid var(--ol-border);
   background-color: color-mix(in oklab, var(--ol-background) 90%, transparent);
   backdrop-filter: blur(8px);

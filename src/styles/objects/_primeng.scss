@@ -53,3 +53,8 @@
 .button--block {
   width: 100%;
 }
+
+/// Notices on top: below the status bar of the Android app
+.p-toast-top-center {
+  top: calc(2rem + safe-area(top));
+}
