@@ -58,6 +58,10 @@
   color: var(--ol-text-muted);
 }
 
+.place-option__distance {
+  white-space: nowrap;
+}
+
 .place-actions {
   @include cluster(space(2));
 }
