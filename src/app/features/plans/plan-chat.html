@@ -1,0 +1,96 @@
+<app-page-layout
+  [title]="'chat.title' | transloco"
+  [withBottomBar]="!loading() && !failure() && open()"
+>
+  <div class="chat-page">
+    @if (title(); as planTitle) {
+      <p class="chat-plan">
+        <a [routerLink]="['/plans', id()]" class="chat-plan__link">{{ planTitle }}</a>
+      </p>
+    }
+
+    @if (loading()) {
+      <div class="chat-loading" role="status">
+        <span class="sr-only">{{ 'chat.loading' | transloco }}</span>
+        <app-card-skeleton [lines]="2" />
+        <app-card-skeleton [lines]="2" />
+      </div>
+    } @else if (failure(); as code) {
+      <div class="chat-failure alert alert--error" role="alert">
+        <p>{{ 'chat.errors.' + code | transloco }}</p>
+        <a [routerLink]="['/plans', id()]">{{ 'chat.backToPlan' | transloco }}</a>
+      </div>
+    } @else {
+      @if (!open()) {
+        <p-message severity="secondary" class="chat-read-only">{{
+          'chat.readOnly' | transloco
+        }}</p-message>
+      }
+      @if (hasOlder()) {
+        <p-button
+          class="load-older"
+          [label]="'chat.older' | transloco"
+          icon="pi pi-history"
+          [text]="true"
+          size="small"
+          [loading]="loadingOlder()"
+          (onClick)="loadOlder()"
+        />
+      }
+      @if (messages().length) {
+        <ol class="chat-log" role="log" [attr.aria-label]="'chat.title' | transloco">
+          @for (message of messages(); track message.id) {
+            <li class="chat-message" [class.chat-message--mine]="isMine(message)">
+              <p class="chat-message__meta">
+                <span class="chat-message__author">{{
+                  isMine(message) ? ('chat.you' | transloco) : message.authorName
+                }}</span>
+                <time class="chat-message__time" [attr.datetime]="message.sentAt">{{
+                  time(message)
+                }}</time>
+              </p>
+              <p class="chat-message__text">{{ message.text }}</p>
+            </li>
+          }
+        </ol>
+      } @else {
+        <p class="chat-empty hint">
+          {{ (open() ? 'chat.empty' : 'chat.emptyClosed') | transloco }}
+        </p>
+      }
+      <div #end class="chat-end"></div>
+    }
+  </div>
+
+  @if (!loading() && !failure() && open()) {
+    <app-bottom-bar>
+      <form class="chat-form" [formGroup]="form" (ngSubmit)="send()">
+        <label for="chatText" class="sr-only">{{ 'chat.label' | transloco }}</label>
+        <input
+          pInputText
+          id="chatText"
+          class="chat-form__input"
+          formControlName="text"
+          [maxlength]="maxLength"
+          autocomplete="off"
+          [placeholder]="'chat.placeholder' | transloco"
+        />
+        <p-button
+          type="submit"
+          class="chat-form__send"
+          icon="pi pi-send"
+          [rounded]="true"
+          [ariaLabel]="'chat.send' | transloco"
+          [disabled]="!text.value.trim()"
+        />
+      </form>
+      <p class="chat-status" role="status">
+        @if (notice(); as code) {
+          <span class="chat-notice">{{ 'chat.errors.' + code | transloco }}</span>
+        } @else if (connecting()) {
+          <span class="hint">{{ 'chat.connecting' | transloco }}</span>
+        }
+      </p>
+    </app-bottom-bar>
+  }
+</app-page-layout>

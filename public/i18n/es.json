@@ -18,7 +18,8 @@
     "login": "OneLeft · Entrar",
     "register": "OneLeft · Crear cuenta",
     "notifications": "OneLeft · Avisos",
-    "alerts": "OneLeft · Alertas guardadas"
+    "alerts": "OneLeft · Alertas guardadas",
+    "chat": "OneLeft · Chat del plan"
   },
   "auth": {
     "login": "Entrar",
@@ -159,7 +160,8 @@
     "clearArrival": "Quitar mi aviso",
     "arrivalOnTheWay": "De camino",
     "arrivalLate": "Llega {{minutes}} min tarde",
-    "arrivalYou": "Tú"
+    "arrivalYou": "Tú",
+    "chat": "Chat del plan"
   },
   "publish": {
     "title": "Publicar un plan",
@@ -459,5 +461,28 @@
     "stop": "Ya no estoy libre",
     "noZone": "Activa la ubicación o guarda una zona en tu perfil para decir que estás libre.",
     "failed": "No se ha podido activar. Inténtalo de nuevo."
+  },
+  "chat": {
+    "title": "Chat del plan",
+    "loading": "Cargando el chat",
+    "label": "Mensaje para el grupo",
+    "placeholder": "Escribe al grupo…",
+    "send": "Enviar",
+    "you": "Tú",
+    "older": "Ver mensajes anteriores",
+    "connecting": "Conectando…",
+    "readOnly": "El plan ha terminado: el chat es de solo lectura.",
+    "empty": "Aún no hay mensajes. ¡Saluda al grupo!",
+    "emptyClosed": "Nadie escribió en este chat.",
+    "backToPlan": "Volver al plan",
+    "errors": {
+      "chat.notMember": "Solo quienes están en el plan pueden ver su chat.",
+      "plan.notFound": "Este plan no existe.",
+      "chat.unavailable": "El chat no está disponible ahora mismo. Inténtalo en un rato.",
+      "chat.closed": "El plan ha terminado: ya no se puede escribir.",
+      "chat.text": "El mensaje no puede estar vacío ni pasar de 500 caracteres.",
+      "chat.tooFast": "Vas muy rápido: espera un momento antes de enviar otro mensaje.",
+      "chat.offline": "Sin conexión con el chat: tu mensaje no se ha enviado."
+    }
   }
 }

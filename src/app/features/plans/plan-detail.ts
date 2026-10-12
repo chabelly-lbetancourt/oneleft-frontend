@@ -1,5 +1,5 @@
 import { Component, computed, DestroyRef, effect, inject, input, signal } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { Avatar } from 'primeng/avatar';
@@ -50,6 +50,7 @@ const ENDED: Plan['status'][] = ['IN_PROGRESS', 'FINISHED', 'CANCELLED'];
     IconTile,
     Message,
     PageLayout,
+    RouterLink,
     SpotSlots,
     Tag,
     TranslocoPipe,
@@ -74,6 +75,16 @@ export class PlanDetail {
   protected readonly forecast = signal<Forecast | null>(null);
   /** Plan whose forecast has been asked for */
   private forecastOf: string | null = null;
+  /** The organizer and the participants have the chat of the plan, also once it is over to read it (HU-008) */
+  protected readonly inChat = computed(() => {
+    const plan = this.plan();
+    const me = this.session.userId();
+    return (
+      !!plan &&
+      !!me &&
+      (plan.organizerId === me || plan.participants.some(({ userId }) => userId === me))
+    );
+  });
   /** The organizer and the participants can say how they are getting there until the start (HU-040) */
   protected readonly canAnnounce = computed(() =>
     ['organizer', 'participant'].includes(this.relation() ?? ''),
