@@ -129,6 +129,12 @@ export class PublishPlan implements OnInit {
   protected readonly error = signal<StatusMessage | null>(null);
   protected readonly placeQueryMinLength = PLACE_QUERY_MIN_LENGTH;
   protected readonly placeSuggestions = signal<PlaceSuggestion[]>([]);
+  /**
+   * Value of the field: the name of a suggestion, or the text as it is typed. A field name such as «name» would also be
+   * read from the typed text, which is a string, and leave the field empty
+   */
+  protected readonly placeValue = (item: PlaceSuggestion | string): string =>
+    typeof item === 'string' ? item : item.name;
   /** Where the places are searched around: worked out once, on the first search */
   private searchArea: Promise<Coordinates | null> | null = null;
   /** Number of the last search: an older answer that arrives later is ignored */
