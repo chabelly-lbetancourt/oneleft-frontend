@@ -92,13 +92,11 @@ describe('PublishPlan', () => {
     // jsdom has no matchMedia, which the list of PrimeNG reads
     vi.stubGlobal(
       'matchMedia',
-      vi
-        .fn()
-        .mockReturnValue({
-          matches: false,
-          addEventListener: vi.fn(),
-          removeEventListener: vi.fn(),
-        }),
+      vi.fn().mockReturnValue({
+        matches: false,
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+      }),
     );
     location.current.mockResolvedValue({ latitude: 40.39, longitude: -3.63 });
     api.suggestPlaces.mockReturnValue(of([campus]));
@@ -134,6 +132,29 @@ describe('PublishPlan', () => {
     expect(element().querySelector('.meeting-coordinates')?.textContent).toContain(
       '40.3885, -3.627',
     );
+  });
+
+  it('should keep a place typed by hand, and the name of a chosen suggestion (HU-071)', async () => {
+    location.current.mockResolvedValue({ latitude: 40.39, longitude: -3.63 });
+    api.suggestPlaces.mockReturnValue(of([]));
+    const input = element().querySelector<HTMLInputElement>('#placeName')!;
+
+    input.value = 'Pistas de la Albufera';
+    input.dispatchEvent(new Event('input'));
+    await render();
+    expect(form().getRawValue()['placeName']).toBe('Pistas de la Albufera');
+
+    call('choosePlace', {
+      name: 'Polideportivo Campus Sur',
+      address: '',
+      latitude: 40.3885,
+      longitude: -3.627,
+      distanceMeters: 300,
+    });
+    await render();
+    expect(form().getRawValue()['placeName']).toBe('Polideportivo Campus Sur');
+    expect(input.value).toBe('Polideportivo Campus Sur');
+    expect(call('placeValue', { name: 'Polideportivo' })).toBe('Polideportivo');
   });
 
   it('should keep the answer of the last search when an older one arrives later', async () => {
