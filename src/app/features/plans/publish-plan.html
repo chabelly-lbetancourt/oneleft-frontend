@@ -72,7 +72,7 @@
         formControlName="placeName"
         [suggestions]="placeSuggestions()"
         optionLabel="name"
-        optionValue="name"
+        [optionValue]="placeValue"
         [minQueryLength]="placeQueryMinLength"
         [delay]="300"
         [fluid]="true"
