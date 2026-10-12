@@ -76,6 +76,8 @@
         [minQueryLength]="placeQueryMinLength"
         [delay]="300"
         [fluid]="true"
+        panelStyleClass="place-panel"
+        scrollHeight="22rem"
         [maxlength]="100"
         [placeholder]="'publish.wherePlaceholder' | transloco"
         [searchMessage]="'publish.placesFound' | transloco"
@@ -88,7 +90,8 @@
           <span class="place-option">
             <span class="place-option__name">{{ place.name }}</span>
             <span class="place-option__detail">
-              {{ place.address ? place.address + ' · ' : '' }}{{ distance(place.distanceMeters) }}
+              {{ place.address ? place.address + ' · ' : ''
+              }}<span class="place-option__distance">{{ distance(place.distanceMeters) }}</span>
             </span>
           </span>
         </ng-template>

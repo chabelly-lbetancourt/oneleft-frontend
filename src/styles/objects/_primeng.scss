@@ -58,3 +58,14 @@
 .p-toast-top-center {
   top: calc(2rem + safe-area(top));
 }
+
+/// Suggested places of the meeting point (HU-071, panelStyleClass="place-panel"): as wide as the field, whatever the
+/// length of the address. PrimeNG gives the list the width of the field as its minimum; with no width of its own it
+/// takes exactly that one, and each option wraps instead of going off the screen
+.place-panel.p-autocomplete-overlay {
+  width: 0;
+
+  .p-autocomplete-option {
+    white-space: normal;
+  }
+}
