@@ -58,6 +58,13 @@ export const routes: Routes = [
     title: 'titles.nearby',
   },
   {
+    // The chat of a plan (HU-008): only for its organizer and participants, which the service checks
+    path: 'plans/:id/chat',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/plans/plan-chat').then((m) => m.PlanChat),
+    title: 'titles.chat',
+  },
+  {
     // Public: a shared link opens it without a session (HU-024)
     path: 'plans/:id',
     loadComponent: () => import('./features/plans/plan-detail').then((m) => m.PlanDetail),
