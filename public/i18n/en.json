@@ -18,7 +18,8 @@
     "login": "OneLeft · Sign in",
     "register": "OneLeft · Sign up",
     "notifications": "OneLeft · Notices",
-    "alerts": "OneLeft · Saved alerts"
+    "alerts": "OneLeft · Saved alerts",
+    "chat": "OneLeft · Plan chat"
   },
   "auth": {
     "login": "Sign in",
@@ -159,7 +160,8 @@
     "clearArrival": "Take back my notice",
     "arrivalOnTheWay": "On the way",
     "arrivalLate": "{{minutes}} min late",
-    "arrivalYou": "You"
+    "arrivalYou": "You",
+    "chat": "Plan chat"
   },
   "publish": {
     "title": "Publish a plan",
@@ -459,5 +461,28 @@
     "stop": "I'm no longer free",
     "noZone": "Turn on the location or save a zone in your profile to say you are free.",
     "failed": "It could not be turned on. Please try again."
+  },
+  "chat": {
+    "title": "Plan chat",
+    "loading": "Loading the chat",
+    "label": "Message for the group",
+    "placeholder": "Write to the group…",
+    "send": "Send",
+    "you": "You",
+    "older": "Show earlier messages",
+    "connecting": "Connecting…",
+    "readOnly": "The plan is over: the chat is read-only.",
+    "empty": "No messages yet. Say hi to the group!",
+    "emptyClosed": "Nobody wrote in this chat.",
+    "backToPlan": "Back to the plan",
+    "errors": {
+      "chat.notMember": "Only the people in the plan can see its chat.",
+      "plan.notFound": "This plan does not exist.",
+      "chat.unavailable": "The chat is not available right now. Try again in a while.",
+      "chat.closed": "The plan is over: nobody can write any more.",
+      "chat.text": "A message cannot be empty or longer than 500 characters.",
+      "chat.tooFast": "You are going too fast: wait a moment before sending another message.",
+      "chat.offline": "No connection with the chat: your message was not sent."
+    }
   }
 }

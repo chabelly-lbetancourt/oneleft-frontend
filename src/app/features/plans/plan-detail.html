@@ -302,6 +302,17 @@
             (onClick)="addToCalendar()"
           />
         }
+        @if (inChat()) {
+          <p-button
+            class="chat-button"
+            [label]="'plan.chat' | transloco"
+            icon="pi pi-comments"
+            [outlined]="true"
+            severity="secondary"
+            styleClass="button--block"
+            [routerLink]="['/plans', current.id, 'chat']"
+          />
+        }
         @if (canAnnounce()) {
           <div class="arrivals panel-muted">
             <p class="arrivals__title">{{ 'plan.arrivalsTitle' | transloco }}</p>

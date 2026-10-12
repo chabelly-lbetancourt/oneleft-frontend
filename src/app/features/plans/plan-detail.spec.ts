@@ -434,6 +434,24 @@ describe('PlanDetail', () => {
     });
   });
 
+  it('should open the chat of the plan for its organizer and participants only (HU-008)', async () => {
+    await create(PLAN, undefined, 'org');
+    const button = element().querySelector('.chat-button');
+    expect(button?.textContent).toContain('Chat del plan');
+
+    const past = new Date(Date.now() - 60_000).toISOString();
+    await create({
+      ...PLAN,
+      startsAt: past,
+      status: 'FINISHED',
+      participants: [{ ...LUCIA, userId: 'me' }],
+    });
+    expect(element().querySelector('.chat-button')).not.toBeNull();
+
+    await create(PLAN);
+    expect(element().querySelector('.chat-button')).toBeNull();
+  });
+
   it('should share the plan with the Android share sheet inside the app', async () => {
     await create(PLAN);
     const platform = TestBed.inject(NativePlatform);
