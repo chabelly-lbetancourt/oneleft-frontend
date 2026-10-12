@@ -181,6 +181,8 @@
     "horizon": "OneLeft es para planes de las próximas {{hours}} horas.",
     "where": "¿Dónde quedáis?",
     "wherePlaceholder": "Pistas del polideportivo de Vallecas",
+    "placesFound": "{0} sitios cerca. Usa las flechas para elegir uno",
+    "noPlaces": "Ningún sitio cerca con ese nombre: escríbelo y usa «Estoy aquí»",
     "here": "Estoy aquí",
     "whereError": "Indica el punto de encuentro con «Estoy aquí».",
     "spots": "¿Cuántas plazas faltan?",
