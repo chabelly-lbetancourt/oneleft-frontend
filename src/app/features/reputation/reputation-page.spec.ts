@@ -1,9 +1,16 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
-import { Observable, of, throwError } from 'rxjs';
+import { Observable, of, Subject, throwError } from 'rxjs';
 import { translocoTesting } from '../../../testing/transloco-testing';
 import { ReputationApi } from '../../core/api/reputation-api';
-import { LedgerEntry, LedgerPage, Reputation } from '../../shared/model/reputation';
+import { UserEvents } from '../../core/realtime/user-events';
+import {
+  BadgeEarnedNotice,
+  BadgeProgress,
+  LedgerEntry,
+  LedgerPage,
+  Reputation,
+} from '../../shared/model/reputation';
 import { ReputationPage } from './reputation-page';
 
 const entry = (
@@ -20,8 +27,21 @@ const entry = (
 
 describe('ReputationPage', () => {
   let fixture: ComponentFixture<ReputationPage>;
+  let badgesEarned: Subject<BadgeEarnedNotice>;
   const api = {
     mine: vi.fn((): Observable<Reputation> => of({ userId: 'me', score: 15 })),
+    myBadges: vi.fn((): Observable<BadgeProgress[]> =>
+      of([
+        {
+          badge: 'FIRST_PLAN_ORGANIZED',
+          progress: 1,
+          goal: 1,
+          earned: true,
+          earnedAt: '2026-10-13T16:30:00Z',
+        },
+        { badge: 'TEN_PLANS_COMPLETED', progress: 7, goal: 10, earned: false, earnedAt: null },
+      ]),
+    ),
     ledger: vi.fn((page = 0): Observable<LedgerPage> =>
       of({
         items: [entry('NO_SHOW', -15, 'Running'), entry('ORGANIZED_HELD', 20, 'Pádel')],
@@ -44,9 +64,14 @@ describe('ReputationPage', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    badgesEarned = new Subject();
     TestBed.configureTestingModule({
       imports: [ReputationPage, translocoTesting()],
-      providers: [provideRouter([]), { provide: ReputationApi, useValue: api }],
+      providers: [
+        provideRouter([]),
+        { provide: ReputationApi, useValue: api },
+        { provide: UserEvents, useValue: { badge$: badgesEarned.asObservable() } },
+      ],
     });
   });
 
@@ -70,6 +95,33 @@ describe('ReputationPage', () => {
     expect(entries[0].querySelector('.points--negative')?.textContent).toBe('−15');
     expect(entries[1].querySelector('a')?.getAttribute('href')).toBe('/plans/plan-ORGANIZED_HELD');
     expect(element().querySelector('.more-entries')).toBeNull();
+  });
+
+  it('should show my badges, the earned ones with their date and how far the others are', async () => {
+    await create();
+
+    const badges = element().querySelectorAll('.badge');
+    expect(badges.length).toBe(2);
+    expect(badges[0].classList).toContain('badge--earned');
+    expect(badges[0].textContent).toContain('Primer plan organizado');
+    expect(badges[0].querySelector('.badge__earned')?.textContent).toContain(
+      'Conseguida el 13 de octubre',
+    );
+    expect(badges[1].querySelector('progress')?.getAttribute('aria-label')).toBe(
+      '10 planes completados',
+    );
+    expect(badges[1].textContent).toContain('7 de 10');
+  });
+
+  it('should show at once a badge earned while the page is open', async () => {
+    await create();
+    expect(api.myBadges).toHaveBeenCalledTimes(1);
+
+    badgesEarned.next({ badge: 'TEN_PLANS_COMPLETED', earnedAt: '2026-10-13T17:00:00Z' });
+    await render();
+
+    expect(api.myBadges).toHaveBeenCalledTimes(2);
+    expect(api.mine).toHaveBeenCalledTimes(2);
   });
 
   it('should explain an entry without a plan and read more pages', async () => {

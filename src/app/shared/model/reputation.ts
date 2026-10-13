@@ -33,3 +33,35 @@ export interface LedgerPage {
   size: number;
   total: number;
 }
+
+/** The badges for milestones (HU-044). */
+export type BadgeCode =
+  | 'FIRST_PLAN_ORGANIZED'
+  | 'TEN_PLANS_COMPLETED'
+  | 'TEN_ACTIVITIES'
+  | 'ALWAYS_PUNCTUAL'
+  | 'NEIGHBOURHOOD_SOUL';
+
+/** A badge: how far, and since when it was earned. */
+export interface BadgeProgress {
+  badge: BadgeCode;
+  progress: number;
+  goal: number;
+  earned: boolean;
+  earnedAt: string | null;
+}
+
+/** I earned a badge (personal real-time stream). */
+export interface BadgeEarnedNotice {
+  badge: BadgeCode;
+  earnedAt: string;
+}
+
+/** The icon of each badge. */
+export const BADGE_ICONS: Record<BadgeCode, string> = {
+  FIRST_PLAN_ORGANIZED: 'pi-flag',
+  TEN_PLANS_COMPLETED: 'pi-check-circle',
+  TEN_ACTIVITIES: 'pi-th-large',
+  ALWAYS_PUNCTUAL: 'pi-clock',
+  NEIGHBOURHOOD_SOUL: 'pi-heart',
+};
