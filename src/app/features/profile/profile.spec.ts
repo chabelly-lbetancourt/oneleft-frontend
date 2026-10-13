@@ -9,6 +9,7 @@ import { Catalog, MyProfile } from '../../shared/model/profile';
 import { TranslocoService } from '@jsverse/transloco';
 import { Profile } from './profile';
 import { translocoTesting } from '../../../testing/transloco-testing';
+import { ReputationApi } from '../../core/api/reputation-api';
 
 const CATALOG: Catalog = {
   activities: ['PADEL', 'CINEMA', 'RUNNING'],
@@ -56,6 +57,7 @@ describe('Profile', () => {
         provideRouter([]),
         { provide: Session, useValue: session },
         { provide: UsersApi, useValue: api },
+        { provide: ReputationApi, useValue: { mine: () => of({ userId: 'a624d063', score: 20 }) } },
         { provide: ApproximateLocation, useValue: location },
       ],
     });
@@ -72,6 +74,13 @@ describe('Profile', () => {
     expect((element().querySelector('#zoneName') as HTMLInputElement).value).toBe('Vallecas');
     expect(element().querySelector('.zone-coordinates')?.textContent).toContain('40.39, -3.63');
     expect(element().querySelectorAll('.hobby-row').length).toBe(1);
+  });
+
+  it('should lead to my network and to my reputation with my score (HU-047, HU-009)', () => {
+    expect(element().querySelector('.profile-network')?.getAttribute('href')).toBe('/network');
+    const reputation = element().querySelector('.profile-reputation');
+    expect(reputation?.getAttribute('href')).toBe('/reputation');
+    expect(reputation?.textContent?.replace(/\s+/g, ' ')).toContain('Mi reputación Reputación 20');
   });
 
   it('should show an error when the profile cannot be loaded', async () => {

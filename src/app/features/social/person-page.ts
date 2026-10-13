@@ -5,10 +5,12 @@ import { Avatar } from 'primeng/avatar';
 import { Button } from 'primeng/button';
 import { Message } from 'primeng/message';
 import { Tag } from 'primeng/tag';
-import { Observable } from 'rxjs';
+import { catchError, Observable, of } from 'rxjs';
+import { ReputationApi } from '../../core/api/reputation-api';
 import { SocialApi } from '../../core/api/social-api';
 import { ApiErrorMessage, apiErrorMessage } from '../../core/i18n/api-error';
 import { CardSkeleton } from '../../components/card-skeleton/card-skeleton';
+import { ReputationBadge } from '../../components/reputation-badge/reputation-badge';
 import { PageLayout } from '../../layout/page-layout/page-layout';
 import { SocialPerson } from '../../shared/model/social';
 import { initials } from '../../shared/text/initials';
@@ -19,25 +21,45 @@ import { initials } from '../../shared/text/initials';
  */
 @Component({
   selector: 'app-person-page',
-  imports: [Avatar, Button, CardSkeleton, Message, PageLayout, RouterLink, Tag, TranslocoPipe],
+  imports: [
+    Avatar,
+    Button,
+    CardSkeleton,
+    Message,
+    PageLayout,
+    ReputationBadge,
+    RouterLink,
+    Tag,
+    TranslocoPipe,
+  ],
   templateUrl: './person-page.html',
   styleUrl: './social.scss',
 })
 export class PersonPage {
   private readonly api = inject(SocialApi);
+  private readonly reputationApi = inject(ReputationApi);
   private readonly transloco = inject(TranslocoService);
 
   /** Route parameter (withComponentInputBinding) */
   readonly id = input.required<string>();
 
   protected readonly person = signal<SocialPerson | null>(null);
+  /** Their reputation (HU-009); null when it cannot be known */
+  protected readonly reputation = signal<number | null>(null);
   protected readonly notFound = signal(false);
   protected readonly busy = signal(false);
   protected readonly error = signal<ApiErrorMessage | null>(null);
   protected readonly initials = computed(() => initials(this.person()?.name ?? ''));
 
   constructor() {
-    effect(() => this.load(this.id()));
+    effect(() => {
+      const id = this.id();
+      this.load(id);
+      this.reputationApi
+        .of(id)
+        .pipe(catchError(() => of(null)))
+        .subscribe((reputation) => this.reputation.set(reputation?.score ?? null));
+    });
   }
 
   protected follow(): void {

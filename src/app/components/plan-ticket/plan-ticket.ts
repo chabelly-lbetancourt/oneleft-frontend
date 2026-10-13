@@ -6,6 +6,7 @@ import { activityKey, activityOf } from '../../shared/model/activities';
 import { Plan } from '../../shared/model/published-plan';
 import { clockTime, spotsKey, startsIn } from '../../shared/time/plan-time';
 import { IconTile } from '../icon-tile/icon-tile';
+import { ReputationBadge } from '../reputation-badge/reputation-badge';
 import { SpotSlots } from '../spot-slots/spot-slots';
 
 /**
@@ -13,7 +14,7 @@ import { SpotSlots } from '../spot-slots/spot-slots';
  */
 @Component({
   selector: 'app-plan-ticket',
-  imports: [IconTile, SpotSlots, TranslocoPipe],
+  imports: [IconTile, ReputationBadge, SpotSlots, TranslocoPipe],
   templateUrl: './plan-ticket.html',
   styleUrl: './plan-ticket.scss',
 })
@@ -22,6 +23,8 @@ export class PlanTicket {
 
   readonly plan = input.required<Plan>();
   readonly distanceMeters = input<number | null>(null);
+  /** The reputation of the organizer (HU-009): with it, the ticket says who organizes */
+  readonly organizerReputation = input<number | null>(null);
 
   protected readonly activity = computed(() => activityOf(this.plan().activity));
   protected readonly activityKey = computed(() => activityKey(this.plan().activity));

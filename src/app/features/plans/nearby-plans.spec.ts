@@ -1,5 +1,9 @@
 import { provideHttpClient } from '@angular/common/http';
-import { HttpTestingController, provideHttpClientTesting, TestRequest } from '@angular/common/http/testing';
+import {
+  HttpTestingController,
+  provideHttpClientTesting,
+  TestRequest,
+} from '@angular/common/http/testing';
 import { Component, input } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
@@ -19,7 +23,12 @@ class FakeMap {
   readonly plans = input<NearbyPlan[]>([]);
 }
 
-const nearby = (id: string, activity: string, distanceMeters: number, freeSpots = 1): NearbyPlan => ({
+const nearby = (
+  id: string,
+  activity: string,
+  distanceMeters: number,
+  freeSpots = 1,
+): NearbyPlan => ({
   distanceMeters,
   plan: {
     id,
@@ -49,14 +58,16 @@ describe('NearbyPlans', () => {
   const location = { current: vi.fn() };
   const stream = { watch: vi.fn() };
   const element = () => fixture.nativeElement as HTMLElement;
-  const set = (name: string, value: unknown) => (component[name] as { set: (v: unknown) => void }).set(value);
+  const set = (name: string, value: unknown) =>
+    (component[name] as { set: (v: unknown) => void }).set(value);
   // whenStable() would wait for the pending HTTP requests, which the tests answer themselves
   const render = async () => {
     fixture.detectChanges();
     await new Promise((resolve) => setTimeout(resolve));
     fixture.detectChanges();
   };
-  const nearbyRequest = (): TestRequest => http.expectOne((request) => request.url.endsWith('/api/v1/plans/nearby'));
+  const nearbyRequest = (): TestRequest =>
+    http.expectOne((request) => request.url.endsWith('/api/v1/plans/nearby'));
 
   const create = async () => {
     fixture = TestBed.createComponent(NearbyPlans);
@@ -79,11 +90,20 @@ describe('NearbyPlans', () => {
         { provide: NearbyStream, useValue: stream },
       ],
     });
-    TestBed.overrideComponent(NearbyPlans, { remove: { imports: [NearbyMap] }, add: { imports: [FakeMap] } });
+    TestBed.overrideComponent(NearbyPlans, {
+      remove: { imports: [NearbyMap] },
+      add: { imports: [FakeMap] },
+    });
     http = TestBed.inject(HttpTestingController);
   });
 
-  afterEach(() => http.verify());
+  // The reputation of the organizers is asked after each list (HU-009): the tests that do not look at it answer it here
+  afterEach(() => {
+    http
+      .match((request) => request.url.endsWith('/api/v1/reputation/scores'))
+      .forEach((request) => request.flush([]));
+    http.verify();
+  });
 
   it('should search around the user with the default filters and list the plans', async () => {
     await create();
@@ -103,7 +123,36 @@ describe('NearbyPlans', () => {
     expect(cards[0].textContent).toContain('Falta 1');
     expect(cards[1].querySelector('.nearby-distance')?.textContent).toBe('1,2 km');
     expect(cards[1].textContent).toContain('Faltan 2');
-    expect(element().querySelector('.results-count')?.textContent).toContain('2 planes a menos de 5 km');
+    expect(element().querySelector('.results-count')?.textContent).toContain(
+      '2 planes a menos de 5 km',
+    );
+  });
+
+  it('should say who organizes each plan with their reputation, asking once for the whole list', async () => {
+    await create();
+    nearbyRequest().flush([nearby('a', 'PADEL', 34), nearby('b', 'PADEL', 90)]);
+    await render();
+
+    const scores = http.expectOne((request) => request.url.endsWith('/api/v1/reputation/scores'));
+    expect(scores.request.params.get('ids')).toBe('org');
+    scores.flush([{ userId: 'org', score: 35 }]);
+    await render();
+
+    const organizer = element().querySelector('.nearby-card .plan-ticket__organizer');
+    expect(organizer?.textContent?.replace(/\s+/g, ' ')).toContain('Organiza Ana · Reputación 35');
+  });
+
+  it('should list the plans as before when the reputation cannot be known', async () => {
+    await create();
+    nearbyRequest().flush([nearby('a', 'PADEL', 34)]);
+    await render();
+    http
+      .expectOne((request) => request.url.endsWith('/api/v1/reputation/scores'))
+      .flush('down', { status: 503, statusText: 'Unavailable' });
+    await render();
+
+    expect(element().querySelectorAll('.nearby-card').length).toBe(1);
+    expect(element().querySelector('.plan-ticket__organizer')).toBeNull();
   });
 
   it('should search again and reopen the stream when a filter changes', async () => {
@@ -135,7 +184,13 @@ describe('NearbyPlans', () => {
     nearbyRequest().flush([]);
     await render();
 
-    events.next({ planId: 'p9', activity: 'PADEL', startsAt: '', freeSpots: 2, distanceMeters: 603 });
+    events.next({
+      planId: 'p9',
+      activity: 'PADEL',
+      startsAt: '',
+      freeSpots: 2,
+      distanceMeters: 603,
+    });
     await render();
 
     const notice = element().querySelector('.new-plan-message');
@@ -149,7 +204,9 @@ describe('NearbyPlans', () => {
   it('should explain a denied location and try again', async () => {
     location.current.mockRejectedValueOnce(new LocationError('denied'));
     await create();
-    expect(element().querySelector('.location-error')?.textContent).toContain('No se ha podido obtener tu ubicación');
+    expect(element().querySelector('.location-error')?.textContent).toContain(
+      'No se ha podido obtener tu ubicación',
+    );
     expect(stream.watch).not.toHaveBeenCalled();
 
     (element().querySelector('.location-error p-button button') as HTMLButtonElement).click();
@@ -161,7 +218,9 @@ describe('NearbyPlans', () => {
     location.current.mockRejectedValueOnce(new Error('unexpected'));
     await (component['locate'] as () => Promise<void>)();
     await render();
-    expect(element().querySelector('.location-error')?.textContent).toContain('No se ha podido obtener tu ubicación');
+    expect(element().querySelector('.location-error')?.textContent).toContain(
+      'No se ha podido obtener tu ubicación',
+    );
   });
 
   it('should show an error when the plans cannot be loaded', async () => {
@@ -189,11 +248,14 @@ describe('NearbyPlans', () => {
     nearbyRequest().flush([]);
     TestBed.inject(TranslocoService).setActiveLang('en');
     await render();
-    const labels = (name: string) => (component[name] as () => { label: string }[])().map((option) => option.label);
+    const labels = (name: string) =>
+      (component[name] as () => { label: string }[])().map((option) => option.label);
     expect(labels('windowOptions')).toEqual(['1 h', '3 h', '12 h']);
     expect(labels('viewOptions')).toEqual(['List', 'Map']);
     expect(labels('radiusOptions')).toEqual(['1 km', '3 km', '5 km', '10 km']);
-    expect((component['activityOptions'] as () => { name: string }[])()[7].name).toBe('Board games');
+    expect((component['activityOptions'] as () => { name: string }[])()[7].name).toBe(
+      'Board games',
+    );
     expect(element().querySelector('h1')?.textContent).toContain('Nearby plans');
   });
 });

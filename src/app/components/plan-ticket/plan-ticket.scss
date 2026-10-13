@@ -63,3 +63,9 @@
 .plan-ticket__slots {
   flex-shrink: 0;
 }
+
+// Who organizes, with their reputation (HU-009)
+.plan-ticket__organizer {
+  @include text(sm);
+  color: var(--ol-text-muted);
+}
