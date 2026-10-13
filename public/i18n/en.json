@@ -19,7 +19,9 @@
     "register": "OneLeft · Sign up",
     "notifications": "OneLeft · Notices",
     "alerts": "OneLeft · Saved alerts",
-    "chat": "OneLeft · Plan chat"
+    "chat": "OneLeft · Plan chat",
+    "network": "My network",
+    "person": "Person"
   },
   "auth": {
     "login": "Sign in",
@@ -172,6 +174,46 @@
     "you": "You",
     "nobody": "Nobody has arrived yet."
   },
+  "social": {
+    "networkTitle": "My network",
+    "personTitle": "Person",
+    "private": "Private profile",
+    "privateHint": "Whoever wants to follow you will wait until you accept their request.",
+    "publicHint": "Anyone can follow you right away.",
+    "openNote": "Making your profile public accepts the requests that were waiting.",
+    "followers": "Followers",
+    "following": "Following",
+    "requests": "Requests",
+    "received": "For you",
+    "sent": "Sent",
+    "follow": "Follow",
+    "requestFollow": "Ask to follow",
+    "privateFollowHint": "Their profile is private: {{name}} will have to accept your request.",
+    "requested": "Request sent. {{name}} has not answered yet.",
+    "cancelRequest": "Cancel request",
+    "followingPerson": "You follow {{name}}.",
+    "unfollow": "Unfollow",
+    "followsYou": "Follows you",
+    "seeNetwork": "See my network",
+    "accept": "Accept",
+    "decline": "Decline",
+    "remove": "Remove",
+    "cancel": "Cancel",
+    "acceptPerson": "Accept {{name}}",
+    "declinePerson": "Decline {{name}}",
+    "removePerson": "Remove {{name}} from your followers",
+    "unfollowPerson": "Unfollow {{name}}",
+    "cancelPerson": "Cancel your request to {{name}}",
+    "noFollowers": "Nobody follows you yet.",
+    "noFollowing": "You do not follow anyone yet. From the detail of a plan you can open the page of its organizer or participants and follow them.",
+    "noRequests": "You have no pending requests.",
+    "noSent": "You have no sent requests.",
+    "more": "See more",
+    "loading": "Loading your network…",
+    "loadError": "Your network could not be loaded.",
+    "personLoading": "Loading…",
+    "notFound": "This person does not exist or has no account."
+  },
   "publish": {
     "title": "Publish a plan",
     "what": "What's the plan?",
@@ -234,7 +276,8 @@
     "addHobby": "Add hobby",
     "save": "Save profile",
     "saved": "Profile saved",
-    "notifications": "Notices of plans nearby"
+    "notifications": "Notices of plans nearby",
+    "network": "My network"
   },
   "errors": {
     "generic": "Something went wrong. Please try again.",
@@ -324,6 +367,17 @@
       "tooFar": "You need to be within 150 m of the meeting point.",
       "notYet": "You can say you have arrived from 15 min before the start.",
       "closed": "Too late: it has been more than 30 min since the start."
+    },
+    "socialFailed": "It could not be done. Please try again.",
+    "person": {
+      "notFound": "This person does not exist or has no account."
+    },
+    "follow": {
+      "self": "You cannot follow your own profile.",
+      "requestNotFound": "That request no longer exists."
+    },
+    "social": {
+      "unavailable": "Nobody can be followed right now. Please try again in a while."
     }
   },
   "nearby": {

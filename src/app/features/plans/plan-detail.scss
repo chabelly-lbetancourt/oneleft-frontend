@@ -169,6 +169,23 @@
   background-color: var(--ol-surface);
 }
 
+.participant__link {
+  @include row(space(2));
+  color: inherit;
+  text-decoration: none;
+
+  &:hover .participant__name,
+  &:focus-visible .participant__name {
+    text-decoration: underline;
+  }
+}
+
+.organizer-link {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
 .participant__name {
   @include text(sm);
 }

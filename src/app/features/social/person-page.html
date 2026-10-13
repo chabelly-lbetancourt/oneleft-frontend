@@ -1,0 +1,106 @@
+<app-page-layout [title]="'social.personTitle' | transloco">
+  @if (person(); as current) {
+    <section class="person-card" aria-labelledby="person-name">
+      <div class="person-card__head">
+        <p-avatar [label]="initials()" shape="circle" size="xlarge" class="person-card__avatar" />
+        <div class="person-card__who">
+          <h1 class="person-card__name" id="person-name">{{ current.name }}</h1>
+          <div class="person-card__tags">
+            @if (current.visibility === 'PRIVATE') {
+              <p-tag
+                class="private-tag"
+                icon="pi pi-lock"
+                severity="secondary"
+                [rounded]="true"
+                [value]="'social.private' | transloco"
+              />
+            }
+            @if (current.followsMe) {
+              <p-tag
+                class="follows-you"
+                severity="info"
+                [rounded]="true"
+                [value]="'social.followsYou' | transloco"
+              />
+            }
+          </div>
+        </div>
+      </div>
+
+      <dl class="social-counts">
+        <div class="social-counts__item">
+          <dt>{{ 'social.followers' | transloco }}</dt>
+          <dd class="followers-count">{{ current.followers }}</dd>
+        </div>
+        <div class="social-counts__item">
+          <dt>{{ 'social.following' | transloco }}</dt>
+          <dd class="following-count">{{ current.following }}</dd>
+        </div>
+      </dl>
+
+      @switch (current.relation) {
+        @case ('SELF') {
+          <a routerLink="/network" class="see-network link-action">
+            <i class="pi pi-users" aria-hidden="true"></i>
+            {{ 'social.seeNetwork' | transloco }}
+          </a>
+        }
+        @case ('NONE') {
+          <p-button
+            class="follow-button"
+            [label]="
+              (current.visibility === 'PRIVATE' ? 'social.requestFollow' : 'social.follow')
+                | transloco
+            "
+            icon="pi pi-user-plus"
+            styleClass="button--block"
+            [loading]="busy()"
+            (onClick)="follow()"
+          />
+          @if (current.visibility === 'PRIVATE') {
+            <p class="hint">{{ 'social.privateFollowHint' | transloco: { name: current.name } }}</p>
+          }
+        }
+        @case ('REQUESTED') {
+          <p-message severity="info" icon="pi pi-clock" class="requested-message">{{
+            'social.requested' | transloco: { name: current.name }
+          }}</p-message>
+          <p-button
+            class="cancel-request"
+            [label]="'social.cancelRequest' | transloco"
+            [text]="true"
+            severity="secondary"
+            [loading]="busy()"
+            (onClick)="unfollow()"
+          />
+        }
+        @case ('FOLLOWING') {
+          <p-message severity="success" icon="pi pi-check-circle" class="following-message">{{
+            'social.followingPerson' | transloco: { name: current.name }
+          }}</p-message>
+          <p-button
+            class="unfollow-button"
+            [label]="'social.unfollow' | transloco"
+            [outlined]="true"
+            severity="secondary"
+            styleClass="button--block"
+            [loading]="busy()"
+            (onClick)="unfollow()"
+          />
+        }
+      }
+      @if (error(); as message) {
+        <p-message severity="error" class="social-error">{{
+          message.key | transloco: message.params
+        }}</p-message>
+      }
+    </section>
+  } @else if (notFound()) {
+    <div class="person-not-found alert alert--error">{{ 'social.notFound' | transloco }}</div>
+  } @else {
+    <div class="person-loading" role="status">
+      <span class="sr-only">{{ 'social.personLoading' | transloco }}</span>
+      <app-card-skeleton [lines]="3" />
+    </div>
+  }
+</app-page-layout>

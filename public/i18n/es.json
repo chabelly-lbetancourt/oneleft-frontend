@@ -19,7 +19,9 @@
     "register": "OneLeft · Crear cuenta",
     "notifications": "OneLeft · Avisos",
     "alerts": "OneLeft · Alertas guardadas",
-    "chat": "OneLeft · Chat del plan"
+    "chat": "OneLeft · Chat del plan",
+    "network": "Mi red",
+    "person": "Persona"
   },
   "auth": {
     "login": "Entrar",
@@ -172,6 +174,46 @@
     "you": "Tú",
     "nobody": "Todavía no ha llegado nadie."
   },
+  "social": {
+    "networkTitle": "Mi red",
+    "personTitle": "Persona",
+    "private": "Perfil privado",
+    "privateHint": "Quien quiera seguirte tendrá que esperar a que aceptes su solicitud.",
+    "publicHint": "Cualquiera puede seguirte al momento.",
+    "openNote": "Al hacer público tu perfil se aceptan las solicitudes que esperaban.",
+    "followers": "Seguidores",
+    "following": "Siguiendo",
+    "requests": "Solicitudes",
+    "received": "Para ti",
+    "sent": "Enviadas",
+    "follow": "Seguir",
+    "requestFollow": "Pedir seguir",
+    "privateFollowHint": "Su perfil es privado: {{name}} tendrá que aceptar tu solicitud.",
+    "requested": "Solicitud enviada. {{name}} aún no ha respondido.",
+    "cancelRequest": "Cancelar solicitud",
+    "followingPerson": "Sigues a {{name}}.",
+    "unfollow": "Dejar de seguir",
+    "followsYou": "Te sigue",
+    "seeNetwork": "Ver mi red",
+    "accept": "Aceptar",
+    "decline": "Rechazar",
+    "remove": "Quitar",
+    "cancel": "Cancelar",
+    "acceptPerson": "Aceptar a {{name}}",
+    "declinePerson": "Rechazar a {{name}}",
+    "removePerson": "Quitar a {{name}} de tus seguidores",
+    "unfollowPerson": "Dejar de seguir a {{name}}",
+    "cancelPerson": "Cancelar la solicitud a {{name}}",
+    "noFollowers": "Todavía no te sigue nadie.",
+    "noFollowing": "Aún no sigues a nadie. Desde el detalle de un plan puedes abrir la página de quien organiza o participa y seguirle.",
+    "noRequests": "No tienes solicitudes pendientes.",
+    "noSent": "No tienes solicitudes enviadas.",
+    "more": "Ver más",
+    "loading": "Cargando tu red…",
+    "loadError": "No se ha podido cargar tu red.",
+    "personLoading": "Cargando…",
+    "notFound": "Esta persona no existe o no tiene cuenta."
+  },
   "publish": {
     "title": "Publicar un plan",
     "what": "¿Qué plan es?",
@@ -234,7 +276,8 @@
     "addHobby": "Añadir afición",
     "save": "Guardar perfil",
     "saved": "Perfil guardado",
-    "notifications": "Avisos de planes cerca"
+    "notifications": "Avisos de planes cerca",
+    "network": "Mi red"
   },
   "errors": {
     "generic": "Algo ha fallado. Inténtalo de nuevo.",
@@ -324,6 +367,17 @@
       "tooFar": "Tienes que estar a menos de 150 m del punto de encuentro.",
       "notYet": "Podrás decir que has llegado desde 15 min antes del inicio.",
       "closed": "Ya no se puede: pasaron más de 30 min desde el inicio."
+    },
+    "socialFailed": "No se ha podido completar. Inténtalo de nuevo.",
+    "person": {
+      "notFound": "Esta persona no existe o no tiene cuenta."
+    },
+    "follow": {
+      "self": "No puedes seguir tu propio perfil.",
+      "requestNotFound": "Esa solicitud ya no existe."
+    },
+    "social": {
+      "unavailable": "Ahora mismo no se puede seguir a nadie. Inténtalo en un rato."
     }
   },
   "nearby": {
