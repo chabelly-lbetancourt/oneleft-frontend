@@ -130,6 +130,10 @@ describe('PlanCheckIn', () => {
       /Has llegado a las \d{2}:\d{2}/,
     );
     expect(element().querySelector('.check-in__button')).toBeNull();
+    // Like the other confirmations of the plan, not in the color of the warnings
+    expect(element().querySelector('p-message.check-in__done')?.getAttribute('severity')).toBe(
+      'success',
+    );
     const people = [...element().querySelectorAll('.check-in__name')].map(
       (name) => name.textContent,
     );
