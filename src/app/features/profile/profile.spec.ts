@@ -41,14 +41,11 @@ describe('Profile', () => {
     fixture.detectChanges();
   };
   // Access to the component's protected members from the tests
-  const call = <T>(name: string, ...args: unknown[]) =>
-    (component[name] as (...a: unknown[]) => T)(...args);
+  const call = <T>(name: string, ...args: unknown[]) => (component[name] as (...a: unknown[]) => T)(...args);
 
   beforeEach(async () => {
     vi.clearAllMocks();
-    api.me.mockReturnValue(
-      of({ id: 'a624d063', name: 'Ana Test', email: 'ana@oneleft.dev', roles: ['ADMIN', 'USER'] }),
-    );
+    api.me.mockReturnValue(of({ id: 'a624d063', name: 'Ana Test', email: 'ana@oneleft.dev', roles: ['ADMIN', 'USER'] }));
     api.myProfile.mockReturnValue(of(PROFILE));
     api.catalog.mockReturnValue(of(CATALOG));
     session = new FakeSession();
@@ -122,9 +119,7 @@ describe('Profile', () => {
     location.current.mockRejectedValue(new LocationError('denied'));
     await call<Promise<void>>('useMyLocation');
     await render();
-    expect(element().querySelector('.status-message')?.textContent).toContain(
-      'No se ha podido obtener tu ubicación',
-    );
+    expect(element().querySelector('.status-message')?.textContent).toContain('No se ha podido obtener tu ubicación');
   });
 
   it('should save the profile and confirm it', async () => {
@@ -151,27 +146,19 @@ describe('Profile', () => {
 
   it('should show the reason given by the server when saving fails', async () => {
     api.updateMyProfile.mockReturnValue(
-      throwError(() => ({
-        error: { code: 'profile.duplicateActivity', detail: 'Each activity can only appear once' },
-      })),
+      throwError(() => ({ error: { code: 'profile.duplicateActivity', detail: 'Each activity can only appear once' } })),
     );
     call('save');
     await render();
-    expect(element().querySelector('.status-message')?.textContent).toContain(
-      'Cada actividad solo puede aparecer una vez',
-    );
+    expect(element().querySelector('.status-message')?.textContent).toContain('Cada actividad solo puede aparecer una vez');
     api.updateMyProfile.mockReturnValue(throwError(() => ({})));
     call('save');
     await render();
-    expect(element().querySelector('.status-message')?.textContent).toContain(
-      'No se ha podido guardar el perfil',
-    );
+    expect(element().querySelector('.status-message')?.textContent).toContain('No se ha podido guardar el perfil');
     api.updateMyProfile.mockReturnValue(throwError(() => ({ error: { code: 'unknown.code' } })));
     call('save');
     await render();
-    expect(element().querySelector('.status-message')?.textContent).toContain(
-      'No se ha podido guardar el perfil',
-    );
+    expect(element().querySelector('.status-message')?.textContent).toContain('No se ha podido guardar el perfil');
   });
 
   it('should show levels, activities and roles in English', async () => {
@@ -179,11 +166,7 @@ describe('Profile', () => {
     await render();
     const tags = Array.from(element().querySelectorAll('p-tag')).map((t) => t.textContent?.trim());
     expect(tags).toEqual(['Administrator', 'User']);
-    expect(call<{ name: string }[]>('activityOptions', 0).map((o) => o.name)).toEqual([
-      'Padel',
-      'Cinema',
-      'Running',
-    ]);
+    expect(call<{ name: string }[]>('activityOptions', 0).map((o) => o.name)).toEqual(['Padel', 'Cinema', 'Running']);
     expect((component['levelOptions'] as () => { label: string }[])().map((o) => o.label)).toEqual([
       'Beginner',
       'Intermediate',
