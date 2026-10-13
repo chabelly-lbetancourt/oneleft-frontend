@@ -34,10 +34,16 @@
             />
           }
         </div>
-        <a routerLink="/notifications" class="profile-notifications link-action">
-          <i class="pi pi-bell" aria-hidden="true"></i>
-          {{ 'profile.notifications' | transloco }}
-        </a>
+        <div class="profile-links">
+          <a routerLink="/notifications" class="profile-notifications link-action">
+            <i class="pi pi-bell" aria-hidden="true"></i>
+            {{ 'profile.notifications' | transloco }}
+          </a>
+          <a routerLink="/network" class="profile-network link-action">
+            <i class="pi pi-users" aria-hidden="true"></i>
+            {{ 'profile.network' | transloco }}
+          </a>
+        </div>
       </section>
     }
 

@@ -45,6 +45,20 @@ export const routes: Routes = [
     title: 'titles.alerts',
   },
   {
+    // Following people (HU-047): my followers, the people I follow and the requests
+    path: 'network',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/social/network').then((m) => m.Network),
+    title: 'titles.network',
+  },
+  {
+    // Someone as I see them, to follow them (HU-047)
+    path: 'people/:id',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/social/person-page').then((m) => m.PersonPage),
+    title: 'titles.person',
+  },
+  {
     path: 'plans/new',
     canActivate: [authGuard],
     loadComponent: () => import('./features/plans/publish-plan').then((m) => m.PublishPlan),
