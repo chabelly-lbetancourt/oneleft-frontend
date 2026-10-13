@@ -1,4 +1,5 @@
 import { Component, computed, input } from '@angular/core';
+import { initials } from '../../shared/text/initials';
 
 /** Colours of the people (see $person-tones in styles/abstracts/_tokens.scss) */
 const PERSON_TONES = 5;
@@ -31,11 +32,3 @@ export class SpotSlots {
   );
   protected readonly hiddenFree = computed(() => Math.max(0, this.free() - MAX_FREE));
 }
-
-const initials = (name: string): string =>
-  name
-    .split(/\s+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part[0]!.toUpperCase())
-    .join('') || '?';

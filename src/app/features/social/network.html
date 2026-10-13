@@ -1,0 +1,152 @@
+<app-page-layout [title]="'social.networkTitle' | transloco">
+  @if (loadError()) {
+    <div class="network-error alert alert--error">{{ 'social.loadError' | transloco }}</div>
+  } @else if (account(); as me) {
+    <section class="visibility-card">
+      <div class="switch-text">
+        <label for="private" class="section-title">{{ 'social.private' | transloco }}</label>
+        <p class="hint">
+          {{ (isPrivate() ? 'social.privateHint' : 'social.publicHint') | transloco }}
+        </p>
+        @if (isPrivate() && me.requests) {
+          <p class="hint open-note">{{ 'social.openNote' | transloco }}</p>
+        }
+      </div>
+      <p-toggleswitch
+        inputId="private"
+        class="private-switch"
+        [ngModel]="isPrivate()"
+        (ngModelChange)="setPrivate($event)"
+      />
+    </section>
+
+    @if (error(); as message) {
+      <p-message severity="error" class="social-error">{{
+        message.key | transloco: message.params
+      }}</p-message>
+    }
+
+    <p-tabs [value]="tab()" (valueChange)="show($event)" class="network-tabs">
+      <p-tablist>
+        <p-tab value="followers" class="followers-tab">
+          {{ 'social.followers' | transloco }} <span class="tab-count">{{ me.followers }}</span>
+        </p-tab>
+        <p-tab value="following" class="following-tab">
+          {{ 'social.following' | transloco }} <span class="tab-count">{{ me.following }}</span>
+        </p-tab>
+        <p-tab value="requests" class="requests-tab">
+          {{ 'social.requests' | transloco }} <span class="tab-count">{{ me.requests }}</span>
+        </p-tab>
+      </p-tablist>
+      <p-tabpanels>
+        <p-tabpanel value="followers">
+          <ng-container *ngTemplateOutlet="people; context: { $implicit: 'followers' }" />
+        </p-tabpanel>
+        <p-tabpanel value="following">
+          <ng-container *ngTemplateOutlet="people; context: { $implicit: 'following' }" />
+        </p-tabpanel>
+        <p-tabpanel value="requests">
+          <h2 class="section-title">{{ 'social.received' | transloco }}</h2>
+          <ng-container *ngTemplateOutlet="people; context: { $implicit: 'requests' }" />
+          <h2 class="section-title sent-title">{{ 'social.sent' | transloco }}</h2>
+          <ng-container *ngTemplateOutlet="people; context: { $implicit: 'sent' }" />
+        </p-tabpanel>
+      </p-tabpanels>
+    </p-tabs>
+  } @else {
+    <div class="network-loading" role="status">
+      <span class="sr-only">{{ 'social.loading' | transloco }}</span>
+      <app-card-skeleton [lines]="1" />
+      <app-card-skeleton [lines]="3" />
+    </div>
+  }
+</app-page-layout>
+
+<ng-template #people let-list>
+  @let loaded = loadedList(list);
+  @if (!loaded) {
+    <app-card-skeleton [lines]="2" />
+  } @else if (!loaded.items.length) {
+    <p class="hint empty-{{ list }}">{{ emptyKey(list) | transloco }}</p>
+  } @else {
+    <ul class="connections connections--{{ list }}">
+      @for (person of loaded.items; track person.userId) {
+        <li class="connection">
+          <a class="connection__person" [routerLink]="['/people', person.userId]">
+            <p-avatar [label]="initials(person.name)" shape="circle" class="connection__avatar" />
+            <span class="connection__name">{{ person.name }}</span>
+          </a>
+          <span class="connection__actions">
+            @switch (list) {
+              @case ('followers') {
+                <p-button
+                  class="remove-follower"
+                  [label]="'social.remove' | transloco"
+                  [ariaLabel]="'social.removePerson' | transloco: { name: person.name }"
+                  [text]="true"
+                  severity="secondary"
+                  size="small"
+                  [loading]="busy() === person.userId"
+                  (onClick)="removeFollower(person)"
+                />
+              }
+              @case ('following') {
+                <p-button
+                  class="unfollow-person"
+                  [label]="'social.unfollow' | transloco"
+                  [ariaLabel]="'social.unfollowPerson' | transloco: { name: person.name }"
+                  [text]="true"
+                  severity="secondary"
+                  size="small"
+                  [loading]="busy() === person.userId"
+                  (onClick)="unfollow(person, 'following')"
+                />
+              }
+              @case ('requests') {
+                <p-button
+                  class="accept-request"
+                  [label]="'social.accept' | transloco"
+                  [ariaLabel]="'social.acceptPerson' | transloco: { name: person.name }"
+                  size="small"
+                  [loading]="busy() === person.userId"
+                  (onClick)="accept(person)"
+                />
+                <p-button
+                  class="decline-request"
+                  [label]="'social.decline' | transloco"
+                  [ariaLabel]="'social.declinePerson' | transloco: { name: person.name }"
+                  [text]="true"
+                  severity="secondary"
+                  size="small"
+                  [disabled]="busy() === person.userId"
+                  (onClick)="decline(person)"
+                />
+              }
+              @case ('sent') {
+                <p-button
+                  class="cancel-sent"
+                  [label]="'social.cancel' | transloco"
+                  [ariaLabel]="'social.cancelPerson' | transloco: { name: person.name }"
+                  [text]="true"
+                  severity="secondary"
+                  size="small"
+                  [loading]="busy() === person.userId"
+                  (onClick)="unfollow(person, 'sent')"
+                />
+              }
+            }
+          </span>
+        </li>
+      }
+    </ul>
+    @if (loaded.items.length < loaded.total) {
+      <p-button
+        class="more-{{ list }}"
+        [label]="'social.more' | transloco"
+        [text]="true"
+        size="small"
+        (onClick)="more(list)"
+      />
+    }
+  }
+</ng-template>
