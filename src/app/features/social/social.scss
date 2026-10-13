@@ -56,13 +56,33 @@
   @include stack(space(1));
 }
 
+// The tabs of PrimeNG in the column of the page: the three fit a phone, on the background of the page
 .network-tabs {
   display: block;
+  --p-tabs-tab-padding: #{space(3)} #{space(2)};
+  --p-tabs-tablist-background: transparent;
+  --p-tabs-tabpanel-background: transparent;
+  --p-tabs-tabpanel-padding: 0;
+}
+
+p-tab {
+  @include text(sm);
+  flex: 1 1 0;
+  justify-content: center;
+}
+
+// In a row, the switch keeps its size
+.private-switch {
+  flex-shrink: 0;
 }
 
 .tab-count {
   @include weight(bold);
   margin-left: space(1);
+}
+
+.received-title {
+  margin-top: space(4);
 }
 
 .sent-title {

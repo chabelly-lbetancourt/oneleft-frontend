@@ -46,7 +46,7 @@
           <ng-container *ngTemplateOutlet="people; context: { $implicit: 'following' }" />
         </p-tabpanel>
         <p-tabpanel value="requests">
-          <h2 class="section-title">{{ 'social.received' | transloco }}</h2>
+          <h2 class="section-title received-title">{{ 'social.received' | transloco }}</h2>
           <ng-container *ngTemplateOutlet="people; context: { $implicit: 'requests' }" />
           <h2 class="section-title sent-title">{{ 'social.sent' | transloco }}</h2>
           <ng-container *ngTemplateOutlet="people; context: { $implicit: 'sent' }" />
@@ -73,7 +73,11 @@
       @for (person of loaded.items; track person.userId) {
         <li class="connection">
           <a class="connection__person" [routerLink]="['/people', person.userId]">
-            <p-avatar [label]="initials(person.name)" shape="circle" class="connection__avatar" />
+            <p-avatar
+              [label]="initials(person.name)"
+              shape="circle"
+              class="connection__avatar avatar--participant"
+            />
             <span class="connection__name">{{ person.name }}</span>
           </a>
           <span class="connection__actions">
