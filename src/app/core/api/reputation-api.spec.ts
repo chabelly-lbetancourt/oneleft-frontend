@@ -20,6 +20,10 @@ describe('ReputationApi', () => {
     http.expectOne(`${base}/me/ledger?page=1&size=20`).flush({ items: [] });
     api.of('ana').subscribe();
     http.expectOne({ method: 'GET', url: `${base}/people/ana` }).flush({});
+    api.myBadges().subscribe();
+    http.expectOne({ method: 'GET', url: `${base}/me/badges` }).flush([]);
+    api.badgesOf('ana').subscribe();
+    http.expectOne({ method: 'GET', url: `${base}/people/ana/badges` }).flush([]);
     expect(api.scoresUrl()).toBe(`${base}/scores`);
     http.verify();
   });

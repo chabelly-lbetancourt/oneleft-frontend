@@ -5,6 +5,7 @@ import { Subject } from 'rxjs';
 import { translocoTesting } from '../../../testing/transloco-testing';
 import { UserEvents } from '../../core/realtime/user-events';
 import { PlanNearbyNotice } from '../../shared/model/notifications';
+import { BadgeEarnedNotice } from '../../shared/model/reputation';
 import {
   PlanJoinedNotice,
   PlanLeftNotice,
@@ -26,6 +27,7 @@ describe('JoinNotices', () => {
     const cancelled = new Subject<PlanCancelledNotice>();
     const arrivals = new Subject<PlanArrivalNotice>();
     const checkIns = new Subject<PlanCheckInNotice>();
+    const badges = new Subject<BadgeEarnedNotice>();
     TestBed.configureTestingModule({
       imports: [JoinNotices, translocoTesting()],
       providers: [
@@ -41,6 +43,7 @@ describe('JoinNotices', () => {
             cancelled$: cancelled.asObservable(),
             arrival$: arrivals.asObservable(),
             checkIn$: checkIns.asObservable(),
+            badge$: badges.asObservable(),
           },
         },
       ],
@@ -184,7 +187,20 @@ describe('JoinNotices', () => {
       data: 'p6',
     });
 
-    (fixture.componentInstance as unknown as { open: (id: string) => void }).open('p1');
+    badges.next({ badge: 'ALWAYS_PUNCTUAL', earnedAt: new Date().toISOString() });
+    expect(add.mock.calls[11][0]).toMatchObject({
+      summary: '¡Nueva insignia!',
+      icon: 'pi-star',
+      detail: 'Has conseguido «Siempre puntual»',
+      data: ['/reputation'],
+    });
+
+    const open = (
+      fixture.componentInstance as unknown as { open: (target: string | string[]) => void }
+    ).open;
+    open.call(fixture.componentInstance, 'p1');
     expect(navigate).toHaveBeenCalledWith(['/plans', 'p1']);
+    open.call(fixture.componentInstance, ['/reputation']);
+    expect(navigate).toHaveBeenLastCalledWith(['/reputation']);
   });
 });

@@ -9,9 +9,11 @@ import { catchError, Observable, of } from 'rxjs';
 import { ReputationApi } from '../../core/api/reputation-api';
 import { SocialApi } from '../../core/api/social-api';
 import { ApiErrorMessage, apiErrorMessage } from '../../core/i18n/api-error';
+import { BadgeList } from '../../components/badge-list/badge-list';
 import { CardSkeleton } from '../../components/card-skeleton/card-skeleton';
 import { ReputationBadge } from '../../components/reputation-badge/reputation-badge';
 import { PageLayout } from '../../layout/page-layout/page-layout';
+import { BadgeProgress } from '../../shared/model/reputation';
 import { SocialPerson } from '../../shared/model/social';
 import { initials } from '../../shared/text/initials';
 
@@ -23,6 +25,7 @@ import { initials } from '../../shared/text/initials';
   selector: 'app-person-page',
   imports: [
     Avatar,
+    BadgeList,
     Button,
     CardSkeleton,
     Message,
@@ -46,6 +49,8 @@ export class PersonPage {
   protected readonly person = signal<SocialPerson | null>(null);
   /** Their reputation (HU-009); null when it cannot be known */
   protected readonly reputation = signal<number | null>(null);
+  /** The badges they earned (HU-044) */
+  protected readonly badges = signal<BadgeProgress[]>([]);
   protected readonly notFound = signal(false);
   protected readonly busy = signal(false);
   protected readonly error = signal<ApiErrorMessage | null>(null);
@@ -59,6 +64,10 @@ export class PersonPage {
         .of(id)
         .pipe(catchError(() => of(null)))
         .subscribe((reputation) => this.reputation.set(reputation?.score ?? null));
+      this.reputationApi
+        .badgesOf(id)
+        .pipe(catchError(() => of([])))
+        .subscribe((badges) => this.badges.set(badges));
     });
   }
 

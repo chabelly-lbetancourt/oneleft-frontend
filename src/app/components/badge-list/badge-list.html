@@ -1,0 +1,31 @@
+<ul class="badges">
+  @for (badge of badges(); track badge.badge) {
+    <li class="badge" [class.badge--earned]="badge.earned">
+      <span class="badge__icon" aria-hidden="true"
+        ><i class="pi {{ icons[badge.badge] }}"></i
+      ></span>
+      <div class="badge__text">
+        <span class="badge__name">{{ 'badges.names.' + badge.badge | transloco }}</span>
+        <span class="badge__description hint">{{
+          'badges.descriptions.' + badge.badge | transloco
+        }}</span>
+        @if (badge.earned) {
+          <span class="badge__earned">{{
+            'badges.earnedOn' | transloco: { date: date(badge) }
+          }}</span>
+        } @else if (progress()) {
+          <span class="badge__progress">
+            <progress
+              [max]="badge.goal"
+              [value]="badge.progress"
+              [attr.aria-label]="'badges.names.' + badge.badge | transloco"
+            ></progress>
+            <span class="hint">{{
+              'badges.progress' | transloco: { progress: badge.progress, goal: badge.goal }
+            }}</span>
+          </span>
+        }
+      </div>
+    </li>
+  }
+</ul>
