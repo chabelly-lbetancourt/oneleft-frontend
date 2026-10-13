@@ -12,12 +12,6 @@
   margin: 0;
 }
 
-.check-in__done {
-  @include row(space(2), center);
-  @include weight(bold);
-  color: var(--ol-brand);
-}
-
 .check-in__subtitle,
 .check-in__name {
   @include weight(bold);
@@ -27,6 +21,10 @@
   @include stack(space(1));
 }
 
-.check-in__person .pi {
-  color: var(--ol-brand);
+.check-in__person {
+  @include row(space(1), center);
+
+  .pi {
+    color: var(--ol-brand);
+  }
 }
