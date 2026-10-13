@@ -1,0 +1,134 @@
+@use 'abstracts' as *;
+
+// Following people (HU-047): the page of a person and «My network»
+
+.person-card,
+.visibility-card {
+  @include card;
+  @include enter;
+  padding: space(5);
+}
+
+.person-card {
+  @include stack(space(4));
+}
+
+.person-card__head {
+  @include row(space(4));
+}
+
+.person-card__who {
+  @include stack(space(2));
+  min-width: 0;
+}
+
+.person-card__name {
+  @include text(xl);
+  @include weight(bold);
+  @include truncate;
+}
+
+.person-card__tags {
+  @include cluster(space(2));
+}
+
+.social-counts {
+  @include row(space(6), flex-start);
+
+  dt {
+    @include text(sm);
+    color: var(--ol-text-muted);
+  }
+
+  dd {
+    @include text(lg);
+    @include weight(bold);
+  }
+}
+
+.visibility-card {
+  @include row(space(4), flex-start);
+  justify-content: space-between;
+  margin-bottom: space(4);
+}
+
+.switch-text {
+  @include stack(space(1));
+}
+
+// The tabs of PrimeNG in the column of the page: the three fit a phone, on the background of the page
+.network-tabs {
+  display: block;
+  --p-tabs-tab-padding: #{space(3)} #{space(2)};
+  --p-tabs-tablist-background: transparent;
+  --p-tabs-tabpanel-background: transparent;
+  --p-tabs-tabpanel-padding: 0;
+}
+
+p-tab {
+  @include text(sm);
+  flex: 1 1 0;
+  justify-content: center;
+}
+
+// In a row, the switch keeps its size
+.private-switch {
+  flex-shrink: 0;
+}
+
+.tab-count {
+  @include weight(bold);
+  margin-left: space(1);
+}
+
+.received-title {
+  margin-top: space(4);
+}
+
+.sent-title {
+  margin-top: space(6);
+}
+
+.connections {
+  @include stack(space(2));
+  margin-top: space(3);
+}
+
+.connection {
+  @include row(space(3));
+  justify-content: space-between;
+  padding: space(2) 0;
+  border-bottom: 1px solid var(--ol-border);
+}
+
+.connection__person {
+  @include row(space(3));
+  min-width: 0;
+  color: inherit;
+  text-decoration: none;
+
+  &:hover .connection__name,
+  &:focus-visible .connection__name {
+    text-decoration: underline;
+  }
+}
+
+.connection__name {
+  @include truncate;
+  @include weight(bold);
+}
+
+.connection__actions {
+  @include row(space(1));
+  flex-shrink: 0;
+}
+
+.person-loading,
+.network-loading {
+  @include stack(space(4));
+}
+
+.social-error {
+  display: block;
+  margin-bottom: space(3);
+}

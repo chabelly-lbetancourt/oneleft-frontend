@@ -34,7 +34,8 @@
   margin-top: space(4);
 }
 
-.profile-notifications {
+.profile-links {
+  @include cluster(space(4));
   margin-top: space(4);
 }
 

@@ -474,6 +474,21 @@ describe('PlanDetail', () => {
     expect(element().querySelector('.check-in')).toBeNull();
   });
 
+  it('should open the page of the other people of the plan to follow them (HU-047)', async () => {
+    await create({ ...PLAN, participants: [LUCIA] });
+    expect(element().querySelector('.organizer-link')?.getAttribute('href')).toBe('/people/org');
+    expect(element().querySelector('.participant__link')?.getAttribute('href')).toBe(
+      '/people/lucia',
+    );
+
+    await create({ ...PLAN, participants: [LUCIA] }, undefined, 'org');
+    expect(element().querySelector('.organizer-link')).toBeNull();
+    expect(element().querySelector('.participant__link')).not.toBeNull();
+
+    await create({ ...PLAN, participants: [{ ...LUCIA, userId: 'me' }] });
+    expect(element().querySelector('.participant__link')).toBeNull();
+  });
+
   it('should share the plan with the Android share sheet inside the app', async () => {
     await create(PLAN);
     const platform = TestBed.inject(NativePlatform);

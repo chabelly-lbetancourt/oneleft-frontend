@@ -27,6 +27,7 @@ import {
   LATE_OPTIONS,
   Plan,
 } from '../../shared/model/published-plan';
+import { initials } from '../../shared/text/initials';
 import { clockTime, spotsKey, startsIn } from '../../shared/time/plan-time';
 import {
   CalendarEvent,
@@ -214,6 +215,9 @@ export class PlanDetail {
       1,
   );
   protected readonly isMe = (userId: string) => userId === this.session.userId();
+  /** The page of someone else of the plan, to follow them (HU-047): only with a session */
+  protected readonly canOpenPerson = (userId: string | undefined) =>
+    !!userId && !this.isGuest() && !this.isMe(userId);
   /** The organizer and the participants can add an upcoming plan to their calendar (HU-027) */
   protected readonly canAddToCalendar = computed(() =>
     ['organizer', 'participant'].includes(this.relation() ?? ''),
@@ -406,14 +410,7 @@ export class PlanDetail {
     });
   }
 
-  protected initials(name: string): string {
-    return name
-      .split(/\s+/)
-      .filter(Boolean)
-      .slice(0, 2)
-      .map((part) => part[0]!.toUpperCase())
-      .join('');
-  }
+  protected readonly initials = initials;
 
   private load(id: string): void {
     (this.isGuest() ? this.api.publicPlan(id) : this.api.plan(id)).subscribe({
