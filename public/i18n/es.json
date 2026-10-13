@@ -423,6 +423,7 @@
     "locating": "Buscando tu ubicación…",
     "retry": "Reintentar",
     "loadError": "No se han podido cargar los planes cercanos.",
+    "countOne": "{{count}} plan a menos de {{distance}}",
     "count": "{{count}} planes a menos de {{distance}}",
     "empty": "No hay planes cerca con estos filtros. ¿Y si publicas tú uno?",
     "newPlan": "Nuevo plan cerca: {{activity}} a {{distance}}",

@@ -155,6 +155,16 @@ describe('NearbyPlans', () => {
     expect(element().querySelector('.plan-ticket__organizer')).toBeNull();
   });
 
+  it('should count a single plan in the singular', async () => {
+    await create();
+    nearbyRequest().flush([nearby('a', 'PADEL', 34)]);
+    await render();
+
+    expect(element().querySelector('.results-count')?.textContent?.trim()).toBe(
+      '1 plan a menos de 5 km',
+    );
+  });
+
   it('should search again and reopen the stream when a filter changes', async () => {
     await create();
     nearbyRequest().flush([]);
