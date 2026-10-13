@@ -2,10 +2,9 @@
   <section class="check-in panel-muted" aria-labelledby="check-in-title">
     <h3 class="check-in__title" id="check-in-title">{{ 'checkIn.title' | transloco }}</h3>
     @if (mine(); as me) {
-      <p class="check-in__done" role="status">
-        <i class="pi pi-check-circle" aria-hidden="true"></i>
-        {{ 'checkIn.done' | transloco: { time: me.time } }}
-      </p>
+      <p-message severity="success" icon="pi pi-check-circle" class="check-in__done">{{
+        'checkIn.done' | transloco: { time: me.time }
+      }}</p-message>
     } @else {
       <p-button
         class="check-in__button"
