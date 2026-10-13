@@ -12,6 +12,12 @@
       {{ activityKey() | transloco }} · <span class="plan-ticket__strong">{{ time() }}</span> ·
       {{ relative().key | transloco: relative().params }}
     </p>
+    @if (organizerReputation() !== null) {
+      <p class="plan-ticket__organizer">
+        {{ 'plan.organizer' | transloco: { name: current.organizerName } }} ·
+        <app-reputation-badge [score]="organizerReputation()!" />
+      </p>
+    }
     <div class="plan-ticket__bottom">
       <p class="plan-ticket__place">
         <i class="pi pi-map-marker icon-xs" aria-hidden="true"></i>

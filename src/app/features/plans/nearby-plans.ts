@@ -9,6 +9,7 @@ import { Message } from 'primeng/message';
 import { MultiSelect } from 'primeng/multiselect';
 import { SelectButton } from 'primeng/selectbutton';
 import { PlansApi } from '../../core/api/plans-api';
+import { ReputationApi } from '../../core/api/reputation-api';
 import {
   ApproximateLocation,
   Coordinates,
@@ -25,6 +26,7 @@ import { ACTIVITIES, activityKey } from '../../shared/model/activities';
 import { BottomBar } from '../../layout/bottom-bar/bottom-bar';
 import { PageLayout } from '../../layout/page-layout/page-layout';
 import { NearbyPlan, NearbyPlanEvent, nearbyParams, NearbyQuery } from '../../shared/model/nearby';
+import { Reputation } from '../../shared/model/reputation';
 import { NearbyMap } from './nearby-map';
 
 export const RADIUS_OPTIONS = [1000, 3000, 5000, 10000];
@@ -60,6 +62,7 @@ type View = 'list' | 'map';
 })
 export class NearbyPlans {
   private readonly api = inject(PlansApi);
+  private readonly reputation = inject(ReputationApi);
   private readonly location = inject(ApproximateLocation);
   private readonly stream = inject(NearbyStream);
   private readonly transloco = inject(TranslocoService);
@@ -119,6 +122,21 @@ export class NearbyPlans {
     return query ? { url: this.api.nearbyUrl(), params: nearbyParams(query) } : undefined;
   });
   protected readonly plans = computed(() => (this.results.hasValue() ? this.results.value() : []));
+  /** The reputation of the organizers of the list, in one question (HU-009); without it, the list as before */
+  protected readonly organizerScores = httpResource<Reputation[]>(() => {
+    const ids = [...new Set(this.plans().map(({ plan }) => plan.organizerId))].slice(0, 50);
+    return ids.length
+      ? { url: this.reputation.scoresUrl(), params: { ids: ids.join(',') } }
+      : undefined;
+  });
+  protected readonly scoreOf = computed(
+    () =>
+      new Map(
+        (this.organizerScores.hasValue() ? this.organizerScores.value() : []).map(
+          ({ userId, score }) => [userId, score] as const,
+        ),
+      ),
+  );
   /** The first search of some filters: the skeletons stand in for the list (a reload keeps the list shown) */
   protected readonly searching = computed(
     () => this.results.isLoading() && !this.results.hasValue(),

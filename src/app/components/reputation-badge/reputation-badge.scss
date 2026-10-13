@@ -1,0 +1,18 @@
+@use 'abstracts' as *;
+
+:host {
+  @include weight(bold);
+  display: inline-flex;
+  align-items: center;
+  gap: space(1);
+  white-space: nowrap;
+  color: var(--ol-brand);
+
+  .pi {
+    font-size: 0.8em;
+  }
+}
+
+:host(.reputation-badge--negative) {
+  color: var(--ol-danger-text);
+}
