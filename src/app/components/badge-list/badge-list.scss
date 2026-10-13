@@ -43,9 +43,28 @@
 .badge__progress {
   @include row(space(2));
 
+  // A thin bar in the colors of the app, in light and dark mode
   progress {
+    appearance: none;
     width: 8rem;
     height: 0.5rem;
-    accent-color: var(--ol-brand);
+    overflow: hidden;
+    border: 0;
+    border-radius: 999px;
+    background: var(--ol-border);
+
+    &::-webkit-progress-bar {
+      background: var(--ol-border);
+    }
+
+    &::-webkit-progress-value {
+      border-radius: 999px;
+      background: var(--ol-brand);
+    }
+
+    &::-moz-progress-bar {
+      border-radius: 999px;
+      background: var(--ol-brand);
+    }
   }
 }

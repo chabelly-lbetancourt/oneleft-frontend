@@ -1,9 +1,11 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { Button } from 'primeng/button';
 import { ReputationApi } from '../../core/api/reputation-api';
 import { Language } from '../../core/i18n/language';
+import { UserEvents } from '../../core/realtime/user-events';
 import { BadgeList } from '../../components/badge-list/badge-list';
 import { CardSkeleton } from '../../components/card-skeleton/card-skeleton';
 import { PageLayout } from '../../layout/page-layout/page-layout';
@@ -24,6 +26,8 @@ const PAGE_SIZE = 20;
 export class ReputationPage implements OnInit {
   private readonly api = inject(ReputationApi);
   private readonly language = inject(Language);
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly events = inject(UserEvents);
 
   protected readonly score = signal<number | null>(null);
   protected readonly entries = signal<LedgerEntry[]>([]);
@@ -35,6 +39,12 @@ export class ReputationPage implements OnInit {
   private page = 0;
 
   ngOnInit(): void {
+    this.load();
+    // A badge earned while the page is open (HU-044): the new badge, score and entries at once
+    this.events.badge$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => this.load());
+  }
+
+  private load(): void {
     this.api.mine().subscribe({
       next: (reputation) => this.score.set(reputation.score),
       error: () => this.loadError.set(true),

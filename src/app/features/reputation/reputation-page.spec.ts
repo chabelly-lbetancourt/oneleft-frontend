@@ -1,9 +1,16 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
-import { Observable, of, throwError } from 'rxjs';
+import { Observable, of, Subject, throwError } from 'rxjs';
 import { translocoTesting } from '../../../testing/transloco-testing';
 import { ReputationApi } from '../../core/api/reputation-api';
-import { BadgeProgress, LedgerEntry, LedgerPage, Reputation } from '../../shared/model/reputation';
+import { UserEvents } from '../../core/realtime/user-events';
+import {
+  BadgeEarnedNotice,
+  BadgeProgress,
+  LedgerEntry,
+  LedgerPage,
+  Reputation,
+} from '../../shared/model/reputation';
 import { ReputationPage } from './reputation-page';
 
 const entry = (
@@ -20,6 +27,7 @@ const entry = (
 
 describe('ReputationPage', () => {
   let fixture: ComponentFixture<ReputationPage>;
+  let badgesEarned: Subject<BadgeEarnedNotice>;
   const api = {
     mine: vi.fn((): Observable<Reputation> => of({ userId: 'me', score: 15 })),
     myBadges: vi.fn((): Observable<BadgeProgress[]> =>
@@ -56,9 +64,14 @@ describe('ReputationPage', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    badgesEarned = new Subject();
     TestBed.configureTestingModule({
       imports: [ReputationPage, translocoTesting()],
-      providers: [provideRouter([]), { provide: ReputationApi, useValue: api }],
+      providers: [
+        provideRouter([]),
+        { provide: ReputationApi, useValue: api },
+        { provide: UserEvents, useValue: { badge$: badgesEarned.asObservable() } },
+      ],
     });
   });
 
@@ -98,6 +111,17 @@ describe('ReputationPage', () => {
       '10 planes completados',
     );
     expect(badges[1].textContent).toContain('7 de 10');
+  });
+
+  it('should show at once a badge earned while the page is open', async () => {
+    await create();
+    expect(api.myBadges).toHaveBeenCalledTimes(1);
+
+    badgesEarned.next({ badge: 'TEN_PLANS_COMPLETED', earnedAt: '2026-10-13T17:00:00Z' });
+    await render();
+
+    expect(api.myBadges).toHaveBeenCalledTimes(2);
+    expect(api.mine).toHaveBeenCalledTimes(2);
   });
 
   it('should explain an entry without a plan and read more pages', async () => {
