@@ -163,6 +163,15 @@
     "arrivalYou": "You",
     "chat": "Plan chat"
   },
+  "checkIn": {
+    "title": "Are you there yet?",
+    "action": "I'm here",
+    "hint": "From 15 min before the start to 30 min after it, within 150 m of the meeting point. Your location is only used to check it and is not stored.",
+    "done": "You arrived at {{time}}",
+    "arrived": "Already here",
+    "you": "You",
+    "nobody": "Nobody has arrived yet."
+  },
   "publish": {
     "title": "Publish a plan",
     "what": "What's the plan?",
@@ -309,6 +318,12 @@
     "arrivalFailed": "The group could not be told. Please try again.",
     "arrival": {
       "minutes": "Choose 5, 10, 15 or 30 minutes."
+    },
+    "checkInFailed": "Your arrival could not be recorded. Please try again.",
+    "checkIn": {
+      "tooFar": "You need to be within 150 m of the meeting point.",
+      "notYet": "You can say you have arrived from 15 min before the start.",
+      "closed": "Too late: it has been more than 30 min since the start."
     }
   },
   "nearby": {
@@ -350,7 +365,8 @@
     "cancelled": "«{{title}}» at {{time}} has been cancelled: not enough people joined",
     "arrivalTitle": "News of your plan",
     "onTheWay": "{{name}} is on the way to «{{title}}»",
-    "late": "{{name}} will be {{minutes}} min late to «{{title}}»"
+    "late": "{{name}} will be {{minutes}} min late to «{{title}}»",
+    "checkIn": "{{name}} has arrived at «{{title}}»"
   },
   "notifications": {
     "title": "Notices of plans nearby",

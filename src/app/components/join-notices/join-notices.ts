@@ -106,6 +106,16 @@ export class JoinNotices {
         notice.planId,
       ),
     );
+    events.checkIn$
+      .pipe(takeUntilDestroyed(destroyRef))
+      .subscribe((notice) =>
+        this.show(
+          'pi-map-marker',
+          'notices.arrivalTitle',
+          this.transloco.translate('notices.checkIn', { name: notice.name, title: notice.title }),
+          notice.planId,
+        ),
+      );
     events.nearby$
       .pipe(takeUntilDestroyed(destroyRef))
       .subscribe((notice) =>

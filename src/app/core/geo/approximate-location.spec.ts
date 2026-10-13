@@ -23,18 +23,39 @@ describe('ApproximateLocation', () => {
     await expect(location.current()).resolves.toEqual({ latitude: 40.39, longitude: -3.63 });
   });
 
+  it('should ask for a fresh and precise position for the check-in', async () => {
+    let options: PositionOptions | undefined;
+    setGeolocation({
+      getCurrentPosition: (
+        ok: PositionCallback,
+        _: PositionErrorCallback,
+        given: PositionOptions,
+      ) => {
+        options = given;
+        ok({ coords: { latitude: 40.391234, longitude: -3.628765 } } as GeolocationPosition);
+      },
+    });
+    const location = TestBed.inject(ApproximateLocation);
+    await expect(location.precise()).resolves.toEqual({ latitude: 40.3912, longitude: -3.6288 });
+    expect(options).toMatchObject({ enableHighAccuracy: true, maximumAge: 30000 });
+  });
+
   it('should fail when the user denies the permission', async () => {
     setGeolocation({
       getCurrentPosition: (_: PositionCallback, error: PositionErrorCallback) =>
         error({ code: 1 } as GeolocationPositionError),
     });
-    const error = await TestBed.inject(ApproximateLocation).current().catch((e: LocationError) => e);
+    const error = await TestBed.inject(ApproximateLocation)
+      .current()
+      .catch((e: LocationError) => e);
     expect(error).toBeInstanceOf(LocationError);
     expect((error as LocationError).translationKey).toBe('errors.location.denied');
   });
 
   it('should fail when geolocation is not available', async () => {
     setGeolocation(undefined);
-    await expect(TestBed.inject(ApproximateLocation).current()).rejects.toMatchObject({ code: 'unavailable' });
+    await expect(TestBed.inject(ApproximateLocation).current()).rejects.toMatchObject({
+      code: 'unavailable',
+    });
   });
 });
