@@ -313,6 +313,9 @@
             [routerLink]="['/plans', current.id, 'chat']"
           />
         }
+        @if (inChat()) {
+          <app-plan-check-in [plan]="current" />
+        }
         @if (canAnnounce()) {
           <div class="arrivals panel-muted">
             <p class="arrivals__title">{{ 'plan.arrivalsTitle' | transloco }}</p>

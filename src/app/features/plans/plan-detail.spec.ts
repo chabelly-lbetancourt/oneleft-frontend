@@ -8,6 +8,7 @@ import { PlansApi } from '../../core/api/plans-api';
 import { Session } from '../../core/auth/session';
 import { UserEvents } from '../../core/realtime/user-events';
 import {
+  CheckIn,
   Forecast,
   FreePerson,
   Plan,
@@ -55,6 +56,8 @@ describe('PlanDetail', () => {
     freePeople: vi.fn((): Observable<FreePerson[]> => of([])),
     announceArrival: vi.fn(),
     clearArrival: vi.fn(),
+    checkIn: vi.fn(),
+    checkIns: vi.fn((): Observable<CheckIn[]> => of([])),
     join: vi.fn(),
     leave: vi.fn(),
     joinWaitlist: vi.fn(),
@@ -83,6 +86,7 @@ describe('PlanDetail', () => {
     // No forecast nor free people unless a test gives them (HU-026, HU-035)
     api.weather.mockReturnValue(of(null));
     api.freePeople.mockReturnValue(of([]));
+    api.checkIns.mockReturnValue(of([]));
     session = new FakeSession();
     notices = new Subject();
     left = new Subject();
@@ -102,6 +106,7 @@ describe('PlanDetail', () => {
             spotFreed$: EMPTY,
             cancelled$: cancelled.asObservable(),
             arrival$: arrivals.asObservable(),
+            checkIn$: EMPTY,
           },
         },
       ],
@@ -196,6 +201,7 @@ describe('PlanDetail', () => {
             spotFreed$: EMPTY,
             cancelled$: EMPTY,
             arrival$: EMPTY,
+            checkIn$: EMPTY,
           },
         },
       ],
@@ -218,6 +224,7 @@ describe('PlanDetail', () => {
             spotFreed$: EMPTY,
             cancelled$: EMPTY,
             arrival$: EMPTY,
+            checkIn$: EMPTY,
           },
         },
       ],
@@ -450,6 +457,21 @@ describe('PlanDetail', () => {
 
     await create(PLAN);
     expect(element().querySelector('.chat-button')).toBeNull();
+  });
+
+  it('should offer the check-in to the group around the start of the plan only (HU-025)', async () => {
+    const soon = new Date(Date.now() + 10 * 60_000).toISOString();
+    await create({ ...PLAN, startsAt: soon }, undefined, 'org');
+    expect(element().querySelector('app-plan-check-in .check-in__button')?.textContent).toContain(
+      'He llegado',
+    );
+    expect(api.checkIns).toHaveBeenCalledWith('plan-1');
+
+    await create({ ...PLAN, startsAt: soon });
+    expect(element().querySelector('app-plan-check-in')).toBeNull();
+
+    await create(PLAN, undefined, 'org');
+    expect(element().querySelector('.check-in')).toBeNull();
   });
 
   it('should share the plan with the Android share sheet inside the app', async () => {

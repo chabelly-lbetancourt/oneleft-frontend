@@ -5,6 +5,7 @@ import { PlanNearbyNotice } from '../../shared/model/notifications';
 import {
   PlanArrivalNotice,
   PlanCancelledNotice,
+  PlanCheckInNotice,
   PlanJoinedNotice,
   PlanLeftNotice,
   PlanReminderNotice,
@@ -21,11 +22,14 @@ const PLAN_NEARBY = 'plan-nearby';
 const PLAN_REMINDER = 'plan-reminder';
 const PLAN_CANCELLED = 'plan-cancelled';
 const PLAN_ARRIVAL = 'plan-arrival';
+const PLAN_CHECK_IN = 'plan-check-in';
 
 /**
  * Personal events of the signed-in user while the app is open: someone has joined (HU-005) or left (HU-023) one of
  * my plans, a spot I was waiting for is now mine, a plan I like has been published nearby (HU-006), a plan I am in
- * is about to start (HU-007) or has been cancelled for not reaching its minimum (HU-039). A single connection is shared by every subscriber and closed when the user signs out.
+ * is about to start (HU-007) or has been cancelled for not reaching its minimum (HU-039), and someone of the group is
+ * on the way (HU-040) or has arrived (HU-025). A single connection is shared by every subscriber and closed when the
+ * user signs out.
  */
 @Injectable({ providedIn: 'root' })
 export class UserEvents {
@@ -46,6 +50,7 @@ export class UserEvents {
             PLAN_REMINDER,
             PLAN_CANCELLED,
             PLAN_ARRIVAL,
+            PLAN_CHECK_IN,
           ])
         : EMPTY,
     ),
@@ -60,6 +65,8 @@ export class UserEvents {
   readonly cancelled$ = this.of<PlanCancelledNotice>(PLAN_CANCELLED);
   /** Someone of the group of my plan is on the way or running late (HU-040) */
   readonly arrival$ = this.of<PlanArrivalNotice>(PLAN_ARRIVAL);
+  /** Someone of the group of my plan arrived at the meeting point (HU-025) */
+  readonly checkIn$ = this.of<PlanCheckInNotice>(PLAN_CHECK_IN);
 
   private of<T>(name: string): Observable<T> {
     return this.events$.pipe(
