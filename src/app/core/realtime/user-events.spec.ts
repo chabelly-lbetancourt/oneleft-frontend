@@ -11,6 +11,7 @@ import { PlanNearbyNotice } from '../../shared/model/notifications';
 import {
   PlanArrivalNotice,
   PlanCancelledNotice,
+  PlanCheckInNotice,
   PlanReminderNotice,
 } from '../../shared/model/published-plan';
 import { Session } from '../auth/session';
@@ -37,6 +38,7 @@ describe('UserEvents', () => {
     const reminders: PlanReminderNotice[] = [];
     const cancelled: PlanCancelledNotice[] = [];
     const arrivals: PlanArrivalNotice[] = [];
+    const checkIns: PlanCheckInNotice[] = [];
     events.joined$.subscribe((notice) => joined.push(notice));
     events.joined$.subscribe((notice) => joinedToo.push(notice));
     events.left$.subscribe((notice) => left.push(notice));
@@ -45,6 +47,7 @@ describe('UserEvents', () => {
     events.reminder$.subscribe((notice) => reminders.push(notice));
     events.cancelled$.subscribe((notice) => cancelled.push(notice));
     events.arrival$.subscribe((notice) => arrivals.push(notice));
+    events.checkIn$.subscribe((notice) => checkIns.push(notice));
     TestBed.tick();
     expect(stream.openEvents).not.toHaveBeenCalled();
 
@@ -96,6 +99,8 @@ describe('UserEvents', () => {
       minutesLate: null,
     };
     source.next({ event: 'plan-arrival', data: coming });
+    const here: PlanCheckInNotice = { planId: 'p6', title: 'Pádel', name: 'Diego' };
+    source.next({ event: 'plan-check-in', data: here });
 
     expect(stream.openEvents).toHaveBeenCalledOnce();
     expect(stream.openEvents).toHaveBeenCalledWith(
@@ -108,6 +113,7 @@ describe('UserEvents', () => {
         'plan-reminder',
         'plan-cancelled',
         'plan-arrival',
+        'plan-check-in',
       ],
     );
     expect(joined).toEqual([join]);
@@ -118,6 +124,7 @@ describe('UserEvents', () => {
     expect(reminders).toEqual([soon]);
     expect(cancelled).toEqual([off]);
     expect(arrivals).toEqual([coming]);
+    expect(checkIns).toEqual([here]);
 
     authenticated.set(false);
     TestBed.tick();

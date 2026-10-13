@@ -1,0 +1,44 @@
+@if (open()) {
+  <section class="check-in panel-muted" aria-labelledby="check-in-title">
+    <h3 class="check-in__title" id="check-in-title">{{ 'checkIn.title' | transloco }}</h3>
+    @if (mine(); as me) {
+      <p class="check-in__done" role="status">
+        <i class="pi pi-check-circle" aria-hidden="true"></i>
+        {{ 'checkIn.done' | transloco: { time: me.time } }}
+      </p>
+    } @else {
+      <p-button
+        class="check-in__button"
+        [label]="'checkIn.action' | transloco"
+        icon="pi pi-map-marker"
+        styleClass="button--block"
+        [loading]="busy()"
+        (onClick)="checkIn()"
+      />
+      <p class="hint">{{ 'checkIn.hint' | transloco }}</p>
+    }
+    @if (error(); as message) {
+      <p-message severity="error" class="check-in__error">{{
+        message.key | transloco: message.params
+      }}</p-message>
+    }
+    <div class="check-in__group" aria-live="polite">
+      @if (arrived().length) {
+        <p class="check-in__subtitle">{{ 'checkIn.arrived' | transloco }}</p>
+        <ul class="check-in__list">
+          @for (checkIn of arrived(); track checkIn.userId) {
+            <li class="check-in__person">
+              <i class="pi pi-map-marker" aria-hidden="true"></i>
+              <span class="check-in__name">{{
+                checkIn.mine ? ('checkIn.you' | transloco) : checkIn.name
+              }}</span>
+              · {{ checkIn.time }}
+            </li>
+          }
+        </ul>
+      } @else {
+        <p class="hint check-in__nobody">{{ 'checkIn.nobody' | transloco }}</p>
+      }
+    </div>
+  </section>
+}

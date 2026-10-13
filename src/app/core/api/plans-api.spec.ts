@@ -43,6 +43,13 @@ describe('PlansApi', () => {
     arrival.flush({});
     api.clearArrival('abc').subscribe();
     http.expectOne({ method: 'DELETE', url: `${base}/abc/arrivals/me` }).flush({});
+    // I'm at the meeting point, and who has arrived (HU-025)
+    api.checkIn('abc', { latitude: 40.3912, longitude: -3.6287 }).subscribe();
+    const checkIn = http.expectOne({ method: 'POST', url: `${base}/abc/check-ins/me` });
+    expect(checkIn.request.body).toEqual({ latitude: 40.3912, longitude: -3.6287 });
+    checkIn.flush({});
+    api.checkIns('abc').subscribe();
+    http.expectOne({ method: 'GET', url: `${base}/abc/check-ins` }).flush([]);
     // Free mode and the free people near my plan (HU-035)
     api.myAvailability().subscribe();
     http.expectOne({ method: 'GET', url: `${base}/availability/me` }).flush(null);

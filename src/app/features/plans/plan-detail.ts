@@ -17,6 +17,7 @@ import { activityKey, activityOf } from '../../shared/model/activities';
 import { levelKey } from '../../shared/model/profile';
 import { CardSkeleton } from '../../components/card-skeleton/card-skeleton';
 import { IconTile } from '../../components/icon-tile/icon-tile';
+import { PlanCheckIn } from '../../components/plan-check-in/plan-check-in';
 import { SpotSlots } from '../../components/spot-slots/spot-slots';
 import { PageLayout } from '../../layout/page-layout/page-layout';
 import {
@@ -50,6 +51,7 @@ const ENDED: Plan['status'][] = ['IN_PROGRESS', 'FINISHED', 'CANCELLED'];
     IconTile,
     Message,
     PageLayout,
+    PlanCheckIn,
     RouterLink,
     SpotSlots,
     Tag,

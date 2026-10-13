@@ -163,6 +163,15 @@
     "arrivalYou": "Tú",
     "chat": "Chat del plan"
   },
+  "checkIn": {
+    "title": "¿Ya estás allí?",
+    "action": "He llegado",
+    "hint": "Desde 15 min antes hasta 30 min después del inicio, a menos de 150 m del punto de encuentro. Tu ubicación solo se usa para comprobarlo y no se guarda.",
+    "done": "Has llegado a las {{time}}",
+    "arrived": "Ya han llegado",
+    "you": "Tú",
+    "nobody": "Todavía no ha llegado nadie."
+  },
   "publish": {
     "title": "Publicar un plan",
     "what": "¿Qué plan es?",
@@ -309,6 +318,12 @@
     "arrivalFailed": "No se ha podido avisar al grupo. Inténtalo de nuevo.",
     "arrival": {
       "minutes": "Elige 5, 10, 15 o 30 minutos."
+    },
+    "checkInFailed": "No se ha podido registrar tu llegada. Inténtalo de nuevo.",
+    "checkIn": {
+      "tooFar": "Tienes que estar a menos de 150 m del punto de encuentro.",
+      "notYet": "Podrás decir que has llegado desde 15 min antes del inicio.",
+      "closed": "Ya no se puede: pasaron más de 30 min desde el inicio."
     }
   },
   "nearby": {
@@ -350,7 +365,8 @@
     "cancelled": "«{{title}}» de las {{time}} se ha cancelado: no se llegó al mínimo de participantes",
     "arrivalTitle": "Novedades de tu plan",
     "onTheWay": "{{name}} va de camino a «{{title}}»",
-    "late": "{{name}} llegará {{minutes}} min tarde a «{{title}}»"
+    "late": "{{name}} llegará {{minutes}} min tarde a «{{title}}»",
+    "checkIn": "{{name}} ha llegado a «{{title}}»"
   },
   "notifications": {
     "title": "Avisos de planes cerca",

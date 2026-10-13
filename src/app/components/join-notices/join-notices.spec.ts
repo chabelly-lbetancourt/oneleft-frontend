@@ -10,6 +10,7 @@ import {
   PlanLeftNotice,
   PlanArrivalNotice,
   PlanCancelledNotice,
+  PlanCheckInNotice,
   PlanReminderNotice,
   SpotFreedNotice,
 } from '../../shared/model/published-plan';
@@ -24,6 +25,7 @@ describe('JoinNotices', () => {
     const reminders = new Subject<PlanReminderNotice>();
     const cancelled = new Subject<PlanCancelledNotice>();
     const arrivals = new Subject<PlanArrivalNotice>();
+    const checkIns = new Subject<PlanCheckInNotice>();
     TestBed.configureTestingModule({
       imports: [JoinNotices, translocoTesting()],
       providers: [
@@ -38,6 +40,7 @@ describe('JoinNotices', () => {
             reminder$: reminders.asObservable(),
             cancelled$: cancelled.asObservable(),
             arrival$: arrivals.asObservable(),
+            checkIn$: checkIns.asObservable(),
           },
         },
       ],
@@ -171,6 +174,14 @@ describe('JoinNotices', () => {
     expect(add.mock.calls[9][0]).toMatchObject({
       icon: 'pi-directions',
       detail: 'Diego va de camino a «Pádel»',
+    });
+
+    checkIns.next({ planId: 'p6', title: 'Pádel', name: 'Lucía' });
+    expect(add.mock.calls[10][0]).toMatchObject({
+      summary: 'Novedades de tu plan',
+      icon: 'pi-map-marker',
+      detail: 'Lucía ha llegado a «Pádel»',
+      data: 'p6',
     });
 
     (fixture.componentInstance as unknown as { open: (id: string) => void }).open('p1');
