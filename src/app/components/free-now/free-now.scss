@@ -1,0 +1,69 @@
+@use 'abstracts' as *;
+
+// «I'm free now» (HU-035): a card on the home screen that lights up while the person is free
+.free-now {
+  @include card;
+  @include stack(space(3));
+  @include enter(ol-fade-up, 120ms);
+  padding: space(5);
+}
+
+.free-now--on {
+  border-color: var(--ol-brand);
+  background: var(--ol-brand-soft);
+}
+
+.free-now__head {
+  @include row(space(2), center);
+}
+
+.free-now__title {
+  @include text(lg, snug);
+  @include weight(bold);
+}
+
+// A soft pulse: someone free right now (no animation with reduced motion)
+.free-now__dot {
+  width: 0.625rem;
+  height: 0.625rem;
+  border-radius: 50%;
+  background: var(--ol-brand);
+  box-shadow: 0 0 0 0.25rem var(--ol-brand-ring);
+
+  @media (prefers-reduced-motion: no-preference) {
+    animation: free-pulse 2s ease-in-out infinite;
+  }
+}
+
+@keyframes free-pulse {
+  50% {
+    box-shadow: 0 0 0 0.5rem transparent;
+  }
+}
+
+.free-now__interests,
+.free-now__chips,
+.free-now__actions {
+  @include cluster(space(2));
+}
+
+.free-hours {
+  flex-wrap: wrap;
+}
+
+.choice {
+  @include transition-colors;
+  @include pressable(0.95, false);
+  @include focus-ring;
+  border: 1px solid transparent;
+}
+
+.choice--off {
+  border-color: var(--ol-border);
+  background-color: var(--ol-surface);
+  color: var(--ol-text-soft);
+}
+
+.choice--on {
+  @include weight(semibold);
+}

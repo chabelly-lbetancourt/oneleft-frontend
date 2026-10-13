@@ -10,6 +10,7 @@ import { Session } from '../../core/auth/session';
 import { UserEvents } from '../../core/realtime/user-events';
 import { ACTIVITIES, activityOf } from '../../shared/model/activities';
 import { Plan } from '../../shared/model/published-plan';
+import { FreeNow } from '../../components/free-now/free-now';
 import { EntryLink } from '../../components/entry-link/entry-link';
 import { IconTile } from '../../components/icon-tile/icon-tile';
 import { PlanTicketSkeleton } from '../../components/plan-ticket-skeleton/plan-ticket-skeleton';
@@ -24,6 +25,7 @@ import { MainLayout } from '../../layout/main-layout/main-layout';
     BottomBar,
     Button,
     EntryLink,
+    FreeNow,
     IconTile,
     MainLayout,
     PlanTicket,
@@ -52,7 +54,8 @@ export class Home {
   constructor() {
     // Free spots of my plans change when someone joins or leaves: refresh the list with each notice
     const events = inject(UserEvents);
-    merge(events.joined$, events.left$)
+    // A cancelled plan (HU-039) leaves the list at once
+    merge(events.joined$, events.left$, events.cancelled$)
       .pipe(takeUntilDestroyed(inject(DestroyRef)))
       .subscribe(() => this.myPlans.reload());
   }

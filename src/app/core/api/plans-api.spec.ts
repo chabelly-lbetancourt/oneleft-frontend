@@ -25,6 +25,9 @@ describe('PlansApi', () => {
     api.publish(plan).subscribe();
     api.plan('abc').subscribe();
     api.mine().subscribe();
+    const forecasts: unknown[] = [];
+    api.weather('abc').subscribe((forecast) => forecasts.push(forecast));
+    api.weather('abc').subscribe((forecast) => forecasts.push(forecast));
     api.join('abc').subscribe();
 
     const post = http.expectOne({ method: 'POST', url: base });
@@ -33,7 +36,56 @@ describe('PlansApi', () => {
     http.expectOne({ method: 'GET', url: `${base}/abc` }).flush({});
     http.expectOne({ method: 'GET', url: `${base}/mine` }).flush([]);
     http.expectOne({ method: 'POST', url: `${base}/abc/participants` }).flush({});
+    // On my way, running late and taking it back (HU-040)
+    api.announceArrival('abc', 'LATE', 10).subscribe();
+    const arrival = http.expectOne({ method: 'PUT', url: `${base}/abc/arrivals/me` });
+    expect(arrival.request.body).toEqual({ status: 'LATE', minutesLate: 10 });
+    arrival.flush({});
+    api.clearArrival('abc').subscribe();
+    http.expectOne({ method: 'DELETE', url: `${base}/abc/arrivals/me` }).flush({});
+    // Free mode and the free people near my plan (HU-035)
+    api.myAvailability().subscribe();
+    http.expectOne({ method: 'GET', url: `${base}/availability/me` }).flush(null);
+    const request = { hours: 2, latitude: 40.39, longitude: -3.63, interests: [] };
+    api.startAvailability(request).subscribe();
+    const put = http.expectOne({ method: 'PUT', url: `${base}/availability/me` });
+    expect(put.request.body).toEqual(request);
+    put.flush({});
+    api.stopAvailability().subscribe();
+    http.expectOne({ method: 'DELETE', url: `${base}/availability/me` }).flush(null);
+    api.freePeople('abc').subscribe();
+    http.expectOne({ method: 'GET', url: `${base}/abc/free-people` }).flush([]);
+    // A forecast, and none (204 or an error) without breaking the page (HU-026)
+    const weather = http.match({ method: 'GET', url: `${base}/abc/weather` });
+    weather[0].flush({ temperature: 17 });
+    weather[1].flush('down', { status: 503, statusText: 'Service Unavailable' });
+    expect(forecasts).toEqual([{ temperature: 17 }, null]);
     expect(api.eventsStreamUrl()).toBe(`${base}/events/stream`);
+    http.verify();
+  });
+
+  it('should suggest places near the device, and none on an error (HU-071)', () => {
+    TestBed.configureTestingModule({
+      providers: [provideHttpClient(), provideHttpClientTesting()],
+    });
+    const api = TestBed.inject(PlansApi);
+    const http = TestBed.inject(HttpTestingController);
+    const found: unknown[] = [];
+    const near = { latitude: 40.39, longitude: -3.63 };
+
+    api.suggestPlaces('padel', near).subscribe((places) => found.push(places));
+    api.suggestPlaces('padel', near).subscribe((places) => found.push(places));
+
+    const searches = http.match(
+      (request) =>
+        request.url === `${environment.apiUrl}/api/v1/places` && request.method === 'GET',
+    );
+    expect(searches[0].request.params.toString()).toBe(
+      'query=padel&latitude=40.39&longitude=-3.63',
+    );
+    searches[0].flush([{ name: 'Pistas de pádel' }]);
+    searches[1].flush({ code: 'rate.limited' }, { status: 429, statusText: 'Too Many Requests' });
+    expect(found).toEqual([[{ name: 'Pistas de pádel' }], []]);
     http.verify();
   });
 

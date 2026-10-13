@@ -25,6 +25,12 @@
   margin-bottom: space(8);
 }
 
+// «I'm free now» (HU-035), between the entries and my plans
+app-free-now {
+  display: block;
+  margin-bottom: space(8);
+}
+
 .section-heading {
   @include text(xl);
   @include weight(bold);

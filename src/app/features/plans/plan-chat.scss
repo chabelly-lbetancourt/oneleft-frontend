@@ -1,0 +1,94 @@
+@use 'abstracts' as *;
+
+// HU-008: the chat of a plan, the newest message at the bottom, next to the field to write
+.chat-page {
+  @include stack(space(3));
+}
+
+.chat-plan {
+  @include text(sm);
+  color: var(--ol-text-muted);
+}
+
+.chat-plan__link {
+  @include focus-ring;
+  color: inherit;
+}
+
+.chat-loading,
+.chat-failure {
+  @include stack(space(3));
+}
+
+.load-older {
+  align-self: center;
+}
+
+.chat-log {
+  @include stack(space(2));
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.chat-message {
+  @include stack(space(1));
+  @include radius(lg);
+  @include enter(ol-fade-up);
+  max-width: 85%;
+  align-self: flex-start;
+  padding: space(2) space(3);
+  background-color: var(--ol-surface);
+  border: 1px solid var(--ol-border);
+}
+
+.chat-message--mine {
+  align-self: flex-end;
+  background-color: var(--ol-brand-soft);
+  border-color: transparent;
+}
+
+.chat-message__meta {
+  @include row(space(2));
+  @include text(xs);
+  justify-content: space-between;
+  color: var(--ol-text-muted);
+}
+
+.chat-message__author {
+  @include weight(semibold);
+}
+
+.chat-message__text {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.chat-empty {
+  padding-block: space(6);
+  text-align: center;
+}
+
+.chat-end {
+  // Room so that the last message is not left under the field to write
+  scroll-margin-bottom: space(32);
+}
+
+.chat-form {
+  @include row(space(2));
+}
+
+.chat-form__input {
+  flex: 1;
+  min-width: 0;
+}
+
+.chat-status {
+  @include text(xs);
+  min-height: 1.25rem;
+  margin-top: space(1);
+}
+
+.chat-notice {
+  color: var(--ol-danger-text);
+}

@@ -5,8 +5,14 @@ import { provideRouter, Router, UrlTree } from '@angular/router';
 import { FakeSession } from '../../../testing/fake-session';
 import { Session } from '../../core/auth/session';
 import { UserEvents } from '../../core/realtime/user-events';
-import { PlanJoinedNotice, PlanLeftNotice } from '../../shared/model/published-plan';
-import { EMPTY, Subject } from 'rxjs';
+import {
+  PlanCancelledNotice,
+  PlanJoinedNotice,
+  PlanLeftNotice,
+} from '../../shared/model/published-plan';
+import { EMPTY, of, Subject } from 'rxjs';
+import { PlansApi } from '../../core/api/plans-api';
+import { UsersApi } from '../../core/api/users-api';
 import { Home } from './home';
 import { translocoTesting } from '../../../testing/transloco-testing';
 
@@ -16,6 +22,7 @@ describe('Home', () => {
   let session: FakeSession;
   const notices = new Subject<PlanJoinedNotice>();
   const left = new Subject<PlanLeftNotice>();
+  const cancelled = new Subject<PlanCancelledNotice>();
 
   beforeEach(async () => {
     session = new FakeSession();
@@ -26,12 +33,16 @@ describe('Home', () => {
         provideHttpClient(),
         provideHttpClientTesting(),
         { provide: Session, useValue: session },
+        // The «I'm free now» card has its own tests (HU-035)
+        { provide: PlansApi, useValue: { myAvailability: () => of(null) } },
+        { provide: UsersApi, useValue: { myProfile: () => of(null) } },
         {
           provide: UserEvents,
           useValue: {
             joined$: notices.asObservable(),
             left$: left.asObservable(),
             spotFreed$: EMPTY,
+            cancelled$: cancelled.asObservable(),
           },
         },
       ],
@@ -62,7 +73,7 @@ describe('Home', () => {
     const router = TestBed.inject(Router);
     const navigate = vi.spyOn(router, 'navigateByUrl').mockResolvedValue(true);
     const buttons = element.querySelectorAll<HTMLButtonElement>(
-      'header p-button:not(.language-switcher) button',
+      'header p-button:not(.language-switcher):not(.theme-switcher) button',
     );
     buttons[0].click();
     buttons[1].click();
@@ -77,7 +88,9 @@ describe('Home', () => {
     // The landing only tells what OneLeft is: no second set of sign-up buttons
     expect(element.querySelector('.hero p-button')).toBeNull();
     expect(element.querySelector('.google-login')).toBeNull();
-    expect(element.querySelectorAll('header p-button:not(.language-switcher)')).toHaveLength(2);
+    expect(
+      element.querySelectorAll('header p-button:not(.language-switcher):not(.theme-switcher)'),
+    ).toHaveLength(2);
   });
 
   it('should show the user and a link to the profile with a session', async () => {
@@ -135,7 +148,7 @@ describe('Home', () => {
     expect(element.querySelector('h1')?.textContent).toContain('¿Te falta uno?');
   });
 
-  it('should refresh my plans when someone joins or leaves one of them', async () => {
+  it('should refresh my plans when someone joins or leaves one of them or one is cancelled', async () => {
     session.signIn('Ana Test');
     fixture.detectChanges();
     const http = TestBed.inject(HttpTestingController);
@@ -160,6 +173,17 @@ describe('Home', () => {
       promotedName: null,
       freeSpots: 1,
       full: false,
+    });
+    fixture.detectChanges();
+    http.expectOne((r) => r.url.endsWith('/api/v1/plans/mine')).flush([]);
+    await fixture.whenStable();
+
+    cancelled.next({
+      planId: 'p1',
+      title: 'Pádel',
+      placeName: 'Pistas',
+      startsAt: '2026-11-16T17:20:00Z',
+      reason: 'MINIMUM_NOT_REACHED',
     });
     fixture.detectChanges();
     http.expectOne((r) => r.url.endsWith('/api/v1/plans/mine')).flush([]);

@@ -18,3 +18,7 @@ services:
   notifications:
     image: ${ONELEFT_IMAGES:-ghcr.io/chabelly-lbetancourt/oneleft-}notifications:${ONELEFT_IMAGE_TAG:-pre}
     environment: *e2e-env
+  # Chat of each plan (HU-008): the gateway relays its WebSocket
+  chat:
+    image: ${ONELEFT_IMAGES:-ghcr.io/chabelly-lbetancourt/oneleft-}chat:${ONELEFT_IMAGE_TAG:-pre}
+    environment: *e2e-env

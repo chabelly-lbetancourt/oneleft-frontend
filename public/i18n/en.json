@@ -17,7 +17,9 @@
     "nearby": "OneLeft · Nearby plans",
     "login": "OneLeft · Sign in",
     "register": "OneLeft · Sign up",
-    "notifications": "OneLeft · Notices"
+    "notifications": "OneLeft · Notices",
+    "alerts": "OneLeft · Saved alerts",
+    "chat": "OneLeft · Plan chat"
   },
   "auth": {
     "login": "Sign in",
@@ -124,10 +126,42 @@
     "waitlistLeave": "Leave the list",
     "waitlistCount": "{{count}} on the waiting list",
     "share": "Share",
+    "addToCalendar": "Add to calendar",
+    "calendarLink": "See the plan on OneLeft: {{url}}",
     "linkCopied": "Link copied: paste it anywhere.",
     "shareText": "{{activity}} at {{time}} · {{spots}}. Are you in?",
+    "shareTextStarted": "{{activity}} at {{time}} · {{status}}",
     "guestHint": "Sign in or create an account to join; you will come back to this plan.",
-    "spotsTaken": "{{occupied}} of {{spots}} spots taken"
+    "spotsTaken": "{{occupied}} of {{spots}} spots taken",
+    "status": {
+      "IN_PROGRESS": "In progress",
+      "FINISHED": "Finished",
+      "CANCELLED": "Cancelled"
+    },
+    "startedHint": "It has started: nobody else can join.",
+    "finishedHint": "This plan is over.",
+    "cancelledHint": "This plan was cancelled.",
+    "minimumPending": "Goes ahead if at least {{count}} join · you will know at {{time}}",
+    "minimumConfirmed": "Confirmed: the minimum of {{count}} was reached",
+    "cancelledMinimumHint": "It was cancelled because not enough people joined.",
+    "weatherTitle": "The weather at that time",
+    "weather": "{{temperature}} °C · {{rain}} % chance of rain · wind {{wind}} km/h",
+    "rainLikely": "Rain is likely: check with the group before going.",
+    "freePeople": "Free people nearby",
+    "freePeopleNone": "Nobody nearby is free for this plan right now.",
+    "freePeopleHint": "People who said they are free less than 5 km away. You will not see who they are or where.",
+    "freePerson": "{{km}} km away · {{level}}",
+    "freePersonActivities": "Also: {{activities}}",
+    "arrivalsTitle": "How are you doing?",
+    "arrivalsHint": "Tell the group; it disappears when the plan starts.",
+    "onTheWay": "I'm on my way",
+    "late": "I'm running late",
+    "lateMinutes": "+{{minutes}} min",
+    "clearArrival": "Take back my notice",
+    "arrivalOnTheWay": "On the way",
+    "arrivalLate": "{{minutes}} min late",
+    "arrivalYou": "You",
+    "chat": "Plan chat"
   },
   "publish": {
     "title": "Publish a plan",
@@ -149,6 +183,8 @@
     "horizon": "OneLeft is for plans in the next {{hours}} hours.",
     "where": "Where do you meet?",
     "wherePlaceholder": "Vallecas sports centre courts",
+    "placesFound": "{0} places nearby. Use the arrow keys to choose one",
+    "noPlaces": "No place nearby with that name: type it and use «I'm here»",
     "here": "I'm here",
     "whereError": "Set the meeting point with \"I'm here\".",
     "spots": "How many spots are left?",
@@ -156,7 +192,16 @@
     "anyLevel": "Any",
     "submit": "Publish plan",
     "checkFields": "Check the highlighted fields",
-    "chooseTime": "Choose a time within the next {{hours}} hours"
+    "chooseTime": "Choose a time within the next {{hours}} hours",
+    "minimumToggle": "Cancel if a minimum is not reached",
+    "minimumHint": "If not enough people have joined by the deadline, the plan is cancelled and everyone is told.",
+    "minimumParticipants": "Minimum of participants",
+    "minimumDeadline": "Deadline",
+    "deadlineAtStart": "At the start",
+    "deadline30": "30 min before",
+    "deadline60": "1 h before",
+    "deadline120": "2 h before",
+    "chooseDeadline": "Choose a deadline at least 5 minutes away."
   },
   "profile": {
     "title": "My profile",
@@ -208,7 +253,10 @@
       "notFull": "There are still free spots: join directly.",
       "alreadyWaiting": "You are already on the waiting list.",
       "notWaiting": "You are not on the waiting list.",
-      "waitlistFull": "The waiting list is full."
+      "waitlistFull": "The waiting list is full.",
+      "minimum": "The minimum of participants must be between 1 and the spots of the plan.",
+      "minimumDeadline": "The deadline of the minimum cannot be after the start of the plan.",
+      "minimumDeadlineTooSoon": "The deadline of the minimum must be at least 5 minutes away."
     },
     "meetingPoint": {
       "name": "The meeting point needs a name of up to 100 characters"
@@ -248,6 +296,19 @@
       "quietHours": "Quiet hours need a start and a different end",
       "pushEndpoint": "The browser subscription is not valid",
       "pushKeys": "The browser subscription is not valid"
+    },
+    "alerts": {
+      "name": "The name of the alert must have 1 to 40 characters.",
+      "zone": "The zone of the alert is not valid.",
+      "radius": "The distance must be between 0.5 and 20 km.",
+      "hours": "The start hour must be before the end hour, on the same day.",
+      "limit": "You already have the maximum of alerts: delete one to create another.",
+      "notFound": "This alert no longer exists."
+    },
+    "alertsFailed": "The alert could not be saved.",
+    "arrivalFailed": "The group could not be told. Please try again.",
+    "arrival": {
+      "minutes": "Choose 5, 10, 15 or 30 minutes."
     }
   },
   "nearby": {
@@ -282,7 +343,14 @@
     "spotTitle": "You have a spot!",
     "spot": "A spot opened up in “{{title}}” and it is yours",
     "nearbyTitle": "A plan near you",
-    "nearby": "\"{{title}}\" · {{activity}} at {{time}} · {{place}} · {{km}} km away · {{spots}}"
+    "nearby": "\"{{title}}\" · {{activity}} at {{time}} · {{place}} · {{km}} km away · {{spots}}",
+    "reminderTitle": "Your plan starts soon",
+    "reminder": "«{{title}}» starts at {{time}} at {{place}}",
+    "cancelledTitle": "Plan cancelled",
+    "cancelled": "«{{title}}» at {{time}} has been cancelled: not enough people joined",
+    "arrivalTitle": "News of your plan",
+    "onTheWay": "{{name}} is on the way to «{{title}}»",
+    "late": "{{name}} will be {{minutes}} min late to «{{title}}»"
   },
   "notifications": {
     "title": "Notices of plans nearby",
@@ -315,6 +383,106 @@
       "denied": "You blocked OneLeft notifications in this browser. Allow them in its settings.",
       "unavailable": "Browser notifications are off on this server: they will reach you with OneLeft open.",
       "unsupported": "This browser does not support notifications: they will reach you with OneLeft open."
+    },
+    "alertsLink": "Saved alerts",
+    "alertsLinkHint": "Specific searches that tell you when a plan like that appears."
+  },
+  "theme": {
+    "toDark": "Switch to dark mode",
+    "toLight": "Switch to light mode",
+    "title": "Appearance",
+    "system": "System",
+    "light": "Light",
+    "dark": "Dark",
+    "hint": "«System» follows the settings of your device."
+  },
+  "alerts": {
+    "title": "Saved alerts",
+    "intro": "Save the searches you care about and we will tell you as soon as a plan like that is published nearby.",
+    "loading": "Loading your alerts…",
+    "loadError": "Your alerts could not be loaded. Please try again.",
+    "empty": "You have no alerts yet. For example: “intermediate padel less than 3 km away on weekday afternoons”.",
+    "new": "New alert",
+    "edit": "Edit",
+    "delete": "Delete",
+    "cancel": "Cancel",
+    "save": "Save alert",
+    "saved": "Alert saved.",
+    "deleted": "Alert deleted.",
+    "limit": "You can keep up to {{max}} alerts: delete one to create another.",
+    "name": "Name",
+    "namePlaceholder": "Padel after work",
+    "activities": "Activities",
+    "activitiesHint": "If you choose none, any activity.",
+    "level": "Level",
+    "zone": "Around where?",
+    "radius": "Maximum distance",
+    "days": "Days",
+    "daysHint": "If you choose none, any day.",
+    "anyTime": "At any time",
+    "from": "From",
+    "to": "To",
+    "chooseZone": "Choose a zone for the alert.",
+    "anyActivity": "Any activity",
+    "everyDay": "Every day",
+    "summaryHours": "from {{from}} to {{to}}",
+    "summaryKm": "{{km}} km away",
+    "day": {
+      "MONDAY": "M",
+      "TUESDAY": "T",
+      "WEDNESDAY": "W",
+      "THURSDAY": "T",
+      "FRIDAY": "F",
+      "SATURDAY": "S",
+      "SUNDAY": "S"
+    },
+    "dayName": {
+      "MONDAY": "Monday",
+      "TUESDAY": "Tuesday",
+      "WEDNESDAY": "Wednesday",
+      "THURSDAY": "Thursday",
+      "FRIDAY": "Friday",
+      "SATURDAY": "Saturday",
+      "SUNDAY": "Sunday"
+    }
+  },
+  "freeNow": {
+    "title": "Are you free now?",
+    "hint": "Tell us for how long and whoever organizes a plan nearby will see you, without your name or where you are.",
+    "start": "I'm free now",
+    "hours": "For how long?",
+    "hoursOption": "{{count}} h",
+    "activities": "For what?",
+    "activitiesHint": "Your hobbies from the profile, with your level. If you choose none, for any plan.",
+    "confirm": "Turn on",
+    "cancel": "Cancel",
+    "on": "You are free until {{time}}",
+    "onHint": "Whoever organizes a plan nearby will see someone is free. It turns off when you join a plan.",
+    "stop": "I'm no longer free",
+    "noZone": "Turn on the location or save a zone in your profile to say you are free.",
+    "failed": "It could not be turned on. Please try again."
+  },
+  "chat": {
+    "title": "Plan chat",
+    "loading": "Loading the chat",
+    "label": "Message for the group",
+    "placeholder": "Write to the group…",
+    "send": "Send",
+    "you": "You",
+    "older": "Show earlier messages",
+    "connecting": "Connecting…",
+    "readOnly": "The plan is over: the chat is read-only.",
+    "empty": "No messages yet. Say hi to the group!",
+    "emptyClosed": "Nobody wrote in this chat.",
+    "backToPlan": "Back to the plan",
+    "errors": {
+      "chat.notMember": "Only the people in the plan can see its chat.",
+      "plan.notFound": "This plan does not exist.",
+      "chat.unavailable": "The chat is not available right now. Try again in a while.",
+      "chat.closed": "The plan is over: nobody can write any more.",
+      "chat.text": "A message cannot be empty or longer than 500 characters.",
+      "chat.tooFast": "You are going too fast: wait a moment before sending another message.",
+      "chat.offline": "No connection with the chat: your message was not sent."
     }
   }
 }

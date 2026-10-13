@@ -8,6 +8,9 @@ import { PlanNearbyNotice } from '../../shared/model/notifications';
 import {
   PlanJoinedNotice,
   PlanLeftNotice,
+  PlanArrivalNotice,
+  PlanCancelledNotice,
+  PlanReminderNotice,
   SpotFreedNotice,
 } from '../../shared/model/published-plan';
 import { JoinNotices } from './join-notices';
@@ -18,6 +21,9 @@ describe('JoinNotices', () => {
     const left = new Subject<PlanLeftNotice>();
     const spots = new Subject<SpotFreedNotice>();
     const nearby = new Subject<PlanNearbyNotice>();
+    const reminders = new Subject<PlanReminderNotice>();
+    const cancelled = new Subject<PlanCancelledNotice>();
+    const arrivals = new Subject<PlanArrivalNotice>();
     TestBed.configureTestingModule({
       imports: [JoinNotices, translocoTesting()],
       providers: [
@@ -29,6 +35,9 @@ describe('JoinNotices', () => {
             left$: left.asObservable(),
             spotFreed$: spots.asObservable(),
             nearby$: nearby.asObservable(),
+            reminder$: reminders.asObservable(),
+            cancelled$: cancelled.asObservable(),
+            arrival$: arrivals.asObservable(),
           },
         },
       ],
@@ -112,6 +121,57 @@ describe('JoinNotices', () => {
     expect(add.mock.calls[5][0].detail).toMatch(
       /^«Pádel 2 contra 2» · Pádel a las \d{2}:\d{2} · Pistas de la Albufera · a 0,7 km · Falta 1$/,
     );
+
+    reminders.next({
+      planId: 'p4',
+      title: 'Pádel 2 contra 2',
+      placeName: 'Pistas de la Albufera',
+      startsAt: '2026-11-16T17:20:00Z',
+    });
+    expect(add.mock.calls[6][0]).toMatchObject({
+      summary: 'Tu plan empieza pronto',
+      icon: 'pi-clock',
+      data: 'p4',
+    });
+    expect(add.mock.calls[6][0].detail).toMatch(
+      /^«Pádel 2 contra 2» empieza a las \d{2}:\d{2} en Pistas de la Albufera$/,
+    );
+
+    cancelled.next({
+      planId: 'p5',
+      title: 'Pádel 2 contra 2',
+      placeName: 'Pistas de la Albufera',
+      startsAt: '2026-11-16T17:20:00Z',
+      reason: 'MINIMUM_NOT_REACHED',
+    });
+    expect(add.mock.calls[7][0]).toMatchObject({
+      summary: 'Plan cancelado',
+      icon: 'pi-times-circle',
+      severity: 'warn',
+      data: 'p5',
+    });
+    expect(add.mock.calls[7][0].detail).toMatch(
+      /^«Pádel 2 contra 2» de las \d{2}:\d{2} se ha cancelado: no se llegó al mínimo de participantes$/,
+    );
+
+    arrivals.next({ planId: 'p6', title: 'Pádel', name: 'Lucía', status: 'LATE', minutesLate: 10 });
+    expect(add.mock.calls[8][0]).toMatchObject({
+      summary: 'Novedades de tu plan',
+      icon: 'pi-clock',
+      detail: 'Lucía llegará 10 min tarde a «Pádel»',
+      data: 'p6',
+    });
+    arrivals.next({
+      planId: 'p6',
+      title: 'Pádel',
+      name: 'Diego',
+      status: 'ON_THE_WAY',
+      minutesLate: null,
+    });
+    expect(add.mock.calls[9][0]).toMatchObject({
+      icon: 'pi-directions',
+      detail: 'Diego va de camino a «Pádel»',
+    });
 
     (fixture.componentInstance as unknown as { open: (id: string) => void }).open('p1');
     expect(navigate).toHaveBeenCalledWith(['/plans', 'p1']);

@@ -4,20 +4,20 @@
 // Avatars with initials: signed-in user, profile and participants
 .avatar--user.p-avatar {
   @include weight(semibold);
-  background-color: var(--p-primary-100);
-  color: var(--p-primary-800);
+  background-color: var(--ol-avatar);
+  color: var(--ol-avatar-text);
 }
 
 .avatar--profile.p-avatar {
   @include weight(bold);
-  background-color: var(--p-primary-100);
+  background-color: var(--ol-avatar);
   color: var(--ol-brand);
 }
 
 .avatar--participant.p-avatar {
   @include text(xs);
   @include weight(bold);
-  background-color: var(--p-primary-200);
+  background-color: var(--ol-avatar-strong);
   color: var(--ol-ink);
 }
 
@@ -52,4 +52,20 @@
 /// A PrimeNG button as wide as its container (styleClass="button--block")
 .button--block {
   width: 100%;
+}
+
+/// Notices on top: below the status bar of the Android app
+.p-toast-top-center {
+  top: calc(2rem + safe-area(top));
+}
+
+/// Suggested places of the meeting point (HU-071, panelStyleClass="place-panel"): as wide as the field, whatever the
+/// length of the address. PrimeNG gives the list the width of the field as its minimum; with no width of its own it
+/// takes exactly that one, and each option wraps instead of going off the screen
+.place-panel.p-autocomplete-overlay {
+  width: 0;
+
+  .p-autocomplete-option {
+    white-space: normal;
+  }
 }

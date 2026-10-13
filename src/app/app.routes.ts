@@ -38,6 +38,13 @@ export const routes: Routes = [
     title: 'titles.notifications',
   },
   {
+    // Saved alerts (HU-036)
+    path: 'notifications/alerts',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/notifications/saved-alerts').then((m) => m.SavedAlerts),
+    title: 'titles.alerts',
+  },
+  {
     path: 'plans/new',
     canActivate: [authGuard],
     loadComponent: () => import('./features/plans/publish-plan').then((m) => m.PublishPlan),
@@ -49,6 +56,13 @@ export const routes: Routes = [
     canActivate: [authGuard],
     loadComponent: () => import('./features/plans/nearby-plans').then((m) => m.NearbyPlans),
     title: 'titles.nearby',
+  },
+  {
+    // The chat of a plan (HU-008): only for its organizer and participants, which the service checks
+    path: 'plans/:id/chat',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/plans/plan-chat').then((m) => m.PlanChat),
+    title: 'titles.chat',
   },
   {
     // Public: a shared link opens it without a session (HU-024)

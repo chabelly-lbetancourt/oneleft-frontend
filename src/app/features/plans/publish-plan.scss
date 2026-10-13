@@ -26,6 +26,42 @@
   width: 10rem;
 }
 
+// The minimum of participants (HU-039): a setting with its switch on the right
+.switch-row {
+  @include row(space(4), flex-start);
+}
+
+.switch-text {
+  flex: 1;
+}
+
+.deadline-options {
+  flex-wrap: wrap;
+}
+
+// HU-071: the meeting point suggests nearby places
+.place-field {
+  display: block;
+}
+
+.place-option {
+  @include stack(space(0.5));
+  min-width: 0;
+}
+
+.place-option__name {
+  @include weight(semibold);
+}
+
+.place-option__detail {
+  @include text(sm);
+  color: var(--ol-text-muted);
+}
+
+.place-option__distance {
+  white-space: nowrap;
+}
+
 .place-actions {
   @include cluster(space(2));
 }

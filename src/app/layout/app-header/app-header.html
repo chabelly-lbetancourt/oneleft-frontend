@@ -2,6 +2,7 @@
   <div class="app-header__inner">
     <app-brand-logo />
     <div class="app-header__actions">
+      <app-theme-switcher />
       <app-language-switcher />
       @if (session.isAuthenticated()) {
         <a routerLink="/profile" class="user-menu">

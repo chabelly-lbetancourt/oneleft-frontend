@@ -1,13 +1,21 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import { TranslocoService } from '@jsverse/transloco';
-import { EMPTY, of, Subject, throwError } from 'rxjs';
+import { EMPTY, Observable, of, Subject, throwError } from 'rxjs';
 import { FakeSession } from '../../../testing/fake-session';
 import { translocoTesting } from '../../../testing/transloco-testing';
 import { PlansApi } from '../../core/api/plans-api';
 import { Session } from '../../core/auth/session';
 import { UserEvents } from '../../core/realtime/user-events';
-import { Plan, PlanJoinedNotice, PlanLeftNotice } from '../../shared/model/published-plan';
+import {
+  Forecast,
+  FreePerson,
+  Plan,
+  PlanArrivalNotice,
+  PlanCancelledNotice,
+  PlanJoinedNotice,
+  PlanLeftNotice,
+} from '../../shared/model/published-plan';
 import { PlanDetail } from './plan-detail';
 import { NativePlatform } from '../../core/platform';
 
@@ -37,10 +45,16 @@ describe('PlanDetail', () => {
   let session: FakeSession;
   let notices: Subject<PlanJoinedNotice>;
   let left: Subject<PlanLeftNotice>;
+  let cancelled: Subject<PlanCancelledNotice>;
+  let arrivals: Subject<PlanArrivalNotice>;
   const api = {
     plan: vi.fn(),
     publicPlan: vi.fn(),
     shareUrl: vi.fn((id: string) => `http://localhost:8080/share/plans/${id}`),
+    weather: vi.fn((): Observable<Forecast | null> => of(null)),
+    freePeople: vi.fn((): Observable<FreePerson[]> => of([])),
+    announceArrival: vi.fn(),
+    clearArrival: vi.fn(),
     join: vi.fn(),
     leave: vi.fn(),
     joinWaitlist: vi.fn(),
@@ -66,9 +80,14 @@ describe('PlanDetail', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    // No forecast nor free people unless a test gives them (HU-026, HU-035)
+    api.weather.mockReturnValue(of(null));
+    api.freePeople.mockReturnValue(of([]));
     session = new FakeSession();
     notices = new Subject();
     left = new Subject();
+    cancelled = new Subject();
+    arrivals = new Subject();
     TestBed.configureTestingModule({
       imports: [PlanDetail, translocoTesting()],
       providers: [
@@ -81,6 +100,8 @@ describe('PlanDetail', () => {
             joined$: notices.asObservable(),
             left$: left.asObservable(),
             spotFreed$: EMPTY,
+            cancelled$: cancelled.asObservable(),
+            arrival$: arrivals.asObservable(),
           },
         },
       ],
@@ -173,6 +194,8 @@ describe('PlanDetail', () => {
             joined$: notices.asObservable(),
             left$: left.asObservable(),
             spotFreed$: EMPTY,
+            cancelled$: EMPTY,
+            arrival$: EMPTY,
           },
         },
       ],
@@ -193,12 +216,40 @@ describe('PlanDetail', () => {
             joined$: notices.asObservable(),
             left$: left.asObservable(),
             spotFreed$: EMPTY,
+            cancelled$: EMPTY,
+            arrival$: EMPTY,
           },
         },
       ],
     });
     await create({ ...PLAN, startsAt: new Date(Date.now() - 60_000).toISOString() });
     expect(element().textContent).toContain('ya no admite gente');
+  });
+
+  it('should show that a plan has started or finished and offer nothing (HU-007)', async () => {
+    const past = new Date(Date.now() - 60_000).toISOString();
+    await create({
+      ...PLAN,
+      startsAt: past,
+      status: 'IN_PROGRESS',
+      participants: [{ ...LUCIA, userId: 'me' }],
+    });
+    expect(element().querySelector('.plan-state')?.textContent).toContain('En curso');
+    expect(element().querySelector('.ended-hint')?.textContent).toContain('Ya ha empezado');
+    expect(element().querySelector('.leave-button')).toBeNull();
+    expect(element().querySelector('.join-button')).toBeNull();
+
+    const component = fixture.componentInstance as unknown as {
+      plan: { set: (plan: unknown) => void };
+    };
+    component.plan.set({ ...PLAN, startsAt: past, status: 'FINISHED' });
+    fixture.detectChanges();
+    expect(element().querySelector('.plan-state')?.textContent).toContain('Terminado');
+    expect(element().querySelector('.ended-hint')?.textContent).toContain('ya terminó');
+
+    component.plan.set({ ...PLAN, status: 'CANCELLED' });
+    fixture.detectChanges();
+    expect(element().querySelector('.ended-hint')?.textContent).toContain('se canceló');
   });
 
   it('should reload the plan when someone joins it', async () => {
@@ -383,6 +434,24 @@ describe('PlanDetail', () => {
     });
   });
 
+  it('should open the chat of the plan for its organizer and participants only (HU-008)', async () => {
+    await create(PLAN, undefined, 'org');
+    const button = element().querySelector('.chat-button');
+    expect(button?.textContent).toContain('Chat del plan');
+
+    const past = new Date(Date.now() - 60_000).toISOString();
+    await create({
+      ...PLAN,
+      startsAt: past,
+      status: 'FINISHED',
+      participants: [{ ...LUCIA, userId: 'me' }],
+    });
+    expect(element().querySelector('.chat-button')).not.toBeNull();
+
+    await create(PLAN);
+    expect(element().querySelector('.chat-button')).toBeNull();
+  });
+
   it('should share the plan with the Android share sheet inside the app', async () => {
     await create(PLAN);
     const platform = TestBed.inject(NativePlatform);
@@ -426,6 +495,267 @@ describe('PlanDetail', () => {
       expect.stringContaining('http://localhost:8080/share/plans/plan-1'),
     );
     expect(element().querySelector('.copied-message')?.textContent).toContain('Enlace copiado');
+  });
+
+  it('should not invite anyone to a plan that has already started', async () => {
+    const past = new Date(Date.now() - 60_000).toISOString();
+    await create({ ...PLAN, startsAt: past, status: 'FINISHED' });
+    const share = vi.fn().mockResolvedValue(undefined);
+    Object.defineProperty(navigator, 'share', { value: share, configurable: true });
+    const shareAndRead = async () => {
+      element().querySelector<HTMLButtonElement>('.share-button button')!.click();
+      await render();
+      return (share.mock.lastCall![0] as { text: string }).text;
+    };
+
+    expect(await shareAndRead()).toMatch(/^Pádel a las \d{2}:\d{2} · Terminado$/);
+
+    // Started a moment ago: the service has not marked it as in progress yet
+    const component = fixture.componentInstance as unknown as {
+      plan: { set: (plan: unknown) => void };
+    };
+    component.plan.set({ ...PLAN, startsAt: past });
+    expect(await shareAndRead()).toMatch(/^Pádel a las \d{2}:\d{2} · En curso$/);
+
+    component.plan.set({ ...PLAN, status: 'CANCELLED' });
+    expect(await shareAndRead()).toMatch(/· Cancelado$/);
+
+    TestBed.inject(TranslocoService).setActiveLang('en');
+    expect(await shareAndRead()).toMatch(/^Padel at .+ · Cancelled$/);
+    Object.defineProperty(navigator, 'share', { value: undefined, configurable: true });
+  });
+
+  it('should offer the calendar to the organizer and the participants of an upcoming plan', async () => {
+    await create(PLAN, undefined, 'org');
+    expect(element().querySelector('.calendar-button')?.textContent).toContain(
+      'Añadir al calendario',
+    );
+
+    await create({ ...PLAN, participants: [{ ...LUCIA, userId: 'me' }] });
+    expect(element().querySelector('.calendar-button')).not.toBeNull();
+
+    await create(PLAN);
+    expect(element().querySelector('.calendar-button')).toBeNull();
+
+    await create({ ...PLAN, status: 'IN_PROGRESS' }, undefined, 'org');
+    expect(element().querySelector('.calendar-button')).toBeNull();
+  });
+
+  it('should download the plan as an iCalendar file', async () => {
+    await create(PLAN, undefined, 'org');
+    const createObjectURL = vi.fn().mockReturnValue('blob:plan');
+    const revokeObjectURL = vi.fn();
+    Object.assign(URL, { createObjectURL, revokeObjectURL });
+    const click = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockReturnValue(undefined);
+
+    element().querySelector<HTMLButtonElement>('.calendar-button button')!.click();
+    await render();
+
+    const file = createObjectURL.mock.calls[0][0] as Blob;
+    expect(file.type).toBe('text/calendar;charset=utf-8');
+    const ics = await file.text();
+    expect(ics).toContain('UID:plan-plan-1@oneleft');
+    expect(ics).toContain('SUMMARY:Partido de pádel\\, falta uno');
+    expect(ics).toContain('LOCATION:Pistas del polideportivo');
+    expect(ics).toContain('URL:http://localhost:8080/share/plans/plan-1');
+    expect(click).toHaveBeenCalled();
+    expect((click.mock.contexts[0] as HTMLAnchorElement).download).toBe(
+      'partido-de-padel-falta-uno.ics',
+    );
+    expect(revokeObjectURL).toHaveBeenCalledWith('blob:plan');
+    click.mockRestore();
+  });
+
+  it('should open Google Calendar inside the Android app', async () => {
+    await create(PLAN, undefined, 'org');
+    const platform = TestBed.inject(NativePlatform);
+    vi.spyOn(platform, 'isNative').mockReturnValue(true);
+    const open = vi.spyOn(platform, 'openBrowser').mockResolvedValue();
+
+    element().querySelector<HTMLButtonElement>('.calendar-button button')!.click();
+    await render();
+
+    const url = new URL(open.mock.calls[0][0]);
+    expect(url.host).toBe('calendar.google.com');
+    expect(url.searchParams.get('text')).toBe('Partido de pádel, falta uno');
+    expect(url.searchParams.get('details')).toContain('Ver el plan en OneLeft');
+  });
+
+  it('should show the minimum of participants until the deadline and once confirmed (HU-039)', async () => {
+    const minimum = { participants: 2, deadline: PLAN.startsAt, confirmed: false };
+    await create({ ...PLAN, minimum });
+    expect(element().querySelector('.plan-minimum')?.textContent).toMatch(
+      /Sale si se apuntan al menos 2 · lo sabrás a las \d{2}:\d{2}/,
+    );
+    expect(element().querySelector('.plan-minimum--confirmed')).toBeNull();
+
+    await create({ ...PLAN, minimum: { ...minimum, confirmed: true } });
+    expect(element().querySelector('.plan-minimum--confirmed')?.textContent).toContain(
+      'Confirmado: se llegó al mínimo de 2',
+    );
+
+    await create(PLAN);
+    expect(element().querySelector('.plan-minimum')).toBeNull();
+  });
+
+  it('should explain a cancellation for not reaching the minimum and reload on the notice', async () => {
+    await create({
+      ...PLAN,
+      minimum: { participants: 2, deadline: PLAN.startsAt, confirmed: false },
+    });
+    api.plan.mockReturnValue(
+      of({
+        ...PLAN,
+        status: 'CANCELLED',
+        minimum: { participants: 2, deadline: PLAN.startsAt, confirmed: false },
+      }),
+    );
+
+    cancelled.next({
+      planId: 'other',
+      title: 'Otro',
+      placeName: 'Pistas',
+      startsAt: PLAN.startsAt,
+      reason: 'MINIMUM_NOT_REACHED',
+    });
+    expect(api.plan).toHaveBeenCalledTimes(1);
+    cancelled.next({
+      planId: 'plan-1',
+      title: PLAN.title,
+      placeName: 'Pistas',
+      startsAt: PLAN.startsAt,
+      reason: 'MINIMUM_NOT_REACHED',
+    });
+    await render();
+
+    expect(api.plan).toHaveBeenCalledTimes(2);
+    expect(element().querySelector('.plan-state')?.textContent).toContain('Cancelado');
+    expect(element().querySelector('.ended-hint')?.textContent).toContain(
+      'no se llegó al mínimo de participantes',
+    );
+    expect(element().querySelector('.plan-minimum')).toBeNull();
+    expect(element().querySelector('.join-button')).toBeNull();
+    // Neither «has already started» nor an invitation to join
+    expect(element().querySelector('.plan-time')?.textContent).not.toContain('·');
+    expect(element().textContent).not.toContain('Aún no se ha apuntado nadie');
+
+    await create({ ...PLAN, status: 'CANCELLED' });
+    expect(element().querySelector('.ended-hint')?.textContent).toContain('Este plan se canceló.');
+  });
+
+  it('should show the weather of an outdoor plan and highlight likely rain (HU-026)', async () => {
+    const forecast = {
+      time: PLAN.startsAt,
+      temperature: 17.4,
+      precipitationProbability: 20,
+      windSpeed: 12.6,
+      rainLikely: false,
+    };
+    api.weather.mockReturnValue(of(forecast));
+    await create(PLAN);
+    expect(api.weather).toHaveBeenCalledWith('plan-1');
+    expect(element().querySelector('.weather')?.textContent).toContain(
+      '17 °C · 20 % de lluvia · viento 13 km/h',
+    );
+    expect(element().querySelector('.weather .pi-sun')).not.toBeNull();
+    expect(element().querySelector('.weather__rain')).toBeNull();
+
+    api.weather.mockReturnValue(
+      of({ ...forecast, precipitationProbability: 70, rainLikely: true }),
+    );
+    await create(PLAN);
+    expect(element().querySelector('.weather--rain .pi-cloud')).not.toBeNull();
+    expect(element().querySelector('.weather__rain')?.textContent).toContain(
+      'Es probable que llueva',
+    );
+  });
+
+  it('should show no weather without a forecast, for guests or for ended plans', async () => {
+    await create(PLAN);
+    expect(element().querySelector('.weather')).toBeNull();
+
+    api.weather.mockClear();
+    await create({ ...PLAN, status: 'FINISHED' });
+    expect(api.weather).not.toHaveBeenCalled();
+  });
+
+  it('should show the organizer who is free nearby, without names (HU-035)', async () => {
+    api.freePeople.mockReturnValue(
+      of([
+        { distanceMeters: 500, level: null, activities: [] },
+        { distanceMeters: 1500, level: 'INTERMEDIATE', activities: ['PADEL', 'TENNIS'] },
+      ]),
+    );
+    await create(PLAN, undefined, 'org');
+
+    expect(api.freePeople).toHaveBeenCalledWith('plan-1');
+    const free = element().querySelector('.free-people')!;
+    expect(free.textContent).toContain('Gente libre cerca · 2');
+    expect(free.textContent).toContain('a 0,5 km · Cualquier nivel');
+    expect(free.textContent).toContain('a 1,5 km · Intermedio');
+    expect(free.textContent).toContain('También: Pádel, Tenis');
+  });
+
+  it('should tell the organizer when nobody is free, and ask nothing for other people', async () => {
+    await create(PLAN, undefined, 'org');
+    expect(element().querySelector('.free-people')?.textContent).toContain('no hay nadie libre');
+
+    api.freePeople.mockClear();
+    await create(PLAN);
+    expect(api.freePeople).not.toHaveBeenCalled();
+    expect(element().querySelector('.free-people')).toBeNull();
+  });
+
+  it('should let the group say how they are getting there and show it (HU-040)', async () => {
+    const joined = { ...PLAN, participants: [{ ...LUCIA, userId: 'me', name: 'Me' }] };
+    await create(joined);
+    expect(element().querySelector('.arrivals')).not.toBeNull();
+    expect(element().querySelector('.arrival')).toBeNull();
+
+    const at = new Date().toISOString();
+    api.announceArrival.mockReturnValue(
+      of({
+        ...joined,
+        arrivals: [
+          { userId: 'org', name: 'Ana Test', status: 'ON_THE_WAY', minutesLate: null, at },
+          { userId: 'me', name: 'Me', status: 'LATE', minutesLate: 10, at },
+        ],
+      }),
+    );
+    element().querySelector<HTMLButtonElement>('.late-10 button')!.click();
+    await render();
+
+    expect(api.announceArrival).toHaveBeenCalledWith('plan-1', 'LATE', 10);
+    const items = element().querySelectorAll('.arrival');
+    expect(items[0].textContent).toContain('Tú · Llega 10 min tarde');
+    expect(items[1].textContent).toContain('Ana Test · De camino');
+
+    api.clearArrival.mockReturnValue(of({ ...joined, arrivals: [] }));
+    element().querySelector<HTMLButtonElement>('.clear-arrival button')!.click();
+    await render();
+    expect(api.clearArrival).toHaveBeenCalledWith('plan-1');
+    expect(element().querySelector('.arrival')).toBeNull();
+  });
+
+  it('should offer nothing to people outside the group and reload on a notice of the group', async () => {
+    await create(PLAN);
+    expect(element().querySelector('.arrivals')).toBeNull();
+
+    await create({ ...PLAN, status: 'IN_PROGRESS' }, undefined, 'org');
+    expect(element().querySelector('.arrivals')).toBeNull();
+
+    await create(PLAN, undefined, 'org');
+    const before = api.plan.mock.calls.length;
+    arrivals.next({
+      planId: 'plan-1',
+      title: PLAN.title,
+      name: 'Lucía',
+      status: 'ON_THE_WAY',
+      minutesLate: null,
+    });
+    await render();
+    // Every detail still open in this test reloads its plan
+    expect(api.plan.mock.calls.length).toBeGreaterThan(before);
   });
 
   it('should show the plan in English', async () => {

@@ -11,8 +11,8 @@ import { PlanNearbyNotice } from '../../shared/model/notifications';
 import { clockTime, spotsKey } from '../../shared/time/plan-time';
 
 /**
- * Toasts of the personal events: someone joined or left one of my plans, a spot I was waiting for is mine, or a plan I
- * like has been published nearby (HU-006). Tapping one opens the plan.
+ * Toasts of the personal events: someone joined or left one of my plans, a spot I was waiting for is mine, a plan I
+ * like has been published nearby (HU-006) or a plan I am in starts soon (HU-007). Tapping one opens the plan.
  */
 @Component({
   selector: 'app-join-notices',
@@ -70,6 +70,42 @@ export class JoinNotices {
           'success',
         ),
       );
+    events.reminder$.pipe(takeUntilDestroyed(destroyRef)).subscribe((notice) =>
+      this.show(
+        'pi-clock',
+        'notices.reminderTitle',
+        this.transloco.translate('notices.reminder', {
+          title: notice.title,
+          time: clockTime(new Date(notice.startsAt), this.language.locale()),
+          place: notice.placeName,
+        }),
+        notice.planId,
+      ),
+    );
+    events.cancelled$.pipe(takeUntilDestroyed(destroyRef)).subscribe((notice) =>
+      this.show(
+        'pi-times-circle',
+        'notices.cancelledTitle',
+        this.transloco.translate('notices.cancelled', {
+          title: notice.title,
+          time: clockTime(new Date(notice.startsAt), this.language.locale()),
+        }),
+        notice.planId,
+        'warn',
+      ),
+    );
+    events.arrival$.pipe(takeUntilDestroyed(destroyRef)).subscribe((notice) =>
+      this.show(
+        notice.status === 'LATE' ? 'pi-clock' : 'pi-directions',
+        'notices.arrivalTitle',
+        this.transloco.translate(notice.status === 'LATE' ? 'notices.late' : 'notices.onTheWay', {
+          name: notice.name,
+          title: notice.title,
+          minutes: notice.minutesLate,
+        }),
+        notice.planId,
+      ),
+    );
     events.nearby$
       .pipe(takeUntilDestroyed(destroyRef))
       .subscribe((notice) =>

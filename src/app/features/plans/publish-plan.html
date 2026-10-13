@@ -64,13 +64,38 @@
 
     <section class="form-section">
       <label for="placeName" class="section-title">{{ 'publish.where' | transloco }}</label>
-      <input
-        pInputText
-        id="placeName"
+      <!-- HU-071: nearby places that match what is typed; a free name still works. Without suggestions nothing
+           covers «I'm here»: only screen readers hear that there are none -->
+      <p-autocomplete
+        class="place-field"
+        inputId="placeName"
         formControlName="placeName"
+        [suggestions]="placeSuggestions()"
+        optionLabel="name"
+        [optionValue]="placeValue"
+        [minQueryLength]="placeQueryMinLength"
+        [delay]="300"
+        [fluid]="true"
+        panelStyleClass="place-panel"
+        scrollHeight="22rem"
+        [maxlength]="100"
         [placeholder]="'publish.wherePlaceholder' | transloco"
-        maxlength="100"
-      />
+        [searchMessage]="'publish.placesFound' | transloco"
+        [showEmptyMessage]="false"
+        [emptyMessage]="'publish.noPlaces' | transloco"
+        (completeMethod)="searchPlaces($event.query)"
+        (onSelect)="choosePlace($event.value)"
+      >
+        <ng-template #item let-place>
+          <span class="place-option">
+            <span class="place-option__name">{{ place.name }}</span>
+            <span class="place-option__detail">
+              {{ place.address ? place.address + ' · ' : ''
+              }}<span class="place-option__distance">{{ distance(place.distanceMeters) }}</span>
+            </span>
+          </span>
+        </ng-template>
+      </p-autocomplete>
       <div class="place-actions">
         <p-button
           [label]="'publish.here' | transloco"
@@ -112,6 +137,45 @@
         [allowEmpty]="false"
         size="small"
       />
+    </section>
+
+    <section class="form-section minimum-section">
+      <div class="switch-row">
+        <div class="switch-text">
+          <label for="hasMinimum" class="section-title">{{
+            'publish.minimumToggle' | transloco
+          }}</label>
+          <p class="hint">{{ 'publish.minimumHint' | transloco }}</p>
+        </div>
+        <p-toggleswitch inputId="hasMinimum" formControlName="hasMinimum" class="minimum-switch" />
+      </div>
+      @if (form.controls.hasMinimum.value) {
+        <label for="minParticipants" class="section-title section-title--spaced">{{
+          'publish.minimumParticipants' | transloco
+        }}</label>
+        <p-inputnumber
+          inputId="minParticipants"
+          formControlName="minParticipants"
+          [showButtons]="true"
+          buttonLayout="horizontal"
+          [min]="1"
+          [max]="form.controls.spots.value"
+          incrementButtonIcon="pi pi-plus"
+          decrementButtonIcon="pi pi-minus"
+        />
+        <span class="section-title section-title--spaced">{{
+          'publish.minimumDeadline' | transloco
+        }}</span>
+        <p-selectbutton
+          formControlName="minimumLead"
+          [options]="deadlineOptions()"
+          optionLabel="label"
+          optionValue="value"
+          [allowEmpty]="false"
+          size="small"
+          class="deadline-options"
+        />
+      }
     </section>
 
     @if (error(); as message) {

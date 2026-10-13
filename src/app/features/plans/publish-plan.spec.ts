@@ -1,7 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
-import { of, throwError } from 'rxjs';
+import { of, Subject, throwError } from 'rxjs';
 import { PlansApi } from '../../core/api/plans-api';
+import { UsersApi } from '../../core/api/users-api';
 import { ApproximateLocation, LocationError } from '../../core/geo/approximate-location';
 import { TranslocoService } from '@jsverse/transloco';
 import { PublishPlan } from './publish-plan';
@@ -10,11 +11,17 @@ import { translocoTesting } from '../../../testing/transloco-testing';
 describe('PublishPlan', () => {
   let fixture: ComponentFixture<PublishPlan>;
   let component: PublishPlan & Record<string, unknown>;
-  const api = { publish: vi.fn() };
+  const api = { publish: vi.fn(), suggestPlaces: vi.fn() };
+  const users = { myProfile: vi.fn() };
   const location = { current: vi.fn() };
   const element = () => fixture.nativeElement as HTMLElement;
-  const call = <T>(name: string, ...args: unknown[]) => (component[name] as (...a: unknown[]) => T)(...args);
-  const form = () => component['form'] as unknown as { patchValue: (value: object) => void };
+  const call = <T>(name: string, ...args: unknown[]) =>
+    (component[name] as (...a: unknown[]) => T)(...args);
+  const form = () =>
+    component['form'] as unknown as {
+      patchValue: (value: object) => void;
+      getRawValue: () => Record<string, unknown>;
+    };
   const render = async () => {
     fixture.detectChanges();
     await fixture.whenStable();
@@ -33,6 +40,8 @@ describe('PublishPlan', () => {
       level: 'INTERMEDIATE',
     });
 
+  afterEach(() => vi.unstubAllGlobals());
+
   beforeEach(async () => {
     vi.clearAllMocks();
     TestBed.configureTestingModule({
@@ -41,6 +50,7 @@ describe('PublishPlan', () => {
         provideRouter([]),
         { provide: PlansApi, useValue: api },
         { provide: ApproximateLocation, useValue: location },
+        { provide: UsersApi, useValue: users },
       ],
     });
     fixture = TestBed.createComponent(PublishPlan);
@@ -69,6 +79,182 @@ describe('PublishPlan', () => {
     expect(startsIn).toBeGreaterThanOrEqual(59 * 60_000);
     expect(startsIn).toBeLessThanOrEqual(61 * 60_000);
     expect(navigate).toHaveBeenCalledWith(['/plans', 'plan-1'], { queryParams: { published: 1 } });
+  });
+
+  it('should suggest nearby places and fill the meeting point with the chosen one (HU-071)', async () => {
+    const campus = {
+      name: 'Polideportivo Campus Sur',
+      address: 'Avenida del Campus Sur, Madrid',
+      latitude: 40.38853,
+      longitude: -3.62699,
+      distanceMeters: 350,
+    };
+    // jsdom has no matchMedia, which the list of PrimeNG reads
+    vi.stubGlobal(
+      'matchMedia',
+      vi.fn().mockReturnValue({
+        matches: false,
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+      }),
+    );
+    location.current.mockResolvedValue({ latitude: 40.39, longitude: -3.63 });
+    api.suggestPlaces.mockReturnValue(of([campus]));
+    const field = element().querySelector('#placeName');
+    expect(field?.getAttribute('role')).toBe('combobox');
+
+    await call<Promise<void>>('searchPlaces', ' polideportivo ');
+    await call<Promise<void>>('searchPlaces', 'polideportivo campus');
+
+    // The approximate location of the device (rounded on it), asked once for every search
+    expect(location.current).toHaveBeenCalledTimes(1);
+    expect(location.current).toHaveBeenCalledWith();
+    expect(api.suggestPlaces).toHaveBeenCalledWith('polideportivo', {
+      latitude: 40.39,
+      longitude: -3.63,
+    });
+    expect(call<unknown[]>('placeSuggestions')).toEqual([campus]);
+    await render();
+    expect(document.querySelectorAll('[role="option"]')).toHaveLength(1);
+    expect(document.querySelector('[role="option"]')?.textContent).toContain(
+      'Avenida del Campus Sur, Madrid · 350 m',
+    );
+    expect(call('distance', 350)).toBe('350 m');
+    expect(call('distance', 1240)).toBe('1,2 km');
+
+    call('choosePlace', campus);
+    await render();
+    expect(form().getRawValue()).toMatchObject({
+      placeName: 'Polideportivo Campus Sur',
+      latitude: 40.3885,
+      longitude: -3.627,
+    });
+    expect(element().querySelector('.meeting-coordinates')?.textContent).toContain(
+      '40.3885, -3.627',
+    );
+  });
+
+  it('should keep a place typed by hand, and the name of a chosen suggestion (HU-071)', async () => {
+    location.current.mockResolvedValue({ latitude: 40.39, longitude: -3.63 });
+    api.suggestPlaces.mockReturnValue(of([]));
+    const input = element().querySelector<HTMLInputElement>('#placeName')!;
+
+    input.value = 'Pistas de la Albufera';
+    input.dispatchEvent(new Event('input'));
+    await render();
+    expect(form().getRawValue()['placeName']).toBe('Pistas de la Albufera');
+
+    call('choosePlace', {
+      name: 'Polideportivo Campus Sur',
+      address: '',
+      latitude: 40.3885,
+      longitude: -3.627,
+      distanceMeters: 300,
+    });
+    await render();
+    expect(form().getRawValue()['placeName']).toBe('Polideportivo Campus Sur');
+    expect(input.value).toBe('Polideportivo Campus Sur');
+    expect(call('placeValue', { name: 'Polideportivo' })).toBe('Polideportivo');
+  });
+
+  it('should keep the answer of the last search when an older one arrives later', async () => {
+    const place = (name: string) => ({
+      name,
+      address: '',
+      latitude: 40.39,
+      longitude: -3.63,
+      distanceMeters: 0,
+    });
+    location.current.mockResolvedValue({ latitude: 40.39, longitude: -3.63 });
+    const slow = new Subject<unknown[]>();
+    api.suggestPlaces.mockReturnValueOnce(slow).mockReturnValueOnce(of([place('Polideportivo')]));
+
+    const older = call<Promise<void>>('searchPlaces', 'pol');
+    await call<Promise<void>>('searchPlaces', 'polideportivo');
+    slow.next([place('Pollería')]);
+    slow.complete();
+    await older;
+
+    expect(call<{ name: string }[]>('placeSuggestions').map(({ name }) => name)).toEqual([
+      'Polideportivo',
+    ]);
+  });
+
+  it('should search around the zone of the profile without location, and suggest nothing without either', async () => {
+    location.current.mockRejectedValue(new LocationError('denied'));
+    users.myProfile.mockReturnValue(
+      of({
+        userId: 'ana',
+        displayName: 'Ana',
+        zone: { name: 'Vallecas', latitude: 40.39, longitude: -3.63 },
+      }),
+    );
+    api.suggestPlaces.mockReturnValue(of([]));
+
+    await call<Promise<void>>('searchPlaces', 'padel');
+    expect(api.suggestPlaces).toHaveBeenCalledWith(
+      'padel',
+      expect.objectContaining({ latitude: 40.39, longitude: -3.63 }),
+    );
+
+    users.myProfile.mockReturnValue(throwError(() => new Error('down')));
+    fixture = TestBed.createComponent(PublishPlan);
+    component = fixture.componentInstance as PublishPlan & Record<string, unknown>;
+    await render();
+    api.suggestPlaces.mockClear();
+    await call<Promise<void>>('searchPlaces', 'padel');
+    expect(api.suggestPlaces).not.toHaveBeenCalled();
+    expect(call<unknown[]>('placeSuggestions')).toEqual([]);
+  });
+
+  it('should publish a plan with a minimum of participants and its deadline (HU-039)', async () => {
+    api.publish.mockReturnValue(of({ id: 'plan-1' }));
+    vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
+    fillValidPlan();
+    form().patchValue({ start: '120', spots: 3 });
+    await render();
+    expect(element().querySelector('.deadline-options')).toBeNull();
+
+    form().patchValue({ hasMinimum: true, minParticipants: 2, minimumLead: 60 });
+    await render();
+    expect(element().querySelector('.deadline-options')?.textContent).toContain('1 h antes');
+    call('publish');
+
+    const sent = api.publish.mock.calls[0][0];
+    expect(sent.minParticipants).toBe(2);
+    expect(new Date(sent.startsAt).getTime() - new Date(sent.minimumDeadline).getTime()).toBe(
+      60 * 60_000,
+    );
+  });
+
+  it('should only offer the deadlines still possible and keep the minimum within the spots', async () => {
+    fillValidPlan();
+    form().patchValue({ start: '30', spots: 3, hasMinimum: true, minParticipants: 3 });
+    await render();
+    const options = () =>
+      (component['deadlineOptions'] as () => { value: number }[])().map(({ value }) => value);
+    // A plan in 30 minutes can only be checked at its start
+    expect(options()).toEqual([0]);
+    expect(
+      (component['form'] as unknown as { value: { minimumLead: number } }).value.minimumLead,
+    ).toBe(0);
+
+    form().patchValue({ start: '180' });
+    expect(options()).toEqual([120, 60, 30, 0]);
+
+    form().patchValue({ spots: 2 });
+    expect(
+      (component['form'] as unknown as { value: { minParticipants: number } }).value
+        .minParticipants,
+    ).toBe(2);
+  });
+
+  it('should not send a deadline that is no longer possible', async () => {
+    fillValidPlan();
+    form().patchValue({ hasMinimum: true, minimumLead: 60 });
+    // Checked in the component: the start (in 60 minutes) leaves no room for «1 h before»
+    expect(call<Date | null>('minimumDeadline', new Date(Date.now() + 60 * 60_000))).toBeNull();
+    expect(call<Date>('minimumDeadline', new Date(Date.now() + 120 * 60_000))).toBeInstanceOf(Date);
   });
 
   it('should not publish an incomplete plan', async () => {
@@ -104,17 +290,26 @@ describe('PublishPlan', () => {
     await call<Promise<void>>('useMyLocation');
     await render();
     expect(location.current).toHaveBeenCalledWith(3);
-    expect(element().querySelector('.meeting-coordinates')?.textContent).toContain('40.391, -3.629');
+    expect(element().querySelector('.meeting-coordinates')?.textContent).toContain(
+      '40.391, -3.629',
+    );
   });
 
   it('should show why the location or the publication failed', async () => {
     location.current.mockRejectedValue(new LocationError('denied'));
     await call<Promise<void>>('useMyLocation');
     await render();
-    expect(element().querySelector('.status-message')?.textContent).toContain('No se ha podido obtener tu ubicación');
+    expect(element().querySelector('.status-message')?.textContent).toContain(
+      'No se ha podido obtener tu ubicación',
+    );
 
     api.publish.mockReturnValue(
-      throwError(() => ({ error: { code: 'plan.startsTooLate', detail: 'The plan must start within the next 12 hours' } })),
+      throwError(() => ({
+        error: {
+          code: 'plan.startsTooLate',
+          detail: 'The plan must start within the next 12 hours',
+        },
+      })),
     );
     fillValidPlan();
     call('publish');
@@ -124,12 +319,16 @@ describe('PublishPlan', () => {
     api.publish.mockReturnValue(throwError(() => ({})));
     call('publish');
     await render();
-    expect(element().querySelector('.status-message')?.textContent).toContain('No se ha podido publicar el plan');
+    expect(element().querySelector('.status-message')?.textContent).toContain(
+      'No se ha podido publicar el plan',
+    );
 
     location.current.mockRejectedValue(new Error('unexpected'));
     await call<Promise<void>>('useMyLocation');
     await render();
-    expect(element().querySelector('.status-message')?.textContent).toContain('No se ha podido obtener tu ubicación');
+    expect(element().querySelector('.status-message')?.textContent).toContain(
+      'No se ha podido obtener tu ubicación',
+    );
   });
 
   it('should ask to wait when the publication limit is reached and keep the form', async () => {
@@ -143,7 +342,9 @@ describe('PublishPlan', () => {
     expect(element().querySelector('.status-message')?.textContent).toContain(
       'Vas demasiado rápido. Vuelve a intentarlo en 11 min.',
     );
-    expect((component['form'] as unknown as { value: { title: string } }).value.title).toBe('  Partido de pádel  ');
+    expect((component['form'] as unknown as { value: { title: string } }).value.title).toBe(
+      '  Partido de pádel  ',
+    );
   });
 
   it('should translate the options when the language changes', async () => {

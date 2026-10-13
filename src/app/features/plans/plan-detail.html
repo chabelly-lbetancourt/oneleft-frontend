@@ -40,9 +40,15 @@
               <p class="plan-card__time">{{ start.time }}</p>
             }
           </div>
-          <span class="plan-card__spots pill pill--md pill--brand pill--outlined">
-            {{ spotsKey(current.freeSpots) | transloco: { count: current.freeSpots } }}
-          </span>
+          @if (ended()) {
+            <span class="plan-card__spots plan-state pill pill--md">
+              {{ 'plan.status.' + current.status | transloco }}
+            </span>
+          } @else {
+            <span class="plan-card__spots pill pill--md pill--brand pill--outlined">
+              {{ spotsKey(current.freeSpots) | transloco: { count: current.freeSpots } }}
+            </span>
+          }
         </div>
         <div class="plan-card__body">
           <h2 class="plan-card__title">{{ current.title }}</h2>
@@ -53,9 +59,14 @@
           <dl class="facts">
             <dt><i class="pi pi-clock" aria-hidden="true"></i></dt>
             <dd class="plan-time">
+              <!-- A cancelled plan has no «in 20 min» nor «has already started» -->
               @if (startsAt(); as start) {
-                {{ 'time.at' | transloco: { time: start.time } }} ·
-                {{ start.relative.key | transloco: start.relative.params }}
+                {{ 'time.at' | transloco: { time: start.time }
+                }}{{
+                  current.status === 'CANCELLED'
+                    ? ''
+                    : ' · ' + (start.relative.key | transloco: start.relative.params)
+                }}
               }
             </dd>
             <dt><i class="pi pi-map-marker" aria-hidden="true"></i></dt>
@@ -65,6 +76,19 @@
                 {{ 'plan.viewOnMap' | transloco }}
               </a>
             </dd>
+            @if (minimum(); as min) {
+              <dt>
+                <i
+                  class="pi"
+                  [class.pi-users]="!min.confirmed"
+                  [class.pi-check-circle]="min.confirmed"
+                  aria-hidden="true"
+                ></i>
+              </dt>
+              <dd class="plan-minimum" [class.plan-minimum--confirmed]="min.confirmed">
+                {{ min.key | transloco: min.params }}
+              </dd>
+            }
             <dt><i class="pi pi-chart-bar" aria-hidden="true"></i></dt>
             <dd>{{ levelKey() | transloco }}</dd>
             <dt><i class="pi pi-user" aria-hidden="true"></i></dt>
@@ -79,6 +103,19 @@
               }
             </dd>
           </dl>
+
+          @if (weather(); as w) {
+            <div class="weather" [class.weather--rain]="w.rainLikely">
+              <i class="weather__icon pi {{ w.icon }}" aria-hidden="true"></i>
+              <div>
+                <p class="weather__title">{{ 'plan.weatherTitle' | transloco }}</p>
+                <p class="weather__values">{{ 'plan.weather' | transloco: w.params }}</p>
+                @if (w.rainLikely) {
+                  <p class="weather__rain" role="status">{{ 'plan.rainLikely' | transloco }}</p>
+                }
+              </div>
+            </div>
+          }
         </div>
       </section>
 
@@ -112,7 +149,7 @@
               </li>
             }
           </ul>
-        } @else if (!isGuest()) {
+        } @else if (!isGuest() && !ended()) {
           <p class="hint">{{ 'plan.noParticipants' | transloco }}</p>
         }
 
@@ -190,6 +227,41 @@
           }
           @case ('organizer') {
             <p class="organizer-hint hint">{{ 'plan.yourPlan' | transloco }}</p>
+            @if (freePeopleView(); as people) {
+              <div class="free-people panel-muted">
+                <p class="free-people__title">
+                  <i class="pi pi-bolt" aria-hidden="true"></i>
+                  {{ 'plan.freePeople' | transloco }} · {{ people.length }}
+                </p>
+                @if (people.length) {
+                  <ul class="free-people__list">
+                    @for (person of people; track $index) {
+                      <li>
+                        {{
+                          'plan.freePerson'
+                            | transloco: { km: person.km, level: (person.levelKey | transloco) }
+                        }}
+                        @if (person.activities) {
+                          <span class="hint">
+                            ·
+                            {{
+                              'plan.freePersonActivities'
+                                | transloco: { activities: person.activities }
+                            }}
+                          </span>
+                        }
+                      </li>
+                    }
+                  </ul>
+                } @else {
+                  <p class="hint">{{ 'plan.freePeopleNone' | transloco }}</p>
+                }
+                <p class="free-people__privacy hint">
+                  <i class="pi pi-lock icon-xs" aria-hidden="true"></i>
+                  {{ 'plan.freePeopleHint' | transloco }}
+                </p>
+              </div>
+            }
           }
           @case ('full') {
             <p-tag
@@ -215,6 +287,90 @@
           @case ('closed') {
             <p class="hint">{{ 'plan.closed' | transloco }}</p>
           }
+          @case ('ended') {
+            <p class="ended-hint hint">{{ endedHintKey() | transloco }}</p>
+          }
+        }
+        @if (canAddToCalendar()) {
+          <p-button
+            class="calendar-button"
+            [label]="'plan.addToCalendar' | transloco"
+            icon="pi pi-calendar-plus"
+            [outlined]="true"
+            severity="secondary"
+            styleClass="button--block"
+            (onClick)="addToCalendar()"
+          />
+        }
+        @if (inChat()) {
+          <p-button
+            class="chat-button"
+            [label]="'plan.chat' | transloco"
+            icon="pi pi-comments"
+            [outlined]="true"
+            severity="secondary"
+            styleClass="button--block"
+            [routerLink]="['/plans', current.id, 'chat']"
+          />
+        }
+        @if (canAnnounce()) {
+          <div class="arrivals panel-muted">
+            <p class="arrivals__title">{{ 'plan.arrivalsTitle' | transloco }}</p>
+            @if (arrivals().length) {
+              <ul class="arrivals__list">
+                @for (arrival of arrivals(); track arrival.userId) {
+                  <li class="arrival" [class.arrival--late]="arrival.status === 'LATE'">
+                    <i
+                      class="pi"
+                      [class.pi-directions]="arrival.status === 'ON_THE_WAY'"
+                      [class.pi-clock]="arrival.status === 'LATE'"
+                      aria-hidden="true"
+                    ></i>
+                    <span class="arrival__name">{{
+                      arrival.mine ? ('plan.arrivalYou' | transloco) : arrival.name
+                    }}</span>
+                    · {{ arrival.key | transloco: { minutes: arrival.minutesLate } }}
+                  </li>
+                }
+              </ul>
+            }
+            <div class="arrivals__actions">
+              <p-button
+                class="on-the-way"
+                [label]="'plan.onTheWay' | transloco"
+                icon="pi pi-directions"
+                size="small"
+                [outlined]="myArrival()?.status !== 'ON_THE_WAY'"
+                [loading]="busy()"
+                (onClick)="announce('ON_THE_WAY')"
+              />
+              <span class="arrivals__late" role="group" [attr.aria-label]="'plan.late' | transloco">
+                <span class="hint">{{ 'plan.late' | transloco }}</span>
+                @for (minutes of lateOptions; track minutes) {
+                  <p-button
+                    class="late-{{ minutes }}"
+                    [label]="'plan.lateMinutes' | transloco: { minutes }"
+                    size="small"
+                    severity="secondary"
+                    [outlined]="myArrival()?.minutesLate !== minutes"
+                    [disabled]="busy()"
+                    (onClick)="announce('LATE', minutes)"
+                  />
+                }
+              </span>
+              @if (myArrival()) {
+                <p-button
+                  class="clear-arrival"
+                  [label]="'plan.clearArrival' | transloco"
+                  [text]="true"
+                  size="small"
+                  severity="secondary"
+                  (onClick)="clearArrival()"
+                />
+              }
+            </div>
+            <p class="hint">{{ 'plan.arrivalsHint' | transloco }}</p>
+          </div>
         }
         @if (justLeft()) {
           <p-message severity="info" class="left-message">{{ 'plan.left' | transloco }}</p-message>

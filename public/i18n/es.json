@@ -17,7 +17,9 @@
     "nearby": "OneLeft · Planes cerca",
     "login": "OneLeft · Entrar",
     "register": "OneLeft · Crear cuenta",
-    "notifications": "OneLeft · Avisos"
+    "notifications": "OneLeft · Avisos",
+    "alerts": "OneLeft · Alertas guardadas",
+    "chat": "OneLeft · Chat del plan"
   },
   "auth": {
     "login": "Entrar",
@@ -124,10 +126,42 @@
     "waitlistLeave": "Salir de la lista",
     "waitlistCount": "{{count}} en lista de espera",
     "share": "Compartir",
+    "addToCalendar": "Añadir al calendario",
+    "calendarLink": "Ver el plan en OneLeft: {{url}}",
     "linkCopied": "Enlace copiado: pégalo donde quieras.",
     "shareText": "{{activity}} a las {{time}} · {{spots}}. ¿Te apuntas?",
+    "shareTextStarted": "{{activity}} a las {{time}} · {{status}}",
     "guestHint": "Entra o crea tu cuenta para apuntarte; volverás a este plan.",
-    "spotsTaken": "{{occupied}} de {{spots}} plazas ocupadas"
+    "spotsTaken": "{{occupied}} de {{spots}} plazas ocupadas",
+    "status": {
+      "IN_PROGRESS": "En curso",
+      "FINISHED": "Terminado",
+      "CANCELLED": "Cancelado"
+    },
+    "startedHint": "Ya ha empezado: no admite a nadie más.",
+    "finishedHint": "Este plan ya terminó.",
+    "cancelledHint": "Este plan se canceló.",
+    "minimumPending": "Sale si se apuntan al menos {{count}} · lo sabrás a las {{time}}",
+    "minimumConfirmed": "Confirmado: se llegó al mínimo de {{count}}",
+    "cancelledMinimumHint": "Se canceló porque no se llegó al mínimo de participantes.",
+    "weatherTitle": "El tiempo a esa hora",
+    "weather": "{{temperature}} °C · {{rain}} % de lluvia · viento {{wind}} km/h",
+    "rainLikely": "Es probable que llueva: confirma con el grupo antes de ir.",
+    "freePeople": "Gente libre cerca",
+    "freePeopleNone": "Ahora no hay nadie libre cerca para este plan.",
+    "freePeopleHint": "Personas que han dicho que están libres a menos de 5 km. No verás quiénes son ni dónde están.",
+    "freePerson": "a {{km}} km · {{level}}",
+    "freePersonActivities": "También: {{activities}}",
+    "arrivalsTitle": "¿Cómo vas?",
+    "arrivalsHint": "Avisa al grupo; desaparece cuando empieza el plan.",
+    "onTheWay": "Voy de camino",
+    "late": "Llego tarde",
+    "lateMinutes": "+{{minutes}} min",
+    "clearArrival": "Quitar mi aviso",
+    "arrivalOnTheWay": "De camino",
+    "arrivalLate": "Llega {{minutes}} min tarde",
+    "arrivalYou": "Tú",
+    "chat": "Chat del plan"
   },
   "publish": {
     "title": "Publicar un plan",
@@ -149,6 +183,8 @@
     "horizon": "OneLeft es para planes de las próximas {{hours}} horas.",
     "where": "¿Dónde quedáis?",
     "wherePlaceholder": "Pistas del polideportivo de Vallecas",
+    "placesFound": "{0} sitios cerca. Usa las flechas para elegir uno",
+    "noPlaces": "Ningún sitio cerca con ese nombre: escríbelo y usa «Estoy aquí»",
     "here": "Estoy aquí",
     "whereError": "Indica el punto de encuentro con «Estoy aquí».",
     "spots": "¿Cuántas plazas faltan?",
@@ -156,7 +192,16 @@
     "anyLevel": "Cualquiera",
     "submit": "Publicar plan",
     "checkFields": "Revisa los campos marcados",
-    "chooseTime": "Elige una hora dentro de las próximas {{hours}} horas"
+    "chooseTime": "Elige una hora dentro de las próximas {{hours}} horas",
+    "minimumToggle": "Cancelar si no se llega a un mínimo",
+    "minimumHint": "Si a la hora límite no se ha apuntado suficiente gente, el plan se cancela y avisamos a todos.",
+    "minimumParticipants": "Mínimo de participantes",
+    "minimumDeadline": "Hora límite",
+    "deadlineAtStart": "Al empezar",
+    "deadline30": "30 min antes",
+    "deadline60": "1 h antes",
+    "deadline120": "2 h antes",
+    "chooseDeadline": "Elige una hora límite que quede al menos a 5 minutos."
   },
   "profile": {
     "title": "Mi perfil",
@@ -208,7 +253,10 @@
       "notFull": "Aún quedan plazas: apúntate directamente.",
       "alreadyWaiting": "Ya estás en la lista de espera.",
       "notWaiting": "No estás en la lista de espera.",
-      "waitlistFull": "La lista de espera está completa."
+      "waitlistFull": "La lista de espera está completa.",
+      "minimum": "El mínimo de participantes debe estar entre 1 y las plazas del plan.",
+      "minimumDeadline": "La hora límite del mínimo no puede ser después de que empiece el plan.",
+      "minimumDeadlineTooSoon": "La hora límite del mínimo debe quedar al menos a 5 minutos."
     },
     "meetingPoint": {
       "name": "El lugar necesita un nombre de hasta 100 caracteres"
@@ -248,6 +296,19 @@
       "quietHours": "El horario sin avisos necesita una hora de inicio y otra de fin distintas",
       "pushEndpoint": "La suscripción del navegador no es válida",
       "pushKeys": "La suscripción del navegador no es válida"
+    },
+    "alerts": {
+      "name": "El nombre de la alerta debe tener entre 1 y 40 caracteres.",
+      "zone": "La zona de la alerta no es válida.",
+      "radius": "La distancia debe estar entre 0,5 y 20 km.",
+      "hours": "La hora de inicio debe ser anterior a la de fin, el mismo día.",
+      "limit": "Ya tienes el máximo de alertas: borra una para crear otra.",
+      "notFound": "Esta alerta ya no existe."
+    },
+    "alertsFailed": "No se ha podido guardar la alerta.",
+    "arrivalFailed": "No se ha podido avisar al grupo. Inténtalo de nuevo.",
+    "arrival": {
+      "minutes": "Elige 5, 10, 15 o 30 minutos."
     }
   },
   "nearby": {
@@ -282,7 +343,14 @@
     "spotTitle": "¡Tienes plaza!",
     "spot": "Se ha liberado una plaza en «{{title}}» y es para ti",
     "nearbyTitle": "Plan cerca de ti",
-    "nearby": "«{{title}}» · {{activity}} a las {{time}} · {{place}} · a {{km}} km · {{spots}}"
+    "nearby": "«{{title}}» · {{activity}} a las {{time}} · {{place}} · a {{km}} km · {{spots}}",
+    "reminderTitle": "Tu plan empieza pronto",
+    "reminder": "«{{title}}» empieza a las {{time}} en {{place}}",
+    "cancelledTitle": "Plan cancelado",
+    "cancelled": "«{{title}}» de las {{time}} se ha cancelado: no se llegó al mínimo de participantes",
+    "arrivalTitle": "Novedades de tu plan",
+    "onTheWay": "{{name}} va de camino a «{{title}}»",
+    "late": "{{name}} llegará {{minutes}} min tarde a «{{title}}»"
   },
   "notifications": {
     "title": "Avisos de planes cerca",
@@ -315,6 +383,106 @@
       "denied": "Has bloqueado las notificaciones de OneLeft en este navegador. Actívalas en sus ajustes.",
       "unavailable": "Este servidor no tiene activadas las notificaciones del navegador: te llegarán con OneLeft abierto.",
       "unsupported": "Este navegador no admite notificaciones: te llegarán con OneLeft abierto."
+    },
+    "alertsLink": "Alertas guardadas",
+    "alertsLinkHint": "Búsquedas concretas que te avisan cuando aparece un plan así."
+  },
+  "theme": {
+    "toDark": "Cambiar al modo oscuro",
+    "toLight": "Cambiar al modo claro",
+    "title": "Apariencia",
+    "system": "Sistema",
+    "light": "Claro",
+    "dark": "Oscuro",
+    "hint": "«Sistema» sigue la configuración de tu dispositivo."
+  },
+  "alerts": {
+    "title": "Alertas guardadas",
+    "intro": "Guarda las búsquedas que te interesan y te avisamos en cuanto se publique un plan así cerca.",
+    "loading": "Cargando tus alertas…",
+    "loadError": "No se han podido cargar tus alertas. Inténtalo de nuevo.",
+    "empty": "Aún no tienes alertas. Por ejemplo: «pádel intermedio a menos de 3 km entre semana por la tarde».",
+    "new": "Nueva alerta",
+    "edit": "Editar",
+    "delete": "Borrar",
+    "cancel": "Cancelar",
+    "save": "Guardar alerta",
+    "saved": "Alerta guardada.",
+    "deleted": "Alerta borrada.",
+    "limit": "Puedes guardar hasta {{max}} alertas: borra una para crear otra.",
+    "name": "Nombre",
+    "namePlaceholder": "Pádel al salir del trabajo",
+    "activities": "Actividades",
+    "activitiesHint": "Si no marcas ninguna, cualquier actividad.",
+    "level": "Nivel",
+    "zone": "¿Alrededor de dónde?",
+    "radius": "Distancia máxima",
+    "days": "Días",
+    "daysHint": "Si no marcas ninguno, cualquier día.",
+    "anyTime": "A cualquier hora",
+    "from": "Desde",
+    "to": "Hasta",
+    "chooseZone": "Elige una zona para la alerta.",
+    "anyActivity": "Cualquier actividad",
+    "everyDay": "Todos los días",
+    "summaryHours": "de {{from}} a {{to}}",
+    "summaryKm": "a {{km}} km",
+    "day": {
+      "MONDAY": "L",
+      "TUESDAY": "M",
+      "WEDNESDAY": "X",
+      "THURSDAY": "J",
+      "FRIDAY": "V",
+      "SATURDAY": "S",
+      "SUNDAY": "D"
+    },
+    "dayName": {
+      "MONDAY": "Lunes",
+      "TUESDAY": "Martes",
+      "WEDNESDAY": "Miércoles",
+      "THURSDAY": "Jueves",
+      "FRIDAY": "Viernes",
+      "SATURDAY": "Sábado",
+      "SUNDAY": "Domingo"
+    }
+  },
+  "freeNow": {
+    "title": "¿Estás libre ahora?",
+    "hint": "Dinos durante cuánto tiempo y te verá quien organice un plan cerca, sin tu nombre ni dónde estás.",
+    "start": "Estoy libre ahora",
+    "hours": "¿Durante cuánto tiempo?",
+    "hoursOption": "{{count}} h",
+    "activities": "¿Para qué?",
+    "activitiesHint": "Tus aficiones del perfil, con tu nivel. Si no marcas ninguna, para cualquier plan.",
+    "confirm": "Activar",
+    "cancel": "Cancelar",
+    "on": "Estás libre hasta las {{time}}",
+    "onHint": "Quien organice un plan cerca verá que hay alguien libre. Se desactiva solo al apuntarte a un plan.",
+    "stop": "Ya no estoy libre",
+    "noZone": "Activa la ubicación o guarda una zona en tu perfil para decir que estás libre.",
+    "failed": "No se ha podido activar. Inténtalo de nuevo."
+  },
+  "chat": {
+    "title": "Chat del plan",
+    "loading": "Cargando el chat",
+    "label": "Mensaje para el grupo",
+    "placeholder": "Escribe al grupo…",
+    "send": "Enviar",
+    "you": "Tú",
+    "older": "Ver mensajes anteriores",
+    "connecting": "Conectando…",
+    "readOnly": "El plan ha terminado: el chat es de solo lectura.",
+    "empty": "Aún no hay mensajes. ¡Saluda al grupo!",
+    "emptyClosed": "Nadie escribió en este chat.",
+    "backToPlan": "Volver al plan",
+    "errors": {
+      "chat.notMember": "Solo quienes están en el plan pueden ver su chat.",
+      "plan.notFound": "Este plan no existe.",
+      "chat.unavailable": "El chat no está disponible ahora mismo. Inténtalo en un rato.",
+      "chat.closed": "El plan ha terminado: ya no se puede escribir.",
+      "chat.text": "El mensaje no puede estar vacío ni pasar de 500 caracteres.",
+      "chat.tooFast": "Vas muy rápido: espera un momento antes de enviar otro mensaje.",
+      "chat.offline": "Sin conexión con el chat: tu mensaje no se ha enviado."
     }
   }
 }

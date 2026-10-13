@@ -1,9 +1,20 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { map, Observable } from 'rxjs';
+import { catchError, map, Observable, of } from 'rxjs';
 import { environment } from '../../../environments/environment';
+import { Coordinates } from '../geo/approximate-location';
 import { nearbyParams, NearbyQuery, toQueryString } from '../../shared/model/nearby';
-import { Plan, PublicPlan, PublishPlan } from '../../shared/model/published-plan';
+import { PlaceSuggestion } from '../../shared/model/places';
+import {
+  ArrivalStatus,
+  Availability,
+  Forecast,
+  FreePerson,
+  Interest,
+  Plan,
+  PublicPlan,
+  PublishPlan,
+} from '../../shared/model/published-plan';
 
 /** Client of the plans service through the API Gateway. */
 @Injectable({ providedIn: 'root' })
@@ -34,6 +45,65 @@ export class PlansApi {
         waitlist: [],
       })),
     );
+  }
+
+  /**
+   * Weather forecast of an upcoming outdoor plan (HU-026). Null when there is none (204: indoor, started or the
+   * weather service did not answer) and on any error: the plan is shown the same.
+   */
+  weather(id: string): Observable<Forecast | null> {
+    return this.http
+      .get<Forecast | null>(`${this.base}/${id}/weather`)
+      .pipe(catchError(() => of(null)));
+  }
+
+  /**
+   * Places for the meeting point that match what is typed, closest to the device first (HU-071). Empty on any error
+   * (the geocoder, the rate limit): the place is then written by hand and publishing goes on.
+   */
+  suggestPlaces(query: string, near: Coordinates): Observable<PlaceSuggestion[]> {
+    const params = { query, latitude: near.latitude, longitude: near.longitude };
+    return this.http
+      .get<PlaceSuggestion[]>(`${environment.apiUrl}/api/v1/places`, { params })
+      .pipe(catchError(() => of([])));
+  }
+
+  /** I'm on my way, or running late by some minutes (HU-040). */
+  announceArrival(
+    id: string,
+    status: ArrivalStatus,
+    minutesLate: number | null = null,
+  ): Observable<Plan> {
+    return this.http.put<Plan>(`${this.base}/${id}/arrivals/me`, { status, minutesLate });
+  }
+
+  /** Takes back my status of arrival (HU-040). */
+  clearArrival(id: string): Observable<Plan> {
+    return this.http.delete<Plan>(`${this.base}/${id}/arrivals/me`);
+  }
+
+  /** My free mode (HU-035), or null when it is off. */
+  myAvailability(): Observable<Availability | null> {
+    return this.http.get<Availability | null>(`${this.base}/availability/me`);
+  }
+
+  /** I'm free now for 1 to 3 hours (HU-035). */
+  startAvailability(request: {
+    hours: number;
+    latitude: number;
+    longitude: number;
+    interests: Interest[];
+  }): Observable<Availability> {
+    return this.http.put<Availability>(`${this.base}/availability/me`, request);
+  }
+
+  stopAvailability(): Observable<void> {
+    return this.http.delete<void>(`${this.base}/availability/me`);
+  }
+
+  /** Free people near my upcoming plan (HU-035): empty for anyone but its organizer. */
+  freePeople(id: string): Observable<FreePerson[]> {
+    return this.http.get<FreePerson[]>(`${this.base}/${id}/free-people`);
   }
 
   /** Link to share a plan: its page gives messaging apps a preview and then opens the plan (HU-024). */

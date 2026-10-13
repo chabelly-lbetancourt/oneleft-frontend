@@ -8,6 +8,11 @@ import {
   SpotFreedNotice,
 } from '../../shared/model/published-plan';
 import { PlanNearbyNotice } from '../../shared/model/notifications';
+import {
+  PlanArrivalNotice,
+  PlanCancelledNotice,
+  PlanReminderNotice,
+} from '../../shared/model/published-plan';
 import { Session } from '../auth/session';
 import { EventStream, StreamEvent } from './event-stream';
 import { UserEvents } from './user-events';
@@ -29,11 +34,17 @@ describe('UserEvents', () => {
     const left: PlanLeftNotice[] = [];
     const spots: SpotFreedNotice[] = [];
     const nearby: PlanNearbyNotice[] = [];
+    const reminders: PlanReminderNotice[] = [];
+    const cancelled: PlanCancelledNotice[] = [];
+    const arrivals: PlanArrivalNotice[] = [];
     events.joined$.subscribe((notice) => joined.push(notice));
     events.joined$.subscribe((notice) => joinedToo.push(notice));
     events.left$.subscribe((notice) => left.push(notice));
     events.spotFreed$.subscribe((notice) => spots.push(notice));
     events.nearby$.subscribe((notice) => nearby.push(notice));
+    events.reminder$.subscribe((notice) => reminders.push(notice));
+    events.cancelled$.subscribe((notice) => cancelled.push(notice));
+    events.arrival$.subscribe((notice) => arrivals.push(notice));
     TestBed.tick();
     expect(stream.openEvents).not.toHaveBeenCalled();
 
@@ -68,17 +79,45 @@ describe('UserEvents', () => {
       distanceMeters: 700,
     };
     source.next({ event: 'plan-nearby', data: near });
+    const soon = {
+      planId: 'p4',
+      title: 'Pádel',
+      placeName: 'Pistas',
+      startsAt: '2026-11-16T17:20:00Z',
+    };
+    source.next({ event: 'plan-reminder', data: soon });
+    const off: PlanCancelledNotice = { ...soon, planId: 'p5', reason: 'MINIMUM_NOT_REACHED' };
+    source.next({ event: 'plan-cancelled', data: off });
+    const coming: PlanArrivalNotice = {
+      planId: 'p6',
+      title: 'Pádel',
+      name: 'Lucía',
+      status: 'ON_THE_WAY',
+      minutesLate: null,
+    };
+    source.next({ event: 'plan-arrival', data: coming });
 
     expect(stream.openEvents).toHaveBeenCalledOnce();
     expect(stream.openEvents).toHaveBeenCalledWith(
       `${environment.apiUrl}/api/v1/plans/events/stream`,
-      ['plan-joined', 'plan-left', 'plan-spot', 'plan-nearby'],
+      [
+        'plan-joined',
+        'plan-left',
+        'plan-spot',
+        'plan-nearby',
+        'plan-reminder',
+        'plan-cancelled',
+        'plan-arrival',
+      ],
     );
     expect(joined).toEqual([join]);
     expect(joinedToo).toEqual([join]);
     expect(left).toEqual([leave]);
     expect(spots).toEqual([spot]);
     expect(nearby).toEqual([near]);
+    expect(reminders).toEqual([soon]);
+    expect(cancelled).toEqual([off]);
+    expect(arrivals).toEqual([coming]);
 
     authenticated.set(false);
     TestBed.tick();
