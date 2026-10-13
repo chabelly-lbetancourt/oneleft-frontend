@@ -423,6 +423,7 @@
     "locating": "Finding your location…",
     "retry": "Try again",
     "loadError": "The nearby plans could not be loaded.",
+    "countOne": "{{count}} plan within {{distance}}",
     "count": "{{count}} plans within {{distance}}",
     "empty": "No plans nearby with these filters. Why not publish one yourself?",
     "newPlan": "New plan nearby: {{activity}} {{distance}} away",

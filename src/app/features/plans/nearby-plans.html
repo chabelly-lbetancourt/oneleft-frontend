@@ -108,7 +108,7 @@
     } @else if (position(); as center) {
       @if (!searching()) {
         <p class="results-count">
-          {{ 'nearby.count' | transloco: { count: plans().length, distance: distance(radius()) } }}
+          {{ countKey() | transloco: { count: plans().length, distance: distance(radius()) } }}
         </p>
       }
 
