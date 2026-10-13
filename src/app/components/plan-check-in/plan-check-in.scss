@@ -1,0 +1,32 @@
+@use 'abstracts' as *;
+
+// «I'm here» at the meeting point (HU-025)
+.check-in {
+  @include stack(space(3));
+  @include text(sm);
+}
+
+.check-in__title {
+  @include text(sm);
+  @include weight(bold);
+  margin: 0;
+}
+
+.check-in__done {
+  @include row(space(2), center);
+  @include weight(bold);
+  color: var(--ol-brand);
+}
+
+.check-in__subtitle,
+.check-in__name {
+  @include weight(bold);
+}
+
+.check-in__list {
+  @include stack(space(1));
+}
+
+.check-in__person .pi {
+  color: var(--ol-brand);
+}

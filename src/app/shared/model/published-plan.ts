@@ -43,6 +43,25 @@ export interface PlanArrivalNotice {
 /** Delays that can be announced, in minutes. */
 export const LATE_OPTIONS = [5, 10, 15, 30] as const;
 
+/** Someone of the group arrived at the meeting point (HU-025). */
+export interface CheckIn {
+  userId: string;
+  name: string;
+  at: string;
+}
+
+/** Someone of the group of my plan arrived at the meeting point (personal real-time stream). */
+export interface PlanCheckInNotice {
+  planId: string;
+  title: string;
+  name: string;
+}
+
+/** The check-in opens this many minutes before the start of the plan... */
+export const CHECK_IN_OPENS_BEFORE_MINUTES = 15;
+/** ...and closes this many minutes after it. */
+export const CHECK_IN_CLOSES_AFTER_MINUTES = 30;
+
 /** An activity someone free would do and their level in it (HU-035). */
 export interface Interest {
   activity: string;

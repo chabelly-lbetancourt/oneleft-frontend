@@ -7,6 +7,7 @@ import { nearbyParams, NearbyQuery, toQueryString } from '../../shared/model/nea
 import { PlaceSuggestion } from '../../shared/model/places';
 import {
   ArrivalStatus,
+  CheckIn,
   Availability,
   Forecast,
   FreePerson,
@@ -80,6 +81,16 @@ export class PlansApi {
   /** Takes back my status of arrival (HU-040). */
   clearArrival(id: string): Observable<Plan> {
     return this.http.delete<Plan>(`${this.base}/${id}/arrivals/me`);
+  }
+
+  /** I'm at the meeting point (HU-025): the location is only used to check it and is not stored. */
+  checkIn(id: string, location: Coordinates): Observable<CheckIn> {
+    return this.http.post<CheckIn>(`${this.base}/${id}/check-ins/me`, location);
+  }
+
+  /** Who of the group has arrived at the meeting point, in order of arrival (HU-025). */
+  checkIns(id: string): Observable<CheckIn[]> {
+    return this.http.get<CheckIn[]>(`${this.base}/${id}/check-ins`);
   }
 
   /** My free mode (HU-035), or null when it is off. */
