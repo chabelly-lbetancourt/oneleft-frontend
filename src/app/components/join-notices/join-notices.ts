@@ -12,7 +12,8 @@ import { clockTime, spotsKey } from '../../shared/time/plan-time';
 
 /**
  * Toasts of the personal events: someone joined or left one of my plans, a spot I was waiting for is mine, a plan I
- * like has been published nearby (HU-006) or a plan I am in starts soon (HU-007). Tapping one opens the plan.
+ * like has been published nearby (HU-006) or a plan I am in starts soon (HU-007), or I earned a badge (HU-044).
+ * Tapping one opens the plan, or my reputation for a badge.
  */
 @Component({
   selector: 'app-join-notices',
@@ -116,6 +117,16 @@ export class JoinNotices {
           notice.planId,
         ),
       );
+    events.badge$.pipe(takeUntilDestroyed(destroyRef)).subscribe((notice) =>
+      this.show(
+        'pi-star',
+        'notices.badgeTitle',
+        this.transloco.translate('notices.badge', {
+          name: this.transloco.translate(`badges.names.${notice.badge}`),
+        }),
+        ['/reputation'],
+      ),
+    );
     events.nearby$
       .pipe(takeUntilDestroyed(destroyRef))
       .subscribe((notice) =>
@@ -140,11 +151,12 @@ export class JoinNotices {
     );
   }
 
+  /** {@code target}: the plan the notice is about, or the route it opens */
   private show(
     icon: string,
     title: string,
     detail: string,
-    planId: string,
+    target: string | string[],
     severity = 'info',
   ): void {
     this.messages.add({
@@ -154,7 +166,7 @@ export class JoinNotices {
       summary: this.transloco.translate(title),
       detail,
       life: 8000,
-      data: planId,
+      data: target,
     });
   }
 
@@ -172,8 +184,8 @@ export class JoinNotices {
     });
   }
 
-  protected open(planId: string): void {
+  protected open(target: string | string[]): void {
     this.messages.clear('joins');
-    void this.router.navigate(['/plans', planId]);
+    void this.router.navigate(Array.isArray(target) ? target : ['/plans', target]);
   }
 }

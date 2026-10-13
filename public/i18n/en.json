@@ -242,6 +242,27 @@
     "loading": "Loading your reputation…",
     "loadError": "Your reputation could not be loaded."
   },
+  "badges": {
+    "title": "Badges",
+    "hint": "Only plans that are held and that you arrive at with a check-in count.",
+    "names": {
+      "FIRST_PLAN_ORGANIZED": "First plan organized",
+      "TEN_PLANS_COMPLETED": "10 plans completed",
+      "TEN_ACTIVITIES": "10 different activities",
+      "ALWAYS_PUNCTUAL": "Always on time",
+      "NEIGHBOURHOOD_SOUL": "Soul of the neighbourhood"
+    },
+    "descriptions": {
+      "FIRST_PLAN_ORGANIZED": "Organize a plan and have someone arrive",
+      "TEN_PLANS_COMPLETED": "Arrive at 10 plans",
+      "TEN_ACTIVITIES": "Arrive at plans of 10 different activities",
+      "ALWAYS_PUNCTUAL": "Arrive at 20 plans in a row without missing one",
+      "NEIGHBOURHOOD_SOUL": "Receive 50 kudos from the people you meet"
+    },
+    "progress": "{{progress}} of {{goal}}",
+    "earnedOn": "Earned on {{date}}",
+    "none": "No badges yet."
+  },
   "publish": {
     "title": "Publish a plan",
     "what": "What's the plan?",
@@ -450,7 +471,9 @@
     "arrivalTitle": "News of your plan",
     "onTheWay": "{{name}} is on the way to «{{title}}»",
     "late": "{{name}} will be {{minutes}} min late to «{{title}}»",
-    "checkIn": "{{name}} has arrived at «{{title}}»"
+    "checkIn": "{{name}} has arrived at «{{title}}»",
+    "badgeTitle": "New badge!",
+    "badge": "You earned «{{name}}»"
   },
   "notifications": {
     "title": "Notices of plans nearby",

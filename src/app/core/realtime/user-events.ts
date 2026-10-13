@@ -2,6 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { EMPTY, filter, map, Observable, share, switchMap } from 'rxjs';
 import { PlanNearbyNotice } from '../../shared/model/notifications';
+import { BadgeEarnedNotice } from '../../shared/model/reputation';
 import {
   PlanArrivalNotice,
   PlanCancelledNotice,
@@ -23,13 +24,14 @@ const PLAN_REMINDER = 'plan-reminder';
 const PLAN_CANCELLED = 'plan-cancelled';
 const PLAN_ARRIVAL = 'plan-arrival';
 const PLAN_CHECK_IN = 'plan-check-in';
+const BADGE_EARNED = 'badge-earned';
 
 /**
  * Personal events of the signed-in user while the app is open: someone has joined (HU-005) or left (HU-023) one of
  * my plans, a spot I was waiting for is now mine, a plan I like has been published nearby (HU-006), a plan I am in
- * is about to start (HU-007) or has been cancelled for not reaching its minimum (HU-039), and someone of the group is
- * on the way (HU-040) or has arrived (HU-025). A single connection is shared by every subscriber and closed when the
- * user signs out.
+ * is about to start (HU-007) or has been cancelled for not reaching its minimum (HU-039), someone of the group is on
+ * the way (HU-040) or has arrived (HU-025), or I earned a badge (HU-044). A single connection is shared by every
+ * subscriber and closed when the user signs out.
  */
 @Injectable({ providedIn: 'root' })
 export class UserEvents {
@@ -51,6 +53,7 @@ export class UserEvents {
             PLAN_CANCELLED,
             PLAN_ARRIVAL,
             PLAN_CHECK_IN,
+            BADGE_EARNED,
           ])
         : EMPTY,
     ),
@@ -67,6 +70,8 @@ export class UserEvents {
   readonly arrival$ = this.of<PlanArrivalNotice>(PLAN_ARRIVAL);
   /** Someone of the group of my plan arrived at the meeting point (HU-025) */
   readonly checkIn$ = this.of<PlanCheckInNotice>(PLAN_CHECK_IN);
+  /** I earned a badge (HU-044) */
+  readonly badge$ = this.of<BadgeEarnedNotice>(BADGE_EARNED);
 
   private of<T>(name: string): Observable<T> {
     return this.events$.pipe(

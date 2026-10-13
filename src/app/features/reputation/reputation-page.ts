@@ -4,18 +4,20 @@ import { TranslocoPipe } from '@jsverse/transloco';
 import { Button } from 'primeng/button';
 import { ReputationApi } from '../../core/api/reputation-api';
 import { Language } from '../../core/i18n/language';
+import { BadgeList } from '../../components/badge-list/badge-list';
 import { CardSkeleton } from '../../components/card-skeleton/card-skeleton';
 import { PageLayout } from '../../layout/page-layout/page-layout';
-import { LedgerEntry, REPUTATION_RULES } from '../../shared/model/reputation';
+import { BadgeProgress, LedgerEntry, REPUTATION_RULES } from '../../shared/model/reputation';
 
 const PAGE_SIZE = 20;
 
 /**
- * «My reputation» (HU-009): my score, how it works and every entry of my ledger, so I know why it went up or down.
+ * «My reputation» (HU-009): my score, my badges (HU-044), how it works and every entry of my ledger, so I know why it
+ * went up or down.
  */
 @Component({
   selector: 'app-reputation-page',
-  imports: [Button, CardSkeleton, PageLayout, RouterLink, TranslocoPipe],
+  imports: [BadgeList, Button, CardSkeleton, PageLayout, RouterLink, TranslocoPipe],
   templateUrl: './reputation-page.html',
   styleUrl: './reputation-page.scss',
 })
@@ -27,6 +29,8 @@ export class ReputationPage implements OnInit {
   protected readonly entries = signal<LedgerEntry[]>([]);
   protected readonly total = signal(0);
   protected readonly loadError = signal(false);
+  /** My badges (HU-044); empty while unknown, without hiding the rest */
+  protected readonly badges = signal<BadgeProgress[]>([]);
   protected readonly rules = REPUTATION_RULES;
   private page = 0;
 
@@ -36,6 +40,9 @@ export class ReputationPage implements OnInit {
       error: () => this.loadError.set(true),
     });
     this.read(0);
+    this.api
+      .myBadges()
+      .subscribe({ next: (badges) => this.badges.set(badges), error: () => undefined });
   }
 
   protected more(): void {
