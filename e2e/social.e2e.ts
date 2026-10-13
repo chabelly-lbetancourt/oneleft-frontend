@@ -156,7 +156,12 @@ test('accepts a request in my network and opens my profile', async ({ openPage, 
   );
   await signedIn(page);
 
-  await page.locator('.profile-network').click();
+  // The profile arrives with a short view transition: a click during it can be lost, so it is retried until it leads
+  // to the network
+  await expect(async () => {
+    await page.getByRole('link', { name: t('profile.network') }).click();
+    await expect(page).toHaveURL(/\/network$/, { timeout: 2000 });
+  }).toPass();
   await expect(page.getByRole('switch', { name: t('social.private') })).toBeChecked();
   await expect(page.locator('.connections--followers')).toContainText('Diego');
 
