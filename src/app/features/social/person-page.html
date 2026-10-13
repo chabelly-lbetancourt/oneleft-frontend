@@ -41,6 +41,12 @@
           <dt>{{ 'social.following' | transloco }}</dt>
           <dd class="following-count">{{ current.following }}</dd>
         </div>
+        @if (reputation() !== null) {
+          <div class="social-counts__item">
+            <dt>{{ 'reputation.label' | transloco }}</dt>
+            <dd class="person-reputation"><app-reputation-badge [score]="reputation()!" /></dd>
+          </div>
+        }
       </dl>
 
       @switch (current.relation) {

@@ -21,7 +21,8 @@
     "alerts": "OneLeft · Alertas guardadas",
     "chat": "OneLeft · Chat del plan",
     "network": "Mi red",
-    "person": "Persona"
+    "person": "Persona",
+    "reputation": "Mi reputación"
   },
   "auth": {
     "login": "Entrar",
@@ -214,6 +215,33 @@
     "personLoading": "Cargando…",
     "notFound": "Esta persona no existe o no tiene cuenta."
   },
+  "reputation": {
+    "title": "Mi reputación",
+    "label": "Reputación",
+    "score": "Tu reputación",
+    "scoreHint": "Sube cuando llegas a tus planes y baja si no te presentas. La ven quienes quedan contigo.",
+    "howTitle": "Cómo funciona",
+    "rules": {
+      "ATTENDED": "Llegar al punto de encuentro (check-in)",
+      "ORGANIZED_HELD": "Organizar un plan que se llena y se celebra",
+      "NO_SHOW": "No presentarte a un plan que se celebró",
+      "LATE_CANCELLATION": "Cancelar tu propio plan a menos de 1 h del inicio",
+      "CONFIRMED_REPORT": "Un reporte confirmado contra ti"
+    },
+    "fairNote": "Si nadie del grupo hace check-in, el plan no cuenta: nadie pierde puntos por él.",
+    "ledgerTitle": "Tu historial",
+    "reasons": {
+      "ATTENDED": "Llegaste a «{{title}}»",
+      "ORGANIZED_HELD": "Organizaste «{{title}}» y se celebró con todas las plazas",
+      "NO_SHOW": "No te presentaste a «{{title}}»",
+      "LATE_CANCELLATION": "Cancelaste «{{title}}» a menos de 1 h del inicio",
+      "CONFIRMED_REPORT": "Se confirmó un reporte contra ti"
+    },
+    "empty": "Todavía no hay movimientos. Llega a tus planes y haz check-in para empezar a sumar.",
+    "more": "Ver más",
+    "loading": "Cargando tu reputación…",
+    "loadError": "No se ha podido cargar tu reputación."
+  },
   "publish": {
     "title": "Publicar un plan",
     "what": "¿Qué plan es?",
@@ -277,7 +305,8 @@
     "save": "Guardar perfil",
     "saved": "Perfil guardado",
     "notifications": "Avisos de planes cerca",
-    "network": "Mi red"
+    "network": "Mi red",
+    "reputation": "Mi reputación"
   },
   "errors": {
     "generic": "Algo ha fallado. Inténtalo de nuevo.",

@@ -5,6 +5,8 @@ import { EMPTY, Observable, of, Subject, throwError } from 'rxjs';
 import { FakeSession } from '../../../testing/fake-session';
 import { translocoTesting } from '../../../testing/transloco-testing';
 import { PlansApi } from '../../core/api/plans-api';
+import { ReputationApi } from '../../core/api/reputation-api';
+import { Reputation } from '../../shared/model/reputation';
 import { Session } from '../../core/auth/session';
 import { UserEvents } from '../../core/realtime/user-events';
 import {
@@ -63,6 +65,9 @@ describe('PlanDetail', () => {
     joinWaitlist: vi.fn(),
     leaveWaitlist: vi.fn(),
   };
+  const reputationApi = {
+    of: vi.fn((userId: string): Observable<Reputation> => of({ userId, score: 35 })),
+  };
   const element = () => fixture.nativeElement as HTMLElement;
   const render = async () => {
     fixture.detectChanges();
@@ -97,6 +102,7 @@ describe('PlanDetail', () => {
       providers: [
         provideRouter([]),
         { provide: PlansApi, useValue: api },
+        { provide: ReputationApi, useValue: reputationApi },
         { provide: Session, useValue: session },
         {
           provide: UserEvents,
@@ -192,6 +198,7 @@ describe('PlanDetail', () => {
       providers: [
         provideRouter([]),
         { provide: PlansApi, useValue: api },
+        { provide: ReputationApi, useValue: reputationApi },
         { provide: Session, useValue: session },
         {
           provide: UserEvents,
@@ -215,6 +222,7 @@ describe('PlanDetail', () => {
       providers: [
         provideRouter([]),
         { provide: PlansApi, useValue: api },
+        { provide: ReputationApi, useValue: reputationApi },
         { provide: Session, useValue: session },
         {
           provide: UserEvents,
@@ -487,6 +495,16 @@ describe('PlanDetail', () => {
 
     await create({ ...PLAN, participants: [{ ...LUCIA, userId: 'me' }] });
     expect(element().querySelector('.participant__link')).toBeNull();
+  });
+
+  it('should show the reputation of the organizer to signed-in people (HU-009)', async () => {
+    await create(PLAN);
+    expect(reputationApi.of).toHaveBeenCalledWith('org');
+    expect(element().querySelector('.organizer-reputation')?.textContent).toContain('35');
+
+    reputationApi.of.mockReturnValueOnce(throwError(() => new Error('down')));
+    await create({ ...PLAN, id: 'plan-2' });
+    expect(element().querySelector('.organizer-reputation')).toBeNull();
   });
 
   it('should share the plan with the Android share sheet inside the app', async () => {
