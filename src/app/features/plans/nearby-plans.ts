@@ -122,6 +122,10 @@ export class NearbyPlans {
     return query ? { url: this.api.nearbyUrl(), params: nearbyParams(query) } : undefined;
   });
   protected readonly plans = computed(() => (this.results.hasValue() ? this.results.value() : []));
+  /** «1 plan» or «2 planes» above the list */
+  protected readonly countKey = computed(() =>
+    this.plans().length === 1 ? 'nearby.countOne' : 'nearby.count',
+  );
   /** The reputation of the organizers of the list, in one question (HU-009); without it, the list as before */
   protected readonly organizerScores = httpResource<Reputation[]>(() => {
     const ids = [...new Set(this.plans().map(({ plan }) => plan.organizerId))].slice(0, 50);
