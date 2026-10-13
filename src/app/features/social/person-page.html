@@ -49,6 +49,13 @@
         }
       </dl>
 
+      @if (badges().length) {
+        <section class="person-badges" aria-labelledby="person-badges-title">
+          <h2 class="section-title" id="person-badges-title">{{ 'badges.title' | transloco }}</h2>
+          <app-badge-list [badges]="badges()" />
+        </section>
+      }
+
       @switch (current.relation) {
         @case ('SELF') {
           <a routerLink="/network" class="see-network link-action">

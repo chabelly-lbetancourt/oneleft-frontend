@@ -8,6 +8,7 @@ import {
   SpotFreedNotice,
 } from '../../shared/model/published-plan';
 import { PlanNearbyNotice } from '../../shared/model/notifications';
+import { BadgeEarnedNotice } from '../../shared/model/reputation';
 import {
   PlanArrivalNotice,
   PlanCancelledNotice,
@@ -39,6 +40,7 @@ describe('UserEvents', () => {
     const cancelled: PlanCancelledNotice[] = [];
     const arrivals: PlanArrivalNotice[] = [];
     const checkIns: PlanCheckInNotice[] = [];
+    const badges: BadgeEarnedNotice[] = [];
     events.joined$.subscribe((notice) => joined.push(notice));
     events.joined$.subscribe((notice) => joinedToo.push(notice));
     events.left$.subscribe((notice) => left.push(notice));
@@ -48,6 +50,7 @@ describe('UserEvents', () => {
     events.cancelled$.subscribe((notice) => cancelled.push(notice));
     events.arrival$.subscribe((notice) => arrivals.push(notice));
     events.checkIn$.subscribe((notice) => checkIns.push(notice));
+    events.badge$.subscribe((notice) => badges.push(notice));
     TestBed.tick();
     expect(stream.openEvents).not.toHaveBeenCalled();
 
@@ -101,6 +104,8 @@ describe('UserEvents', () => {
     source.next({ event: 'plan-arrival', data: coming });
     const here: PlanCheckInNotice = { planId: 'p6', title: 'Pádel', name: 'Diego' };
     source.next({ event: 'plan-check-in', data: here });
+    const badge: BadgeEarnedNotice = { badge: 'TEN_ACTIVITIES', earnedAt: '2026-10-13T16:00:00Z' };
+    source.next({ event: 'badge-earned', data: badge });
 
     expect(stream.openEvents).toHaveBeenCalledOnce();
     expect(stream.openEvents).toHaveBeenCalledWith(
@@ -114,6 +119,7 @@ describe('UserEvents', () => {
         'plan-cancelled',
         'plan-arrival',
         'plan-check-in',
+        'badge-earned',
       ],
     );
     expect(joined).toEqual([join]);
@@ -125,6 +131,7 @@ describe('UserEvents', () => {
     expect(cancelled).toEqual([off]);
     expect(arrivals).toEqual([coming]);
     expect(checkIns).toEqual([here]);
+    expect(badges).toEqual([badge]);
 
     authenticated.set(false);
     TestBed.tick();

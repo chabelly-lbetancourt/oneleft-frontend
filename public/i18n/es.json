@@ -242,6 +242,27 @@
     "loading": "Cargando tu reputación…",
     "loadError": "No se ha podido cargar tu reputación."
   },
+  "badges": {
+    "title": "Insignias",
+    "hint": "Solo cuentan los planes que se celebran y a los que llegas con check-in.",
+    "names": {
+      "FIRST_PLAN_ORGANIZED": "Primer plan organizado",
+      "TEN_PLANS_COMPLETED": "10 planes completados",
+      "TEN_ACTIVITIES": "10 actividades distintas",
+      "ALWAYS_PUNCTUAL": "Siempre puntual",
+      "NEIGHBOURHOOD_SOUL": "El alma del barrio"
+    },
+    "descriptions": {
+      "FIRST_PLAN_ORGANIZED": "Organiza un plan y que alguien llegue",
+      "TEN_PLANS_COMPLETED": "Llega a 10 planes",
+      "TEN_ACTIVITIES": "Llega a planes de 10 actividades distintas",
+      "ALWAYS_PUNCTUAL": "Llega a 20 planes seguidos sin faltar a ninguno",
+      "NEIGHBOURHOOD_SOUL": "Recibe 50 kudos de la gente con la que quedas"
+    },
+    "progress": "{{progress}} de {{goal}}",
+    "earnedOn": "Conseguida el {{date}}",
+    "none": "Todavía no tiene insignias."
+  },
   "publish": {
     "title": "Publicar un plan",
     "what": "¿Qué plan es?",
@@ -450,7 +471,9 @@
     "arrivalTitle": "Novedades de tu plan",
     "onTheWay": "{{name}} va de camino a «{{title}}»",
     "late": "{{name}} llegará {{minutes}} min tarde a «{{title}}»",
-    "checkIn": "{{name}} ha llegado a «{{title}}»"
+    "checkIn": "{{name}} ha llegado a «{{title}}»",
+    "badgeTitle": "¡Nueva insignia!",
+    "badge": "Has conseguido «{{name}}»"
   },
   "notifications": {
     "title": "Avisos de planes cerca",

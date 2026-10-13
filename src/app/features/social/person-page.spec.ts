@@ -49,7 +49,22 @@ describe('PersonPage', () => {
       providers: [
         provideRouter([]),
         { provide: SocialApi, useValue: api },
-        { provide: ReputationApi, useValue: { of: () => of({ userId: 'ana', score: -15 }) } },
+        {
+          provide: ReputationApi,
+          useValue: {
+            of: () => of({ userId: 'ana', score: -15 }),
+            badgesOf: () =>
+              of([
+                {
+                  badge: 'TEN_ACTIVITIES',
+                  progress: 10,
+                  goal: 10,
+                  earned: true,
+                  earnedAt: '2026-10-13T16:30:00Z',
+                },
+              ]),
+          },
+        },
       ],
     });
   });
@@ -65,6 +80,9 @@ describe('PersonPage', () => {
     expect(element().querySelector('.followers-count')?.textContent).toBe('3');
     expect(element().querySelector('.following-count')?.textContent).toBe('1');
     expect(element().querySelector('.person-reputation')?.textContent).toContain('-15');
+    expect(element().querySelector('.person-badges .badge__name')?.textContent).toContain(
+      '10 actividades distintas',
+    );
   });
 
   it('should ask to follow a private profile and then say the request is waiting', async () => {

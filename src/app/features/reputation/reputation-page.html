@@ -10,6 +10,14 @@
       <p class="hint">{{ 'reputation.scoreHint' | transloco }}</p>
     </section>
 
+    @if (badges().length) {
+      <section class="badges-section" aria-labelledby="badges-title">
+        <h2 class="section-title" id="badges-title">{{ 'badges.title' | transloco }}</h2>
+        <app-badge-list [badges]="badges()" [progress]="true" />
+        <p class="hint">{{ 'badges.hint' | transloco }}</p>
+      </section>
+    }
+
     <section class="rules panel-muted" aria-labelledby="rules-title">
       <h2 class="section-title" id="rules-title">{{ 'reputation.howTitle' | transloco }}</h2>
       <ul class="rules__list">

@@ -1,0 +1,51 @@
+@use 'abstracts' as *;
+
+// The badges of someone (HU-044): in color once earned, faded while not
+.badges {
+  @include stack(space(3));
+}
+
+.badge {
+  @include row(space(3), flex-start);
+}
+
+.badge__icon {
+  @include row(0, center);
+  @include radius(full);
+  flex-shrink: 0;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border: 1px dashed var(--ol-border-strong);
+  color: var(--ol-text-muted);
+}
+
+.badge--earned .badge__icon {
+  border: 0;
+  background: var(--ol-brand-soft);
+  color: var(--ol-brand);
+}
+
+.badge__text {
+  @include stack(space(1));
+  min-width: 0;
+}
+
+.badge__name {
+  @include weight(bold);
+}
+
+.badge__earned {
+  @include text(sm);
+  color: var(--ol-brand);
+}
+
+.badge__progress {
+  @include row(space(2));
+
+  progress {
+    width: 8rem;
+    height: 0.5rem;
+    accent-color: var(--ol-brand);
+  }
+}
