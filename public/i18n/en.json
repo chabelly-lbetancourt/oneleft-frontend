@@ -21,7 +21,8 @@
     "alerts": "OneLeft · Saved alerts",
     "chat": "OneLeft · Plan chat",
     "network": "My network",
-    "person": "Person"
+    "person": "Person",
+    "reputation": "My reputation"
   },
   "auth": {
     "login": "Sign in",
@@ -214,6 +215,33 @@
     "personLoading": "Loading…",
     "notFound": "This person does not exist or has no account."
   },
+  "reputation": {
+    "title": "My reputation",
+    "label": "Reputation",
+    "score": "Your reputation",
+    "scoreHint": "It goes up when you arrive at your plans and down if you do not show up. The people you meet can see it.",
+    "howTitle": "How it works",
+    "rules": {
+      "ATTENDED": "Arriving at the meeting point (check-in)",
+      "ORGANIZED_HELD": "Organizing a plan that fills up and is held",
+      "NO_SHOW": "Not showing up to a plan that was held",
+      "LATE_CANCELLATION": "Cancelling your own plan less than 1 h before it starts",
+      "CONFIRMED_REPORT": "A confirmed report against you"
+    },
+    "fairNote": "If nobody of the group checks in, the plan does not count: nobody loses points for it.",
+    "ledgerTitle": "Your history",
+    "reasons": {
+      "ATTENDED": "You arrived at «{{title}}»",
+      "ORGANIZED_HELD": "You organized «{{title}}» and it was held with every spot taken",
+      "NO_SHOW": "You did not show up to «{{title}}»",
+      "LATE_CANCELLATION": "You cancelled «{{title}}» less than 1 h before it started",
+      "CONFIRMED_REPORT": "A report against you was confirmed"
+    },
+    "empty": "Nothing yet. Arrive at your plans and check in to start adding points.",
+    "more": "See more",
+    "loading": "Loading your reputation…",
+    "loadError": "Your reputation could not be loaded."
+  },
   "publish": {
     "title": "Publish a plan",
     "what": "What's the plan?",
@@ -277,7 +305,8 @@
     "save": "Save profile",
     "saved": "Profile saved",
     "notifications": "Notices of plans nearby",
-    "network": "My network"
+    "network": "My network",
+    "reputation": "My reputation"
   },
   "errors": {
     "generic": "Something went wrong. Please try again.",

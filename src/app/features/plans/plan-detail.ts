@@ -8,6 +8,7 @@ import { Message } from 'primeng/message';
 import { Tag } from 'primeng/tag';
 import { catchError, filter, merge, Observable, of } from 'rxjs';
 import { PlansApi } from '../../core/api/plans-api';
+import { ReputationApi } from '../../core/api/reputation-api';
 import { Session } from '../../core/auth/session';
 import { ApiErrorMessage, apiErrorMessage } from '../../core/i18n/api-error';
 import { Language } from '../../core/i18n/language';
@@ -18,6 +19,7 @@ import { levelKey } from '../../shared/model/profile';
 import { CardSkeleton } from '../../components/card-skeleton/card-skeleton';
 import { IconTile } from '../../components/icon-tile/icon-tile';
 import { PlanCheckIn } from '../../components/plan-check-in/plan-check-in';
+import { ReputationBadge } from '../../components/reputation-badge/reputation-badge';
 import { SpotSlots } from '../../components/spot-slots/spot-slots';
 import { PageLayout } from '../../layout/page-layout/page-layout';
 import {
@@ -53,6 +55,7 @@ const ENDED: Plan['status'][] = ['IN_PROGRESS', 'FINISHED', 'CANCELLED'];
     Message,
     PageLayout,
     PlanCheckIn,
+    ReputationBadge,
     RouterLink,
     SpotSlots,
     Tag,
@@ -63,6 +66,7 @@ const ENDED: Plan['status'][] = ['IN_PROGRESS', 'FINISHED', 'CANCELLED'];
 })
 export class PlanDetail {
   private readonly api = inject(PlansApi);
+  private readonly reputationApi = inject(ReputationApi);
   private readonly language = inject(Language);
   private readonly session = inject(Session);
   private readonly transloco = inject(TranslocoService);
@@ -78,6 +82,8 @@ export class PlanDetail {
   protected readonly forecast = signal<Forecast | null>(null);
   /** Plan whose forecast has been asked for */
   private forecastOf: string | null = null;
+  /** The reputation of the organizer (HU-009); null for guests or when it cannot be known */
+  protected readonly organizerReputation = signal<number | null>(null);
   /** The organizer and the participants have the chat of the plan, also once it is over to read it (HU-008) */
   protected readonly inChat = computed(() => {
     const plan = this.plan();
@@ -421,6 +427,10 @@ export class PlanDetail {
         if (this.forecastOf !== plan.id && !this.isGuest() && !ENDED.includes(plan.status)) {
           this.forecastOf = plan.id;
           this.api.weather(plan.id).subscribe((forecast) => this.forecast.set(forecast));
+          this.reputationApi
+            .of(plan.organizerId)
+            .pipe(catchError(() => of(null)))
+            .subscribe((reputation) => this.organizerReputation.set(reputation?.score ?? null));
           // Only the organizer sees who is free nearby (HU-035)
           if (plan.organizerId === this.session.userId()) {
             this.api

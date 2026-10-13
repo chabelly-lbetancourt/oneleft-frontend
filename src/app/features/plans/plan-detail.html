@@ -97,8 +97,22 @@
                 <a class="organizer-link" [routerLink]="['/people', current.organizerId]">{{
                   'plan.organizer' | transloco: { name: current.organizerName }
                 }}</a>
+                @if (organizerReputation() !== null) {
+                  ·
+                  <app-reputation-badge
+                    class="organizer-reputation"
+                    [score]="organizerReputation()!"
+                  />
+                }
               } @else if (current.organizerName) {
                 {{ 'plan.organizer' | transloco: { name: current.organizerName } }}
+                @if (organizerReputation() !== null) {
+                  ·
+                  <app-reputation-badge
+                    class="organizer-reputation"
+                    [score]="organizerReputation()!"
+                  />
+                }
               } @else {
                 {{
                   'plan.spotsTaken'

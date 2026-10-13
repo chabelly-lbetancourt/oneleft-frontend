@@ -43,6 +43,13 @@
             <i class="pi pi-users" aria-hidden="true"></i>
             {{ 'profile.network' | transloco }}
           </a>
+          <a routerLink="/reputation" class="profile-reputation link-action">
+            <i class="pi pi-star" aria-hidden="true"></i>
+            {{ 'profile.reputation' | transloco }}
+            @if (reputation(); as score) {
+              <app-reputation-badge [score]="score.score" />
+            }
+          </a>
         </div>
       </section>
     }

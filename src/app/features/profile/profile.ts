@@ -27,9 +27,11 @@ import { Message } from 'primeng/message';
 import { Select } from 'primeng/select';
 import { SelectButton } from 'primeng/selectbutton';
 import { Tag } from 'primeng/tag';
-import { forkJoin } from 'rxjs';
+import { catchError, forkJoin, of } from 'rxjs';
 import { CardSkeleton } from '../../components/card-skeleton/card-skeleton';
 import { LanguageSwitcher } from '../../components/language-switcher/language-switcher';
+import { ReputationBadge } from '../../components/reputation-badge/reputation-badge';
+import { ReputationApi } from '../../core/api/reputation-api';
 import { UsersApi } from '../../core/api/users-api';
 import { Theme, THEME_MODES } from '../../core/theme/theme';
 import { Session } from '../../core/auth/session';
@@ -70,6 +72,7 @@ const zoneComplete = (group: AbstractControl): ValidationErrors | null => {
     Tag,
     TranslocoPipe,
     PageLayout,
+    ReputationBadge,
     RouterLink,
   ],
   templateUrl: './profile.html',
@@ -78,6 +81,13 @@ const zoneComplete = (group: AbstractControl): ValidationErrors | null => {
 export class Profile implements OnInit {
   protected readonly session = inject(Session);
   private readonly api = inject(UsersApi);
+  /** My reputation next to its link (HU-009): without it, the link alone */
+  protected readonly reputation = toSignal(
+    inject(ReputationApi)
+      .mine()
+      .pipe(catchError(() => of(null))),
+    { initialValue: null },
+  );
   private readonly location = inject(ApproximateLocation);
   private readonly fb = inject(NonNullableFormBuilder);
   private readonly transloco = inject(TranslocoService);

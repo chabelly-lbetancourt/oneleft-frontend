@@ -1,0 +1,79 @@
+@use 'abstracts' as *;
+
+// «My reputation» (HU-009)
+:host {
+  display: contents;
+}
+
+.score-card {
+  @include card;
+  @include enter;
+  @include stack(space(2));
+  padding: space(5);
+  margin-bottom: space(4);
+}
+
+.score-card__title {
+  @include text(sm);
+  @include weight(bold);
+  color: var(--ol-text-muted);
+}
+
+.score-card__value {
+  @include row(space(2));
+  @include text(3xl, tight);
+  @include weight(bold);
+  color: var(--ol-brand);
+
+  .pi {
+    font-size: 0.6em;
+  }
+}
+
+.score-card__value--negative {
+  color: var(--ol-danger-text);
+}
+
+.rules {
+  @include stack(space(3));
+  margin-bottom: space(6);
+}
+
+.rules__list,
+.ledger__list {
+  @include stack(space(2));
+}
+
+.rule,
+.entry {
+  @include row(space(3));
+  justify-content: space-between;
+}
+
+.entry {
+  padding: space(2) 0;
+  border-bottom: 1px solid var(--ol-border);
+}
+
+.entry__text {
+  @include stack(space(1));
+  min-width: 0;
+}
+
+.entry__reason {
+  color: inherit;
+}
+
+.points {
+  @include weight(bold);
+  flex-shrink: 0;
+  color: var(--ol-brand);
+}
+
+.points--negative {
+  color: var(--ol-danger-text);
+}
+
+.reputation-loading {
+  @include stack(space(4));
+}

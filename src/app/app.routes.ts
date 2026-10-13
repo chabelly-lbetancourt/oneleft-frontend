@@ -52,6 +52,14 @@ export const routes: Routes = [
     title: 'titles.network',
   },
   {
+    // My reputation and why it went up or down (HU-009)
+    path: 'reputation',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/reputation/reputation-page').then((m) => m.ReputationPage),
+    title: 'titles.reputation',
+  },
+  {
     // Someone as I see them, to follow them (HU-047)
     path: 'people/:id',
     canActivate: [authGuard],

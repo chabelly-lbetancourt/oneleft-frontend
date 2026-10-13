@@ -3,6 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { Observable, of, throwError } from 'rxjs';
 import { translocoTesting } from '../../../testing/transloco-testing';
+import { ReputationApi } from '../../core/api/reputation-api';
 import { SocialApi } from '../../core/api/social-api';
 import { Connection, SocialPerson } from '../../shared/model/social';
 import { PersonPage } from './person-page';
@@ -45,7 +46,11 @@ describe('PersonPage', () => {
     vi.clearAllMocks();
     TestBed.configureTestingModule({
       imports: [PersonPage, translocoTesting()],
-      providers: [provideRouter([]), { provide: SocialApi, useValue: api }],
+      providers: [
+        provideRouter([]),
+        { provide: SocialApi, useValue: api },
+        { provide: ReputationApi, useValue: { of: () => of({ userId: 'ana', score: -15 }) } },
+      ],
     });
   });
 
@@ -59,6 +64,7 @@ describe('PersonPage', () => {
     expect(element().querySelector('.follows-you')?.textContent).toContain('Te sigue');
     expect(element().querySelector('.followers-count')?.textContent).toBe('3');
     expect(element().querySelector('.following-count')?.textContent).toBe('1');
+    expect(element().querySelector('.person-reputation')?.textContent).toContain('-15');
   });
 
   it('should ask to follow a private profile and then say the request is waiting', async () => {
