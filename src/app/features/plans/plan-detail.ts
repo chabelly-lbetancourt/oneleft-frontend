@@ -182,6 +182,16 @@ export class PlanDetail {
       ? [plan.organizerName, ...plan.participants.map((participant) => participant.name)]
       : [];
   });
+  /** Their photos, in the same order as the people (HU-020) */
+  protected readonly peoplePhotos = computed(() => {
+    const plan = this.plan();
+    const photos = this.photoOf();
+    return plan && !this.isGuest()
+      ? [plan.organizerId, ...plan.participants.map(({ userId }) => userId)].map((id) =>
+          photos.get(id),
+        )
+      : [];
+  });
   protected readonly activityKey = computed(() => activityKey(this.activity().code));
   protected readonly levelKey = computed(() => levelKey(this.plan()?.level));
   protected readonly startsAt = computed(() => {
