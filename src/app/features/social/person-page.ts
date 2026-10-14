@@ -1,21 +1,21 @@
-import { Component, computed, effect, inject, input, signal } from '@angular/core';
+import { Component, effect, inject, input, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
-import { Avatar } from 'primeng/avatar';
 import { Button } from 'primeng/button';
 import { Message } from 'primeng/message';
 import { Tag } from 'primeng/tag';
 import { catchError, Observable, of } from 'rxjs';
+import { PhotosApi } from '../../core/api/photos-api';
 import { ReputationApi } from '../../core/api/reputation-api';
 import { SocialApi } from '../../core/api/social-api';
 import { ApiErrorMessage, apiErrorMessage } from '../../core/i18n/api-error';
 import { BadgeList } from '../../components/badge-list/badge-list';
 import { CardSkeleton } from '../../components/card-skeleton/card-skeleton';
+import { PersonAvatar } from '../../components/person-avatar/person-avatar';
 import { ReputationBadge } from '../../components/reputation-badge/reputation-badge';
 import { PageLayout } from '../../layout/page-layout/page-layout';
 import { BadgeProgress } from '../../shared/model/reputation';
 import { SocialPerson } from '../../shared/model/social';
-import { initials } from '../../shared/text/initials';
 
 /**
  * Someone as I see them (HU-047): their name, counts, whether they follow me, and following them, asking to if their
@@ -24,12 +24,12 @@ import { initials } from '../../shared/text/initials';
 @Component({
   selector: 'app-person-page',
   imports: [
-    Avatar,
     BadgeList,
     Button,
     CardSkeleton,
     Message,
     PageLayout,
+    PersonAvatar,
     ReputationBadge,
     RouterLink,
     Tag,
@@ -41,6 +41,7 @@ import { initials } from '../../shared/text/initials';
 export class PersonPage {
   private readonly api = inject(SocialApi);
   private readonly reputationApi = inject(ReputationApi);
+  private readonly photosApi = inject(PhotosApi);
   private readonly transloco = inject(TranslocoService);
 
   /** Route parameter (withComponentInputBinding) */
@@ -54,7 +55,8 @@ export class PersonPage {
   protected readonly notFound = signal(false);
   protected readonly busy = signal(false);
   protected readonly error = signal<ApiErrorMessage | null>(null);
-  protected readonly initials = computed(() => initials(this.person()?.name ?? ''));
+  /** Their profile photo (HU-020); null without one */
+  protected readonly photo = signal<string | null>(null);
 
   constructor() {
     effect(() => {
@@ -64,6 +66,10 @@ export class PersonPage {
         .of(id)
         .pipe(catchError(() => of(null)))
         .subscribe((reputation) => this.reputation.set(reputation?.score ?? null));
+      this.photosApi
+        .photosOf([id])
+        .pipe(catchError(() => of([])))
+        .subscribe((photos) => this.photo.set(photos[0]?.url ?? null));
       this.reputationApi
         .badgesOf(id)
         .pipe(catchError(() => of([])))

@@ -1,13 +1,22 @@
-import { Component, computed, DestroyRef, effect, inject, input, signal } from '@angular/core';
+import {
+  Component,
+  computed,
+  DestroyRef,
+  effect,
+  inject,
+  input,
+  signal,
+  untracked,
+} from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
-import { Avatar } from 'primeng/avatar';
 import { Button } from 'primeng/button';
 import { Message } from 'primeng/message';
 import { Tag } from 'primeng/tag';
 import { catchError, filter, merge, Observable, of } from 'rxjs';
 import { PlansApi } from '../../core/api/plans-api';
+import { PhotosApi } from '../../core/api/photos-api';
 import { ReputationApi } from '../../core/api/reputation-api';
 import { Session } from '../../core/auth/session';
 import { ApiErrorMessage, apiErrorMessage } from '../../core/i18n/api-error';
@@ -18,6 +27,7 @@ import { activityKey, activityOf } from '../../shared/model/activities';
 import { levelKey } from '../../shared/model/profile';
 import { CardSkeleton } from '../../components/card-skeleton/card-skeleton';
 import { IconTile } from '../../components/icon-tile/icon-tile';
+import { PersonAvatar } from '../../components/person-avatar/person-avatar';
 import { PlanCheckIn } from '../../components/plan-check-in/plan-check-in';
 import { ReputationBadge } from '../../components/reputation-badge/reputation-badge';
 import { SpotSlots } from '../../components/spot-slots/spot-slots';
@@ -29,7 +39,7 @@ import {
   LATE_OPTIONS,
   Plan,
 } from '../../shared/model/published-plan';
-import { initials } from '../../shared/text/initials';
+import { photoMap } from '../../shared/model/photo';
 import { clockTime, spotsKey, startsIn } from '../../shared/time/plan-time';
 import {
   CalendarEvent,
@@ -48,12 +58,12 @@ const ENDED: Plan['status'][] = ['IN_PROGRESS', 'FINISHED', 'CANCELLED'];
 @Component({
   selector: 'app-plan-detail',
   imports: [
-    Avatar,
     Button,
     CardSkeleton,
     IconTile,
     Message,
     PageLayout,
+    PersonAvatar,
     PlanCheckIn,
     ReputationBadge,
     RouterLink,
@@ -67,6 +77,7 @@ const ENDED: Plan['status'][] = ['IN_PROGRESS', 'FINISHED', 'CANCELLED'];
 export class PlanDetail {
   private readonly api = inject(PlansApi);
   private readonly reputationApi = inject(ReputationApi);
+  private readonly photosApi = inject(PhotosApi);
   private readonly language = inject(Language);
   private readonly session = inject(Session);
   private readonly transloco = inject(TranslocoService);
@@ -84,6 +95,10 @@ export class PlanDetail {
   private forecastOf: string | null = null;
   /** The reputation of the organizer (HU-009); null for guests or when it cannot be known */
   protected readonly organizerReputation = signal<number | null>(null);
+  /** The photos of the people of the plan (HU-020); without them, the initials as before */
+  protected readonly photoOf = signal(new Map<string, string>());
+  /** Whose photos were asked last: a reload of the same people asks nothing */
+  private photosFor = '';
   /** The organizer and the participants have the chat of the plan, also once it is over to read it (HU-008) */
   protected readonly inChat = computed(() => {
     const plan = this.plan();
@@ -258,6 +273,13 @@ export class PlanDetail {
   });
 
   constructor() {
+    // The photos follow the people of the plan, however the plan arrives (loaded, joined, left)
+    effect(() => {
+      const plan = this.plan();
+      if (plan) {
+        untracked(() => this.loadPhotos(plan));
+      }
+    });
     effect(() => this.load(this.id()));
     // The plan is refreshed at once when a notice about it arrives: someone joined or left, or my spot came up
     const events = inject(UserEvents);
@@ -416,7 +438,18 @@ export class PlanDetail {
     });
   }
 
-  protected readonly initials = initials;
+  /** One question for the organizer and the participants, and only with a session */
+  private loadPhotos(plan: Plan): void {
+    const ids = [plan.organizerId, ...plan.participants.map(({ userId }) => userId)];
+    if (this.isGuest() || ids.join(',') === this.photosFor) {
+      return;
+    }
+    this.photosFor = ids.join(',');
+    this.photosApi
+      .photosOf(ids)
+      .pipe(catchError(() => of([])))
+      .subscribe((photos) => this.photoOf.set(photoMap(photos)));
+  }
 
   private load(id: string): void {
     (this.isGuest() ? this.api.publicPlan(id) : this.api.plan(id)).subscribe({

@@ -3,8 +3,10 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { Observable, of, throwError } from 'rxjs';
 import { translocoTesting } from '../../../testing/transloco-testing';
+import { PhotosApi } from '../../core/api/photos-api';
 import { ReputationApi } from '../../core/api/reputation-api';
 import { SocialApi } from '../../core/api/social-api';
+import { PersonPhoto } from '../../shared/model/photo';
 import { Connection, SocialPerson } from '../../shared/model/social';
 import { PersonPage } from './person-page';
 
@@ -25,6 +27,7 @@ describe('PersonPage', () => {
     follow: vi.fn((): Observable<Connection> => of({} as Connection)),
     unfollow: vi.fn((): Observable<void> => of(undefined)),
   };
+  const photosApi = { photosOf: vi.fn((): Observable<PersonPhoto[]> => of([])) };
   const element = () => fixture.nativeElement as HTMLElement;
   const render = async () => {
     fixture.detectChanges();
@@ -49,6 +52,7 @@ describe('PersonPage', () => {
       providers: [
         provideRouter([]),
         { provide: SocialApi, useValue: api },
+        { provide: PhotosApi, useValue: photosApi },
         {
           provide: ReputationApi,
           useValue: {
@@ -82,6 +86,20 @@ describe('PersonPage', () => {
     expect(element().querySelector('.person-reputation')?.textContent).toContain('-15');
     expect(element().querySelector('.person-badges .badge__name')?.textContent).toContain(
       '10 actividades distintas',
+    );
+  });
+
+  it('should show their photo (HU-020), or their initials without one', async () => {
+    await create();
+    expect(photosApi.photosOf).toHaveBeenCalledWith(['ana']);
+    expect(element().querySelector('.person-card__avatar')?.textContent?.trim()).toBe('AP');
+
+    photosApi.photosOf.mockReturnValueOnce(
+      of([{ userId: 'ana', url: 'http://storage.test/photos/ana/1.webp?view' }]),
+    );
+    await create();
+    expect(element().querySelector('.person-card__avatar img')?.getAttribute('src')).toContain(
+      '/photos/ana/1.webp',
     );
   });
 

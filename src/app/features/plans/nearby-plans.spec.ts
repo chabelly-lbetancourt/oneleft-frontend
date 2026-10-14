@@ -97,10 +97,15 @@ describe('NearbyPlans', () => {
     http = TestBed.inject(HttpTestingController);
   });
 
-  // The reputation of the organizers is asked after each list (HU-009): the tests that do not look at it answer it here
+  // The reputation and the photos of the organizers are asked after each list (HU-009, HU-020): the tests that do not
+  // look at them answer them here
   afterEach(() => {
     http
-      .match((request) => request.url.endsWith('/api/v1/reputation/scores'))
+      .match(
+        (request) =>
+          request.url.endsWith('/api/v1/reputation/scores') ||
+          request.url.endsWith('/api/v1/users/photos'),
+      )
       .forEach((request) => request.flush([]));
     http.verify();
   });
@@ -140,6 +145,22 @@ describe('NearbyPlans', () => {
 
     const organizer = element().querySelector('.nearby-card .plan-ticket__organizer');
     expect(organizer?.textContent?.replace(/\s+/g, ' ')).toContain('Organiza Ana · Reputación 35');
+  });
+
+  it('should show the photo of each organizer, asking once for the whole list', async () => {
+    await create();
+    nearbyRequest().flush([nearby('a', 'PADEL', 34), nearby('b', 'PADEL', 90)]);
+    await render();
+
+    const photos = http.expectOne((request) => request.url.endsWith('/api/v1/users/photos'));
+    expect(photos.request.params.get('ids')).toBe('org');
+    photos.flush([{ userId: 'org', url: 'http://storage.test/photos/org/1.webp?view' }]);
+    await render();
+
+    const organizer = element().querySelectorAll('.nearby-card .plan-ticket__organizer');
+    expect(organizer.length).toBe(2);
+    expect(organizer[0].querySelector('img')?.getAttribute('src')).toContain('/photos/org/1.webp');
+    expect(organizer[0].textContent).toContain('Organiza Ana');
   });
 
   it('should list the plans as before when the reputation cannot be known', async () => {

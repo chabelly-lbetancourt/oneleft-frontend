@@ -2,11 +2,12 @@
   @if (person(); as current) {
     <section class="person-card" aria-labelledby="person-name">
       <div class="person-card__head">
-        <p-avatar
-          [label]="initials()"
-          shape="circle"
+        <app-person-avatar
+          class="person-card__avatar"
+          [name]="current.name"
+          [photo]="photo()"
+          variant="profile"
           size="xlarge"
-          class="person-card__avatar avatar--profile"
         />
         <div class="person-card__who">
           <h1 class="person-card__name" id="person-name">{{ current.name }}</h1>

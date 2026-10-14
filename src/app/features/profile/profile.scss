@@ -29,6 +29,20 @@
   color: var(--ol-text-muted);
 }
 
+.photo-actions {
+  @include cluster(space(2));
+  margin-top: space(3);
+}
+
+.photo-hint {
+  margin-top: space(1);
+}
+
+.photo-status {
+  display: block;
+  margin-top: space(2);
+}
+
 .profile-card__roles {
   @include cluster(space(2));
   margin-top: space(4);
