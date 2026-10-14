@@ -28,7 +28,8 @@ const encode = (canvas: HTMLCanvasElement, type: string): Promise<Blob | null> =
 
 /** The square photo ready to upload; it keeps the orientation the camera wrote in the file. */
 export const squarePhoto = async (file: File): Promise<Blob> => {
-  if (!file.type.startsWith('image/')) {
+  // Some pickers give no type: then decoding the file decides
+  if (file.type && !file.type.startsWith('image/')) {
     throw new PhotoFileError('notImage');
   }
   if (file.size > MAX_ORIGINAL_BYTES) {
