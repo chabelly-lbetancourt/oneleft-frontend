@@ -131,13 +131,13 @@ La app de Android es la misma compilación de Angular empaquetada con **Capacito
 Requisitos: Android Studio (o el SDK de Android con `ANDROID_HOME`) y Java 21.
 
 ```bash
-npm run android:local   # build de desarrollo, copia al proyecto Android y adb reverse de 8080 y 8180
+npm run android:local   # build de desarrollo, copia al proyecto Android y adb reverse de 8080, 8180 y 7070
 npm run android:apk     # APK de depuración en android/app/build/outputs/apk/debug/
 npm run android:open    # abre el proyecto en Android Studio
 ```
 
-En el emulador o en un móvil conectado por USB, `adb reverse` hace que `localhost:8080` (API) y `localhost:8180`
-(Keycloak) lleguen al Docker Compose del Mac. La CI genera el APK como artefacto en cada ejecución.
+En el emulador o en un móvil conectado por USB, `adb reverse` hace que `localhost:8080` (API), `localhost:8180`
+(Keycloak) y `localhost:7070` (almacenamiento de las fotos de perfil, HU-020) lleguen al Docker Compose del Mac. La CI genera el APK como artefacto en cada ejecución.
 
 El icono y la pantalla de arranque se generan a partir de `assets/`, que a su vez dibuja
 [`scripts/generate-app-assets.mjs`](scripts/generate-app-assets.mjs) con la identidad de OneLeft:

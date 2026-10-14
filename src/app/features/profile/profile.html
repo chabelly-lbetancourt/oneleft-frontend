@@ -14,17 +14,55 @@
     @if (user(); as account) {
       <section class="profile-card">
         <div class="profile-card__identity">
-          <p-avatar
-            [label]="session.initials()"
-            shape="circle"
+          <app-person-avatar
+            class="profile-photo"
+            [name]="account.name"
+            [photo]="myPhoto.url()"
+            variant="profile"
             size="xlarge"
-            class="avatar--profile"
           />
           <div class="profile-card__names">
             <h2 class="profile-card__name">{{ account.name }}</h2>
             <p class="profile-card__email">{{ account.email }}</p>
           </div>
         </div>
+        <div class="photo-actions">
+          <input
+            #photoFile
+            hidden
+            type="file"
+            accept="image/*"
+            class="photo-file"
+            (change)="choosePhoto($event)"
+          />
+          <p-button
+            class="change-photo"
+            icon="pi pi-camera"
+            size="small"
+            [text]="true"
+            [label]="(myPhoto.url() ? 'photo.change' : 'photo.add') | transloco"
+            [loading]="photoBusy()"
+            (onClick)="photoFile.click()"
+          />
+          @if (myPhoto.url()) {
+            <p-button
+              class="remove-photo"
+              icon="pi pi-trash"
+              size="small"
+              severity="secondary"
+              [text]="true"
+              [label]="'photo.remove' | transloco"
+              [disabled]="photoBusy()"
+              (onClick)="removePhoto()"
+            />
+          }
+        </div>
+        <p class="photo-hint hint">{{ 'photo.hint' | transloco }}</p>
+        @if (photoStatus(); as photo) {
+          <p-message class="photo-status" [severity]="photo.severity" role="status">{{
+            photo.key | transloco: photo.params
+          }}</p-message>
+        }
         <div class="profile-card__roles">
           @for (role of account.roles; track role) {
             <p-tag

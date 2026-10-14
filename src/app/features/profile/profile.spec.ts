@@ -1,3 +1,5 @@
+import { HttpErrorResponse } from '@angular/common/http';
+import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { of, throwError } from 'rxjs';
@@ -5,6 +7,8 @@ import { FakeSession } from '../../../testing/fake-session';
 import { UsersApi } from '../../core/api/users-api';
 import { Session } from '../../core/auth/session';
 import { ApproximateLocation, LocationError } from '../../core/geo/approximate-location';
+import { MyPhoto } from '../../core/photos/my-photo';
+import { PhotoFileError } from '../../shared/image/square-photo';
 import { Catalog, MyProfile } from '../../shared/model/profile';
 import { TranslocoService } from '@jsverse/transloco';
 import { Profile } from './profile';
@@ -34,6 +38,19 @@ describe('Profile', () => {
     updateMyProfile: vi.fn(),
   };
   const location = { current: vi.fn() };
+  const myPhoto = {
+    url: signal<string | null>(null),
+    change: vi.fn(async (): Promise<void> => undefined),
+    remove: vi.fn(async (): Promise<void> => undefined),
+  };
+  /** Chooses a file in the hidden input, as the file picker (or the camera on Android) does */
+  const choose = async (file: File) => {
+    const input = element().querySelector<HTMLInputElement>('.photo-file')!;
+    Object.defineProperty(input, 'files', { value: [file], configurable: true });
+    input.dispatchEvent(new Event('change'));
+    await render();
+    await render();
+  };
 
   const element = () => fixture.nativeElement as HTMLElement;
   const render = async () => {
@@ -42,11 +59,15 @@ describe('Profile', () => {
     fixture.detectChanges();
   };
   // Access to the component's protected members from the tests
-  const call = <T>(name: string, ...args: unknown[]) => (component[name] as (...a: unknown[]) => T)(...args);
+  const call = <T>(name: string, ...args: unknown[]) =>
+    (component[name] as (...a: unknown[]) => T)(...args);
 
   beforeEach(async () => {
     vi.clearAllMocks();
-    api.me.mockReturnValue(of({ id: 'a624d063', name: 'Ana Test', email: 'ana@oneleft.dev', roles: ['ADMIN', 'USER'] }));
+    myPhoto.url.set(null);
+    api.me.mockReturnValue(
+      of({ id: 'a624d063', name: 'Ana Test', email: 'ana@oneleft.dev', roles: ['ADMIN', 'USER'] }),
+    );
     api.myProfile.mockReturnValue(of(PROFILE));
     api.catalog.mockReturnValue(of(CATALOG));
     session = new FakeSession();
@@ -59,6 +80,7 @@ describe('Profile', () => {
         { provide: UsersApi, useValue: api },
         { provide: ReputationApi, useValue: { mine: () => of({ userId: 'a624d063', score: 20 }) } },
         { provide: ApproximateLocation, useValue: location },
+        { provide: MyPhoto, useValue: myPhoto },
       ],
     });
     fixture = TestBed.createComponent(Profile);
@@ -81,6 +103,60 @@ describe('Profile', () => {
     const reputation = element().querySelector('.profile-reputation');
     expect(reputation?.getAttribute('href')).toBe('/reputation');
     expect(reputation?.textContent?.replace(/\s+/g, ' ')).toContain('Mi reputación Reputación 20');
+  });
+
+  it('should offer to add a photo, open the file picker and confirm the new one (HU-020)', async () => {
+    expect(element().querySelector('.profile-photo')?.textContent?.trim()).toBe('AT');
+    expect(element().querySelector('.change-photo')?.textContent).toContain('Añadir foto');
+    expect(element().querySelector('.remove-photo')).toBeNull();
+    const picker = vi.spyOn(element().querySelector<HTMLInputElement>('.photo-file')!, 'click');
+    element().querySelector<HTMLButtonElement>('.change-photo button')!.click();
+    expect(picker).toHaveBeenCalled();
+
+    myPhoto.change.mockImplementationOnce(async () =>
+      myPhoto.url.set('http://storage.test/me.webp?view'),
+    );
+    const file = new File(['photo'], 'IMG_1.jpg', { type: 'image/jpeg' });
+    await choose(file);
+
+    expect(myPhoto.change).toHaveBeenCalledWith(file);
+    expect(element().querySelector('.profile-photo img')?.getAttribute('src')).toContain('me.webp');
+    expect(element().querySelector('.photo-status')?.textContent).toContain('Foto actualizada');
+    expect(element().querySelector('.change-photo')?.textContent).toContain('Cambiar foto');
+  });
+
+  it('should explain why a photo could not be changed', async () => {
+    myPhoto.change.mockRejectedValueOnce(new PhotoFileError('notImage'));
+    await choose(new File(['%PDF'], 'notes.pdf', { type: 'application/pdf' }));
+    expect(element().querySelector('.photo-status')?.textContent).toContain('no es una imagen');
+
+    myPhoto.change.mockRejectedValueOnce(
+      new HttpErrorResponse({ status: 503, error: { code: 'photo.unavailable' } }),
+    );
+    await choose(new File(['photo'], 'IMG_2.jpg', { type: 'image/jpeg' }));
+    expect(element().querySelector('.photo-status')?.textContent).toContain(
+      'no se pueden cambiar las fotos',
+    );
+
+    myPhoto.change.mockRejectedValueOnce(new HttpErrorResponse({ status: 403 }));
+    await choose(new File(['photo'], 'IMG_3.jpg', { type: 'image/jpeg' }));
+    expect(element().querySelector('.photo-status')?.textContent).toContain(
+      'No se ha podido cambiar la foto',
+    );
+  });
+
+  it('should remove my photo', async () => {
+    myPhoto.url.set('http://storage.test/me.webp?view');
+    await render();
+    myPhoto.remove.mockImplementationOnce(async () => myPhoto.url.set(null));
+
+    element().querySelector<HTMLButtonElement>('.remove-photo button')!.click();
+    await render();
+    await render();
+
+    expect(myPhoto.remove).toHaveBeenCalled();
+    expect(element().querySelector('.profile-photo img')).toBeNull();
+    expect(element().querySelector('.photo-status')?.textContent).toContain('Has quitado tu foto');
   });
 
   it('should show an error when the profile cannot be loaded', async () => {
@@ -128,7 +204,9 @@ describe('Profile', () => {
     location.current.mockRejectedValue(new LocationError('denied'));
     await call<Promise<void>>('useMyLocation');
     await render();
-    expect(element().querySelector('.status-message')?.textContent).toContain('No se ha podido obtener tu ubicación');
+    expect(element().querySelector('.status-message')?.textContent).toContain(
+      'No se ha podido obtener tu ubicación',
+    );
   });
 
   it('should save the profile and confirm it', async () => {
@@ -155,19 +233,27 @@ describe('Profile', () => {
 
   it('should show the reason given by the server when saving fails', async () => {
     api.updateMyProfile.mockReturnValue(
-      throwError(() => ({ error: { code: 'profile.duplicateActivity', detail: 'Each activity can only appear once' } })),
+      throwError(() => ({
+        error: { code: 'profile.duplicateActivity', detail: 'Each activity can only appear once' },
+      })),
     );
     call('save');
     await render();
-    expect(element().querySelector('.status-message')?.textContent).toContain('Cada actividad solo puede aparecer una vez');
+    expect(element().querySelector('.status-message')?.textContent).toContain(
+      'Cada actividad solo puede aparecer una vez',
+    );
     api.updateMyProfile.mockReturnValue(throwError(() => ({})));
     call('save');
     await render();
-    expect(element().querySelector('.status-message')?.textContent).toContain('No se ha podido guardar el perfil');
+    expect(element().querySelector('.status-message')?.textContent).toContain(
+      'No se ha podido guardar el perfil',
+    );
     api.updateMyProfile.mockReturnValue(throwError(() => ({ error: { code: 'unknown.code' } })));
     call('save');
     await render();
-    expect(element().querySelector('.status-message')?.textContent).toContain('No se ha podido guardar el perfil');
+    expect(element().querySelector('.status-message')?.textContent).toContain(
+      'No se ha podido guardar el perfil',
+    );
   });
 
   it('should show levels, activities and roles in English', async () => {
@@ -175,7 +261,11 @@ describe('Profile', () => {
     await render();
     const tags = Array.from(element().querySelectorAll('p-tag')).map((t) => t.textContent?.trim());
     expect(tags).toEqual(['Administrator', 'User']);
-    expect(call<{ name: string }[]>('activityOptions', 0).map((o) => o.name)).toEqual(['Padel', 'Cinema', 'Running']);
+    expect(call<{ name: string }[]>('activityOptions', 0).map((o) => o.name)).toEqual([
+      'Padel',
+      'Cinema',
+      'Running',
+    ]);
     expect((component['levelOptions'] as () => { label: string }[])().map((o) => o.label)).toEqual([
       'Beginner',
       'Intermediate',

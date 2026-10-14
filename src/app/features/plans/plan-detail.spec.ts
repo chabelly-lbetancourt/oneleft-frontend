@@ -4,8 +4,10 @@ import { TranslocoService } from '@jsverse/transloco';
 import { EMPTY, Observable, of, Subject, throwError } from 'rxjs';
 import { FakeSession } from '../../../testing/fake-session';
 import { translocoTesting } from '../../../testing/transloco-testing';
+import { PhotosApi } from '../../core/api/photos-api';
 import { PlansApi } from '../../core/api/plans-api';
 import { ReputationApi } from '../../core/api/reputation-api';
+import { PersonPhoto } from '../../shared/model/photo';
 import { Reputation } from '../../shared/model/reputation';
 import { Session } from '../../core/auth/session';
 import { UserEvents } from '../../core/realtime/user-events';
@@ -42,6 +44,8 @@ const PLAN: Plan = {
 };
 
 const LUCIA = { userId: 'lucia', name: 'Lucía Martín', joinedAt: new Date().toISOString() };
+/** Nobody has a photo unless a test gives one (HU-020) */
+const photosApi = { photosOf: vi.fn((): Observable<PersonPhoto[]> => of([])) };
 
 describe('PlanDetail', () => {
   let fixture: ComponentFixture<PlanDetail>;
@@ -102,6 +106,7 @@ describe('PlanDetail', () => {
       providers: [
         provideRouter([]),
         { provide: PlansApi, useValue: api },
+        { provide: PhotosApi, useValue: photosApi },
         { provide: ReputationApi, useValue: reputationApi },
         { provide: Session, useValue: session },
         {
@@ -198,6 +203,7 @@ describe('PlanDetail', () => {
       providers: [
         provideRouter([]),
         { provide: PlansApi, useValue: api },
+        { provide: PhotosApi, useValue: photosApi },
         { provide: ReputationApi, useValue: reputationApi },
         { provide: Session, useValue: session },
         {
@@ -222,6 +228,7 @@ describe('PlanDetail', () => {
       providers: [
         provideRouter([]),
         { provide: PlansApi, useValue: api },
+        { provide: PhotosApi, useValue: photosApi },
         { provide: ReputationApi, useValue: reputationApi },
         { provide: Session, useValue: session },
         {
@@ -832,10 +839,36 @@ describe('PlanDetail', () => {
     expect(element().querySelector('.plan-error')).not.toBeNull();
   });
 
-  it('should build initials from the participant name', async () => {
-    await create(PLAN);
-    const initials = (fixture.componentInstance as unknown as { initials: (n: string) => string })
-      .initials;
-    expect(initials('lucía  martín gómez')).toBe('LM');
+  it('should show the photos of the people of the plan, asking once, and the initials of whoever has none', async () => {
+    photosApi.photosOf.mockReturnValueOnce(
+      of([
+        { userId: PLAN.organizerId, url: 'http://storage.test/photos/org/1.webp?view' },
+        { userId: 'lucia', url: 'http://storage.test/photos/lucia/1.webp?view' },
+      ]),
+    );
+    await create({
+      ...PLAN,
+      participants: [LUCIA, { ...LUCIA, userId: 'diego', name: 'Diego Ruiz' }],
+    });
+
+    expect(photosApi.photosOf).toHaveBeenCalledExactlyOnceWith([
+      PLAN.organizerId,
+      'lucia',
+      'diego',
+    ]);
+    const people = element().querySelectorAll('.participant');
+    expect(people[0].querySelector('img')?.getAttribute('src')).toContain('/photos/lucia/1.webp');
+    expect(people[1].querySelector('img')).toBeNull();
+    expect(people[1].querySelector('.p-avatar')?.textContent?.trim()).toBe('DR');
+    expect(element().querySelector('.organizer-avatar img')?.getAttribute('src')).toContain(
+      '/photos/org/1.webp',
+    );
+    // The spots of the plan too: organizer and Lucía with their photos, Diego with his initials
+    const spots = element().querySelectorAll('app-spot-slots .person-slot');
+    expect([...spots].map((spot) => spot.querySelector('img') !== null)).toEqual([
+      true,
+      true,
+      false,
+    ]);
   });
 });

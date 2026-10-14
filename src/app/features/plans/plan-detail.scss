@@ -180,6 +180,12 @@
   }
 }
 
+// The photo of the organizer, inline before their name (HU-020)
+.organizer-avatar {
+  margin-right: space(1.5);
+  vertical-align: middle;
+}
+
 .organizer-link {
   color: inherit;
   text-decoration: underline;

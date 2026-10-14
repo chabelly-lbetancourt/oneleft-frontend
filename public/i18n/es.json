@@ -329,6 +329,18 @@
     "network": "Mi red",
     "reputation": "Mi reputación"
   },
+  "photo": {
+    "add": "Añadir foto",
+    "change": "Cambiar foto",
+    "remove": "Quitar foto",
+    "changed": "Foto actualizada.",
+    "removed": "Has quitado tu foto.",
+    "hint": "Se recorta en cuadrado y se reduce antes de subirla. Solo la ven quienes han iniciado sesión.",
+    "errors": {
+      "notImage": "Ese archivo no es una imagen que se pueda leer. Prueba con una foto JPEG, PNG o WebP.",
+      "tooBig": "La foto pesa demasiado: elige una de hasta 20 MB."
+    }
+  },
   "errors": {
     "generic": "Algo ha fallado. Inténtalo de nuevo.",
     "publishFailed": "No se ha podido publicar el plan",
@@ -428,6 +440,15 @@
     },
     "social": {
       "unavailable": "Ahora mismo no se puede seguir a nadie. Inténtalo en un rato."
+    },
+    "photoFailed": "No se ha podido cambiar la foto. Inténtalo de nuevo.",
+    "photo": {
+      "format": "La foto tiene que ser WebP o JPEG.",
+      "tooBig": "La foto ya reducida pesa más de 1 MB. Prueba con otra.",
+      "empty": "La foto está vacía. Prueba con otra.",
+      "notUploaded": "La foto no llegó a subirse. Inténtalo de nuevo.",
+      "key": "No se ha podido guardar la foto. Inténtalo de nuevo.",
+      "unavailable": "Ahora mismo no se pueden cambiar las fotos. Inténtalo en un rato."
     }
   },
   "nearby": {
