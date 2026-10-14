@@ -68,6 +68,12 @@ describe('squarePhoto', () => {
     expect(encoded).toEqual(['image/webp 512x512', 'image/jpeg 512x512']);
   });
 
+  it('should read a photo the picker gives without a type', async () => {
+    const photo = await squarePhoto(file('19.jpg', ''));
+
+    expect(photo.type).toBe('image/webp');
+  });
+
   it('should refuse what is not a photo that can be read, or too big', async () => {
     await expect(squarePhoto(file('notes.pdf', 'application/pdf'))).rejects.toEqual(
       new PhotoFileError('notImage'),
