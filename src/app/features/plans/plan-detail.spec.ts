@@ -863,5 +863,12 @@ describe('PlanDetail', () => {
     expect(element().querySelector('.organizer-avatar img')?.getAttribute('src')).toContain(
       '/photos/org/1.webp',
     );
+    // The spots of the plan too: organizer and Lucía with their photos, Diego with his initials
+    const spots = element().querySelectorAll('app-spot-slots .person-slot');
+    expect([...spots].map((spot) => spot.querySelector('img') !== null)).toEqual([
+      true,
+      true,
+      false,
+    ]);
   });
 });

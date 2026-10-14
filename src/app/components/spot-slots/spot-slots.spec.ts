@@ -27,6 +27,23 @@ describe('SpotSlots', () => {
     expect(element.className).toContain('spot-slots--md');
   });
 
+  it('should show the photo of whoever has one, and the initials if its link expired', () => {
+    const fixture = TestBed.createComponent(SpotSlots);
+    fixture.componentRef.setInput('names', ['Ana Pruebas', 'Diego']);
+    fixture.componentRef.setInput('photos', ['http://storage.test/ana.webp', null]);
+    fixture.detectChanges();
+    const element = fixture.nativeElement as HTMLElement;
+    const slots = element.querySelectorAll('.person-slot');
+
+    expect(slots[0].querySelector('img')?.getAttribute('src')).toBe('http://storage.test/ana.webp');
+    expect(slots[0].querySelector('img')?.getAttribute('alt')).toBe('');
+    expect(slots[1].textContent?.trim()).toBe('D');
+
+    slots[0].querySelector('img')!.dispatchEvent(new Event('error'));
+    fixture.detectChanges();
+    expect(element.querySelector('.person-slot')?.textContent?.trim()).toBe('AP');
+  });
+
   it('should not break with an empty name', () => {
     expect(render([' '], 0).querySelector('.person-slot')?.textContent?.trim()).toBe('?');
   });

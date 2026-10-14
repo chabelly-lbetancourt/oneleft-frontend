@@ -156,7 +156,12 @@
             {{ 'plan.waitlistCount' | transloco: { count: current.waitlist.length } }}
           </p>
         }
-        <app-spot-slots [names]="people()" [free]="current.freeSpots" size="md" />
+        <app-spot-slots
+          [names]="people()"
+          [photos]="peoplePhotos()"
+          [free]="current.freeSpots"
+          size="md"
+        />
         @if (current.participants.length) {
           <ul class="people">
             @for (participant of current.participants; track participant.userId) {

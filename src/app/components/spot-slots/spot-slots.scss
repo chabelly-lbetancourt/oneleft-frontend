@@ -44,6 +44,17 @@
   }
 }
 
+// A photo fills the circle of the person
+.person-slot--photo {
+  overflow: hidden;
+}
+
+.person-slot__photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 .free-slot {
   @include spot;
   * + & {

@@ -31,7 +31,12 @@
           · <span class="nearby-distance">{{ distance() }}</span>
         }
       </p>
-      <app-spot-slots class="plan-ticket__slots" [names]="names()" [free]="current.freeSpots" />
+      <app-spot-slots
+        class="plan-ticket__slots"
+        [names]="names()"
+        [photos]="photos()"
+        [free]="current.freeSpots"
+      />
     </div>
   </div>
 </article>

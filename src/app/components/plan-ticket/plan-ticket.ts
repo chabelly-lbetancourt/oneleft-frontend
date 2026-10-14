@@ -41,6 +41,8 @@ export class PlanTicket {
     this.plan().organizerName,
     ...(this.plan().participants ?? []).map((participant) => participant.name),
   ]);
+  /** Only the photo of the organizer is known in the list */
+  protected readonly photos = computed(() => [this.organizerPhoto()]);
   protected readonly distance = computed(() =>
     formatDistance(this.distanceMeters() ?? 0, this.language.locale()),
   );
