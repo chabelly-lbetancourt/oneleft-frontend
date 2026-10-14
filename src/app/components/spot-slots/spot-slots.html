@@ -1,7 +1,15 @@
 @for (person of people(); track $index) {
-  <span [class]="'slot person-slot ' + person.tone" [style.--i]="$index">{{
-    person.initials
-  }}</span>
+  <span
+    [class]="'slot person-slot ' + person.tone"
+    [class.person-slot--photo]="!!person.photo"
+    [style.--i]="$index"
+  >
+    @if (person.photo; as photo) {
+      <img class="person-slot__photo" [src]="photo" alt="" (error)="fail(photo)" />
+    } @else {
+      {{ person.initials }}
+    }
+  </span>
 }
 @for (free of freeSlots(); track $index) {
   <span class="slot free-slot" [style.--i]="people().length + $index">+</span>

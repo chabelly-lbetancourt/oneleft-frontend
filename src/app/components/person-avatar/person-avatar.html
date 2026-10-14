@@ -1,0 +1,15 @@
+<p-avatar
+  [label]="showPhoto() ? undefined : initials()"
+  shape="circle"
+  [size]="primeSize()"
+  class="avatar"
+  [class.avatar--user]="variant() === 'user'"
+  [class.avatar--profile]="variant() === 'profile'"
+  [class.avatar--participant]="variant() === 'participant'"
+  [class.avatar--photo]="showPhoto()"
+  [class.avatar--small]="size() === 'small'"
+>
+  @if (showPhoto()) {
+    <img class="avatar__photo" [src]="photo()" alt="" (error)="failed.set(true)" />
+  }
+</p-avatar>

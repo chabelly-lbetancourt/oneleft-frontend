@@ -9,6 +9,7 @@ import { Message } from 'primeng/message';
 import { MultiSelect } from 'primeng/multiselect';
 import { SelectButton } from 'primeng/selectbutton';
 import { PlansApi } from '../../core/api/plans-api';
+import { PhotosApi } from '../../core/api/photos-api';
 import { ReputationApi } from '../../core/api/reputation-api';
 import {
   ApproximateLocation,
@@ -26,6 +27,7 @@ import { ACTIVITIES, activityKey } from '../../shared/model/activities';
 import { BottomBar } from '../../layout/bottom-bar/bottom-bar';
 import { PageLayout } from '../../layout/page-layout/page-layout';
 import { NearbyPlan, NearbyPlanEvent, nearbyParams, NearbyQuery } from '../../shared/model/nearby';
+import { PersonPhoto, photoMap } from '../../shared/model/photo';
 import { Reputation } from '../../shared/model/reputation';
 import { NearbyMap } from './nearby-map';
 
@@ -63,6 +65,7 @@ type View = 'list' | 'map';
 export class NearbyPlans {
   private readonly api = inject(PlansApi);
   private readonly reputation = inject(ReputationApi);
+  private readonly photos = inject(PhotosApi);
   private readonly location = inject(ApproximateLocation);
   private readonly stream = inject(NearbyStream);
   private readonly transloco = inject(TranslocoService);
@@ -140,6 +143,16 @@ export class NearbyPlans {
           ({ userId, score }) => [userId, score] as const,
         ),
       ),
+  );
+  /** The photos of the organizers of the list (HU-020), also in one question */
+  protected readonly organizerPhotos = httpResource<PersonPhoto[]>(() => {
+    const ids = [...new Set(this.plans().map(({ plan }) => plan.organizerId))].slice(0, 50);
+    return ids.length
+      ? { url: this.photos.photosUrl(), params: { ids: ids.join(',') } }
+      : undefined;
+  });
+  protected readonly photoOf = computed(() =>
+    photoMap(this.organizerPhotos.hasValue() ? this.organizerPhotos.value() : undefined),
   );
   /** The first search of some filters: the skeletons stand in for the list (a reload keeps the list shown) */
   protected readonly searching = computed(

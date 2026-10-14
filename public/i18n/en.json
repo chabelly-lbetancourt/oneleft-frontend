@@ -329,6 +329,18 @@
     "network": "My network",
     "reputation": "My reputation"
   },
+  "photo": {
+    "add": "Add photo",
+    "change": "Change photo",
+    "remove": "Remove photo",
+    "changed": "Photo updated.",
+    "removed": "You removed your photo.",
+    "hint": "It is cropped to a square and made smaller before it is uploaded. Only signed-in people can see it.",
+    "errors": {
+      "notImage": "That file is not an image that can be read. Try a JPEG, PNG or WebP photo.",
+      "tooBig": "The photo is too big: choose one up to 20 MB."
+    }
+  },
   "errors": {
     "generic": "Something went wrong. Please try again.",
     "publishFailed": "The plan could not be published",
@@ -428,6 +440,15 @@
     },
     "social": {
       "unavailable": "Nobody can be followed right now. Please try again in a while."
+    },
+    "photoFailed": "Your photo could not be changed. Please try again.",
+    "photo": {
+      "format": "The photo must be WebP or JPEG.",
+      "tooBig": "Even made smaller, the photo is bigger than 1 MB. Try another one.",
+      "empty": "The photo is empty. Try another one.",
+      "notUploaded": "The photo was not uploaded. Please try again.",
+      "key": "The photo could not be saved. Please try again.",
+      "unavailable": "Photos cannot be changed right now. Please try again in a while."
     }
   },
   "nearby": {

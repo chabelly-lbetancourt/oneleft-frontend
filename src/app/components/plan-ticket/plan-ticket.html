@@ -12,10 +12,15 @@
       {{ activityKey() | transloco }} · <span class="plan-ticket__strong">{{ time() }}</span> ·
       {{ relative().key | transloco: relative().params }}
     </p>
-    @if (organizerReputation() !== null) {
+    @if (organizerReputation() !== null || organizerPhoto()) {
       <p class="plan-ticket__organizer">
-        {{ 'plan.organizer' | transloco: { name: current.organizerName } }} ·
-        <app-reputation-badge [score]="organizerReputation()!" />
+        @if (organizerPhoto(); as photo) {
+          <app-person-avatar size="small" [name]="current.organizerName" [photo]="photo" />
+        }
+        {{ 'plan.organizer' | transloco: { name: current.organizerName } }}
+        @if (organizerReputation() !== null) {
+          · <app-reputation-badge [score]="organizerReputation()!" />
+        }
       </p>
     }
     <div class="plan-ticket__bottom">
@@ -26,7 +31,12 @@
           · <span class="nearby-distance">{{ distance() }}</span>
         }
       </p>
-      <app-spot-slots class="plan-ticket__slots" [names]="names()" [free]="current.freeSpots" />
+      <app-spot-slots
+        class="plan-ticket__slots"
+        [names]="names()"
+        [photos]="photos()"
+        [free]="current.freeSpots"
+      />
     </div>
   </div>
 </article>
