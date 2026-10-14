@@ -20,7 +20,6 @@ import {
 } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
-import { Avatar } from 'primeng/avatar';
 import { Button } from 'primeng/button';
 import { InputText } from 'primeng/inputtext';
 import { Message } from 'primeng/message';
@@ -30,6 +29,7 @@ import { Tag } from 'primeng/tag';
 import { catchError, forkJoin, of } from 'rxjs';
 import { CardSkeleton } from '../../components/card-skeleton/card-skeleton';
 import { LanguageSwitcher } from '../../components/language-switcher/language-switcher';
+import { PersonAvatar } from '../../components/person-avatar/person-avatar';
 import { ReputationBadge } from '../../components/reputation-badge/reputation-badge';
 import { ReputationApi } from '../../core/api/reputation-api';
 import { UsersApi } from '../../core/api/users-api';
@@ -37,10 +37,12 @@ import { Theme, THEME_MODES } from '../../core/theme/theme';
 import { Session } from '../../core/auth/session';
 import { ApproximateLocation, LocationError } from '../../core/geo/approximate-location';
 import { apiErrorMessage } from '../../core/i18n/api-error';
+import { MyPhoto } from '../../core/photos/my-photo';
 import { PageLayout } from '../../layout/page-layout/page-layout';
 import { activityKey } from '../../shared/model/activities';
 import { Catalog, Level, levelKey, MAX_HOBBIES, MyProfile } from '../../shared/model/profile';
 import { UserProfile } from '../../shared/model/user';
+import { PhotoFileError } from '../../shared/image/square-photo';
 
 type HobbyForm = FormGroup<{ activity: FormControl<string>; level: FormControl<Level> }>;
 
@@ -61,7 +63,6 @@ const zoneComplete = (group: AbstractControl): ValidationErrors | null => {
   imports: [
     FormsModule,
     ReactiveFormsModule,
-    Avatar,
     Button,
     CardSkeleton,
     InputText,
@@ -72,6 +73,7 @@ const zoneComplete = (group: AbstractControl): ValidationErrors | null => {
     Tag,
     TranslocoPipe,
     PageLayout,
+    PersonAvatar,
     ReputationBadge,
     RouterLink,
   ],
@@ -94,6 +96,14 @@ export class Profile implements OnInit {
   private readonly changeDetector = inject(ChangeDetectorRef);
   private readonly destroyRef = inject(DestroyRef);
 
+  /** My profile photo (HU-020), the same one as in the header */
+  protected readonly myPhoto = inject(MyPhoto);
+  protected readonly photoBusy = signal(false);
+  protected readonly photoStatus = signal<{
+    severity: 'success' | 'error';
+    key: string;
+    params?: Record<string, unknown>;
+  } | null>(null);
   protected readonly user = signal<UserProfile | null>(null);
   protected readonly catalog = signal<Catalog | null>(null);
   protected readonly loading = signal(true);
@@ -163,6 +173,37 @@ export class Profile implements OnInit {
         this.loading.set(false);
       },
     });
+  }
+
+  protected async choosePhoto(event: Event): Promise<void> {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    // Choosing the same file again must work too
+    input.value = '';
+    if (file) {
+      await this.photoTask(() => this.myPhoto.change(file), 'photo.changed');
+    }
+  }
+
+  protected async removePhoto(): Promise<void> {
+    await this.photoTask(() => this.myPhoto.remove(), 'photo.removed');
+  }
+
+  private async photoTask(task: () => Promise<void>, done: string): Promise<void> {
+    this.photoBusy.set(true);
+    this.photoStatus.set(null);
+    try {
+      await task();
+      this.photoStatus.set({ severity: 'success', key: done });
+    } catch (error) {
+      const message =
+        error instanceof PhotoFileError
+          ? { key: `photo.errors.${error.problem}` }
+          : apiErrorMessage(this.transloco, error, 'errors.photoFailed');
+      this.photoStatus.set({ severity: 'error', ...message });
+    } finally {
+      this.photoBusy.set(false);
+    }
   }
 
   protected roleKey(role: string): string {

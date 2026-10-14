@@ -93,6 +93,14 @@
             <dd>{{ levelKey() | transloco }}</dd>
             <dt><i class="pi pi-user" aria-hidden="true"></i></dt>
             <dd>
+              @if (photoOf().get(current.organizerId); as organizerPhoto) {
+                <app-person-avatar
+                  class="organizer-avatar"
+                  size="small"
+                  [name]="current.organizerName ?? ''"
+                  [photo]="organizerPhoto"
+                />
+              }
               @if (current.organizerName && canOpenPerson(current.organizerId)) {
                 <a class="organizer-link" [routerLink]="['/people', current.organizerId]">{{
                   'plan.organizer' | transloco: { name: current.organizerName }
@@ -155,18 +163,16 @@
               <li class="participant" [style.--i]="$index">
                 @if (canOpenPerson(participant.userId)) {
                   <a class="participant__link" [routerLink]="['/people', participant.userId]">
-                    <p-avatar
-                      [label]="initials(participant.name)"
-                      shape="circle"
-                      class="avatar--participant"
+                    <app-person-avatar
+                      [name]="participant.name"
+                      [photo]="photoOf().get(participant.userId)"
                     />
                     <span class="participant__name">{{ participant.name }}</span>
                   </a>
                 } @else {
-                  <p-avatar
-                    [label]="initials(participant.name)"
-                    shape="circle"
-                    class="avatar--participant"
+                  <app-person-avatar
+                    [name]="participant.name"
+                    [photo]="photoOf().get(participant.userId)"
                   />
                   <span class="participant__name">
                     {{ participant.name }}

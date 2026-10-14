@@ -1,0 +1,26 @@
+@use 'abstracts' as *;
+
+:host {
+  display: inline-flex;
+}
+
+// The photo fills the circle; the background of the initials stays behind while it loads
+.avatar__photo {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.avatar--photo.p-avatar {
+  overflow: hidden;
+  background-color: var(--ol-avatar);
+}
+
+// Inline next to a name
+.avatar--small.p-avatar {
+  @include text(xs);
+  width: 1.5rem;
+  height: 1.5rem;
+  vertical-align: middle;
+}

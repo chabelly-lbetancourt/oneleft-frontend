@@ -6,7 +6,7 @@
       <app-language-switcher />
       @if (session.isAuthenticated()) {
         <a routerLink="/profile" class="user-menu">
-          <p-avatar [label]="session.initials()" shape="circle" class="avatar--user" />
+          <app-person-avatar [name]="session.userName()" [photo]="myPhoto.url()" variant="user" />
           <span class="user-menu__name">{{ session.userName() }}</span>
         </a>
       } @else {
