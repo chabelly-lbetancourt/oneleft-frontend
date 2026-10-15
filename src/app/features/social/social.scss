@@ -3,6 +3,7 @@
 // Following people (HU-047): the page of a person and «My network»
 
 .person-card,
+.person-activity-card,
 .visibility-card {
   @include card;
   @include enter;
@@ -11,6 +12,40 @@
 
 .person-card {
   @include stack(space(4));
+}
+
+// The social profile (HU-048): their words, their numbers and their hobbies
+.person-bio {
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+
+.person-stats {
+  padding-top: space(4);
+  border-top: 1px solid var(--ol-border);
+}
+
+.hobby-chips {
+  @include cluster(space(2));
+  margin-top: space(2);
+}
+
+.hobby-chip {
+  @include radius(full);
+  @include text(sm);
+  @include weight(semibold);
+  padding: space(1) space(3);
+  background: var(--ol-surface-muted);
+}
+
+.hobby-chip__level {
+  @include weight(regular);
+  color: var(--ol-text-muted);
+}
+
+.person-activity-card {
+  @include stack(space(2));
+  margin-top: space(4);
 }
 
 .person-card__head {
@@ -32,7 +67,8 @@
   @include cluster(space(2));
 }
 
-.social-counts {
+.social-counts,
+.person-stats {
   @include row(space(6), flex-start);
 
   dt {

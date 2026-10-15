@@ -17,6 +17,14 @@ export interface Reputation {
   score: number;
 }
 
+/** What someone has done (HU-048): only plans held, with a check-in, count. */
+export interface PersonStats {
+  userId: string;
+  plansCompleted: number;
+  plansOrganized: number;
+  activities: number;
+}
+
 /** An entry of my ledger: why my reputation went up or down. */
 export interface LedgerEntry {
   reason: ReputationReason;

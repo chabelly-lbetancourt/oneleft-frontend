@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { BadgeProgress, LedgerPage, Reputation } from '../../shared/model/reputation';
+import { BadgeProgress, LedgerPage, PersonStats, Reputation } from '../../shared/model/reputation';
 
 /** Client of the reputation service through the API Gateway (HU-009). */
 @Injectable({ providedIn: 'root' })
@@ -31,6 +31,11 @@ export class ReputationApi {
   /** The badges someone has earned. */
   badgesOf(userId: string): Observable<BadgeProgress[]> {
     return this.http.get<BadgeProgress[]>(`${this.base}/people/${userId}/badges`);
+  }
+
+  /** What someone has done, for their social profile (HU-048). */
+  statsOf(userId: string): Observable<PersonStats> {
+    return this.http.get<PersonStats>(`${this.base}/people/${userId}/stats`);
   }
 
   /** URL of the scores of several people (1 to 50), for the lists of plans. */

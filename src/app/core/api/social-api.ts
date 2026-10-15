@@ -6,6 +6,7 @@ import {
   Connection,
   ConnectionPage,
   NetworkList,
+  PersonList,
   SocialAccount,
   SocialPerson,
   Visibility,
@@ -50,6 +51,13 @@ export class SocialApi {
 
   list(list: NetworkList, page = 0, size = 20): Observable<ConnectionPage> {
     return this.http.get<ConnectionPage>(`${this.base}/me/${LISTS[list]}`, {
+      params: { page, size },
+    });
+  }
+
+  /** The followers or who someone follows (HU-048), if their profile lets me see them. */
+  listOf(userId: string, list: PersonList, page = 0, size = 20): Observable<ConnectionPage> {
+    return this.http.get<ConnectionPage>(`${this.base}/people/${userId}/${list}`, {
       params: { page, size },
     });
   }

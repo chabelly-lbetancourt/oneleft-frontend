@@ -35,6 +35,8 @@ describe('PlansApi', () => {
     post.flush({});
     http.expectOne({ method: 'GET', url: `${base}/abc` }).flush({});
     http.expectOne({ method: 'GET', url: `${base}/mine` }).flush([]);
+    api.recentOf('ana').subscribe();
+    http.expectOne({ method: 'GET', url: `${base}/people/ana/recent` }).flush([]);
     http.expectOne({ method: 'POST', url: `${base}/abc/participants` }).flush({});
     // On my way, running late and taking it back (HU-040)
     api.announceArrival('abc', 'LATE', 10).subscribe();

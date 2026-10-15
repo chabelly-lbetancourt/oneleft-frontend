@@ -10,7 +10,9 @@ describe('UsersApi', () => {
   let http: HttpTestingController;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({ providers: [provideHttpClient(), provideHttpClientTesting()] });
+    TestBed.configureTestingModule({
+      providers: [provideHttpClient(), provideHttpClientTesting()],
+    });
     api = TestBed.inject(UsersApi);
     http = TestBed.inject(HttpTestingController);
   });
@@ -21,13 +23,15 @@ describe('UsersApi', () => {
     api.me().subscribe();
     api.myProfile().subscribe();
     api.catalog().subscribe();
-    api.updateMyProfile({ displayName: 'Ana', zone: null, hobbies: [] }).subscribe();
+    api.updateMyProfile({ displayName: 'Ana', bio: null, zone: null, hobbies: [] }).subscribe();
 
     http.expectOne({ method: 'GET', url: `${base}/me` }).flush({});
     http.expectOne({ method: 'GET', url: `${base}/me/profile` }).flush({});
     http.expectOne({ method: 'GET', url: `${base}/activities` }).flush({});
+    api.profileOf('ana').subscribe();
+    http.expectOne({ method: 'GET', url: `${base}/ana/profile` }).flush({});
     const put = http.expectOne({ method: 'PUT', url: `${base}/me/profile` });
-    expect(put.request.body).toEqual({ displayName: 'Ana', zone: null, hobbies: [] });
+    expect(put.request.body).toEqual({ displayName: 'Ana', bio: null, zone: null, hobbies: [] });
     put.flush({});
   });
 });
