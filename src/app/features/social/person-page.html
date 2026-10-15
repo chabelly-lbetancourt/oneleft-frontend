@@ -78,7 +78,7 @@
           </h2>
           <ul class="hobby-chips">
             @for (hobby of profile()!.hobbies; track hobby.activity) {
-              <li class="hobby-chip pill pill--sm">
+              <li class="hobby-chip">
                 {{ activityKey(hobby.activity) | transloco }} ·
                 <span class="hobby-chip__level">{{ levelKey(hobby.level) | transloco }}</span>
               </li>
