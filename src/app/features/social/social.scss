@@ -30,7 +30,16 @@
   margin-top: space(2);
 }
 
+.hobby-chip {
+  @include radius(full);
+  @include text(sm);
+  @include weight(semibold);
+  padding: space(1) space(3);
+  background: var(--ol-surface-muted);
+}
+
 .hobby-chip__level {
+  @include weight(regular);
   color: var(--ol-text-muted);
 }
 
