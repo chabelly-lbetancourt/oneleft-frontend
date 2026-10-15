@@ -33,6 +33,10 @@
         </div>
       </div>
 
+      @if (profile()?.bio; as bio) {
+        <p class="person-bio">{{ bio }}</p>
+      }
+
       <dl class="social-counts">
         <div class="social-counts__item">
           <dt>{{ 'social.followers' | transloco }}</dt>
@@ -49,6 +53,39 @@
           </div>
         }
       </dl>
+
+      @if (stats(); as numbers) {
+        <dl class="person-stats">
+          <div class="person-stats__item">
+            <dt>{{ 'social.stats.completed' | transloco }}</dt>
+            <dd class="stats-completed">{{ numbers.plansCompleted }}</dd>
+          </div>
+          <div class="person-stats__item">
+            <dt>{{ 'social.stats.organized' | transloco }}</dt>
+            <dd class="stats-organized">{{ numbers.plansOrganized }}</dd>
+          </div>
+          <div class="person-stats__item">
+            <dt>{{ 'social.stats.activities' | transloco }}</dt>
+            <dd class="stats-activities">{{ numbers.activities }}</dd>
+          </div>
+        </dl>
+      }
+
+      @if (profile()?.hobbies?.length) {
+        <section class="person-hobbies" aria-labelledby="person-hobbies-title">
+          <h2 class="section-title" id="person-hobbies-title">
+            {{ 'social.hobbies' | transloco }}
+          </h2>
+          <ul class="hobby-chips">
+            @for (hobby of profile()!.hobbies; track hobby.activity) {
+              <li class="hobby-chip pill pill--sm">
+                {{ activityKey(hobby.activity) | transloco }} ·
+                <span class="hobby-chip__level">{{ levelKey(hobby.level) | transloco }}</span>
+              </li>
+            }
+          </ul>
+        </section>
+      }
 
       @if (badges().length) {
         <section class="person-badges" aria-labelledby="person-badges-title">
@@ -113,6 +150,19 @@
           message.key | transloco: message.params
         }}</p-message>
       }
+    </section>
+
+    <section class="person-activity-card" aria-labelledby="person-activity-title">
+      <h2 class="section-title" id="person-activity-title">
+        {{ 'social.activityTitle' | transloco }}
+      </h2>
+      <app-person-activity
+        [userId]="current.userId"
+        [name]="current.name"
+        [visible]="current.activityVisible"
+        [followers]="current.followers"
+        [following]="current.following"
+      />
     </section>
   } @else if (notFound()) {
     <div class="person-not-found alert alert--error">{{ 'social.notFound' | transloco }}</div>

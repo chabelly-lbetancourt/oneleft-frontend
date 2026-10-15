@@ -26,6 +26,7 @@ import { Message } from 'primeng/message';
 import { Select } from 'primeng/select';
 import { SelectButton } from 'primeng/selectbutton';
 import { Tag } from 'primeng/tag';
+import { Textarea } from 'primeng/textarea';
 import { catchError, forkJoin, of } from 'rxjs';
 import { CardSkeleton } from '../../components/card-skeleton/card-skeleton';
 import { LanguageSwitcher } from '../../components/language-switcher/language-switcher';
@@ -40,7 +41,14 @@ import { apiErrorMessage } from '../../core/i18n/api-error';
 import { MyPhoto } from '../../core/photos/my-photo';
 import { PageLayout } from '../../layout/page-layout/page-layout';
 import { activityKey } from '../../shared/model/activities';
-import { Catalog, Level, levelKey, MAX_HOBBIES, MyProfile } from '../../shared/model/profile';
+import {
+  Catalog,
+  Level,
+  levelKey,
+  MAX_BIO,
+  MAX_HOBBIES,
+  MyProfile,
+} from '../../shared/model/profile';
 import { UserProfile } from '../../shared/model/user';
 import { PhotoFileError } from '../../shared/image/square-photo';
 
@@ -71,6 +79,7 @@ const zoneComplete = (group: AbstractControl): ValidationErrors | null => {
     Select,
     SelectButton,
     Tag,
+    Textarea,
     TranslocoPipe,
     PageLayout,
     PersonAvatar,
@@ -104,6 +113,7 @@ export class Profile implements OnInit {
     key: string;
     params?: Record<string, unknown>;
   } | null>(null);
+  protected readonly maxBio = MAX_BIO;
   protected readonly user = signal<UserProfile | null>(null);
   protected readonly catalog = signal<Catalog | null>(null);
   protected readonly loading = signal(true);
@@ -140,6 +150,7 @@ export class Profile implements OnInit {
   protected readonly form = this.fb.group(
     {
       displayName: ['', [Validators.required, Validators.maxLength(50)]],
+      bio: ['', Validators.maxLength(MAX_BIO)],
       zoneName: ['', Validators.maxLength(60)],
       latitude: this.fb.control<number | null>(null),
       longitude: this.fb.control<number | null>(null),
@@ -265,27 +276,29 @@ export class Profile implements OnInit {
       this.form.markAllAsTouched();
       return;
     }
-    const { displayName, zoneName, latitude, longitude, hobbies } = this.form.getRawValue();
+    const { displayName, bio, zoneName, latitude, longitude, hobbies } = this.form.getRawValue();
     const zone =
       zoneName.trim() && latitude !== null && longitude !== null
         ? { name: zoneName.trim(), latitude, longitude }
         : null;
     this.saving.set(true);
     this.status.set(null);
-    this.api.updateMyProfile({ displayName: displayName.trim(), zone, hobbies }).subscribe({
-      next: (profile) => {
-        this.fill(profile);
-        this.saving.set(false);
-        this.status.set({ severity: 'success', key: 'profile.saved' });
-      },
-      error: (error) => {
-        this.saving.set(false);
-        this.status.set({
-          severity: 'error',
-          ...apiErrorMessage(this.transloco, error, 'errors.saveFailed'),
-        });
-      },
-    });
+    this.api
+      .updateMyProfile({ displayName: displayName.trim(), bio: bio.trim() || null, zone, hobbies })
+      .subscribe({
+        next: (profile) => {
+          this.fill(profile);
+          this.saving.set(false);
+          this.status.set({ severity: 'success', key: 'profile.saved' });
+        },
+        error: (error) => {
+          this.saving.set(false);
+          this.status.set({
+            severity: 'error',
+            ...apiErrorMessage(this.transloco, error, 'errors.saveFailed'),
+          });
+        },
+      });
   }
 
   private nextFreeActivity(): string | undefined {
@@ -300,6 +313,7 @@ export class Profile implements OnInit {
     );
     this.form.patchValue({
       displayName: profile.displayName,
+      bio: profile.bio ?? '',
       zoneName: profile.zone?.name ?? '',
       latitude: profile.zone?.latitude ?? null,
       longitude: profile.zone?.longitude ?? null,

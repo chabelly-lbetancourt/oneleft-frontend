@@ -213,7 +213,24 @@
     "loading": "Cargando tu red…",
     "loadError": "No se ha podido cargar tu red.",
     "personLoading": "Cargando…",
-    "notFound": "Esta persona no existe o no tiene cuenta."
+    "notFound": "Esta persona no existe o no tiene cuenta.",
+    "about": "Sobre {{name}}",
+    "hobbies": "Aficiones",
+    "stats": {
+      "completed": "Planes",
+      "organized": "Organizados",
+      "activities": "Actividades"
+    },
+    "activityTitle": "Actividad",
+    "recentPlans": "Planes recientes",
+    "organized": "Organizó",
+    "attended": "Fue",
+    "noRecentPlans": "Aún no ha ido a ningún plan celebrado.",
+    "noFollowersOf": "Todavía no tiene seguidores.",
+    "noFollowingOf": "Todavía no sigue a nadie.",
+    "privateActivity": "El perfil de {{name}} es privado: solo quienes le siguen ven sus planes y su red.",
+    "activityError": "No se ha podido cargar. Inténtalo de nuevo.",
+    "loadingActivity": "Cargando…"
   },
   "reputation": {
     "title": "Mi reputación",
@@ -327,7 +344,11 @@
     "saved": "Perfil guardado",
     "notifications": "Avisos de planes cerca",
     "network": "Mi red",
-    "reputation": "Mi reputación"
+    "reputation": "Mi reputación",
+    "bio": "Sobre mí",
+    "bioPlaceholder": "Por ejemplo: corro los domingos y busco gente para el pádel",
+    "bioHint": "Unas palabras para que te conozcan quienes quedan contigo.",
+    "socialProfile": "Mi perfil social"
   },
   "photo": {
     "add": "Añadir foto",
@@ -389,7 +410,8 @@
       "notFound": "Este usuario no tiene perfil",
       "displayName": "El nombre visible es obligatorio y admite hasta 50 caracteres",
       "tooManyHobbies": "Se admiten como máximo 10 aficiones",
-      "duplicateActivity": "Cada actividad solo puede aparecer una vez"
+      "duplicateActivity": "Cada actividad solo puede aparecer una vez",
+      "bio": "La bio admite hasta 300 caracteres."
     },
     "joinFailed": "No se ha podido apuntarte al plan",
     "participant": {
@@ -439,7 +461,8 @@
       "requestNotFound": "Esa solicitud ya no existe."
     },
     "social": {
-      "unavailable": "Ahora mismo no se puede seguir a nadie. Inténtalo en un rato."
+      "unavailable": "Ahora mismo no se puede seguir a nadie. Inténtalo en un rato.",
+      "private": "El perfil de esta persona es privado: solo quienes le siguen ven sus planes y su red."
     },
     "photoFailed": "No se ha podido cambiar la foto. Inténtalo de nuevo.",
     "photo": {

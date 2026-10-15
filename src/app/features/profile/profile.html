@@ -77,6 +77,12 @@
             <i class="pi pi-bell" aria-hidden="true"></i>
             {{ 'profile.notifications' | transloco }}
           </a>
+          @if (session.userId(); as myId) {
+            <a [routerLink]="['/people', myId]" class="profile-social link-action">
+              <i class="pi pi-id-card" aria-hidden="true"></i>
+              {{ 'profile.socialProfile' | transloco }}
+            </a>
+          }
           <a routerLink="/network" class="profile-network link-action">
             <i class="pi pi-users" aria-hidden="true"></i>
             {{ 'profile.network' | transloco }}
@@ -102,6 +108,24 @@
         @if (form.controls.displayName.invalid && form.controls.displayName.touched) {
           <small class="field-error">{{ 'profile.displayNameError' | transloco }}</small>
         }
+      </section>
+
+      <section class="form-section form-section--tight">
+        <label for="bio" class="section-title">{{ 'profile.bio' | transloco }}</label>
+        <textarea
+          pTextarea
+          id="bio"
+          class="bio-input"
+          formControlName="bio"
+          rows="3"
+          [maxlength]="maxBio"
+          [placeholder]="'profile.bioPlaceholder' | transloco"
+          aria-describedby="bio-hint"
+        ></textarea>
+        <small class="muted bio-hint" id="bio-hint"
+          >{{ 'profile.bioHint' | transloco }}
+          <span class="bio-count">{{ form.controls.bio.value.length }}/{{ maxBio }}</span></small
+        >
       </section>
 
       <section class="form-section form-section--tight">
