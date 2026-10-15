@@ -178,3 +178,12 @@ export interface Plan extends PublishPlan {
   /** Only for the group of the plan, until it starts (HU-040) */
   arrivals?: Arrival[];
 }
+
+/** A plan someone took part in, for their social profile (HU-048): what and when, never where. */
+export interface RecentPlan {
+  planId: string;
+  title: string;
+  activity: string;
+  startsAt: string;
+  role: 'ORGANIZER' | 'ATTENDEE';
+}

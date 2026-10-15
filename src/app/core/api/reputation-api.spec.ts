@@ -24,6 +24,8 @@ describe('ReputationApi', () => {
     http.expectOne({ method: 'GET', url: `${base}/me/badges` }).flush([]);
     api.badgesOf('ana').subscribe();
     http.expectOne({ method: 'GET', url: `${base}/people/ana/badges` }).flush([]);
+    api.statsOf('ana').subscribe();
+    http.expectOne({ method: 'GET', url: `${base}/people/ana/stats` }).flush({});
     expect(api.scoresUrl()).toBe(`${base}/scores`);
     http.verify();
   });

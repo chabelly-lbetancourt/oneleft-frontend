@@ -14,12 +14,15 @@ export interface Hobby {
 export interface MyProfile {
   userId: string;
   displayName: string;
+  /** A few words about me (HU-048) */
+  bio: string | null;
   zone: Zone | null;
   hobbies: Hobby[];
 }
 
 export interface UpdateProfile {
   displayName: string;
+  bio: string | null;
   zone: Zone | null;
   hobbies: Hobby[];
 }
@@ -36,3 +39,13 @@ export const LEVELS: Level[] = ['BEGINNER', 'INTERMEDIATE', 'ADVANCED'];
 export const levelKey = (level: Level | null | undefined): string => `levels.${level ?? 'ANY'}`;
 
 export const MAX_HOBBIES = 10;
+export const MAX_BIO = 300;
+
+/** The profile of someone else (HU-048): no coordinates. */
+export interface PublicProfile {
+  userId: string;
+  displayName: string;
+  bio: string | null;
+  zoneName: string | null;
+  hobbies: Hobby[];
+}

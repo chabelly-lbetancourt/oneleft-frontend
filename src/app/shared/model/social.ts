@@ -29,6 +29,8 @@ export interface SocialPerson {
   following: number;
   relation: Relation;
   followsMe: boolean;
+  /** I may see their recent plans and their network (HU-048): it is me, their profile is public or I follow them */
+  activityVisible: boolean;
 }
 
 /** Someone in one of my lists, and since when. */
@@ -49,3 +51,6 @@ export interface ConnectionPage {
 
 /** My lists in «My network». */
 export type NetworkList = 'followers' | 'following' | 'requests' | 'sent';
+
+/** The lists of someone else, if their profile lets me see them (HU-048). */
+export type PersonList = 'followers' | 'following';

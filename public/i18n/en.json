@@ -213,7 +213,24 @@
     "loading": "Loading your network…",
     "loadError": "Your network could not be loaded.",
     "personLoading": "Loading…",
-    "notFound": "This person does not exist or has no account."
+    "notFound": "This person does not exist or has no account.",
+    "about": "About {{name}}",
+    "hobbies": "Hobbies",
+    "stats": {
+      "completed": "Plans",
+      "organized": "Organized",
+      "activities": "Activities"
+    },
+    "activityTitle": "Activity",
+    "recentPlans": "Plans",
+    "organized": "Organized",
+    "attended": "Went",
+    "noRecentPlans": "No plan held yet.",
+    "noFollowersOf": "No followers yet.",
+    "noFollowingOf": "Not following anyone yet.",
+    "privateActivity": "{{name}}'s profile is private: only their followers see their plans and their network.",
+    "activityError": "It could not be loaded. Please try again.",
+    "loadingActivity": "Loading…"
   },
   "reputation": {
     "title": "My reputation",
@@ -327,7 +344,11 @@
     "saved": "Profile saved",
     "notifications": "Notices of plans nearby",
     "network": "My network",
-    "reputation": "My reputation"
+    "reputation": "My reputation",
+    "bio": "About me",
+    "bioPlaceholder": "For example: I run on Sundays and look for people for padel",
+    "bioHint": "A few words so that the people you meet get to know you.",
+    "socialProfile": "My social profile"
   },
   "photo": {
     "add": "Add photo",
@@ -389,7 +410,8 @@
       "notFound": "This user has no profile",
       "displayName": "The display name is required and allows up to 50 characters",
       "tooManyHobbies": "At most 10 hobbies are allowed",
-      "duplicateActivity": "Each activity can only appear once"
+      "duplicateActivity": "Each activity can only appear once",
+      "bio": "The bio allows up to 300 characters."
     },
     "joinFailed": "You could not join the plan",
     "participant": {
@@ -439,7 +461,8 @@
       "requestNotFound": "That request no longer exists."
     },
     "social": {
-      "unavailable": "Nobody can be followed right now. Please try again in a while."
+      "unavailable": "Nobody can be followed right now. Please try again in a while.",
+      "private": "This person's profile is private: only their followers see their plans and their network."
     },
     "photoFailed": "Your photo could not be changed. Please try again.",
     "photo": {

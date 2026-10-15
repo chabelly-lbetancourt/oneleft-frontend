@@ -23,6 +23,7 @@ const CATALOG: Catalog = {
 const PROFILE: MyProfile = {
   userId: 'a624d063',
   displayName: 'Ana',
+  bio: 'Corro los domingos',
   zone: { name: 'Vallecas', latitude: 40.39, longitude: -3.63 },
   hobbies: [{ activity: 'PADEL', level: 'INTERMEDIATE' }],
 };
@@ -218,10 +219,30 @@ describe('Profile', () => {
     await render();
     expect(api.updateMyProfile).toHaveBeenCalledWith({
       displayName: 'Anita',
+      bio: 'Corro los domingos',
       zone: { name: 'Vallecas', latitude: 40.39, longitude: -3.63 },
       hobbies: [{ activity: 'PADEL', level: 'INTERMEDIATE' }],
     });
     expect(element().querySelector('.status-message')?.textContent).toContain('Perfil guardado');
+  });
+
+  it('should write my bio, with how much is left, and save it trimmed or removed (HU-048)', async () => {
+    const bio = element().querySelector<HTMLTextAreaElement>('#bio')!;
+    expect(bio.value).toBe('Corro los domingos');
+    expect(element().querySelector('.bio-count')?.textContent).toBe('18/300');
+    expect(bio.getAttribute('maxlength')).toBe('300');
+
+    api.updateMyProfile.mockReturnValue(of({ ...PROFILE, bio: null }));
+    bio.value = '   ';
+    bio.dispatchEvent(new Event('input'));
+    (element().querySelector('form') as HTMLFormElement).dispatchEvent(new Event('submit'));
+    await render();
+
+    expect(api.updateMyProfile).toHaveBeenCalledWith(expect.objectContaining({ bio: null }));
+  });
+
+  it('should lead to my social profile', () => {
+    expect(element().querySelector('.profile-social')?.getAttribute('href')).toBe('/people/me');
   });
 
   it('should save without zone after removing it', async () => {

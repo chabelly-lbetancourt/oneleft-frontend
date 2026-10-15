@@ -1,0 +1,90 @@
+@use 'abstracts' as *;
+
+:host {
+  display: block;
+}
+
+.private-activity {
+  @include row(space(2), flex-start);
+  @include text(sm);
+  padding: space(3) space(4);
+  @include radius(md);
+  background: var(--ol-surface-muted);
+  color: var(--ol-text-muted);
+
+  .pi {
+    margin-top: space(0.5);
+  }
+}
+
+// The same tabs as «My network»: they fit on a phone, with no scroll arrows
+.activity-tabs {
+  display: block;
+  --p-tabs-tab-padding: #{space(3)} #{space(2)};
+  --p-tabs-tablist-background: transparent;
+  --p-tabs-tabpanel-background: transparent;
+  --p-tabs-tabpanel-padding: 0;
+}
+
+p-tab {
+  @include text(sm);
+  flex: 1 1 0;
+  justify-content: center;
+}
+
+.tab-count {
+  @include weight(bold);
+  margin-left: space(1);
+}
+
+.recent-plans,
+.person-connections {
+  @include stack(space(3));
+  margin-top: space(3);
+}
+
+.recent-plan {
+  @include row(space(3));
+}
+
+.recent-plan__text {
+  @include stack(0);
+  flex: 1;
+  min-width: 0;
+}
+
+.recent-plan__title {
+  @include truncate;
+  @include weight(semibold);
+}
+
+.recent-plan__meta {
+  @include text(sm);
+  color: var(--ol-text-muted);
+}
+
+.recent-plan__role {
+  flex-shrink: 0;
+}
+
+.person-connection {
+  @include row(space(3));
+  min-width: 0;
+  color: inherit;
+  text-decoration: none;
+
+  &:hover .person-connection__name,
+  &:focus-visible .person-connection__name {
+    text-decoration: underline;
+  }
+}
+
+.person-connection__name {
+  @include truncate;
+  @include weight(bold);
+}
+
+.more-people {
+  display: block;
+  margin-top: space(2);
+}

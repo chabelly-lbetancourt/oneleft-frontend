@@ -15,6 +15,7 @@ import {
   Plan,
   PublicPlan,
   PublishPlan,
+  RecentPlan,
 } from '../../shared/model/published-plan';
 
 /** Client of the plans service through the API Gateway. */
@@ -120,6 +121,11 @@ export class PlansApi {
   /** Link to share a plan: its page gives messaging apps a preview and then opens the plan (HU-024). */
   shareUrl(id: string): string {
     return new URL(`${environment.apiUrl}/share/plans/${id}`, globalThis.location?.origin).href;
+  }
+
+  /** The last plans held of someone, for their social profile (HU-048). */
+  recentOf(userId: string): Observable<RecentPlan[]> {
+    return this.http.get<RecentPlan[]>(`${this.base}/people/${userId}/recent`);
   }
 
   mine(): Observable<Plan[]> {
