@@ -1,0 +1,92 @@
+@if (!visible()) {
+  <p class="private-activity" role="note">
+    <i class="pi pi-lock" aria-hidden="true"></i>
+    {{ 'social.privateActivity' | transloco: { name: name() } }}
+  </p>
+} @else {
+  <p-tabs [value]="tab()" (valueChange)="show($event)" class="activity-tabs">
+    <p-tablist>
+      <p-tab value="plans" class="plans-tab">{{ 'social.recentPlans' | transloco }}</p-tab>
+      <p-tab value="followers" class="person-followers-tab">
+        {{ 'social.followers' | transloco }} <span class="tab-count">{{ followers() }}</span>
+      </p-tab>
+      <p-tab value="following" class="person-following-tab">
+        {{ 'social.following' | transloco }} <span class="tab-count">{{ following() }}</span>
+      </p-tab>
+    </p-tablist>
+    <p-tabpanels>
+      <p-tabpanel value="plans">
+        @if (plansError()) {
+          <p class="hint activity-error">{{ 'social.activityError' | transloco }}</p>
+        } @else if (plans(); as recent) {
+          @if (recent.length) {
+            <ul class="recent-plans">
+              @for (plan of recent; track plan.planId) {
+                <li class="recent-plan">
+                  <app-icon-tile
+                    [icon]="activityOf(plan.activity).icon"
+                    [tone]="activityOf(plan.activity).tone"
+                  />
+                  <span class="recent-plan__text">
+                    <span class="recent-plan__title">{{ plan.title }}</span>
+                    <span class="recent-plan__meta"
+                      >{{ activityKey(plan.activity) | transloco }} · {{ date(plan) }}</span
+                    >
+                  </span>
+                  <span class="recent-plan__role pill pill--sm">{{
+                    (plan.role === 'ORGANIZER' ? 'social.organized' : 'social.attended') | transloco
+                  }}</span>
+                </li>
+              }
+            </ul>
+          } @else {
+            <p class="hint empty-plans">{{ 'social.noRecentPlans' | transloco }}</p>
+          }
+        } @else {
+          <p class="hint" role="status">{{ 'social.loadingActivity' | transloco }}</p>
+        }
+      </p-tabpanel>
+      <p-tabpanel value="followers">
+        <ng-container *ngTemplateOutlet="people; context: { $implicit: 'followers' }" />
+      </p-tabpanel>
+      <p-tabpanel value="following">
+        <ng-container *ngTemplateOutlet="people; context: { $implicit: 'following' }" />
+      </p-tabpanel>
+    </p-tabpanels>
+  </p-tabs>
+}
+
+<ng-template #people let-list>
+  @if (listError()) {
+    <p class="hint activity-error">{{ 'social.activityError' | transloco }}</p>
+  } @else if (loadedList(list); as loaded) {
+    @if (loaded.page.items.length) {
+      <ul class="person-connections person-connections--{{ list }}">
+        @for (person of loaded.page.items; track person.userId) {
+          <li>
+            <a class="person-connection" [routerLink]="['/people', person.userId]">
+              <app-person-avatar [name]="person.name" [photo]="loaded.photos.get(person.userId)" />
+              <span class="person-connection__name">{{ person.name }}</span>
+            </a>
+          </li>
+        }
+      </ul>
+      @if (hasMore(list)) {
+        <p-button
+          class="more-people"
+          [label]="'social.more' | transloco"
+          [text]="true"
+          size="small"
+          [loading]="loadingMore()"
+          (onClick)="more(list)"
+        />
+      }
+    } @else {
+      <p class="hint empty-{{ list }}">
+        {{ (list === 'followers' ? 'social.noFollowersOf' : 'social.noFollowingOf') | transloco }}
+      </p>
+    }
+  } @else {
+    <p class="hint" role="status">{{ 'social.loadingActivity' | transloco }}</p>
+  }
+</ng-template>

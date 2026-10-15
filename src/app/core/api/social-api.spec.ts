@@ -28,6 +28,10 @@ describe('SocialApi', () => {
     visibility.flush({});
     api.person('ana').subscribe();
     http.expectOne({ method: 'GET', url: `${base}/people/ana` }).flush({});
+    api.listOf('ana', 'followers').subscribe();
+    http.expectOne(`${base}/people/ana/followers?page=0&size=20`).flush({ items: [] });
+    api.listOf('ana', 'following', 2).subscribe();
+    http.expectOne(`${base}/people/ana/following?page=2&size=20`).flush({ items: [] });
     api.follow('ana').subscribe();
     http.expectOne({ method: 'PUT', url: `${base}/me/following/ana` }).flush({});
     api.unfollow('ana').subscribe();
