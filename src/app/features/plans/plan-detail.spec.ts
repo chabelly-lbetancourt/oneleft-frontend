@@ -5,9 +5,11 @@ import { EMPTY, Observable, of, Subject, throwError } from 'rxjs';
 import { FakeSession } from '../../../testing/fake-session';
 import { translocoTesting } from '../../../testing/transloco-testing';
 import { PhotosApi } from '../../core/api/photos-api';
+import { SocialApi } from '../../core/api/social-api';
 import { PlansApi } from '../../core/api/plans-api';
 import { ReputationApi } from '../../core/api/reputation-api';
 import { PersonPhoto } from '../../shared/model/photo';
+import { HiddenPlan } from '../../shared/model/social';
 import { Reputation } from '../../shared/model/reputation';
 import { Session } from '../../core/auth/session';
 import { UserEvents } from '../../core/realtime/user-events';
@@ -46,6 +48,11 @@ const PLAN: Plan = {
 const LUCIA = { userId: 'lucia', name: 'Lucía Martín', joinedAt: new Date().toISOString() };
 /** Nobody has a photo unless a test gives one (HU-020) */
 const photosApi = { photosOf: vi.fn((): Observable<PersonPhoto[]> => of([])) };
+const socialApi = {
+  hiddenPlan: vi.fn((planId: string): Observable<HiddenPlan> => of({ planId, hidden: false })),
+  hidePlan: vi.fn((): Observable<void> => of(undefined)),
+  showPlan: vi.fn((): Observable<void> => of(undefined)),
+};
 
 describe('PlanDetail', () => {
   let fixture: ComponentFixture<PlanDetail>;
@@ -107,6 +114,7 @@ describe('PlanDetail', () => {
         provideRouter([]),
         { provide: PlansApi, useValue: api },
         { provide: PhotosApi, useValue: photosApi },
+        { provide: SocialApi, useValue: socialApi },
         { provide: ReputationApi, useValue: reputationApi },
         { provide: Session, useValue: session },
         {
@@ -204,6 +212,7 @@ describe('PlanDetail', () => {
         provideRouter([]),
         { provide: PlansApi, useValue: api },
         { provide: PhotosApi, useValue: photosApi },
+        { provide: SocialApi, useValue: socialApi },
         { provide: ReputationApi, useValue: reputationApi },
         { provide: Session, useValue: session },
         {
@@ -229,6 +238,7 @@ describe('PlanDetail', () => {
         provideRouter([]),
         { provide: PlansApi, useValue: api },
         { provide: PhotosApi, useValue: photosApi },
+        { provide: SocialApi, useValue: socialApi },
         { provide: ReputationApi, useValue: reputationApi },
         { provide: Session, useValue: session },
         {
@@ -472,6 +482,17 @@ describe('PlanDetail', () => {
 
     await create(PLAN);
     expect(element().querySelector('.chat-button')).toBeNull();
+  });
+
+  it('should let the organizer and the participants keep the plan out of their activity (HU-059)', async () => {
+    await create(PLAN, undefined, 'org');
+    expect(socialApi.hiddenPlan).toHaveBeenCalledWith('plan-1');
+    expect(element().querySelector('app-activity-visibility')?.textContent).toContain(
+      'Mostrar en mi actividad',
+    );
+
+    await create(PLAN);
+    expect(element().querySelector('app-activity-visibility')).toBeNull();
   });
 
   it('should offer the check-in to the group around the start of the plan only (HU-025)', async () => {

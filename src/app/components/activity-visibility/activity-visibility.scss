@@ -1,0 +1,23 @@
+@use 'abstracts' as *;
+
+:host {
+  @include stack(space(2));
+}
+
+.activity-visibility {
+  @include row(space(4), flex-start);
+  justify-content: space-between;
+}
+
+.activity-visibility__text {
+  @include stack(space(1));
+}
+
+.activity-visibility__title {
+  @include weight(semibold);
+}
+
+// In a row, the switch keeps its size
+.activity-visibility__switch {
+  flex-shrink: 0;
+}

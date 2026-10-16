@@ -25,6 +25,7 @@ import { NativePlatform } from '../../core/platform';
 import { UserEvents } from '../../core/realtime/user-events';
 import { activityKey, activityOf } from '../../shared/model/activities';
 import { levelKey } from '../../shared/model/profile';
+import { ActivityVisibility } from '../../components/activity-visibility/activity-visibility';
 import { CardSkeleton } from '../../components/card-skeleton/card-skeleton';
 import { IconTile } from '../../components/icon-tile/icon-tile';
 import { PersonAvatar } from '../../components/person-avatar/person-avatar';
@@ -58,6 +59,7 @@ const ENDED: Plan['status'][] = ['IN_PROGRESS', 'FINISHED', 'CANCELLED'];
 @Component({
   selector: 'app-plan-detail',
   imports: [
+    ActivityVisibility,
     Button,
     CardSkeleton,
     IconTile,
