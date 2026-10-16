@@ -1,6 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { EMPTY, filter, map, Observable, share, switchMap } from 'rxjs';
+import { FeedActivityNotice } from '../../shared/model/feed';
 import { PlanNearbyNotice } from '../../shared/model/notifications';
 import { BadgeEarnedNotice } from '../../shared/model/reputation';
 import {
@@ -25,13 +26,14 @@ const PLAN_CANCELLED = 'plan-cancelled';
 const PLAN_ARRIVAL = 'plan-arrival';
 const PLAN_CHECK_IN = 'plan-check-in';
 const BADGE_EARNED = 'badge-earned';
+const FEED_ACTIVITY = 'feed-activity';
 
 /**
  * Personal events of the signed-in user while the app is open: someone has joined (HU-005) or left (HU-023) one of
  * my plans, a spot I was waiting for is now mine, a plan I like has been published nearby (HU-006), a plan I am in
  * is about to start (HU-007) or has been cancelled for not reaching its minimum (HU-039), someone of the group is on
- * the way (HU-040) or has arrived (HU-025), or I earned a badge (HU-044). A single connection is shared by every
- * subscriber and closed when the user signs out.
+ * the way (HU-040) or has arrived (HU-025), I earned a badge (HU-044) or someone I follow did something in a plan
+ * (HU-051). A single connection is shared by every subscriber and closed when the user signs out.
  */
 @Injectable({ providedIn: 'root' })
 export class UserEvents {
@@ -54,6 +56,7 @@ export class UserEvents {
             PLAN_ARRIVAL,
             PLAN_CHECK_IN,
             BADGE_EARNED,
+            FEED_ACTIVITY,
           ])
         : EMPTY,
     ),
@@ -72,6 +75,8 @@ export class UserEvents {
   readonly checkIn$ = this.of<PlanCheckInNotice>(PLAN_CHECK_IN);
   /** I earned a badge (HU-044) */
   readonly badge$ = this.of<BadgeEarnedNotice>(BADGE_EARNED);
+  /** Someone I follow published, joined or completed a plan (HU-051) */
+  readonly feedActivity$ = this.of<FeedActivityNotice>(FEED_ACTIVITY);
 
   private of<T>(name: string): Observable<T> {
     return this.events$.pipe(

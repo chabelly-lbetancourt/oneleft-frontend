@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
+import { FeedPage } from '../../shared/model/feed';
 import {
   Connection,
   ConnectionPage,
@@ -60,6 +61,11 @@ export class SocialApi {
     return this.http.get<ConnectionPage>(`${this.base}/people/${userId}/${list}`, {
       params: { page, size },
     });
+  }
+
+  /** What the people I follow do in the plans (HU-051), the latest first. */
+  feed(page = 0, size = 20): Observable<FeedPage> {
+    return this.http.get<FeedPage>(`${this.base}/me/feed`, { params: { page, size } });
   }
 
   accept(userId: string): Observable<Connection> {
