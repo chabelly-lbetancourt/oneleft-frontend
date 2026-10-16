@@ -189,6 +189,9 @@
     "privateHint": "Whoever wants to follow you will wait until you accept their request.",
     "publicHint": "Anyone can follow you right away.",
     "openNote": "Making your profile public accepts the requests that were waiting.",
+    "shareActivity": "Share my activity",
+    "shareActivityHint": "Your followers see in their feed the plans you publish, join and complete. You can hide a single plan from its page.",
+    "noActivityHint": "Nobody sees your activity in their feed, and what you do meanwhile is not kept.",
     "followers": "Followers",
     "following": "Following",
     "requests": "Requests",
@@ -253,6 +256,12 @@
     "empty": "No activity yet. Follow the people you meet in plans and you will see here when they publish one, join one or complete it. If their profile is private, they will show up once they accept you.",
     "findPlans": "See nearby plans",
     "myNetwork": "My network"
+  },
+  "activityVisibility": {
+    "title": "Show in my activity",
+    "shownHint": "Your followers see in their feed that you are in this plan.",
+    "hiddenHint": "Hidden: your followers do not see this plan in your activity.",
+    "unknown": "It is not possible to know now whether this plan shows in your activity."
   },
   "reputation": {
     "title": "My reputation",

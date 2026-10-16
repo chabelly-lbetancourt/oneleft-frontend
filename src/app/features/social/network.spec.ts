@@ -6,6 +6,7 @@ import { SocialApi } from '../../core/api/social-api';
 import {
   Connection,
   ConnectionPage,
+  FeedAudience,
   NetworkList,
   SocialAccount,
   Visibility,
@@ -16,6 +17,7 @@ const ACCOUNT: SocialAccount = {
   userId: 'ana',
   name: 'Ana',
   visibility: 'PRIVATE',
+  feedAudience: 'FOLLOWERS',
   followers: 1,
   following: 1,
   requests: 1,
@@ -52,6 +54,9 @@ describe('Network', () => {
     myAccount: vi.fn((): Observable<SocialAccount> => of(ACCOUNT)),
     changeVisibility: vi.fn((visibility: Visibility): Observable<SocialAccount> =>
       of({ ...ACCOUNT, visibility }),
+    ),
+    changeFeedAudience: vi.fn((feedAudience: FeedAudience): Observable<SocialAccount> =>
+      of({ ...ACCOUNT, feedAudience }),
     ),
     list: vi.fn((list: NetworkList, pageNumber = 0): Observable<ConnectionPage> =>
       of({ ...lists[list], page: pageNumber }),
@@ -121,6 +126,40 @@ describe('Network', () => {
     expect(api.changeVisibility).toHaveBeenCalledWith('PUBLIC');
     expect(element().textContent).toContain('Cualquiera puede seguirte al momento');
     expect(names('followers')).toEqual(['Marta', 'Diego']);
+  });
+
+  it('should share my activity with my followers by default, and with nobody if I want (HU-059)', async () => {
+    await create();
+    const share = () => element().querySelector<HTMLInputElement>('#share-activity');
+    expect(share()?.checked).toBe(true);
+    expect(element().querySelector('.audience-card')?.textContent).toContain(
+      'Tus seguidores ven en su feed',
+    );
+
+    share()!.click();
+    await render();
+
+    expect(api.changeFeedAudience).toHaveBeenCalledWith('NOBODY');
+    expect(share()?.checked).toBe(false);
+    expect(element().querySelector('.audience-card')?.textContent).toContain(
+      'Nadie ve tu actividad en su feed',
+    );
+
+    share()!.click();
+    await render();
+    expect(api.changeFeedAudience).toHaveBeenLastCalledWith('FOLLOWERS');
+  });
+
+  it('should say when who sees my activity cannot be changed', async () => {
+    await create();
+    api.changeFeedAudience.mockReturnValueOnce(throwError(() => new Error('down')));
+
+    element().querySelector<HTMLElement>('#share-activity')!.click();
+    await render();
+
+    expect(element().querySelector('.social-error')?.textContent).toContain(
+      'No se ha podido completar',
+    );
   });
 
   it('should accept and decline requests and cancel the ones I sent', async () => {
