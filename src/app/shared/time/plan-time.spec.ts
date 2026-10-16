@@ -1,4 +1,11 @@
-import { clockTime, nextOccurrence, spotsKey, startsIn, startsInRange } from './plan-time';
+import {
+  clockTime,
+  happenedAgo,
+  nextOccurrence,
+  spotsKey,
+  startsIn,
+  startsInRange,
+} from './plan-time';
 
 describe('plan-time', () => {
   const now = new Date(2026, 8, 28, 17, 0, 0);
@@ -30,7 +37,32 @@ describe('plan-time', () => {
     expect(startsIn(minutes(-1), now)).toEqual({ key: 'time.started', params: {} });
     expect(startsIn(minutes(45), now)).toEqual({ key: 'time.inMinutes', params: { minutes: 45 } });
     expect(startsIn(minutes(120), now)).toEqual({ key: 'time.inHours', params: { hours: 2 } });
-    expect(startsIn(minutes(90), now)).toEqual({ key: 'time.inHoursMinutes', params: { hours: 1, minutes: 30 } });
+    expect(startsIn(minutes(90), now)).toEqual({
+      key: 'time.inHoursMinutes',
+      params: { hours: 1, minutes: 30 },
+    });
+  });
+
+  it('should describe how long ago something happened', () => {
+    const minutes = (m: number) => new Date(now.getTime() - m * 60_000);
+    expect(happenedAgo(minutes(0), now)).toEqual({ key: 'time.justNow', params: {} });
+    expect(happenedAgo(new Date(now.getTime() + 5_000), now)).toEqual({
+      key: 'time.justNow',
+      params: {},
+    });
+    expect(happenedAgo(minutes(5), now)).toEqual({
+      key: 'time.minutesAgo',
+      params: { minutes: 5 },
+    });
+    expect(happenedAgo(minutes(59), now)).toEqual({
+      key: 'time.minutesAgo',
+      params: { minutes: 59 },
+    });
+    expect(happenedAgo(minutes(150), now)).toEqual({ key: 'time.hoursAgo', params: { hours: 2 } });
+    expect(happenedAgo(minutes(60 * 49), now)).toEqual({
+      key: 'time.daysAgo',
+      params: { days: 2 },
+    });
   });
 
   it('should format the clock time in the locale of the language', () => {

@@ -1,0 +1,90 @@
+<app-page-layout [title]="'feed.title' | transloco">
+  <p class="sr-only" aria-live="polite">{{ announcement() }}</p>
+
+  @if (loadError()) {
+    <div class="feed-error alert alert--error">{{ 'feed.loadError' | transloco }}</div>
+  } @else if (feed(); as loaded) {
+    @if (loaded.items.length) {
+      <p class="hint feed-intro">{{ 'feed.intro' | transloco }}</p>
+      <ol class="feed">
+        @for (item of loaded.items; track key(item)) {
+          <li
+            class="feed-item"
+            [class.feed-item--fresh]="fresh().has(key(item))"
+            [style.--i]="$index"
+          >
+            <a
+              class="feed-item__avatar"
+              [routerLink]="['/people', item.actorId]"
+              tabindex="-1"
+              aria-hidden="true"
+            >
+              <app-person-avatar
+                [name]="item.actorName"
+                [photo]="loaded.photos.get(item.actorId)"
+              />
+            </a>
+            <div class="feed-item__body">
+              <p class="feed-item__what">
+                <a class="feed-item__actor" [routerLink]="['/people', item.actorId]">{{
+                  item.actorName
+                }}</a>
+                {{ 'feed.' + item.type | transloco }}
+                <time class="feed-item__when" [attr.datetime]="item.occurredAt">
+                  · {{ ago(item).key | transloco: ago(item).params }}
+                </time>
+              </p>
+              <a class="feed-plan" [routerLink]="['/plans', item.planId]">
+                <app-icon-tile
+                  size="sm"
+                  iconSize="lg"
+                  [icon]="activityOf(item.planActivity).icon"
+                  [tone]="activityOf(item.planActivity).tone"
+                />
+                <span class="feed-plan__text">
+                  <span class="feed-plan__title">{{ item.planTitle }}</span>
+                  <span class="feed-plan__meta"
+                    >{{ activityKey(item.planActivity) | transloco }} · {{ startsAt(item) }}</span
+                  >
+                </span>
+                <i class="pi pi-angle-right feed-plan__go" aria-hidden="true"></i>
+              </a>
+            </div>
+          </li>
+        }
+      </ol>
+      @if (moreError()) {
+        <p class="hint feed-more-error" role="alert">{{ 'feed.moreError' | transloco }}</p>
+      }
+      @if (hasMore()) {
+        <p-button
+          class="feed-more"
+          [label]="'feed.more' | transloco"
+          [text]="true"
+          [loading]="loadingMore()"
+          (onClick)="more()"
+        />
+      }
+    } @else {
+      <app-empty-state class="feed-empty" [message]="'feed.empty' | transloco">
+        <div class="feed-empty__actions">
+          <a routerLink="/plans/nearby" class="link-action">
+            <i class="pi pi-map-marker" aria-hidden="true"></i>
+            {{ 'feed.findPlans' | transloco }}
+          </a>
+          <a routerLink="/network" class="link-action">
+            <i class="pi pi-users" aria-hidden="true"></i>
+            {{ 'feed.myNetwork' | transloco }}
+          </a>
+        </div>
+      </app-empty-state>
+    }
+  } @else {
+    <div class="feed-loading" role="status">
+      <span class="sr-only">{{ 'feed.loading' | transloco }}</span>
+      <app-card-skeleton media="circle" [lines]="2" />
+      <app-card-skeleton media="circle" [lines]="2" />
+      <app-card-skeleton media="circle" [lines]="2" />
+    </div>
+  }
+</app-page-layout>
