@@ -54,9 +54,10 @@
   width: 100%;
 }
 
-/// Notices on top: below the status bar of the Android app
+/// Notices on top: below the status bar of the Android app. PrimeNG writes its own `top` on the element itself, which
+/// would win over this rule and put the notice over the clock and the icons of the phone
 .p-toast-top-center {
-  top: calc(2rem + safe-area(top));
+  top: calc(2rem + safe-area(top)) !important;
 }
 
 /// Suggested places of the meeting point (HU-071, panelStyleClass="place-panel"): as wide as the field, whatever the
