@@ -1,13 +1,13 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { of, Subject, throwError } from 'rxjs';
-import { translocoTesting } from '../../../testing/transloco-testing';
-import { FakeSession } from '../../../testing/fake-session';
-import { ChatApi } from '../../core/api/chat-api';
-import { PlansApi } from '../../core/api/plans-api';
-import { Session } from '../../core/auth/session';
-import { ChatSocket } from '../../core/realtime/chat-socket';
-import { CHAT_PAGE, ChatEvent, ChatHistory, ChatMessage } from '../../shared/model/chat';
+import { translocoTesting } from '@testing/transloco-testing';
+import { FakeSession } from '@testing/fake-session';
+import { ChatApi } from '@core/api/chat-api';
+import { PlansApi } from '@core/api/plans-api';
+import { Session } from '@core/auth/session';
+import { ChatSocket } from '@core/realtime/chat-socket';
+import { CHAT_PAGE, ChatEvent, ChatHistory, ChatMessage } from '@shared/model/chat';
 import { PlanChat } from './plan-chat';
 
 const message = (id: string, authorId: string, text: string, minute = 0): ChatMessage => ({

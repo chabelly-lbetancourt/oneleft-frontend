@@ -1,6 +1,6 @@
 import { Component, computed, input, linkedSignal } from '@angular/core';
 import { Avatar as PrimeAvatar } from 'primeng/avatar';
-import { initials } from '../../shared/text/initials';
+import { initials } from '@shared/text/initials';
 
 /** The look of each place: the signed-in user in the header, a profile, a participant of a plan. */
 export type AvatarVariant = 'user' | 'profile' | 'participant';

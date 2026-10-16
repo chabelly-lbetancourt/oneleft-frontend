@@ -1,8 +1,8 @@
 import { TestBed } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
-import { FakeSession } from '../../../testing/fake-session';
-import { PhotosApi } from '../api/photos-api';
-import { Session } from '../auth/session';
+import { FakeSession } from '@testing/fake-session';
+import { PhotosApi } from '@core/api/photos-api';
+import { Session } from '@core/auth/session';
 import { MyPhoto } from './my-photo';
 
 describe('MyPhoto', () => {

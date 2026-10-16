@@ -2,19 +2,19 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter, Router, UrlTree } from '@angular/router';
-import { FakeSession } from '../../../testing/fake-session';
-import { Session } from '../../core/auth/session';
-import { UserEvents } from '../../core/realtime/user-events';
+import { FakeSession } from '@testing/fake-session';
+import { Session } from '@core/auth/session';
+import { UserEvents } from '@core/realtime/user-events';
 import {
   PlanCancelledNotice,
   PlanJoinedNotice,
   PlanLeftNotice,
-} from '../../shared/model/published-plan';
+} from '@shared/model/published-plan';
 import { EMPTY, of, Subject } from 'rxjs';
-import { PlansApi } from '../../core/api/plans-api';
-import { UsersApi } from '../../core/api/users-api';
+import { PlansApi } from '@core/api/plans-api';
+import { UsersApi } from '@core/api/users-api';
 import { Home } from './home';
-import { translocoTesting } from '../../../testing/transloco-testing';
+import { translocoTesting } from '@testing/transloco-testing';
 
 describe('Home', () => {
   let fixture: ComponentFixture<Home>;

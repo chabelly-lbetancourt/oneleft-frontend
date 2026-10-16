@@ -1,8 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { Observable, of, throwError } from 'rxjs';
-import { translocoTesting } from '../../../testing/transloco-testing';
-import { SocialApi } from '../../core/api/social-api';
+import { translocoTesting } from '@testing/transloco-testing';
+import { SocialApi } from '@core/api/social-api';
 import {
   Connection,
   ConnectionPage,
@@ -10,7 +10,7 @@ import {
   NetworkList,
   SocialAccount,
   Visibility,
-} from '../../shared/model/social';
+} from '@shared/model/social';
 import { Network } from './network';
 
 const ACCOUNT: SocialAccount = {

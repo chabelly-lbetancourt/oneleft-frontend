@@ -22,16 +22,16 @@ import {
 } from 'angular-auth-oidc-client';
 import { providePrimeNG } from 'primeng/config';
 import { routes } from './app.routes';
-import { authConfig } from './core/auth/auth.config';
-import { NativeAuthCallback } from './core/auth/native-auth-callback';
-import { Session } from './core/auth/session';
-import { DEFAULT_LANGUAGE, Language, LANGUAGES } from './core/i18n/language';
-import { TranslatedTitleStrategy } from './core/i18n/translated-title-strategy';
-import { TranslocoHttpLoader } from './core/i18n/transloco-loader';
-import { isNativeApp } from './core/platform';
-import { primeUiLicense } from './core/primeui-license';
-import { OneLeftPreset } from './core/theme/oneleft-preset';
-import { Theme } from './core/theme/theme';
+import { authConfig } from '@core/auth/auth.config';
+import { NativeAuthCallback } from '@core/auth/native-auth-callback';
+import { Session } from '@core/auth/session';
+import { DEFAULT_LANGUAGE, Language, LANGUAGES } from '@core/i18n/language';
+import { TranslatedTitleStrategy } from '@core/i18n/translated-title-strategy';
+import { TranslocoHttpLoader } from '@core/i18n/transloco-loader';
+import { isNativeApp } from '@core/platform';
+import { primeUiLicense } from '@core/primeui-license';
+import { OneLeftPreset } from '@core/theme/oneleft-preset';
+import { Theme } from '@core/theme/theme';
 
 export const appConfig: ApplicationConfig = {
   providers: [

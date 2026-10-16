@@ -5,21 +5,21 @@ import { Button } from 'primeng/button';
 import { Message } from 'primeng/message';
 import { Tag } from 'primeng/tag';
 import { catchError, Observable, of } from 'rxjs';
-import { PhotosApi } from '../../core/api/photos-api';
-import { ReputationApi } from '../../core/api/reputation-api';
-import { SocialApi } from '../../core/api/social-api';
-import { UsersApi } from '../../core/api/users-api';
-import { ApiErrorMessage, apiErrorMessage } from '../../core/i18n/api-error';
-import { BadgeList } from '../../components/badge-list/badge-list';
-import { CardSkeleton } from '../../components/card-skeleton/card-skeleton';
-import { PersonActivity } from '../../components/person-activity/person-activity';
-import { PersonAvatar } from '../../components/person-avatar/person-avatar';
-import { ReputationBadge } from '../../components/reputation-badge/reputation-badge';
-import { PageLayout } from '../../layout/page-layout/page-layout';
-import { activityKey } from '../../shared/model/activities';
-import { levelKey, PublicProfile } from '../../shared/model/profile';
-import { BadgeProgress, PersonStats } from '../../shared/model/reputation';
-import { SocialPerson } from '../../shared/model/social';
+import { PhotosApi } from '@core/api/photos-api';
+import { ReputationApi } from '@core/api/reputation-api';
+import { SocialApi } from '@core/api/social-api';
+import { UsersApi } from '@core/api/users-api';
+import { ApiErrorMessage, apiErrorMessage } from '@core/i18n/api-error';
+import { BadgeList } from '@components/badge-list/badge-list';
+import { CardSkeleton } from '@components/card-skeleton/card-skeleton';
+import { PersonActivity } from '@components/person-activity/person-activity';
+import { PersonAvatar } from '@components/person-avatar/person-avatar';
+import { ReputationBadge } from '@components/reputation-badge/reputation-badge';
+import { PageLayout } from '@layout/page-layout/page-layout';
+import { activityKey } from '@shared/model/activities';
+import { levelKey, PublicProfile } from '@shared/model/profile';
+import { BadgeProgress, PersonStats } from '@shared/model/reputation';
+import { SocialPerson } from '@shared/model/social';
 
 /**
  * Someone as I see them, their social profile (HU-047, HU-048): their photo, name, bio, hobbies, counts, statistics,

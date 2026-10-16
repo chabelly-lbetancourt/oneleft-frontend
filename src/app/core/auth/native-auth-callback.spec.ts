@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import { OidcSecurityService } from 'angular-auth-oidc-client';
 import { of } from 'rxjs';
-import { NativePlatform } from '../platform';
+import { NativePlatform } from '@core/platform';
 import { NativeAuthCallback } from './native-auth-callback';
 
 describe('NativeAuthCallback', () => {

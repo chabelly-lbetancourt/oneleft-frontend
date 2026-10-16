@@ -1,13 +1,13 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { Observable, of, throwError } from 'rxjs';
-import { translocoTesting } from '../../../testing/transloco-testing';
-import { PhotosApi } from '../../core/api/photos-api';
-import { PlansApi } from '../../core/api/plans-api';
-import { SocialApi } from '../../core/api/social-api';
-import { PersonPhoto } from '../../shared/model/photo';
-import { RecentPlan } from '../../shared/model/published-plan';
-import { ConnectionPage } from '../../shared/model/social';
+import { translocoTesting } from '@testing/transloco-testing';
+import { PhotosApi } from '@core/api/photos-api';
+import { PlansApi } from '@core/api/plans-api';
+import { SocialApi } from '@core/api/social-api';
+import { PersonPhoto } from '@shared/model/photo';
+import { RecentPlan } from '@shared/model/published-plan';
+import { ConnectionPage } from '@shared/model/social';
 import { PersonActivity } from './person-activity';
 
 const PLANS: RecentPlan[] = [

@@ -1,7 +1,7 @@
 import { Component, inject, input } from '@angular/core';
 import { TranslocoPipe } from '@jsverse/transloco';
-import { Language } from '../../core/i18n/language';
-import { BADGE_ICONS, BadgeProgress } from '../../shared/model/reputation';
+import { Language } from '@core/i18n/language';
+import { BADGE_ICONS, BadgeProgress } from '@shared/model/reputation';
 
 /**
  * The badges of someone (HU-044): the earned ones with their date and, with {@code progress}, how far the others are.

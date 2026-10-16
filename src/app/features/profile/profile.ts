@@ -28,29 +28,22 @@ import { SelectButton } from 'primeng/selectbutton';
 import { Tag } from 'primeng/tag';
 import { Textarea } from 'primeng/textarea';
 import { catchError, forkJoin, of } from 'rxjs';
-import { CardSkeleton } from '../../components/card-skeleton/card-skeleton';
-import { LanguageSwitcher } from '../../components/language-switcher/language-switcher';
-import { PersonAvatar } from '../../components/person-avatar/person-avatar';
-import { ReputationBadge } from '../../components/reputation-badge/reputation-badge';
-import { ReputationApi } from '../../core/api/reputation-api';
-import { UsersApi } from '../../core/api/users-api';
-import { Theme, THEME_MODES } from '../../core/theme/theme';
-import { Session } from '../../core/auth/session';
-import { ApproximateLocation, LocationError } from '../../core/geo/approximate-location';
-import { apiErrorMessage } from '../../core/i18n/api-error';
-import { MyPhoto } from '../../core/photos/my-photo';
-import { PageLayout } from '../../layout/page-layout/page-layout';
-import { activityKey } from '../../shared/model/activities';
-import {
-  Catalog,
-  Level,
-  levelKey,
-  MAX_BIO,
-  MAX_HOBBIES,
-  MyProfile,
-} from '../../shared/model/profile';
-import { UserProfile } from '../../shared/model/user';
-import { PhotoFileError } from '../../shared/image/square-photo';
+import { CardSkeleton } from '@components/card-skeleton/card-skeleton';
+import { LanguageSwitcher } from '@components/language-switcher/language-switcher';
+import { PersonAvatar } from '@components/person-avatar/person-avatar';
+import { ReputationBadge } from '@components/reputation-badge/reputation-badge';
+import { ReputationApi } from '@core/api/reputation-api';
+import { UsersApi } from '@core/api/users-api';
+import { Theme, THEME_MODES } from '@core/theme/theme';
+import { Session } from '@core/auth/session';
+import { ApproximateLocation, LocationError } from '@core/geo/approximate-location';
+import { apiErrorMessage } from '@core/i18n/api-error';
+import { MyPhoto } from '@core/photos/my-photo';
+import { PageLayout } from '@layout/page-layout/page-layout';
+import { activityKey } from '@shared/model/activities';
+import { Catalog, Level, levelKey, MAX_BIO, MAX_HOBBIES, MyProfile } from '@shared/model/profile';
+import { UserProfile } from '@shared/model/user';
+import { PhotoFileError } from '@shared/image/square-photo';
 
 type HobbyForm = FormGroup<{ activity: FormControl<string>; level: FormControl<Level> }>;
 

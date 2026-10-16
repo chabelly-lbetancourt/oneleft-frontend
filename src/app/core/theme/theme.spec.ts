@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { NativePlatform } from '../platform';
+import { NativePlatform } from '@core/platform';
 import { DARK_CLASS, Theme, THEME_STORAGE_KEY } from './theme';
 
 describe('Theme', () => {

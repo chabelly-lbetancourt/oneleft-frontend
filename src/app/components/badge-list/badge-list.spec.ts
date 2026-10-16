@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
-import { translocoTesting } from '../../../testing/transloco-testing';
-import { BadgeProgress } from '../../shared/model/reputation';
+import { translocoTesting } from '@testing/transloco-testing';
+import { BadgeProgress } from '@shared/model/reputation';
 import { BadgeList } from './badge-list';
 
 const BADGES: BadgeProgress[] = [

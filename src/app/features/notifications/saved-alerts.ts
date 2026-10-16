@@ -16,21 +16,15 @@ import { Message } from 'primeng/message';
 import { SelectButton } from 'primeng/selectbutton';
 import { ToggleSwitch } from 'primeng/toggleswitch';
 import { catchError, of } from 'rxjs';
-import { NotificationsApi } from '../../core/api/notifications-api';
-import { UsersApi } from '../../core/api/users-api';
-import { ApproximateLocation, LocationError } from '../../core/geo/approximate-location';
-import { apiErrorMessage } from '../../core/i18n/api-error';
-import { ACTIVITIES, activityKey } from '../../shared/model/activities';
-import {
-  Day,
-  DAYS,
-  MAX_ALERTS,
-  RADIUS_OPTIONS,
-  SavedAlert,
-} from '../../shared/model/notifications';
-import { Level, LEVELS, levelKey, Zone } from '../../shared/model/profile';
-import { CardSkeleton } from '../../components/card-skeleton/card-skeleton';
-import { PageLayout } from '../../layout/page-layout/page-layout';
+import { NotificationsApi } from '@core/api/notifications-api';
+import { UsersApi } from '@core/api/users-api';
+import { ApproximateLocation, LocationError } from '@core/geo/approximate-location';
+import { apiErrorMessage } from '@core/i18n/api-error';
+import { ACTIVITIES, activityKey } from '@shared/model/activities';
+import { Day, DAYS, MAX_ALERTS, RADIUS_OPTIONS, SavedAlert } from '@shared/model/notifications';
+import { Level, LEVELS, levelKey, Zone } from '@shared/model/profile';
+import { CardSkeleton } from '@components/card-skeleton/card-skeleton';
+import { PageLayout } from '@layout/page-layout/page-layout';
 
 /** "17:00:00" (API) → "17:00" (time input). */
 const hhmm = (time: string | null): string | null => time?.slice(0, 5) ?? null;

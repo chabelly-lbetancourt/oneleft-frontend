@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
-import { BrandLogo } from '../../components/brand-logo/brand-logo';
-import { LanguageSwitcher } from '../../components/language-switcher/language-switcher';
-import { ThemeSwitcher } from '../../components/theme-switcher/theme-switcher';
+import { BrandLogo } from '@components/brand-logo/brand-logo';
+import { LanguageSwitcher } from '@components/language-switcher/language-switcher';
+import { ThemeSwitcher } from '@components/theme-switcher/theme-switcher';
 
 /** Layout of the sign-in and sign-up pages: the logo, the language and a narrow centred column. */
 @Component({

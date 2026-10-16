@@ -9,12 +9,12 @@ import { Message } from 'primeng/message';
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from 'primeng/tabs';
 import { ToggleSwitch } from 'primeng/toggleswitch';
 import { Observable } from 'rxjs';
-import { SocialApi } from '../../core/api/social-api';
-import { ApiErrorMessage, apiErrorMessage } from '../../core/i18n/api-error';
-import { CardSkeleton } from '../../components/card-skeleton/card-skeleton';
-import { PageLayout } from '../../layout/page-layout/page-layout';
-import { Connection, NetworkList, SocialAccount } from '../../shared/model/social';
-import { initials } from '../../shared/text/initials';
+import { SocialApi } from '@core/api/social-api';
+import { ApiErrorMessage, apiErrorMessage } from '@core/i18n/api-error';
+import { CardSkeleton } from '@components/card-skeleton/card-skeleton';
+import { PageLayout } from '@layout/page-layout/page-layout';
+import { Connection, NetworkList, SocialAccount } from '@shared/model/social';
+import { initials } from '@shared/text/initials';
 
 /** A list as far as it has been read. */
 interface Loaded {

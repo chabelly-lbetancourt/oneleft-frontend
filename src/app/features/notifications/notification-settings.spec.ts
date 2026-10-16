@@ -2,12 +2,12 @@ import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { of, throwError } from 'rxjs';
-import { translocoTesting } from '../../../testing/transloco-testing';
-import { NotificationsApi } from '../../core/api/notifications-api';
-import { UsersApi } from '../../core/api/users-api';
-import { ApproximateLocation, LocationError } from '../../core/geo/approximate-location';
-import { PushState, WebPush } from '../../core/push/web-push';
-import { NotificationPreferences } from '../../shared/model/notifications';
+import { translocoTesting } from '@testing/transloco-testing';
+import { NotificationsApi } from '@core/api/notifications-api';
+import { UsersApi } from '@core/api/users-api';
+import { ApproximateLocation, LocationError } from '@core/geo/approximate-location';
+import { PushState, WebPush } from '@core/push/web-push';
+import { NotificationPreferences } from '@shared/model/notifications';
 import { NotificationSettings } from './notification-settings';
 
 const DEFAULTS: NotificationPreferences = {

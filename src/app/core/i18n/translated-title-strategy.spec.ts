@@ -3,7 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { Title } from '@angular/platform-browser';
 import { provideRouter, Router, TitleStrategy } from '@angular/router';
 import { TranslocoService } from '@jsverse/transloco';
-import { translocoTesting } from '../../../testing/transloco-testing';
+import { translocoTesting } from '@testing/transloco-testing';
 import { TranslatedTitleStrategy } from './translated-title-strategy';
 
 @Component({ template: '' })

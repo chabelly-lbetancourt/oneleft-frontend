@@ -2,11 +2,11 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { TranslocoService } from '@jsverse/transloco';
 import { of, throwError } from 'rxjs';
-import { translocoTesting } from '../../../testing/transloco-testing';
-import { NotificationsApi } from '../../core/api/notifications-api';
-import { UsersApi } from '../../core/api/users-api';
-import { ApproximateLocation, LocationError } from '../../core/geo/approximate-location';
-import { SavedAlert } from '../../shared/model/notifications';
+import { translocoTesting } from '@testing/transloco-testing';
+import { NotificationsApi } from '@core/api/notifications-api';
+import { UsersApi } from '@core/api/users-api';
+import { ApproximateLocation, LocationError } from '@core/geo/approximate-location';
+import { SavedAlert } from '@shared/model/notifications';
 import { SavedAlerts } from './saved-alerts';
 
 const AFTER_WORK: SavedAlert = {

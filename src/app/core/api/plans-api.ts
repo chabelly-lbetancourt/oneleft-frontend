@@ -1,10 +1,10 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { catchError, map, Observable, of } from 'rxjs';
-import { environment } from '../../../environments/environment';
-import { Coordinates } from '../geo/approximate-location';
-import { nearbyParams, NearbyQuery, toQueryString } from '../../shared/model/nearby';
-import { PlaceSuggestion } from '../../shared/model/places';
+import { environment } from '@env/environment';
+import { Coordinates } from '@core/geo/approximate-location';
+import { nearbyParams, NearbyQuery, toQueryString } from '@shared/model/nearby';
+import { PlaceSuggestion } from '@shared/model/places';
 import {
   ArrivalStatus,
   CheckIn,
@@ -16,7 +16,7 @@ import {
   PublicPlan,
   PublishPlan,
   RecentPlan,
-} from '../../shared/model/published-plan';
+} from '@shared/model/published-plan';
 
 /** Client of the plans service through the API Gateway. */
 @Injectable({ providedIn: 'root' })

@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
-import { translocoTesting } from '../../../testing/transloco-testing';
-import { BottomBar } from '../bottom-bar/bottom-bar';
+import { translocoTesting } from '@testing/transloco-testing';
+import { BottomBar } from '@layout/bottom-bar/bottom-bar';
 import { PageLayout } from './page-layout';
 
 @Component({

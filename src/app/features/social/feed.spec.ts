@@ -1,12 +1,12 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { Observable, of, Subject, throwError } from 'rxjs';
-import { translocoTesting } from '../../../testing/transloco-testing';
-import { PhotosApi } from '../../core/api/photos-api';
-import { SocialApi } from '../../core/api/social-api';
-import { UserEvents } from '../../core/realtime/user-events';
-import { FeedActivityNotice, FeedItem, FeedPage } from '../../shared/model/feed';
-import { PersonPhoto } from '../../shared/model/photo';
+import { translocoTesting } from '@testing/transloco-testing';
+import { PhotosApi } from '@core/api/photos-api';
+import { SocialApi } from '@core/api/social-api';
+import { UserEvents } from '@core/realtime/user-events';
+import { FeedActivityNotice, FeedItem, FeedPage } from '@shared/model/feed';
+import { PersonPhoto } from '@shared/model/photo';
 import { Feed } from './feed';
 
 const minutesAgo = (minutes: number) => new Date(Date.now() - minutes * 60_000).toISOString();

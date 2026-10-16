@@ -1,10 +1,16 @@
 import { TestBed } from '@angular/core/testing';
 import { firstValueFrom, take, toArray } from 'rxjs';
-import { environment } from '../../../environments/environment';
-import { Session } from '../auth/session';
+import { environment } from '@env/environment';
+import { Session } from '@core/auth/session';
 import { NearbyStream, RECONNECT_DELAY_MS } from './nearby-stream';
 
-const QUERY = { latitude: 40.391, longitude: -3.629, radius: 3000, activities: ['PADEL', 'TENNIS'], withinHours: 3 };
+const QUERY = {
+  latitude: 40.391,
+  longitude: -3.629,
+  radius: 3000,
+  activities: ['PADEL', 'TENNIS'],
+  withinHours: 3,
+};
 
 /** fetch response whose body delivers the given chunks and then ends. */
 const streamResponse = (chunks: string[], ok = true) => {
@@ -16,7 +22,9 @@ const streamResponse = (chunks: string[], ok = true) => {
     body: {
       getReader: () => ({
         read: async () =>
-          queue.length ? { value: encoder.encode(queue.shift()), done: false } : { value: undefined, done: true },
+          queue.length
+            ? { value: encoder.encode(queue.shift()), done: false }
+            : { value: undefined, done: true },
       }),
     },
   };
@@ -29,7 +37,9 @@ describe('NearbyStream', () => {
   beforeEach(() => {
     vi.stubGlobal('fetch', fetchMock);
     fetchMock.mockReset();
-    TestBed.configureTestingModule({ providers: [{ provide: Session, useValue: { accessToken: async () => 'token-1' } }] });
+    TestBed.configureTestingModule({
+      providers: [{ provide: Session, useValue: { accessToken: async () => 'token-1' } }],
+    });
     stream = TestBed.inject(NearbyStream);
   });
 
@@ -39,9 +49,18 @@ describe('NearbyStream', () => {
   });
 
   it('should open the stream with the token and emit only the published plans', async () => {
-    const event = { planId: 'p1', activity: 'PADEL', startsAt: '2026-09-28T18:00:00Z', freeSpots: 2, distanceMeters: 603 };
+    const event = {
+      planId: 'p1',
+      activity: 'PADEL',
+      startsAt: '2026-09-28T18:00:00Z',
+      freeSpots: 2,
+      distanceMeters: 603,
+    };
     fetchMock.mockResolvedValue(
-      streamResponse(['event:ready\ndata:ok\n\n:ping\n\n', `event:plan-published\ndata:${JSON.stringify(event)}\n\n`]),
+      streamResponse([
+        'event:ready\ndata:ok\n\n:ping\n\n',
+        `event:plan-published\ndata:${JSON.stringify(event)}\n\n`,
+      ]),
     );
 
     const received = await firstValueFrom(stream.watch(QUERY).pipe(take(1)));

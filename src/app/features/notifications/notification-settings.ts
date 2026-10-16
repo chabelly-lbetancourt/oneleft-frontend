@@ -16,20 +16,16 @@ import { Message } from 'primeng/message';
 import { SelectButton } from 'primeng/selectbutton';
 import { ToggleSwitch } from 'primeng/toggleswitch';
 import { catchError, forkJoin, of } from 'rxjs';
-import { NotificationsApi } from '../../core/api/notifications-api';
-import { UsersApi } from '../../core/api/users-api';
-import { ApproximateLocation, LocationError } from '../../core/geo/approximate-location';
-import { apiErrorMessage } from '../../core/i18n/api-error';
-import { WebPush } from '../../core/push/web-push';
-import { ACTIVITIES, activityKey } from '../../shared/model/activities';
-import {
-  MAX_PER_DAY,
-  NotificationPreferences,
-  RADIUS_OPTIONS,
-} from '../../shared/model/notifications';
-import { Zone } from '../../shared/model/profile';
-import { CardSkeleton } from '../../components/card-skeleton/card-skeleton';
-import { PageLayout } from '../../layout/page-layout/page-layout';
+import { NotificationsApi } from '@core/api/notifications-api';
+import { UsersApi } from '@core/api/users-api';
+import { ApproximateLocation, LocationError } from '@core/geo/approximate-location';
+import { apiErrorMessage } from '@core/i18n/api-error';
+import { WebPush } from '@core/push/web-push';
+import { ACTIVITIES, activityKey } from '@shared/model/activities';
+import { MAX_PER_DAY, NotificationPreferences, RADIUS_OPTIONS } from '@shared/model/notifications';
+import { Zone } from '@shared/model/profile';
+import { CardSkeleton } from '@components/card-skeleton/card-skeleton';
+import { PageLayout } from '@layout/page-layout/page-layout';
 
 /** "23:00:00" (API) → "23:00" (time input). */
 const hhmm = (time: string | undefined, fallback: string): string => time?.slice(0, 5) ?? fallback;

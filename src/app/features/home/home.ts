@@ -5,19 +5,19 @@ import { RouterLink } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { merge } from 'rxjs';
 import { Button } from 'primeng/button';
-import { environment } from '../../../environments/environment';
-import { Session } from '../../core/auth/session';
-import { UserEvents } from '../../core/realtime/user-events';
-import { ACTIVITIES, activityOf } from '../../shared/model/activities';
-import { Plan } from '../../shared/model/published-plan';
-import { FreeNow } from '../../components/free-now/free-now';
-import { EntryLink } from '../../components/entry-link/entry-link';
-import { IconTile } from '../../components/icon-tile/icon-tile';
-import { PlanTicketSkeleton } from '../../components/plan-ticket-skeleton/plan-ticket-skeleton';
-import { PlanTicket } from '../../components/plan-ticket/plan-ticket';
-import { SpotSlots } from '../../components/spot-slots/spot-slots';
-import { BottomBar } from '../../layout/bottom-bar/bottom-bar';
-import { MainLayout } from '../../layout/main-layout/main-layout';
+import { environment } from '@env/environment';
+import { Session } from '@core/auth/session';
+import { UserEvents } from '@core/realtime/user-events';
+import { ACTIVITIES, activityOf } from '@shared/model/activities';
+import { Plan } from '@shared/model/published-plan';
+import { FreeNow } from '@components/free-now/free-now';
+import { EntryLink } from '@components/entry-link/entry-link';
+import { IconTile } from '@components/icon-tile/icon-tile';
+import { PlanTicketSkeleton } from '@components/plan-ticket-skeleton/plan-ticket-skeleton';
+import { PlanTicket } from '@components/plan-ticket/plan-ticket';
+import { SpotSlots } from '@components/spot-slots/spot-slots';
+import { BottomBar } from '@layout/bottom-bar/bottom-bar';
+import { MainLayout } from '@layout/main-layout/main-layout';
 
 @Component({
   selector: 'app-home',

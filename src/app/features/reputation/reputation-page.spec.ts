@@ -1,16 +1,16 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { Observable, of, Subject, throwError } from 'rxjs';
-import { translocoTesting } from '../../../testing/transloco-testing';
-import { ReputationApi } from '../../core/api/reputation-api';
-import { UserEvents } from '../../core/realtime/user-events';
+import { translocoTesting } from '@testing/transloco-testing';
+import { ReputationApi } from '@core/api/reputation-api';
+import { UserEvents } from '@core/realtime/user-events';
 import {
   BadgeEarnedNotice,
   BadgeProgress,
   LedgerEntry,
   LedgerPage,
   Reputation,
-} from '../../shared/model/reputation';
+} from '@shared/model/reputation';
 import { ReputationPage } from './reputation-page';
 
 const entry = (

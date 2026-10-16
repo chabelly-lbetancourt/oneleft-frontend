@@ -1,8 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { environment } from '../../../environments/environment';
-import { BadgeProgress, LedgerPage, PersonStats, Reputation } from '../../shared/model/reputation';
+import { environment } from '@env/environment';
+import { BadgeProgress, LedgerPage, PersonStats, Reputation } from '@shared/model/reputation';
 
 /** Client of the reputation service through the API Gateway (HU-009). */
 @Injectable({ providedIn: 'root' })

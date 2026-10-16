@@ -4,19 +4,19 @@ import { RouterLink } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { Button } from 'primeng/button';
 import { catchError, forkJoin, interval, map, Observable, of, switchMap } from 'rxjs';
-import { PhotosApi } from '../../core/api/photos-api';
-import { SocialApi } from '../../core/api/social-api';
-import { Language } from '../../core/i18n/language';
-import { UserEvents } from '../../core/realtime/user-events';
-import { CardSkeleton } from '../../components/card-skeleton/card-skeleton';
-import { EmptyState } from '../../components/empty-state/empty-state';
-import { IconTile } from '../../components/icon-tile/icon-tile';
-import { PersonAvatar } from '../../components/person-avatar/person-avatar';
-import { PageLayout } from '../../layout/page-layout/page-layout';
-import { activityKey, activityOf } from '../../shared/model/activities';
-import { FeedActivityNotice, FeedItem, FeedPage, feedKey } from '../../shared/model/feed';
-import { photoMap } from '../../shared/model/photo';
-import { happenedAgo, RelativeTime } from '../../shared/time/plan-time';
+import { PhotosApi } from '@core/api/photos-api';
+import { SocialApi } from '@core/api/social-api';
+import { Language } from '@core/i18n/language';
+import { UserEvents } from '@core/realtime/user-events';
+import { CardSkeleton } from '@components/card-skeleton/card-skeleton';
+import { EmptyState } from '@components/empty-state/empty-state';
+import { IconTile } from '@components/icon-tile/icon-tile';
+import { PersonAvatar } from '@components/person-avatar/person-avatar';
+import { PageLayout } from '@layout/page-layout/page-layout';
+import { activityKey, activityOf } from '@shared/model/activities';
+import { FeedActivityNotice, FeedItem, FeedPage, feedKey } from '@shared/model/feed';
+import { photoMap } from '@shared/model/photo';
+import { happenedAgo, RelativeTime } from '@shared/time/plan-time';
 
 /** The feed as far as it has been read, with the photos of the people in it. */
 interface LoadedFeed {

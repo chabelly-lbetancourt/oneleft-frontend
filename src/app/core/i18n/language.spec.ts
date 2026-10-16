@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { TranslocoService } from '@jsverse/transloco';
-import { translocoTesting } from '../../../testing/transloco-testing';
+import { translocoTesting } from '@testing/transloco-testing';
 import { initialLanguage, Language, STORAGE_KEY } from './language';
 
 describe('initialLanguage', () => {

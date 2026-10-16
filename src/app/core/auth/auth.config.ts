@@ -1,6 +1,6 @@
 import { LogLevel, PassedInitialConfig } from 'angular-auth-oidc-client';
-import { environment } from '../../../environments/environment';
-import { isNativeApp, NATIVE_AUTH_CALLBACK } from '../platform';
+import { environment } from '@env/environment';
+import { isNativeApp, NATIVE_AUTH_CALLBACK } from '@core/platform';
 
 /**
  * OpenID Connect with Keycloak: Authorization Code + PKCE (public client, no secret),

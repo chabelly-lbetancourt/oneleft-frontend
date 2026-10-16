@@ -2,8 +2,8 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { firstValueFrom } from 'rxjs';
-import { environment } from '../../../environments/environment';
-import { NotificationPreferences } from '../../shared/model/notifications';
+import { environment } from '@env/environment';
+import { NotificationPreferences } from '@shared/model/notifications';
 import { NotificationsApi } from './notifications-api';
 
 describe('NotificationsApi', () => {

@@ -34,6 +34,24 @@ module.exports = defineConfig([
     },
   },
   {
+    // The code of another folder is imported with its alias (tsconfig.json): @core, @shared, @components, @features,
+    // @layout, @env and @testing. Only the files of the same folder keep ./
+    files: ['src/app/**/*.ts'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              group: ['../*'],
+              message: 'Import other folders with their @ alias (see tsconfig.json).',
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
     files: ['**/*.html'],
     extends: [angular.configs.templateRecommended, angular.configs.templateAccessibility],
     rules: {},

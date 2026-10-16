@@ -9,10 +9,10 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { TranslocoService } from '@jsverse/transloco';
 import { Subject } from 'rxjs';
-import { translocoTesting } from '../../../testing/transloco-testing';
-import { ApproximateLocation, LocationError } from '../../core/geo/approximate-location';
-import { NearbyStream } from '../../core/realtime/nearby-stream';
-import { NearbyPlan, NearbyPlanEvent, NearbyQuery } from '../../shared/model/nearby';
+import { translocoTesting } from '@testing/transloco-testing';
+import { ApproximateLocation, LocationError } from '@core/geo/approximate-location';
+import { NearbyStream } from '@core/realtime/nearby-stream';
+import { NearbyPlan, NearbyPlanEvent, NearbyQuery } from '@shared/model/nearby';
 import { NearbyMap } from './nearby-map';
 import { NearbyPlans } from './nearby-plans';
 

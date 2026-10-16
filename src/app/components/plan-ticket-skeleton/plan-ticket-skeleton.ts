@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Skeleton } from '../skeleton/skeleton';
+import { Skeleton } from '@components/skeleton/skeleton';
 
 /** The shape of a plan of a list while the plans load (same size as the plan ticket, so nothing jumps). */
 @Component({
