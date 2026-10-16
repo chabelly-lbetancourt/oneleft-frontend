@@ -415,6 +415,9 @@
             <p class="hint">{{ 'plan.arrivalsHint' | transloco }}</p>
           </div>
         }
+        @if (inChat()) {
+          <app-activity-visibility [planId]="current.id" />
+        }
         @if (justLeft()) {
           <p-message severity="info" class="left-message">{{ 'plan.left' | transloco }}</p-message>
         }

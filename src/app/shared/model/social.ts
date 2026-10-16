@@ -1,6 +1,9 @@
 /** Who can follow someone (HU-047): anyone at once, or only whoever they accept. */
 export type Visibility = 'PUBLIC' | 'PRIVATE';
 
+/** Who sees my activity in their feeds (HU-059): my followers, once accepted, or nobody. */
+export type FeedAudience = 'FOLLOWERS' | 'NOBODY';
+
 /** A follow, or a request still waiting for the answer of a private profile. */
 export type FollowStatus = 'ACCEPTED' | 'PENDING';
 
@@ -12,6 +15,7 @@ export interface SocialAccount {
   userId: string;
   name: string;
   visibility: Visibility;
+  feedAudience: FeedAudience;
   followers: number;
   following: number;
   /** Requests waiting for my answer */
@@ -54,3 +58,9 @@ export type NetworkList = 'followers' | 'following' | 'requests' | 'sent';
 
 /** The lists of someone else, if their profile lets me see them (HU-048). */
 export type PersonList = 'followers' | 'following';
+
+/** Whether one of my plans is kept out of my activity (HU-059). */
+export interface HiddenPlan {
+  planId: string;
+  hidden: boolean;
+}

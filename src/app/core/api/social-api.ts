@@ -6,6 +6,8 @@ import { FeedPage } from '../../shared/model/feed';
 import {
   Connection,
   ConnectionPage,
+  FeedAudience,
+  HiddenPlan,
   NetworkList,
   PersonList,
   SocialAccount,
@@ -34,6 +36,11 @@ export class SocialApi {
 
   changeVisibility(visibility: Visibility): Observable<SocialAccount> {
     return this.http.put<SocialAccount>(`${this.base}/me/visibility`, { visibility });
+  }
+
+  /** Who sees my activity in their feeds (HU-059). */
+  changeFeedAudience(feedAudience: FeedAudience): Observable<SocialAccount> {
+    return this.http.put<SocialAccount>(`${this.base}/me/feed-audience`, { feedAudience });
   }
 
   person(userId: string): Observable<SocialPerson> {
@@ -66,6 +73,19 @@ export class SocialApi {
   /** What the people I follow do in the plans (HU-051), the latest first. */
   feed(page = 0, size = 20): Observable<FeedPage> {
     return this.http.get<FeedPage>(`${this.base}/me/feed`, { params: { page, size } });
+  }
+
+  /** Whether one of my plans is kept out of my activity (HU-059). */
+  hiddenPlan(planId: string): Observable<HiddenPlan> {
+    return this.http.get<HiddenPlan>(`${this.base}/me/hidden-plans/${planId}`);
+  }
+
+  hidePlan(planId: string): Observable<void> {
+    return this.http.put<void>(`${this.base}/me/hidden-plans/${planId}`, null);
+  }
+
+  showPlan(planId: string): Observable<void> {
+    return this.http.delete<void>(`${this.base}/me/hidden-plans/${planId}`);
   }
 
   accept(userId: string): Observable<Connection> {
