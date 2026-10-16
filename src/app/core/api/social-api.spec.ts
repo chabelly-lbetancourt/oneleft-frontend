@@ -55,6 +55,19 @@ describe('SocialApi', () => {
     http.expectOne(`${base}/me/requests/sent?page=0&size=5`).flush({ items: [] });
   });
 
+  it('should keep my activity private when I want', () => {
+    api.changeFeedAudience('NOBODY').subscribe();
+    const audience = http.expectOne({ method: 'PUT', url: `${base}/me/feed-audience` });
+    expect(audience.request.body).toEqual({ feedAudience: 'NOBODY' });
+    audience.flush({});
+    api.hiddenPlan('p1').subscribe();
+    http.expectOne({ method: 'GET', url: `${base}/me/hidden-plans/p1` }).flush({});
+    api.hidePlan('p1').subscribe();
+    http.expectOne({ method: 'PUT', url: `${base}/me/hidden-plans/p1` }).flush(null);
+    api.showPlan('p1').subscribe();
+    http.expectOne({ method: 'DELETE', url: `${base}/me/hidden-plans/p1` }).flush(null);
+  });
+
   it('should page my feed', () => {
     api.feed().subscribe();
     http.expectOne({ method: 'GET', url: `${base}/me/feed?page=0&size=20` }).flush({ items: [] });

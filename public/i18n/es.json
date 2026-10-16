@@ -189,6 +189,9 @@
     "privateHint": "Quien quiera seguirte tendrá que esperar a que aceptes su solicitud.",
     "publicHint": "Cualquiera puede seguirte al momento.",
     "openNote": "Al hacer público tu perfil se aceptan las solicitudes que esperaban.",
+    "shareActivity": "Compartir mi actividad",
+    "shareActivityHint": "Tus seguidores ven en su feed los planes que publicas, a los que te apuntas y los que completas. Puedes ocultar un plan concreto desde su detalle.",
+    "noActivityHint": "Nadie ve tu actividad en su feed, y lo que hagas mientras tanto no se guarda.",
     "followers": "Seguidores",
     "following": "Siguiendo",
     "requests": "Solicitudes",
@@ -253,6 +256,12 @@
     "empty": "Aún no hay actividad. Sigue a la gente con la que coincides en los planes y aquí verás cuándo publican uno, se apuntan o lo completan. Si su perfil es privado, aparecerán cuando te acepten.",
     "findPlans": "Ver planes cerca",
     "myNetwork": "Mi red"
+  },
+  "activityVisibility": {
+    "title": "Mostrar en mi actividad",
+    "shownHint": "Tus seguidores ven en su feed que estás en este plan.",
+    "hiddenHint": "Oculto: tus seguidores no ven este plan en tu actividad.",
+    "unknown": "Ahora no se puede saber si este plan sale en tu actividad."
   },
   "reputation": {
     "title": "Mi reputación",

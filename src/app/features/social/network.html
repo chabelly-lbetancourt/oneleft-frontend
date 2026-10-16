@@ -20,6 +20,26 @@
       />
     </section>
 
+    <!-- Who sees my activity in their feeds (HU-059) -->
+    <section class="visibility-card audience-card">
+      <div class="switch-text">
+        <label for="share-activity" class="section-title">{{
+          'social.shareActivity' | transloco
+        }}</label>
+        <p class="hint">
+          {{
+            (sharesActivity() ? 'social.shareActivityHint' : 'social.noActivityHint') | transloco
+          }}
+        </p>
+      </div>
+      <p-toggleswitch
+        inputId="share-activity"
+        class="share-activity-switch private-switch"
+        [ngModel]="sharesActivity()"
+        (ngModelChange)="setSharesActivity($event)"
+      />
+    </section>
+
     @if (error(); as message) {
       <p-message severity="error" class="social-error">{{
         message.key | transloco: message.params

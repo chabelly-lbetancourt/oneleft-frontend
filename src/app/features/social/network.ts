@@ -37,8 +37,8 @@ const EMPTY: Record<NetworkList, string> = {
 };
 
 /**
- * «My network» (HU-047): public or private profile, my followers, the people I follow and the requests, with what
- * can be done with each of them.
+ * «My network» (HU-047): public or private profile, who sees my activity (HU-059), my followers, the people I follow
+ * and the requests, with what can be done with each of them.
  */
 @Component({
   selector: 'app-network',
@@ -74,6 +74,8 @@ export class Network implements OnInit {
   protected readonly busy = signal<string | null>(null);
   protected readonly error = signal<ApiErrorMessage | null>(null);
   protected readonly isPrivate = computed(() => this.account()?.visibility === 'PRIVATE');
+  /** My followers see my activity in their feeds (HU-059) */
+  protected readonly sharesActivity = computed(() => this.account()?.feedAudience !== 'NOBODY');
   protected readonly initials = initials;
 
   ngOnInit(): void {
@@ -112,6 +114,14 @@ export class Network implements OnInit {
         this.forget('followers', 'requests');
         this.show(this.tab());
       },
+      error: (error) => this.fail(error),
+    });
+  }
+
+  protected setSharesActivity(shares: boolean): void {
+    this.error.set(null);
+    this.api.changeFeedAudience(shares ? 'FOLLOWERS' : 'NOBODY').subscribe({
+      next: (account) => this.account.set(account),
       error: (error) => this.fail(error),
     });
   }

@@ -1,0 +1,29 @@
+<div class="activity-visibility panel-muted">
+  <div class="activity-visibility__text">
+    <label [for]="inputId()" class="activity-visibility__title">{{
+      'activityVisibility.title' | transloco
+    }}</label>
+    <p class="hint activity-visibility__hint">
+      @if (loadError()) {
+        {{ 'activityVisibility.unknown' | transloco }}
+      } @else {
+        {{
+          (shown() === false ? 'activityVisibility.hiddenHint' : 'activityVisibility.shownHint')
+            | transloco
+        }}
+      }
+    </p>
+  </div>
+  <p-toggleswitch
+    class="activity-visibility__switch"
+    [inputId]="inputId()"
+    [ngModel]="shown() ?? true"
+    [disabled]="shown() === null || busy()"
+    (ngModelChange)="change($event)"
+  />
+</div>
+@if (error(); as message) {
+  <p-message severity="error" class="activity-visibility__error">{{
+    message.key | transloco: message.params
+  }}</p-message>
+}
