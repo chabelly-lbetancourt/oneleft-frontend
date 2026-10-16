@@ -1,8 +1,8 @@
 import { inject, Injectable, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
-import { NotificationsApi } from '../api/notifications-api';
-import { Language } from '../i18n/language';
-import { NativePlatform } from '../platform';
+import { NotificationsApi } from '@core/api/notifications-api';
+import { Language } from '@core/i18n/language';
+import { NativePlatform } from '@core/platform';
 
 /**
  * Web Push in this browser (HU-006):

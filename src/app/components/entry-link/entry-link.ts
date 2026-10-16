@@ -1,5 +1,5 @@
 import { Component, input } from '@angular/core';
-import { IconTile } from '../icon-tile/icon-tile';
+import { IconTile } from '@components/icon-tile/icon-tile';
 
 /**
  * A card that leads to a section: icon, title, a short hint and an arrow. Placed on a link:

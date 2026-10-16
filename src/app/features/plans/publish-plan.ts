@@ -23,28 +23,28 @@ import { Select } from 'primeng/select';
 import { SelectButton } from 'primeng/selectbutton';
 import { Textarea } from 'primeng/textarea';
 import { ToggleSwitch } from 'primeng/toggleswitch';
-import { PageLayout } from '../../layout/page-layout/page-layout';
-import { PlansApi } from '../../core/api/plans-api';
-import { UsersApi } from '../../core/api/users-api';
+import { PageLayout } from '@layout/page-layout/page-layout';
+import { PlansApi } from '@core/api/plans-api';
+import { UsersApi } from '@core/api/users-api';
 import {
   ApproximateLocation,
   Coordinates,
   LocationError,
   MEETING_POINT_DECIMALS,
   roundCoordinate,
-} from '../../core/geo/approximate-location';
-import { apiErrorMessage } from '../../core/i18n/api-error';
-import { Language } from '../../core/i18n/language';
-import { formatDistance } from '../../shared/geo/distance';
-import { ACTIVITIES, activityKey } from '../../shared/model/activities';
-import { PLACE_QUERY_MIN_LENGTH, PlaceSuggestion } from '../../shared/model/places';
-import { Level, LEVELS, levelKey } from '../../shared/model/profile';
+} from '@core/geo/approximate-location';
+import { apiErrorMessage } from '@core/i18n/api-error';
+import { Language } from '@core/i18n/language';
+import { formatDistance } from '@shared/geo/distance';
+import { ACTIVITIES, activityKey } from '@shared/model/activities';
+import { PLACE_QUERY_MIN_LENGTH, PlaceSuggestion } from '@shared/model/places';
+import { Level, LEVELS, levelKey } from '@shared/model/profile';
 import {
   MAX_HORIZON_HOURS,
   MIN_LEAD_MINUTES,
   nextOccurrence,
   startsInRange,
-} from '../../shared/time/plan-time';
+} from '@shared/time/plan-time';
 
 type StartOption = '30' | '60' | '120' | '180' | 'custom';
 

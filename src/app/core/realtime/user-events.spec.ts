@@ -1,22 +1,18 @@
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { Subject } from 'rxjs';
-import { environment } from '../../../environments/environment';
-import {
-  PlanJoinedNotice,
-  PlanLeftNotice,
-  SpotFreedNotice,
-} from '../../shared/model/published-plan';
-import { FeedActivityNotice } from '../../shared/model/feed';
-import { PlanNearbyNotice } from '../../shared/model/notifications';
-import { BadgeEarnedNotice } from '../../shared/model/reputation';
+import { environment } from '@env/environment';
+import { PlanJoinedNotice, PlanLeftNotice, SpotFreedNotice } from '@shared/model/published-plan';
+import { FeedActivityNotice } from '@shared/model/feed';
+import { PlanNearbyNotice } from '@shared/model/notifications';
+import { BadgeEarnedNotice } from '@shared/model/reputation';
 import {
   PlanArrivalNotice,
   PlanCancelledNotice,
   PlanCheckInNotice,
   PlanReminderNotice,
-} from '../../shared/model/published-plan';
-import { Session } from '../auth/session';
+} from '@shared/model/published-plan';
+import { Session } from '@core/auth/session';
 import { EventStream, StreamEvent } from './event-stream';
 import { UserEvents } from './user-events';
 

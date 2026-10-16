@@ -6,14 +6,14 @@ import { Button } from 'primeng/button';
 import { Message } from 'primeng/message';
 import { SelectButton } from 'primeng/selectbutton';
 import { catchError, of } from 'rxjs';
-import { PlansApi } from '../../core/api/plans-api';
-import { UsersApi } from '../../core/api/users-api';
-import { ApproximateLocation } from '../../core/geo/approximate-location';
-import { Language } from '../../core/i18n/language';
-import { activityOf, activityKey } from '../../shared/model/activities';
-import { Hobby, levelKey, Zone } from '../../shared/model/profile';
-import { Availability } from '../../shared/model/published-plan';
-import { clockTime } from '../../shared/time/plan-time';
+import { PlansApi } from '@core/api/plans-api';
+import { UsersApi } from '@core/api/users-api';
+import { ApproximateLocation } from '@core/geo/approximate-location';
+import { Language } from '@core/i18n/language';
+import { activityOf, activityKey } from '@shared/model/activities';
+import { Hobby, levelKey, Zone } from '@shared/model/profile';
+import { Availability } from '@shared/model/published-plan';
+import { clockTime } from '@shared/time/plan-time';
 
 /**
  * «I'm free now» on the home screen (HU-035): for 1 to 3 hours, for the hobbies of the profile with their level, around

@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { translocoTesting } from '../../../testing/transloco-testing';
+import { translocoTesting } from '@testing/transloco-testing';
 import { ReputationBadge } from './reputation-badge';
 
 describe('ReputationBadge', () => {

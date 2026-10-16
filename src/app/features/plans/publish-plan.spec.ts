@@ -1,12 +1,12 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import { of, Subject, throwError } from 'rxjs';
-import { PlansApi } from '../../core/api/plans-api';
-import { UsersApi } from '../../core/api/users-api';
-import { ApproximateLocation, LocationError } from '../../core/geo/approximate-location';
+import { PlansApi } from '@core/api/plans-api';
+import { UsersApi } from '@core/api/users-api';
+import { ApproximateLocation, LocationError } from '@core/geo/approximate-location';
 import { TranslocoService } from '@jsverse/transloco';
 import { PublishPlan } from './publish-plan';
-import { translocoTesting } from '../../../testing/transloco-testing';
+import { translocoTesting } from '@testing/transloco-testing';
 
 describe('PublishPlan', () => {
   let fixture: ComponentFixture<PublishPlan>;

@@ -4,19 +4,19 @@ import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { Button } from 'primeng/button';
 import { Message } from 'primeng/message';
 import { filter } from 'rxjs';
-import { PlansApi } from '../../core/api/plans-api';
-import { Session } from '../../core/auth/session';
-import { ApproximateLocation, LocationError } from '../../core/geo/approximate-location';
-import { ApiErrorMessage, apiErrorMessage } from '../../core/i18n/api-error';
-import { Language } from '../../core/i18n/language';
-import { UserEvents } from '../../core/realtime/user-events';
+import { PlansApi } from '@core/api/plans-api';
+import { Session } from '@core/auth/session';
+import { ApproximateLocation, LocationError } from '@core/geo/approximate-location';
+import { ApiErrorMessage, apiErrorMessage } from '@core/i18n/api-error';
+import { Language } from '@core/i18n/language';
+import { UserEvents } from '@core/realtime/user-events';
 import {
   CHECK_IN_CLOSES_AFTER_MINUTES,
   CHECK_IN_OPENS_BEFORE_MINUTES,
   CheckIn,
   Plan,
-} from '../../shared/model/published-plan';
-import { clockTime } from '../../shared/time/plan-time';
+} from '@shared/model/published-plan';
+import { clockTime } from '@shared/time/plan-time';
 
 const MINUTE = 60_000;
 /** How often the window of the check-in is looked at again, so that it opens and closes on its own */

@@ -1,8 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { environment } from '../../../environments/environment';
-import { ChatHistory } from '../../shared/model/chat';
+import { environment } from '@env/environment';
+import { ChatHistory } from '@shared/model/chat';
 
 /** Client of the chat service through the API Gateway (HU-008): the history; messages go through the WebSocket. */
 @Injectable({ providedIn: 'root' })

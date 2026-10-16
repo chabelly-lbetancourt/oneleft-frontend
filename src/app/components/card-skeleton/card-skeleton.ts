@@ -1,5 +1,5 @@
 import { Component, computed, input } from '@angular/core';
-import { Skeleton } from '../skeleton/skeleton';
+import { Skeleton } from '@components/skeleton/skeleton';
 
 /** A card that is loading: optionally an icon or avatar, a title and some lines of text. */
 @Component({

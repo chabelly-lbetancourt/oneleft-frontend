@@ -1,5 +1,5 @@
 import { Component, computed, input, signal } from '@angular/core';
-import { initials } from '../../shared/text/initials';
+import { initials } from '@shared/text/initials';
 
 /** Colours of the people (see $person-tones in styles/abstracts/_tokens.scss) */
 const PERSON_TONES = 5;

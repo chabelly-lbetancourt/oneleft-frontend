@@ -2,17 +2,17 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import { TranslocoService } from '@jsverse/transloco';
 import { EMPTY, Observable, of, Subject, throwError } from 'rxjs';
-import { FakeSession } from '../../../testing/fake-session';
-import { translocoTesting } from '../../../testing/transloco-testing';
-import { PhotosApi } from '../../core/api/photos-api';
-import { SocialApi } from '../../core/api/social-api';
-import { PlansApi } from '../../core/api/plans-api';
-import { ReputationApi } from '../../core/api/reputation-api';
-import { PersonPhoto } from '../../shared/model/photo';
-import { HiddenPlan } from '../../shared/model/social';
-import { Reputation } from '../../shared/model/reputation';
-import { Session } from '../../core/auth/session';
-import { UserEvents } from '../../core/realtime/user-events';
+import { FakeSession } from '@testing/fake-session';
+import { translocoTesting } from '@testing/transloco-testing';
+import { PhotosApi } from '@core/api/photos-api';
+import { SocialApi } from '@core/api/social-api';
+import { PlansApi } from '@core/api/plans-api';
+import { ReputationApi } from '@core/api/reputation-api';
+import { PersonPhoto } from '@shared/model/photo';
+import { HiddenPlan } from '@shared/model/social';
+import { Reputation } from '@shared/model/reputation';
+import { Session } from '@core/auth/session';
+import { UserEvents } from '@core/realtime/user-events';
 import {
   CheckIn,
   Forecast,
@@ -22,9 +22,9 @@ import {
   PlanCancelledNotice,
   PlanJoinedNotice,
   PlanLeftNotice,
-} from '../../shared/model/published-plan';
+} from '@shared/model/published-plan';
 import { PlanDetail } from './plan-detail';
-import { NativePlatform } from '../../core/platform';
+import { NativePlatform } from '@core/platform';
 
 const PLAN: Plan = {
   id: 'plan-1',

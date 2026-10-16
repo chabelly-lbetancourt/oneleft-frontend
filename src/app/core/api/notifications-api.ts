@@ -1,12 +1,12 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { catchError, map, Observable, of } from 'rxjs';
-import { environment } from '../../../environments/environment';
+import { environment } from '@env/environment';
 import {
   NotificationPreferences,
   PushSubscriptionRequest,
   SavedAlert,
-} from '../../shared/model/notifications';
+} from '@shared/model/notifications';
 
 /** Client of the notifications service through the API Gateway (HU-006). */
 @Injectable({ providedIn: 'root' })

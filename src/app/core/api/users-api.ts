@@ -1,9 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { environment } from '../../../environments/environment';
-import { Catalog, MyProfile, PublicProfile, UpdateProfile } from '../../shared/model/profile';
-import { UserProfile } from '../../shared/model/user';
+import { environment } from '@env/environment';
+import { Catalog, MyProfile, PublicProfile, UpdateProfile } from '@shared/model/profile';
+import { UserProfile } from '@shared/model/user';
 
 /** Client of the users service through the API Gateway. */
 @Injectable({ providedIn: 'root' })

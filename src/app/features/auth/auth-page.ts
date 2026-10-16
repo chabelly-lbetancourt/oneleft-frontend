@@ -2,10 +2,10 @@ import { Component, computed, inject, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { Button } from 'primeng/button';
-import { Session } from '../../core/auth/session';
-import { GoogleButton } from '../../components/google-button/google-button';
-import { SpotSlots } from '../../components/spot-slots/spot-slots';
-import { AuthLayout } from '../../layout/auth-layout/auth-layout';
+import { Session } from '@core/auth/session';
+import { GoogleButton } from '@components/google-button/google-button';
+import { SpotSlots } from '@components/spot-slots/spot-slots';
+import { AuthLayout } from '@layout/auth-layout/auth-layout';
 
 export type AuthMode = 'login' | 'register';
 

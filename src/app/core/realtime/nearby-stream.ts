@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { NearbyPlanEvent, NearbyQuery } from '../../shared/model/nearby';
-import { PlansApi } from '../api/plans-api';
+import { NearbyPlanEvent, NearbyQuery } from '@shared/model/nearby';
+import { PlansApi } from '@core/api/plans-api';
 import { EventStream } from './event-stream';
 
 export { RECONNECT_DELAY_MS } from './event-stream';

@@ -1,14 +1,14 @@
 import { Component, computed, inject, input } from '@angular/core';
 import { TranslocoPipe } from '@jsverse/transloco';
-import { Language } from '../../core/i18n/language';
-import { formatDistance } from '../../shared/geo/distance';
-import { activityKey, activityOf } from '../../shared/model/activities';
-import { Plan } from '../../shared/model/published-plan';
-import { clockTime, spotsKey, startsIn } from '../../shared/time/plan-time';
-import { IconTile } from '../icon-tile/icon-tile';
-import { PersonAvatar } from '../person-avatar/person-avatar';
-import { ReputationBadge } from '../reputation-badge/reputation-badge';
-import { SpotSlots } from '../spot-slots/spot-slots';
+import { Language } from '@core/i18n/language';
+import { formatDistance } from '@shared/geo/distance';
+import { activityKey, activityOf } from '@shared/model/activities';
+import { Plan } from '@shared/model/published-plan';
+import { clockTime, spotsKey, startsIn } from '@shared/time/plan-time';
+import { IconTile } from '@components/icon-tile/icon-tile';
+import { PersonAvatar } from '@components/person-avatar/person-avatar';
+import { ReputationBadge } from '@components/reputation-badge/reputation-badge';
+import { SpotSlots } from '@components/spot-slots/spot-slots';
 
 /**
  * A plan in a list: the activity, when, where, who is in and how many spots are left. The caller wraps it in its link (so each list keeps its own class for the tests).

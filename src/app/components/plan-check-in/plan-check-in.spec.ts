@@ -1,13 +1,13 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Observable, of, Subject, throwError } from 'rxjs';
-import { FakeSession } from '../../../testing/fake-session';
-import { translocoTesting } from '../../../testing/transloco-testing';
-import { PlansApi } from '../../core/api/plans-api';
-import { Session } from '../../core/auth/session';
-import { ApproximateLocation, LocationError } from '../../core/geo/approximate-location';
-import { UserEvents } from '../../core/realtime/user-events';
-import { CheckIn, Plan, PlanCheckInNotice } from '../../shared/model/published-plan';
+import { FakeSession } from '@testing/fake-session';
+import { translocoTesting } from '@testing/transloco-testing';
+import { PlansApi } from '@core/api/plans-api';
+import { Session } from '@core/auth/session';
+import { ApproximateLocation, LocationError } from '@core/geo/approximate-location';
+import { UserEvents } from '@core/realtime/user-events';
+import { CheckIn, Plan, PlanCheckInNotice } from '@shared/model/published-plan';
 import { PlanCheckIn } from './plan-check-in';
 
 const minutesFromNow = (minutes: number) => new Date(Date.now() + minutes * 60_000).toISOString();

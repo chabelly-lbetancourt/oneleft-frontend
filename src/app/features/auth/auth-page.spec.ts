@@ -1,8 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
-import { FakeSession } from '../../../testing/fake-session';
-import { translocoTesting } from '../../../testing/transloco-testing';
-import { Session } from '../../core/auth/session';
+import { FakeSession } from '@testing/fake-session';
+import { translocoTesting } from '@testing/transloco-testing';
+import { Session } from '@core/auth/session';
 import { AuthMode, AuthPage } from './auth-page';
 
 describe('AuthPage', () => {

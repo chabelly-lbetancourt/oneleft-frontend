@@ -1,8 +1,8 @@
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { environment } from '../../../environments/environment';
-import { ChatEvent } from '../../shared/model/chat';
-import { Session } from '../auth/session';
+import { environment } from '@env/environment';
+import { ChatEvent } from '@shared/model/chat';
+import { Session } from '@core/auth/session';
 
 /**
  * The browser cannot add an Authorization header to a WebSocket: the token goes as the second subprotocol, after

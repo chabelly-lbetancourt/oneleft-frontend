@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
-import { environment } from '../../../environments/environment';
-import { ChatEvent } from '../../shared/model/chat';
-import { Session } from '../auth/session';
+import { environment } from '@env/environment';
+import { ChatEvent } from '@shared/model/chat';
+import { Session } from '@core/auth/session';
 import { CHAT_PROTOCOL, ChatSocket, chatSocketUrl, RECONNECT_BASE_MS } from './chat-socket';
 
 /** A WebSocket that the test opens, fills and closes. */

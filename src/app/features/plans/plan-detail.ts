@@ -15,39 +15,39 @@ import { Button } from 'primeng/button';
 import { Message } from 'primeng/message';
 import { Tag } from 'primeng/tag';
 import { catchError, filter, merge, Observable, of } from 'rxjs';
-import { PlansApi } from '../../core/api/plans-api';
-import { PhotosApi } from '../../core/api/photos-api';
-import { ReputationApi } from '../../core/api/reputation-api';
-import { Session } from '../../core/auth/session';
-import { ApiErrorMessage, apiErrorMessage } from '../../core/i18n/api-error';
-import { Language } from '../../core/i18n/language';
-import { NativePlatform } from '../../core/platform';
-import { UserEvents } from '../../core/realtime/user-events';
-import { activityKey, activityOf } from '../../shared/model/activities';
-import { levelKey } from '../../shared/model/profile';
-import { ActivityVisibility } from '../../components/activity-visibility/activity-visibility';
-import { CardSkeleton } from '../../components/card-skeleton/card-skeleton';
-import { IconTile } from '../../components/icon-tile/icon-tile';
-import { PersonAvatar } from '../../components/person-avatar/person-avatar';
-import { PlanCheckIn } from '../../components/plan-check-in/plan-check-in';
-import { ReputationBadge } from '../../components/reputation-badge/reputation-badge';
-import { SpotSlots } from '../../components/spot-slots/spot-slots';
-import { PageLayout } from '../../layout/page-layout/page-layout';
+import { PlansApi } from '@core/api/plans-api';
+import { PhotosApi } from '@core/api/photos-api';
+import { ReputationApi } from '@core/api/reputation-api';
+import { Session } from '@core/auth/session';
+import { ApiErrorMessage, apiErrorMessage } from '@core/i18n/api-error';
+import { Language } from '@core/i18n/language';
+import { NativePlatform } from '@core/platform';
+import { UserEvents } from '@core/realtime/user-events';
+import { activityKey, activityOf } from '@shared/model/activities';
+import { levelKey } from '@shared/model/profile';
+import { ActivityVisibility } from '@components/activity-visibility/activity-visibility';
+import { CardSkeleton } from '@components/card-skeleton/card-skeleton';
+import { IconTile } from '@components/icon-tile/icon-tile';
+import { PersonAvatar } from '@components/person-avatar/person-avatar';
+import { PlanCheckIn } from '@components/plan-check-in/plan-check-in';
+import { ReputationBadge } from '@components/reputation-badge/reputation-badge';
+import { SpotSlots } from '@components/spot-slots/spot-slots';
+import { PageLayout } from '@layout/page-layout/page-layout';
 import {
   ArrivalStatus,
   Forecast,
   FreePerson,
   LATE_OPTIONS,
   Plan,
-} from '../../shared/model/published-plan';
-import { photoMap } from '../../shared/model/photo';
-import { clockTime, spotsKey, startsIn } from '../../shared/time/plan-time';
+} from '@shared/model/published-plan';
+import { photoMap } from '@shared/model/photo';
+import { clockTime, spotsKey, startsIn } from '@shared/time/plan-time';
 import {
   CalendarEvent,
   googleCalendarUrl,
   icsFileName,
   planIcs,
-} from '../../shared/calendar/plan-calendar';
+} from '@shared/calendar/plan-calendar';
 
 /** What the signed-in person can do with the plan. */
 type Relation =

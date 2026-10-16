@@ -42,6 +42,12 @@ issue#N ──PR──▶ dev ──PR (promoción)──▶ pre ──PR (relea
 - **Textos de la app** en español e inglés, en los ficheros de traducción de `oneleft-frontend/public/i18n`.
 - **Documentación del TFM** (memoria, diario, diagramas, issues y este documento) en español.
 
+## Código
+
+- **Imports con alias en `oneleft-frontend`:** el código de otra carpeta se importa con su alias (`@core`, `@shared`,
+  `@components`, `@features`, `@layout`, `@env`, `@testing`); solo los ficheros de la misma carpeta usan `./`. Lo
+  comprueba ESLint.
+
 ## Mensajes de commit
 
 Se sigue [Conventional Commits](https://www.conventionalcommits.org/es/v1.0.0/), en inglés, y **todo commit

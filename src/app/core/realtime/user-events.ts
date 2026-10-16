@@ -1,9 +1,9 @@
 import { inject, Injectable } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { EMPTY, filter, map, Observable, share, switchMap } from 'rxjs';
-import { FeedActivityNotice } from '../../shared/model/feed';
-import { PlanNearbyNotice } from '../../shared/model/notifications';
-import { BadgeEarnedNotice } from '../../shared/model/reputation';
+import { FeedActivityNotice } from '@shared/model/feed';
+import { PlanNearbyNotice } from '@shared/model/notifications';
+import { BadgeEarnedNotice } from '@shared/model/reputation';
 import {
   PlanArrivalNotice,
   PlanCancelledNotice,
@@ -12,9 +12,9 @@ import {
   PlanLeftNotice,
   PlanReminderNotice,
   SpotFreedNotice,
-} from '../../shared/model/published-plan';
-import { PlansApi } from '../api/plans-api';
-import { Session } from '../auth/session';
+} from '@shared/model/published-plan';
+import { PlansApi } from '@core/api/plans-api';
+import { Session } from '@core/auth/session';
 import { EventStream, StreamEvent } from './event-stream';
 
 const PLAN_JOINED = 'plan-joined';

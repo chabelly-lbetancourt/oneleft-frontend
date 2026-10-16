@@ -3,13 +3,13 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { Button } from 'primeng/button';
-import { ReputationApi } from '../../core/api/reputation-api';
-import { Language } from '../../core/i18n/language';
-import { UserEvents } from '../../core/realtime/user-events';
-import { BadgeList } from '../../components/badge-list/badge-list';
-import { CardSkeleton } from '../../components/card-skeleton/card-skeleton';
-import { PageLayout } from '../../layout/page-layout/page-layout';
-import { BadgeProgress, LedgerEntry, REPUTATION_RULES } from '../../shared/model/reputation';
+import { ReputationApi } from '@core/api/reputation-api';
+import { Language } from '@core/i18n/language';
+import { UserEvents } from '@core/realtime/user-events';
+import { BadgeList } from '@components/badge-list/badge-list';
+import { CardSkeleton } from '@components/card-skeleton/card-skeleton';
+import { PageLayout } from '@layout/page-layout/page-layout';
+import { BadgeProgress, LedgerEntry, REPUTATION_RULES } from '@shared/model/reputation';
 
 const PAGE_SIZE = 20;
 

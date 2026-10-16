@@ -1,5 +1,5 @@
 import { Component, input } from '@angular/core';
-import { AppHeader } from '../app-header/app-header';
+import { AppHeader } from '@layout/app-header/app-header';
 
 /**
  * Layout of the home screen: the main header of the app and the content column. A page with a bottom bar

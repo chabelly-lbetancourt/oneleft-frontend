@@ -1,8 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Observable, of, Subject, throwError } from 'rxjs';
-import { translocoTesting } from '../../../testing/transloco-testing';
-import { SocialApi } from '../../core/api/social-api';
-import { HiddenPlan } from '../../shared/model/social';
+import { translocoTesting } from '@testing/transloco-testing';
+import { SocialApi } from '@core/api/social-api';
+import { HiddenPlan } from '@shared/model/social';
 import { ActivityVisibility } from './activity-visibility';
 
 describe('ActivityVisibility', () => {

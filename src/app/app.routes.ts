@@ -1,24 +1,24 @@
 import { Routes } from '@angular/router';
-import { authGuard, guestGuard } from './core/auth/auth-guard';
+import { authGuard, guestGuard } from '@core/auth/auth-guard';
 
 /** Titles are translation keys (see TranslatedTitleStrategy). */
 export const routes: Routes = [
   {
     path: '',
-    loadComponent: () => import('./features/home/home').then((m) => m.Home),
+    loadComponent: () => import('@features/home/home').then((m) => m.Home),
     title: 'titles.home',
   },
   {
     path: 'login',
     canActivate: [guestGuard],
-    loadComponent: () => import('./features/auth/auth-page').then((m) => m.AuthPage),
+    loadComponent: () => import('@features/auth/auth-page').then((m) => m.AuthPage),
     data: { mode: 'login' },
     title: 'titles.login',
   },
   {
     path: 'register',
     canActivate: [guestGuard],
-    loadComponent: () => import('./features/auth/auth-page').then((m) => m.AuthPage),
+    loadComponent: () => import('@features/auth/auth-page').then((m) => m.AuthPage),
     data: { mode: 'register' },
     title: 'titles.register',
   },
@@ -26,7 +26,7 @@ export const routes: Routes = [
     path: 'profile',
     // Without a session, the login page, which comes back here afterwards
     canActivate: [authGuard],
-    loadComponent: () => import('./features/profile/profile').then((m) => m.Profile),
+    loadComponent: () => import('@features/profile/profile').then((m) => m.Profile),
     title: 'titles.profile',
   },
   {
@@ -34,28 +34,28 @@ export const routes: Routes = [
     path: 'notifications',
     canActivate: [authGuard],
     loadComponent: () =>
-      import('./features/notifications/notification-settings').then((m) => m.NotificationSettings),
+      import('@features/notifications/notification-settings').then((m) => m.NotificationSettings),
     title: 'titles.notifications',
   },
   {
     // Saved alerts (HU-036)
     path: 'notifications/alerts',
     canActivate: [authGuard],
-    loadComponent: () => import('./features/notifications/saved-alerts').then((m) => m.SavedAlerts),
+    loadComponent: () => import('@features/notifications/saved-alerts').then((m) => m.SavedAlerts),
     title: 'titles.alerts',
   },
   {
     // Following people (HU-047): my followers, the people I follow and the requests
     path: 'network',
     canActivate: [authGuard],
-    loadComponent: () => import('./features/social/network').then((m) => m.Network),
+    loadComponent: () => import('@features/social/network').then((m) => m.Network),
     title: 'titles.network',
   },
   {
     // What the people I follow do in the plans (HU-051)
     path: 'feed',
     canActivate: [authGuard],
-    loadComponent: () => import('./features/social/feed').then((m) => m.Feed),
+    loadComponent: () => import('@features/social/feed').then((m) => m.Feed),
     title: 'titles.feed',
   },
   {
@@ -63,40 +63,40 @@ export const routes: Routes = [
     path: 'reputation',
     canActivate: [authGuard],
     loadComponent: () =>
-      import('./features/reputation/reputation-page').then((m) => m.ReputationPage),
+      import('@features/reputation/reputation-page').then((m) => m.ReputationPage),
     title: 'titles.reputation',
   },
   {
     // Someone as I see them, to follow them (HU-047)
     path: 'people/:id',
     canActivate: [authGuard],
-    loadComponent: () => import('./features/social/person-page').then((m) => m.PersonPage),
+    loadComponent: () => import('@features/social/person-page').then((m) => m.PersonPage),
     title: 'titles.person',
   },
   {
     path: 'plans/new',
     canActivate: [authGuard],
-    loadComponent: () => import('./features/plans/publish-plan').then((m) => m.PublishPlan),
+    loadComponent: () => import('@features/plans/publish-plan').then((m) => m.PublishPlan),
     title: 'titles.newPlan',
   },
   {
     // Before plans/:id, which would otherwise take "nearby" as an id
     path: 'plans/nearby',
     canActivate: [authGuard],
-    loadComponent: () => import('./features/plans/nearby-plans').then((m) => m.NearbyPlans),
+    loadComponent: () => import('@features/plans/nearby-plans').then((m) => m.NearbyPlans),
     title: 'titles.nearby',
   },
   {
     // The chat of a plan (HU-008): only for its organizer and participants, which the service checks
     path: 'plans/:id/chat',
     canActivate: [authGuard],
-    loadComponent: () => import('./features/plans/plan-chat').then((m) => m.PlanChat),
+    loadComponent: () => import('@features/plans/plan-chat').then((m) => m.PlanChat),
     title: 'titles.chat',
   },
   {
     // Public: a shared link opens it without a session (HU-024)
     path: 'plans/:id',
-    loadComponent: () => import('./features/plans/plan-detail').then((m) => m.PlanDetail),
+    loadComponent: () => import('@features/plans/plan-detail').then((m) => m.PlanDetail),
     title: 'titles.plan',
   },
   { path: '**', redirectTo: '' },

@@ -4,11 +4,11 @@ import { Router } from '@angular/router';
 import { TranslocoService } from '@jsverse/transloco';
 import { MessageService } from 'primeng/api';
 import { Toast } from 'primeng/toast';
-import { Language } from '../../core/i18n/language';
-import { UserEvents } from '../../core/realtime/user-events';
-import { activityKey } from '../../shared/model/activities';
-import { PlanNearbyNotice } from '../../shared/model/notifications';
-import { clockTime, spotsKey } from '../../shared/time/plan-time';
+import { Language } from '@core/i18n/language';
+import { UserEvents } from '@core/realtime/user-events';
+import { activityKey } from '@shared/model/activities';
+import { PlanNearbyNotice } from '@shared/model/notifications';
+import { clockTime, spotsKey } from '@shared/time/plan-time';
 
 /**
  * Toasts of the personal events: someone joined or left one of my plans, a spot I was waiting for is mine, a plan I

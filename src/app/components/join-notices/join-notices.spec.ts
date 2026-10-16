@@ -2,10 +2,10 @@ import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
 import { Subject } from 'rxjs';
-import { translocoTesting } from '../../../testing/transloco-testing';
-import { UserEvents } from '../../core/realtime/user-events';
-import { PlanNearbyNotice } from '../../shared/model/notifications';
-import { BadgeEarnedNotice } from '../../shared/model/reputation';
+import { translocoTesting } from '@testing/transloco-testing';
+import { UserEvents } from '@core/realtime/user-events';
+import { PlanNearbyNotice } from '@shared/model/notifications';
+import { BadgeEarnedNotice } from '@shared/model/reputation';
 import {
   PlanJoinedNotice,
   PlanLeftNotice,
@@ -14,7 +14,7 @@ import {
   PlanCheckInNotice,
   PlanReminderNotice,
   SpotFreedNotice,
-} from '../../shared/model/published-plan';
+} from '@shared/model/published-plan';
 import { JoinNotices } from './join-notices';
 
 describe('JoinNotices', () => {

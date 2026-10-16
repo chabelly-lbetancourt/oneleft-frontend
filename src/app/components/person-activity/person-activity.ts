@@ -5,16 +5,16 @@ import { TranslocoPipe } from '@jsverse/transloco';
 import { Button } from 'primeng/button';
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from 'primeng/tabs';
 import { catchError, forkJoin, map, Observable, of, switchMap } from 'rxjs';
-import { PhotosApi } from '../../core/api/photos-api';
-import { PlansApi } from '../../core/api/plans-api';
-import { SocialApi } from '../../core/api/social-api';
-import { Language } from '../../core/i18n/language';
-import { activityKey, activityOf } from '../../shared/model/activities';
-import { photoMap } from '../../shared/model/photo';
-import { RecentPlan } from '../../shared/model/published-plan';
-import { ConnectionPage, PersonList } from '../../shared/model/social';
-import { IconTile } from '../icon-tile/icon-tile';
-import { PersonAvatar } from '../person-avatar/person-avatar';
+import { PhotosApi } from '@core/api/photos-api';
+import { PlansApi } from '@core/api/plans-api';
+import { SocialApi } from '@core/api/social-api';
+import { Language } from '@core/i18n/language';
+import { activityKey, activityOf } from '@shared/model/activities';
+import { photoMap } from '@shared/model/photo';
+import { RecentPlan } from '@shared/model/published-plan';
+import { ConnectionPage, PersonList } from '@shared/model/social';
+import { IconTile } from '@components/icon-tile/icon-tile';
+import { PersonAvatar } from '@components/person-avatar/person-avatar';
 
 type ActivityTab = 'plans' | PersonList;
 

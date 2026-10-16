@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { filter, map, Observable } from 'rxjs';
-import { Session } from '../auth/session';
+import { Session } from '@core/auth/session';
 import { SseParser } from './sse-parser';
 
 /** An event of the stream: its name and its data, parsed as JSON. */

@@ -41,17 +41,27 @@ npm run e2e                       # usa ng serve si está en marcha; si no, sirv
 ## Organización
 
 ```
-src/app/
-├── core/
-│   ├── api/        clientes de los servicios users y plans (a través del gateway)
-│   ├── auth/       OpenID Connect con Keycloak (PKCE) y sesión como signals
-│   ├── geo/        ubicación aproximada: se redondea antes de salir del dispositivo
-│   ├── i18n/       idioma activo, cargador de traducciones, títulos y errores de la API traducidos
-│   └── theme/      tema de PrimeNG con el naranja de marca
-├── features/       una carpeta por funcionalidad: home, plans (publicar, detalle), profile
-└── shared/         modelos, reglas de tiempo de los planes y componentes (selector de idioma)
-public/i18n/        traducciones es.json y en.json
+src/app/                 alias
+├── core/                @core/…        servicios de toda la app
+│   ├── api/             clientes de los servicios a través del gateway
+│   ├── auth/            OpenID Connect con Keycloak (PKCE) y sesión como signals
+│   ├── geo/             ubicación aproximada: se redondea antes de salir del dispositivo
+│   ├── i18n/            idioma activo, cargador de traducciones, títulos y errores de la API traducidos
+│   ├── photos/ push/    fotos de perfil y avisos Web Push
+│   ├── realtime/        streams SSE y WebSocket del chat
+│   └── theme/           tema de PrimeNG con el naranja de marca
+├── components/          @components/…  un componente reutilizable por carpeta (.ts, .html y .scss)
+├── features/            @features/…    las páginas, una carpeta por funcionalidad
+├── layout/              @layout/…      cabeceras, barras y layouts de las páginas
+└── shared/              @shared/…      modelos y utilidades sin estado
+src/environments/        @env/…         configuración de cada entorno
+src/testing/             @testing/…     ayudas de los tests unitarios
+public/i18n/                            traducciones es.json y en.json
 ```
+
+**Imports:** el código de otra carpeta se importa con su alias, definido en `tsconfig.json`
+(`import { SocialApi } from '@core/api/social-api'`); solo los ficheros de la misma carpeta usan `./`. ESLint rechaza
+los imports con `../` dentro de `src/app`.
 
 | Ruta | Pantalla | Sesión |
 |---|---|---|

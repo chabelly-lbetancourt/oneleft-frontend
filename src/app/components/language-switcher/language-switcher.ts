@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { Button } from 'primeng/button';
-import { Language } from '../../core/i18n/language';
+import { Language } from '@core/i18n/language';
 
 /** Switches between Spanish and English; it shows the language it switches to. */
 @Component({

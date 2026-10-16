@@ -1,8 +1,8 @@
 import { effect, inject, Injectable, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
-import { PhotosApi } from '../api/photos-api';
-import { Session } from '../auth/session';
-import { squarePhoto } from '../../shared/image/square-photo';
+import { PhotosApi } from '@core/api/photos-api';
+import { Session } from '@core/auth/session';
+import { squarePhoto } from '@shared/image/square-photo';
 
 /**
  * My profile photo (HU-020), the same one in the header and in my profile. Changing it crops and resizes the photo

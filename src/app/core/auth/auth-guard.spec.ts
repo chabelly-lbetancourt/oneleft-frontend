@@ -6,7 +6,7 @@ import {
   RouterStateSnapshot,
   UrlTree,
 } from '@angular/router';
-import { FakeSession } from '../../../testing/fake-session';
+import { FakeSession } from '@testing/fake-session';
 import { authGuard, guestGuard } from './auth-guard';
 import { Session } from './session';
 
