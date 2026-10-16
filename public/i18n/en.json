@@ -22,7 +22,8 @@
     "chat": "OneLeft · Plan chat",
     "network": "My network",
     "person": "Person",
-    "reputation": "My reputation"
+    "reputation": "My reputation",
+    "feed": "OneLeft · Your network’s activity"
   },
   "auth": {
     "login": "Sign in",
@@ -75,6 +76,10 @@
     "inMinutes": "in {{minutes}} min",
     "inHours": "in {{hours}} h",
     "inHoursMinutes": "in {{hours}} h {{minutes}} min",
+    "justNow": "just now",
+    "minutesAgo": "{{minutes}} min ago",
+    "hoursAgo": "{{hours}} h ago",
+    "daysAgo": "{{days}} d ago",
     "at": "At {{time}}"
   },
   "home": {
@@ -84,6 +89,8 @@
     "nearby": "Plans near you right now",
     "publish": "Publish a plan",
     "nearbyHint": "See the plans starting soon near you, in a list or on the map.",
+    "feed": "Your network’s activity",
+    "feedHint": "See which plans the people you follow publish, join and complete.",
     "kicker": "Plans for right now, near you",
     "demoTitle": "Padel in Vallecas",
     "demoWhen": "Today · 7:30 pm",
@@ -231,6 +238,21 @@
     "privateActivity": "{{name}}'s profile is private: only their followers see their plans and their network.",
     "activityError": "It could not be loaded. Please try again.",
     "loadingActivity": "Loading…"
+  },
+  "feed": {
+    "title": "Your network’s activity",
+    "intro": "What the people you follow do in the plans. Open a plan to join it.",
+    "PUBLISHED": "published a plan",
+    "JOINED": "joined a plan",
+    "COMPLETED": "completed a plan",
+    "newActivity": "New: {{name}} {{what}}",
+    "more": "See more",
+    "loading": "Loading your network’s activity…",
+    "loadError": "Your network’s activity could not be loaded. Try again in a while.",
+    "moreError": "More activity could not be loaded. Try again.",
+    "empty": "No activity yet. Follow the people you meet in plans and you will see here when they publish one, join one or complete it. If their profile is private, they will show up once they accept you.",
+    "findPlans": "See nearby plans",
+    "myNetwork": "My network"
   },
   "reputation": {
     "title": "My reputation",

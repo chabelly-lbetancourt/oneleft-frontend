@@ -22,7 +22,8 @@
     "chat": "OneLeft · Chat del plan",
     "network": "Mi red",
     "person": "Persona",
-    "reputation": "Mi reputación"
+    "reputation": "Mi reputación",
+    "feed": "OneLeft · Actividad de tu red"
   },
   "auth": {
     "login": "Entrar",
@@ -75,6 +76,10 @@
     "inMinutes": "en {{minutes}} min",
     "inHours": "en {{hours}} h",
     "inHoursMinutes": "en {{hours}} h {{minutes}} min",
+    "justNow": "ahora mismo",
+    "minutesAgo": "hace {{minutes}} min",
+    "hoursAgo": "hace {{hours}} h",
+    "daysAgo": "hace {{days}} d",
     "at": "A las {{time}}"
   },
   "home": {
@@ -84,6 +89,8 @@
     "nearby": "Planes cerca de ti ahora",
     "publish": "Publicar un plan",
     "nearbyHint": "Mira en una lista o en el mapa los planes que empiezan pronto cerca de ti.",
+    "feed": "Actividad de tu red",
+    "feedHint": "Mira qué planes publican, a cuáles se apuntan y cuáles completan las personas que sigues.",
     "kicker": "Planes para ya, cerca de ti",
     "demoTitle": "Pádel en Vallecas",
     "demoWhen": "Hoy · 19:30",
@@ -231,6 +238,21 @@
     "privateActivity": "El perfil de {{name}} es privado: solo quienes le siguen ven sus planes y su red.",
     "activityError": "No se ha podido cargar. Inténtalo de nuevo.",
     "loadingActivity": "Cargando…"
+  },
+  "feed": {
+    "title": "Actividad de tu red",
+    "intro": "Lo que hacen en los planes las personas que sigues. Abre un plan para apuntarte.",
+    "PUBLISHED": "ha publicado un plan",
+    "JOINED": "se ha apuntado a un plan",
+    "COMPLETED": "ha completado un plan",
+    "newActivity": "Novedad: {{name}} {{what}}",
+    "more": "Ver más",
+    "loading": "Cargando la actividad de tu red…",
+    "loadError": "No se ha podido cargar la actividad de tu red. Inténtalo de nuevo en un rato.",
+    "moreError": "No se ha podido cargar más actividad. Inténtalo de nuevo.",
+    "empty": "Aún no hay actividad. Sigue a la gente con la que coincides en los planes y aquí verás cuándo publican uno, se apuntan o lo completan. Si su perfil es privado, aparecerán cuando te acepten.",
+    "findPlans": "Ver planes cerca",
+    "myNetwork": "Mi red"
   },
   "reputation": {
     "title": "Mi reputación",

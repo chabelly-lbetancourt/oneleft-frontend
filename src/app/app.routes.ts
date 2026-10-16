@@ -52,6 +52,13 @@ export const routes: Routes = [
     title: 'titles.network',
   },
   {
+    // What the people I follow do in the plans (HU-051)
+    path: 'feed',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/social/feed').then((m) => m.Feed),
+    title: 'titles.feed',
+  },
+  {
     // My reputation and why it went up or down (HU-009)
     path: 'reputation',
     canActivate: [authGuard],

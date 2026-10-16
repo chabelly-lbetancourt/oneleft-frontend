@@ -54,4 +54,11 @@ describe('SocialApi', () => {
     api.list('sent', 0, 5).subscribe();
     http.expectOne(`${base}/me/requests/sent?page=0&size=5`).flush({ items: [] });
   });
+
+  it('should page my feed', () => {
+    api.feed().subscribe();
+    http.expectOne({ method: 'GET', url: `${base}/me/feed?page=0&size=20` }).flush({ items: [] });
+    api.feed(2, 10).subscribe();
+    http.expectOne(`${base}/me/feed?page=2&size=10`).flush({ items: [] });
+  });
 });
