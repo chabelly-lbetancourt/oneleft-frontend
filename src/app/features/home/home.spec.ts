@@ -67,6 +67,9 @@ describe('Home', () => {
     const entry = element.querySelector('.nearby-entry');
     expect(entry?.getAttribute('href')).toBe('/plans/nearby');
     expect(entry?.textContent).toContain('Planes cerca de ti ahora');
+    const feed = element.querySelector('.feed-entry');
+    expect(feed?.getAttribute('href')).toBe('/feed');
+    expect(feed?.textContent).toContain('Actividad de tu red');
   });
 
   it('should lead to the login and registration pages without a session', () => {

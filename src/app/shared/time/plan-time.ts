@@ -45,6 +45,21 @@ export const startsIn = (startsAt: Date, now: Date): RelativeTime => {
     : { key: 'time.inHoursMinutes', params: { hours, minutes: rest } };
 };
 
+/** How long ago something happened: "just now", "5 min ago", "2 h ago" or "3 days ago" (keys under time.*). */
+export const happenedAgo = (at: Date, now: Date): RelativeTime => {
+  const minutes = Math.round((now.getTime() - at.getTime()) / MINUTE);
+  if (minutes < 1) {
+    return { key: 'time.justNow', params: {} };
+  }
+  if (minutes < 60) {
+    return { key: 'time.minutesAgo', params: { minutes } };
+  }
+  const hours = Math.floor(minutes / 60);
+  return hours < 24
+    ? { key: 'time.hoursAgo', params: { hours } }
+    : { key: 'time.daysAgo', params: { days: Math.floor(hours / 24) } };
+};
+
 /** Local time in 24-hour format in the given locale, for example "18:30". */
 export const clockTime = (date: Date, locale = 'es-ES'): string =>
   date.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit', hour12: false });
