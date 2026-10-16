@@ -320,7 +320,11 @@ export class PublishPlan implements OnInit {
       })
       .subscribe({
         next: (plan) =>
-          this.router.navigate(['/plans', plan.id], { queryParams: { published: 1 } }),
+          this.router.navigate(['/plans', plan.id], {
+            queryParams: { published: 1 },
+            // Going back from the published plan does not open the form again
+            replaceUrl: true,
+          }),
         error: (error) => {
           this.publishing.set(false);
           this.error.set(apiErrorMessage(this.transloco, error, 'errors.publishFailed'));

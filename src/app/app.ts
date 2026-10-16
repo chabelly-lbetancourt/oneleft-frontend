@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { JoinNotices } from '@components/join-notices/join-notices';
+import { BackNavigation } from '@core/navigation/back-navigation';
 import { RouteProgress } from '@components/route-progress/route-progress';
 
 @Component({
@@ -15,4 +16,7 @@ import { RouteProgress } from '@components/route-progress/route-progress';
     <router-outlet />
   `,
 })
-export class App {}
+export class App {
+  // From the first navigation on, to know which screen of the app is behind each page
+  private readonly backNavigation = inject(BackNavigation);
+}

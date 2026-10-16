@@ -1,14 +1,25 @@
-import { Component, input } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Component, inject, input } from '@angular/core';
 import { TranslocoPipe } from '@jsverse/transloco';
+import { BackNavigation } from '@core/navigation/back-navigation';
 
-/** Header of the inner pages: back to home, the title and optional actions (projected content). */
+/**
+ * Header of the inner pages: back to the previous screen of the app (or to {@link fallback} when there is none), the
+ * title and optional actions (projected content).
+ */
 @Component({
   selector: 'app-page-header',
-  imports: [RouterLink, TranslocoPipe],
+  imports: [TranslocoPipe],
   templateUrl: './page-header.html',
   styleUrl: './page-header.scss',
 })
 export class PageHeader {
+  private readonly navigation = inject(BackNavigation);
+
   readonly title = input.required<string>();
+  /** Where back goes when the page was opened directly */
+  readonly fallback = input('/');
+
+  protected back(): void {
+    this.navigation.back(this.fallback());
+  }
 }
