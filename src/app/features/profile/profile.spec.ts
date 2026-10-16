@@ -3,17 +3,17 @@ import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { of, throwError } from 'rxjs';
-import { FakeSession } from '../../../testing/fake-session';
-import { UsersApi } from '../../core/api/users-api';
-import { Session } from '../../core/auth/session';
-import { ApproximateLocation, LocationError } from '../../core/geo/approximate-location';
-import { MyPhoto } from '../../core/photos/my-photo';
-import { PhotoFileError } from '../../shared/image/square-photo';
-import { Catalog, MyProfile } from '../../shared/model/profile';
+import { FakeSession } from '@testing/fake-session';
+import { UsersApi } from '@core/api/users-api';
+import { Session } from '@core/auth/session';
+import { ApproximateLocation, LocationError } from '@core/geo/approximate-location';
+import { MyPhoto } from '@core/photos/my-photo';
+import { PhotoFileError } from '@shared/image/square-photo';
+import { Catalog, MyProfile } from '@shared/model/profile';
 import { TranslocoService } from '@jsverse/transloco';
 import { Profile } from './profile';
-import { translocoTesting } from '../../../testing/transloco-testing';
-import { ReputationApi } from '../../core/api/reputation-api';
+import { translocoTesting } from '@testing/transloco-testing';
+import { ReputationApi } from '@core/api/reputation-api';
 
 const CATALOG: Catalog = {
   activities: ['PADEL', 'CINEMA', 'RUNNING'],

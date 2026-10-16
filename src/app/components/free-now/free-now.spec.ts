@@ -1,10 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of, Subject, throwError } from 'rxjs';
-import { translocoTesting } from '../../../testing/transloco-testing';
-import { PlansApi } from '../../core/api/plans-api';
-import { UsersApi } from '../../core/api/users-api';
-import { ApproximateLocation } from '../../core/geo/approximate-location';
-import { Availability } from '../../shared/model/published-plan';
+import { translocoTesting } from '@testing/transloco-testing';
+import { PlansApi } from '@core/api/plans-api';
+import { UsersApi } from '@core/api/users-api';
+import { ApproximateLocation } from '@core/geo/approximate-location';
+import { Availability } from '@shared/model/published-plan';
 import { FreeNow } from './free-now';
 
 const FREE: Availability = {

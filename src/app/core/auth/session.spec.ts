@@ -3,8 +3,8 @@ import { TestBed } from '@angular/core/testing';
 import { NavigationEnd, Router } from '@angular/router';
 import { OidcSecurityService } from 'angular-auth-oidc-client';
 import { of, Subject } from 'rxjs';
-import { Language } from '../i18n/language';
-import { NativePlatform } from '../platform';
+import { Language } from '@core/i18n/language';
+import { NativePlatform } from '@core/platform';
 import { Session } from './session';
 
 describe('Session', () => {

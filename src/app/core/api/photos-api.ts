@@ -1,8 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { environment } from '../../../environments/environment';
-import { PersonPhoto, PhotoUpload } from '../../shared/model/photo';
+import { environment } from '@env/environment';
+import { PersonPhoto, PhotoUpload } from '@shared/model/photo';
 
 /**
  * Profile photos through the users service (HU-020). The photo itself goes straight to the storage with the signed

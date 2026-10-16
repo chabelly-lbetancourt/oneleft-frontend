@@ -1,5 +1,5 @@
 import { Component, input } from '@angular/core';
-import { PageHeader } from '../page-header/page-header';
+import { PageHeader } from '@layout/page-header/page-header';
 
 /**
  * Layout of the inner pages: the header with back, the title and the actions (elements marked pageActions), the

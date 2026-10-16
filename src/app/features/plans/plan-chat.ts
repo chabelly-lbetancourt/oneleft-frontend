@@ -18,22 +18,22 @@ import { Button } from 'primeng/button';
 import { InputText } from 'primeng/inputtext';
 import { Message } from 'primeng/message';
 import { catchError, of } from 'rxjs';
-import { ChatApi } from '../../core/api/chat-api';
-import { PlansApi } from '../../core/api/plans-api';
-import { Session } from '../../core/auth/session';
-import { Language } from '../../core/i18n/language';
-import { ChatConnection, ChatSocket } from '../../core/realtime/chat-socket';
-import { CardSkeleton } from '../../components/card-skeleton/card-skeleton';
-import { BottomBar } from '../../layout/bottom-bar/bottom-bar';
-import { PageLayout } from '../../layout/page-layout/page-layout';
+import { ChatApi } from '@core/api/chat-api';
+import { PlansApi } from '@core/api/plans-api';
+import { Session } from '@core/auth/session';
+import { Language } from '@core/i18n/language';
+import { ChatConnection, ChatSocket } from '@core/realtime/chat-socket';
+import { CardSkeleton } from '@components/card-skeleton/card-skeleton';
+import { BottomBar } from '@layout/bottom-bar/bottom-bar';
+import { PageLayout } from '@layout/page-layout/page-layout';
 import {
   CHAT_MAX_LENGTH,
   CHAT_PAGE,
   ChatEvent,
   ChatHistory,
   ChatMessage,
-} from '../../shared/model/chat';
-import { clockTime } from '../../shared/time/plan-time';
+} from '@shared/model/chat';
+import { clockTime } from '@shared/time/plan-time';
 
 /**
  * The chat of a plan (HU-008), for its organizer and participants: the history, the messages in real time through the

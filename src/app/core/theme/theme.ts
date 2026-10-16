@@ -1,5 +1,5 @@
 import { computed, DestroyRef, DOCUMENT, inject, Injectable, signal } from '@angular/core';
-import { NativePlatform } from '../platform';
+import { NativePlatform } from '@core/platform';
 
 export type ThemeMode = 'system' | 'light' | 'dark';
 export const THEME_MODES: readonly ThemeMode[] = ['system', 'light', 'dark'];

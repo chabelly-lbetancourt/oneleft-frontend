@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { JoinNotices } from './components/join-notices/join-notices';
-import { RouteProgress } from './components/route-progress/route-progress';
+import { JoinNotices } from '@components/join-notices/join-notices';
+import { RouteProgress } from '@components/route-progress/route-progress';
 
 @Component({
   imports: [RouterOutlet, JoinNotices, RouteProgress],

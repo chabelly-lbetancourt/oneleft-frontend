@@ -11,10 +11,10 @@ import {
 import { Router } from '@angular/router';
 import { TranslocoService } from '@jsverse/transloco';
 import * as L from 'leaflet';
-import { Coordinates } from '../../core/geo/approximate-location';
-import { Language } from '../../core/i18n/language';
-import { formatDistance } from '../../shared/geo/distance';
-import { NearbyPlan } from '../../shared/model/nearby';
+import { Coordinates } from '@core/geo/approximate-location';
+import { Language } from '@core/i18n/language';
+import { formatDistance } from '@shared/geo/distance';
+import { NearbyPlan } from '@shared/model/nearby';
 
 /** Brand orange (Tailwind orange-600), the primary colour of the PrimeNG preset. */
 const BRAND = '#ea580c';

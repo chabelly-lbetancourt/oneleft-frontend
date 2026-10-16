@@ -8,27 +8,27 @@ import { Button } from 'primeng/button';
 import { Message } from 'primeng/message';
 import { MultiSelect } from 'primeng/multiselect';
 import { SelectButton } from 'primeng/selectbutton';
-import { PlansApi } from '../../core/api/plans-api';
-import { PhotosApi } from '../../core/api/photos-api';
-import { ReputationApi } from '../../core/api/reputation-api';
+import { PlansApi } from '@core/api/plans-api';
+import { PhotosApi } from '@core/api/photos-api';
+import { ReputationApi } from '@core/api/reputation-api';
 import {
   ApproximateLocation,
   Coordinates,
   LocationError,
   MEETING_POINT_DECIMALS,
-} from '../../core/geo/approximate-location';
-import { EmptyState } from '../../components/empty-state/empty-state';
-import { PlanTicketSkeleton } from '../../components/plan-ticket-skeleton/plan-ticket-skeleton';
-import { PlanTicket } from '../../components/plan-ticket/plan-ticket';
-import { Language } from '../../core/i18n/language';
-import { NearbyStream } from '../../core/realtime/nearby-stream';
-import { formatDistance } from '../../shared/geo/distance';
-import { ACTIVITIES, activityKey } from '../../shared/model/activities';
-import { BottomBar } from '../../layout/bottom-bar/bottom-bar';
-import { PageLayout } from '../../layout/page-layout/page-layout';
-import { NearbyPlan, NearbyPlanEvent, nearbyParams, NearbyQuery } from '../../shared/model/nearby';
-import { PersonPhoto, photoMap } from '../../shared/model/photo';
-import { Reputation } from '../../shared/model/reputation';
+} from '@core/geo/approximate-location';
+import { EmptyState } from '@components/empty-state/empty-state';
+import { PlanTicketSkeleton } from '@components/plan-ticket-skeleton/plan-ticket-skeleton';
+import { PlanTicket } from '@components/plan-ticket/plan-ticket';
+import { Language } from '@core/i18n/language';
+import { NearbyStream } from '@core/realtime/nearby-stream';
+import { formatDistance } from '@shared/geo/distance';
+import { ACTIVITIES, activityKey } from '@shared/model/activities';
+import { BottomBar } from '@layout/bottom-bar/bottom-bar';
+import { PageLayout } from '@layout/page-layout/page-layout';
+import { NearbyPlan, NearbyPlanEvent, nearbyParams, NearbyQuery } from '@shared/model/nearby';
+import { PersonPhoto, photoMap } from '@shared/model/photo';
+import { Reputation } from '@shared/model/reputation';
 import { NearbyMap } from './nearby-map';
 
 export const RADIUS_OPTIONS = [1000, 3000, 5000, 10000];

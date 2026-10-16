@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { URLOpenListenerEvent } from '@capacitor/app';
 import { OidcSecurityService } from 'angular-auth-oidc-client';
 import { firstValueFrom } from 'rxjs';
-import { NATIVE_AUTH_CALLBACK, NativePlatform } from '../platform';
+import { NATIVE_AUTH_CALLBACK, NativePlatform } from '@core/platform';
 
 /**
  * Completes the sign-in in the Android app: Keycloak opens oneleft://callback?code=…&state=…, the app closes the

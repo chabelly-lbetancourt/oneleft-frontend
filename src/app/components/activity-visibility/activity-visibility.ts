@@ -3,8 +3,8 @@ import { FormsModule } from '@angular/forms';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { Message } from 'primeng/message';
 import { ToggleSwitch } from 'primeng/toggleswitch';
-import { SocialApi } from '../../core/api/social-api';
-import { ApiErrorMessage, apiErrorMessage } from '../../core/i18n/api-error';
+import { SocialApi } from '@core/api/social-api';
+import { ApiErrorMessage, apiErrorMessage } from '@core/i18n/api-error';
 
 /**
  * Whether one of my plans shows in my activity (HU-059): my followers see in their feeds that I published, joined or

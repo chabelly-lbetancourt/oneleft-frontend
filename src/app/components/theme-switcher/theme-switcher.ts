@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { Button } from 'primeng/button';
-import { Theme } from '../../core/theme/theme';
+import { Theme } from '@core/theme/theme';
 
 /** Switches between the light and the dark theme (HU-032); the icon shows the theme it switches to. */
 @Component({

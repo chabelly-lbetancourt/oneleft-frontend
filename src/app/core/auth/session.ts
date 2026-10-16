@@ -2,8 +2,8 @@ import { computed, inject, Injectable } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { OidcSecurityService } from 'angular-auth-oidc-client';
 import { filter, firstValueFrom } from 'rxjs';
-import { Language } from '../i18n/language';
-import { NativePlatform } from '../platform';
+import { Language } from '@core/i18n/language';
+import { NativePlatform } from '@core/platform';
 
 const RETURN_URL_KEY = 'oneleft.returnUrl';
 

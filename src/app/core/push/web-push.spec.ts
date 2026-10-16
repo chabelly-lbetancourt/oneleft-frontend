@@ -1,9 +1,9 @@
 import { TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { signal } from '@angular/core';
-import { NotificationsApi } from '../api/notifications-api';
-import { Language } from '../i18n/language';
-import { NativePlatform } from '../platform';
+import { NotificationsApi } from '@core/api/notifications-api';
+import { Language } from '@core/i18n/language';
+import { NativePlatform } from '@core/platform';
 import { applicationServerKey, PUSH_WORKER, WebPush } from './web-push';
 
 /** The Push API of a browser, enough for the tests. */

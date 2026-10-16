@@ -1,8 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { environment } from '../../../environments/environment';
-import { FeedPage } from '../../shared/model/feed';
+import { environment } from '@env/environment';
+import { FeedPage } from '@shared/model/feed';
 import {
   Connection,
   ConnectionPage,
@@ -13,7 +13,7 @@ import {
   SocialAccount,
   SocialPerson,
   Visibility,
-} from '../../shared/model/social';
+} from '@shared/model/social';
 
 /** Paths of my lists under /me. */
 const LISTS: Record<NetworkList, string> = {

@@ -2,15 +2,15 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { Observable, of, throwError } from 'rxjs';
-import { translocoTesting } from '../../../testing/transloco-testing';
-import { PhotosApi } from '../../core/api/photos-api';
-import { PlansApi } from '../../core/api/plans-api';
-import { ReputationApi } from '../../core/api/reputation-api';
-import { SocialApi } from '../../core/api/social-api';
-import { UsersApi } from '../../core/api/users-api';
-import { PersonPhoto } from '../../shared/model/photo';
-import { PublicProfile } from '../../shared/model/profile';
-import { Connection, ConnectionPage, SocialPerson } from '../../shared/model/social';
+import { translocoTesting } from '@testing/transloco-testing';
+import { PhotosApi } from '@core/api/photos-api';
+import { PlansApi } from '@core/api/plans-api';
+import { ReputationApi } from '@core/api/reputation-api';
+import { SocialApi } from '@core/api/social-api';
+import { UsersApi } from '@core/api/users-api';
+import { PersonPhoto } from '@shared/model/photo';
+import { PublicProfile } from '@shared/model/profile';
+import { Connection, ConnectionPage, SocialPerson } from '@shared/model/social';
 import { PersonPage } from './person-page';
 
 const ANA: SocialPerson = {

@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
-import { translocoTesting } from '../../../testing/transloco-testing';
-import { Plan } from '../../shared/model/published-plan';
+import { translocoTesting } from '@testing/transloco-testing';
+import { Plan } from '@shared/model/published-plan';
 import { PlanTicket } from './plan-ticket';
 
 describe('PlanTicket', () => {
