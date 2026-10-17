@@ -137,6 +137,10 @@ La app de Android es la misma compilación de Angular empaquetada con **Capacito
   porque Google no permite iniciar sesión en uno. Keycloak vuelve a la app por el *deep link* `oneleft://callback`.
 - **Compartir** abre la hoja nativa de Android (`@capacitor/share`); el WebView no tiene Web Share API.
 - La sesión se guarda en `localStorage` para que sobreviva al cerrar la app.
+- **Menú inferior** (HU-072, [`layout/tab-bar`](src/app/layout/tab-bar)): Inicio, Cerca, Publicar (en el centro),
+  Actividad y Perfil, por encima de la barra de navegación del sistema. Solo con sesión, y se oculta en el chat, al
+  publicar y al iniciar sesión; publicar deja de ser la barra fija del inicio y de «Planes cerca». La web sigue con su
+  cabecera.
 
 Requisitos: Android Studio (o el SDK de Android con `ANDROID_HOME`) y Java 21.
 

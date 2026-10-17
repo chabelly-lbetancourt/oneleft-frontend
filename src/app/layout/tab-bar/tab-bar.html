@@ -1,0 +1,21 @@
+@if (visible()) {
+  <nav class="tab-bar" [attr.aria-label]="'tabs.label' | transloco">
+    <ul class="tab-bar__list">
+      @for (tab of tabs; track tab.path) {
+        <li class="tab-bar__item">
+          <a
+            class="tab"
+            [class.tab--primary]="tab.primary"
+            [routerLink]="tab.path"
+            routerLinkActive="tab--active"
+            ariaCurrentWhenActive="page"
+            [routerLinkActiveOptions]="{ exact: !!tab.exact }"
+          >
+            <span class="tab__icon"><i class="pi {{ tab.icon }}" aria-hidden="true"></i></span>
+            <span class="tab__label">{{ tab.label | transloco }}</span>
+          </a>
+        </li>
+      }
+    </ul>
+  </nav>
+}

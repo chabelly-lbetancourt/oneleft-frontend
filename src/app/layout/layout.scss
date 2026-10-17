@@ -20,6 +20,11 @@
   }
 }
 
+// Android app with the menu at the bottom (HU-072): the end of the page stays above it
+:host-context(.has-tab-bar) {
+  padding-bottom: $tab-bar-height;
+}
+
 .layout__content {
   @include container;
   flex: 1;

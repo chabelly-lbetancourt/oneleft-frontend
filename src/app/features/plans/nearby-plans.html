@@ -1,4 +1,4 @@
-<app-page-layout [title]="'nearby.title' | transloco" [withBottomBar]="true" [compact]="true">
+<app-page-layout [title]="'nearby.title' | transloco" [withBottomBar]="!inApp" [compact]="true">
   <p-selectbutton
     pageActions
     class="view-switch"
@@ -142,14 +142,16 @@
     }
   </div>
 
-  <app-bottom-bar>
-    <p-button
-      [label]="'home.publish' | transloco"
-      icon="pi pi-plus"
-      styleClass="button--block"
-      size="large"
-      [rounded]="true"
-      routerLink="/plans/new"
-    />
-  </app-bottom-bar>
+  @if (!inApp) {
+    <app-bottom-bar>
+      <p-button
+        [label]="'home.publish' | transloco"
+        icon="pi pi-plus"
+        styleClass="button--block"
+        size="large"
+        [rounded]="true"
+        routerLink="/plans/new"
+      />
+    </app-bottom-bar>
+  }
 </app-page-layout>
