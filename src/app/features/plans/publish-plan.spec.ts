@@ -78,7 +78,11 @@ describe('PublishPlan', () => {
     const startsIn = new Date(sent.startsAt).getTime() - before;
     expect(startsIn).toBeGreaterThanOrEqual(59 * 60_000);
     expect(startsIn).toBeLessThanOrEqual(61 * 60_000);
-    expect(navigate).toHaveBeenCalledWith(['/plans', 'plan-1'], { queryParams: { published: 1 } });
+    // In place of the form: going back from the plan does not open it again
+    expect(navigate).toHaveBeenCalledWith(['/plans', 'plan-1'], {
+      queryParams: { published: 1 },
+      replaceUrl: true,
+    });
   });
 
   it('should suggest nearby places and fill the meeting point with the chosen one (HU-071)', async () => {

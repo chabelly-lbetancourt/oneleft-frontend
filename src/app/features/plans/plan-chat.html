@@ -1,5 +1,6 @@
 <app-page-layout
   [title]="'chat.title' | transloco"
+  [fallback]="'/plans/' + id()"
   [withBottomBar]="!loading() && !failure() && open()"
 >
   <div class="chat-page">
