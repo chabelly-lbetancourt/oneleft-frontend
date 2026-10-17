@@ -15,6 +15,13 @@
   @include enter(ol-slide-up, 120ms);
 }
 
+// Android app with the menu at the bottom (HU-072): the main action sits on top of it, which already leaves room for
+// the navigation bar of the system
+:host-context(.has-tab-bar) {
+  bottom: calc(#{$tab-bar-height} + #{safe-area(bottom)});
+  padding-bottom: space(4);
+}
+
 .bottom-bar__inner {
   max-width: $container-width;
   margin-inline: auto;

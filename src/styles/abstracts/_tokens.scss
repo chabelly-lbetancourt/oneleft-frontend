@@ -82,6 +82,8 @@ $radii: (
 
 /// Width of the content column of the pages and of the sign-in pages
 $container-width: 48rem;
+/// Height of the menu at the bottom of the Android app (HU-072), without the navigation bar of the system
+$tab-bar-height: 4rem;
 $narrow-width: 28rem;
 
 /// Activity colours: background and text (the tone of each activity in shared/model/activities.ts)

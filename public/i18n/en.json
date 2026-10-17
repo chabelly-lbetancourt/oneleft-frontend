@@ -25,6 +25,14 @@
     "reputation": "My reputation",
     "feed": "OneLeft · Your network’s activity"
   },
+  "tabs": {
+    "label": "Main navigation",
+    "home": "Home",
+    "nearby": "Nearby",
+    "publish": "Publish",
+    "activity": "Activity",
+    "profile": "Profile"
+  },
   "auth": {
     "login": "Sign in",
     "google": "Continue with Google",

@@ -1,0 +1,65 @@
+@use 'abstracts' as *;
+
+// Fixed at the bottom, above the navigation bar of the system
+.tab-bar {
+  position: fixed;
+  inset: auto 0 0;
+  z-index: 15;
+  padding: 0 safe-area(right) safe-area(bottom) safe-area(left);
+  border-top: 1px solid var(--ol-border);
+  background-color: var(--ol-surface);
+}
+
+.tab-bar__list {
+  display: flex;
+  max-width: $container-width;
+  margin-inline: auto;
+}
+
+.tab-bar__item {
+  flex: 1 1 0;
+}
+
+// Each section: an icon over its label, a large target for the thumb
+.tab {
+  @include stack(space(0.5));
+  @include focus-ring;
+  @include pressable(0.94);
+  align-items: center;
+  justify-content: center;
+  min-height: $tab-bar-height;
+  padding-block: space(2);
+  color: var(--ol-text-muted);
+  text-decoration: none;
+  @include transition-colors;
+}
+
+.tab__icon {
+  @include center;
+  @include square(space(7));
+  @include radius(full);
+  @include transition-colors;
+}
+
+.tab__label {
+  @include text(xs);
+  @include weight(semibold);
+}
+
+// The current section: the colour of the brand and a soft background behind the icon, not only the colour
+.tab--active {
+  color: var(--ol-brand);
+
+  .tab__icon {
+    background-color: var(--ol-brand-soft);
+  }
+}
+
+// Publishing, the main action of the app: always a filled circle in the centre
+.tab--primary .tab__icon {
+  @include square(space(10));
+  margin-top: space(-3);
+  background-color: var(--ol-brand);
+  box-shadow: var(--ol-shadow-raised);
+  color: var(--ol-on-inverse);
+}

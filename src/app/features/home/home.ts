@@ -7,6 +7,7 @@ import { merge } from 'rxjs';
 import { Button } from 'primeng/button';
 import { environment } from '@env/environment';
 import { Session } from '@core/auth/session';
+import { NativePlatform } from '@core/platform';
 import { UserEvents } from '@core/realtime/user-events';
 import { ACTIVITIES, activityOf } from '@shared/model/activities';
 import { Plan } from '@shared/model/published-plan';
@@ -39,6 +40,8 @@ import { MainLayout } from '@layout/main-layout/main-layout';
 })
 export class Home {
   protected readonly session = inject(Session);
+  /** In the Android app, publishing is in the menu at the bottom (HU-072) */
+  protected readonly inApp = inject(NativePlatform).isNative();
   /** Plans I organize that have not started yet (only with a session). */
   protected readonly myPlans = httpResource<Plan[]>(() =>
     this.session.isAuthenticated() ? `${environment.apiUrl}/api/v1/plans/mine` : undefined,

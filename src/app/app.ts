@@ -3,9 +3,10 @@ import { RouterOutlet } from '@angular/router';
 import { JoinNotices } from '@components/join-notices/join-notices';
 import { BackNavigation } from '@core/navigation/back-navigation';
 import { RouteProgress } from '@components/route-progress/route-progress';
+import { TabBar } from '@layout/tab-bar/tab-bar';
 
 @Component({
-  imports: [RouterOutlet, JoinNotices, RouteProgress],
+  imports: [RouterOutlet, JoinNotices, RouteProgress, TabBar],
   selector: 'app-root',
   // The notices (PrimeNG Toast) load once the app is idle, outside the initial bundle
   template: `
@@ -14,6 +15,8 @@ import { RouteProgress } from '@components/route-progress/route-progress';
       <app-join-notices />
     }
     <router-outlet />
+    <!-- The menu of the Android app (HU-072): it shows itself only there, with a session -->
+    <app-tab-bar />
   `,
 })
 export class App {

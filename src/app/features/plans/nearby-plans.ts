@@ -21,6 +21,7 @@ import { EmptyState } from '@components/empty-state/empty-state';
 import { PlanTicketSkeleton } from '@components/plan-ticket-skeleton/plan-ticket-skeleton';
 import { PlanTicket } from '@components/plan-ticket/plan-ticket';
 import { Language } from '@core/i18n/language';
+import { NativePlatform } from '@core/platform';
 import { NearbyStream } from '@core/realtime/nearby-stream';
 import { formatDistance } from '@shared/geo/distance';
 import { ACTIVITIES, activityKey } from '@shared/model/activities';
@@ -70,6 +71,8 @@ export class NearbyPlans {
   private readonly stream = inject(NearbyStream);
   private readonly transloco = inject(TranslocoService);
   private readonly language = inject(Language);
+  /** In the Android app, publishing is in the menu at the bottom (HU-072) */
+  protected readonly inApp = inject(NativePlatform).isNative();
 
   /** Active language as a signal: the PrimeNG option labels are recomputed when it changes. */
   private readonly lang = toSignal(this.transloco.langChanges$, {

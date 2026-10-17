@@ -4,6 +4,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter, Router, UrlTree } from '@angular/router';
 import { FakeSession } from '@testing/fake-session';
 import { Session } from '@core/auth/session';
+import { NativePlatform } from '@core/platform';
 import { UserEvents } from '@core/realtime/user-events';
 import {
   PlanCancelledNotice,
@@ -16,36 +17,39 @@ import { UsersApi } from '@core/api/users-api';
 import { Home } from './home';
 import { translocoTesting } from '@testing/transloco-testing';
 
+const notices = new Subject<PlanJoinedNotice>();
+const left = new Subject<PlanLeftNotice>();
+const cancelled = new Subject<PlanCancelledNotice>();
+
+const providers = (session: FakeSession) => [
+  provideRouter([]),
+  provideHttpClient(),
+  provideHttpClientTesting(),
+  { provide: Session, useValue: session },
+  // The «I'm free now» card has its own tests (HU-035)
+  { provide: PlansApi, useValue: { myAvailability: () => of(null) } },
+  { provide: UsersApi, useValue: { myProfile: () => of(null) } },
+  {
+    provide: UserEvents,
+    useValue: {
+      joined$: notices.asObservable(),
+      left$: left.asObservable(),
+      spotFreed$: EMPTY,
+      cancelled$: cancelled.asObservable(),
+    },
+  },
+];
+
 describe('Home', () => {
   let fixture: ComponentFixture<Home>;
   let element: HTMLElement;
   let session: FakeSession;
-  const notices = new Subject<PlanJoinedNotice>();
-  const left = new Subject<PlanLeftNotice>();
-  const cancelled = new Subject<PlanCancelledNotice>();
 
   beforeEach(async () => {
     session = new FakeSession();
     await TestBed.configureTestingModule({
       imports: [Home, translocoTesting()],
-      providers: [
-        provideRouter([]),
-        provideHttpClient(),
-        provideHttpClientTesting(),
-        { provide: Session, useValue: session },
-        // The «I'm free now» card has its own tests (HU-035)
-        { provide: PlansApi, useValue: { myAvailability: () => of(null) } },
-        { provide: UsersApi, useValue: { myProfile: () => of(null) } },
-        {
-          provide: UserEvents,
-          useValue: {
-            joined$: notices.asObservable(),
-            left$: left.asObservable(),
-            spotFreed$: EMPTY,
-            cancelled$: cancelled.asObservable(),
-          },
-        },
-      ],
+      providers: providers(session),
     }).compileComponents();
     fixture = TestBed.createComponent(Home);
     fixture.detectChanges();
@@ -70,6 +74,8 @@ describe('Home', () => {
     const feed = element.querySelector('.feed-entry');
     expect(feed?.getAttribute('href')).toBe('/feed');
     expect(feed?.textContent).toContain('Actividad de tu red');
+    // On the web, publishing is the main action at the bottom
+    expect(element.querySelector('app-bottom-bar')?.textContent).toContain('Publicar un plan');
   });
 
   it('should lead to the login and registration pages without a session', () => {
@@ -195,5 +201,30 @@ describe('Home', () => {
   it('should not ask for my plans without a session', () => {
     TestBed.inject(HttpTestingController).expectNone((r) => r.url.endsWith('/api/v1/plans/mine'));
     expect(element.querySelector('.my-plans')).toBeNull();
+  });
+});
+
+describe('Home in the Android app (HU-072)', () => {
+  it('should leave publishing to the menu at the bottom', async () => {
+    const session = new FakeSession();
+    TestBed.configureTestingModule({
+      imports: [Home, translocoTesting()],
+      providers: providers(session),
+    });
+    const platform = TestBed.inject(NativePlatform);
+    vi.spyOn(platform, 'isNative').mockReturnValue(true);
+    vi.spyOn(platform, 'setSystemBarsDark').mockResolvedValue();
+    const fixture = TestBed.createComponent(Home);
+    session.signIn('Ana Test');
+    fixture.detectChanges();
+    TestBed.inject(HttpTestingController)
+      .expectOne((r) => r.url.endsWith('/api/v1/plans/mine'))
+      .flush([]);
+    await fixture.whenStable();
+    const element = fixture.nativeElement as HTMLElement;
+
+    expect(element.querySelector('.nearby-entry')).not.toBeNull();
+    expect(element.querySelector('app-bottom-bar')).toBeNull();
+    expect(element.querySelector('main')?.className).not.toContain('layout__content--with-bar');
   });
 });
