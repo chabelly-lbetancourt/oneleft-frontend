@@ -22,14 +22,29 @@
   gap: space(1);
 }
 
+// My avatar opens the menu of my account and the settings (HU-073)
 .user-menu {
   @include row(space(2));
   @include radius(full);
   @include hover-soft;
-  padding: space(1) space(3) space(1) space(1);
+  @include focus-ring;
+  padding: space(1) space(2) space(1) space(1);
+  color: inherit;
+  cursor: pointer;
 }
 
+// On a phone the avatar is enough: the name is in the menu
 .user-menu__name {
+  display: none;
   @include text(sm);
   @include weight(bold);
+
+  @include up(sm) {
+    display: inline;
+  }
+}
+
+.user-menu__chevron {
+  @include text(xs);
+  color: var(--ol-text-muted);
 }

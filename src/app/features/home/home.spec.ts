@@ -102,16 +102,16 @@ describe('Home', () => {
     ).toHaveLength(2);
   });
 
-  it('should show the user and a link to the profile with a session', async () => {
+  it('should show the user, whose avatar opens the menu of the account, with a session', async () => {
     session.signIn('Ana Test');
     fixture.detectChanges();
     TestBed.inject(HttpTestingController)
       .expectOne((r) => r.url.endsWith('/api/v1/plans/mine'))
       .flush([]);
     await fixture.whenStable();
-    const menu = element.querySelector('.user-menu');
+    const menu = element.querySelector('button.user-menu');
     expect(menu?.textContent).toContain('Ana Test');
-    expect(menu?.getAttribute('href')).toBe('/profile');
+    expect(menu?.getAttribute('aria-haspopup')).toBe('menu');
   });
 
   it('should list my upcoming plans with a session', async () => {
