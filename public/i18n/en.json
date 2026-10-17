@@ -33,6 +33,13 @@
     "activity": "Activity",
     "profile": "Profile"
   },
+  "userMenu": {
+    "label": "Your account and settings",
+    "profile": "My profile",
+    "network": "My network",
+    "darkTheme": "Dark theme",
+    "lightTheme": "Light theme"
+  },
   "auth": {
     "login": "Sign in",
     "google": "Continue with Google",

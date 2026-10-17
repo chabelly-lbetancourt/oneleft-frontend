@@ -2,14 +2,34 @@
   <div class="app-header__inner">
     <app-brand-logo />
     <div class="app-header__actions">
-      <app-theme-switcher />
-      <app-language-switcher />
       @if (session.isAuthenticated()) {
-        <a routerLink="/profile" class="user-menu">
+        <button
+          type="button"
+          class="user-menu"
+          aria-haspopup="menu"
+          aria-controls="user-menu"
+          [attr.aria-expanded]="menuOpen()"
+          [attr.aria-label]="'userMenu.label' | transloco"
+          (click)="menu.toggle($event)"
+          (keydown.escape)="menu.hide()"
+        >
           <app-person-avatar [name]="session.userName()" [photo]="myPhoto.url()" variant="user" />
           <span class="user-menu__name">{{ session.userName() }}</span>
-        </a>
+          <i class="pi pi-angle-down user-menu__chevron" aria-hidden="true"></i>
+        </button>
+        <p-menu
+          #menu
+          id="user-menu"
+          [model]="menuItems()"
+          [popup]="true"
+          appendTo="body"
+          styleClass="user-menu-panel"
+          (onShow)="menuOpen.set(true)"
+          (onHide)="menuOpen.set(false)"
+        />
       } @else {
+        <app-theme-switcher />
+        <app-language-switcher />
         <div class="app-header__access">
           <p-button
             [label]="'auth.register' | transloco"

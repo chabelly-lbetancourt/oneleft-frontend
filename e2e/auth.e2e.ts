@@ -12,6 +12,7 @@ test('signs in with Keycloak, keeps the session after a reload and signs out', a
   await expect(page.locator('.user-menu')).toBeVisible();
 
   await page.locator('.user-menu').click();
+  await page.getByRole('menuitem', { name: t('userMenu.profile') }).click();
   await expect(page.locator('.profile-card')).toBeVisible();
   await page.reload();
   await expect(page.locator('.profile-card')).toBeVisible();
