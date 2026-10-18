@@ -18,7 +18,7 @@ import { ReputationBadge } from '@components/reputation-badge/reputation-badge';
 import { PageLayout } from '@layout/page-layout/page-layout';
 import { activityKey } from '@shared/model/activities';
 import { levelKey, PublicProfile } from '@shared/model/profile';
-import { BadgeProgress, PersonStats } from '@shared/model/reputation';
+import { BadgeProgress, KudosCount, PersonStats } from '@shared/model/reputation';
 import { SocialPerson } from '@shared/model/social';
 
 /**
@@ -59,6 +59,8 @@ export class PersonPage {
   protected readonly reputation = signal<number | null>(null);
   /** The badges they earned (HU-044) */
   protected readonly badges = signal<BadgeProgress[]>([]);
+  /** The kudos they received, by kind, the ones they have (HU-060) */
+  protected readonly kudos = signal<KudosCount[]>([]);
   /** Their bio and hobbies, from their profile (HU-048); null without a profile */
   protected readonly profile = signal<PublicProfile | null>(null);
   /** What they have done (HU-048); null when it cannot be known */
@@ -95,6 +97,10 @@ export class PersonPage {
         .badgesOf(id)
         .pipe(catchError(() => of([])))
         .subscribe((badges) => this.badges.set(badges));
+      this.reputationApi
+        .kudosOf(id)
+        .pipe(catchError(() => of([])))
+        .subscribe((kudos) => this.kudos.set(kudos.filter(({ count }) => count > 0)));
     });
   }
 

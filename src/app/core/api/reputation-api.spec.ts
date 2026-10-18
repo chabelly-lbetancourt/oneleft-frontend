@@ -27,6 +27,15 @@ describe('ReputationApi', () => {
     api.statsOf('ana').subscribe();
     http.expectOne({ method: 'GET', url: `${base}/people/ana/stats` }).flush({});
     expect(api.scoresUrl()).toBe(`${base}/scores`);
+    // Kudos (HU-060)
+    api.planKudos('p1').subscribe();
+    http.expectOne({ method: 'GET', url: `${base}/plans/p1/kudos` }).flush({ people: [] });
+    api.giveKudos('p1', 'ana', 'GOOD_VIBES').subscribe();
+    const give = http.expectOne({ method: 'POST', url: `${base}/plans/p1/kudos` });
+    expect(give.request.body).toEqual({ receiverId: 'ana', kind: 'GOOD_VIBES' });
+    give.flush({});
+    api.kudosOf('ana').subscribe();
+    http.expectOne({ method: 'GET', url: `${base}/people/ana/kudos` }).flush([]);
     http.verify();
   });
 });

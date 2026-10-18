@@ -89,6 +89,7 @@ describe('ReputationPage', () => {
       ['No presentarte a un plan que se celebró', '−15'],
       ['Cancelar tu propio plan a menos de 1 h del inicio', '−10'],
       ['Un reporte confirmado contra ti', '−50'],
+      ['Recibir un kudos de alguien de tu plan', '+5'],
     ]);
     const entries = element().querySelectorAll('.entry');
     expect(entries[0].textContent).toContain('No te presentaste a «Running»');

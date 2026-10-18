@@ -96,6 +96,12 @@ describe('PersonPage', () => {
                   earnedAt: '2026-10-13T16:30:00Z',
                 },
               ]),
+            kudosOf: () =>
+              of([
+                { kind: 'PUNCTUAL', count: 2 },
+                { kind: 'GOOD_VIBES', count: 0 },
+                { kind: 'GREAT_ORGANIZER', count: 1 },
+              ]),
           },
         },
       ],
@@ -116,6 +122,15 @@ describe('PersonPage', () => {
     expect(element().querySelector('.person-badges .badge__name')?.textContent).toContain(
       '10 actividades distintas',
     );
+    // The kudos received (HU-060): only the kinds they have, with how many
+    const kudos = [...element().querySelectorAll('.kudos-count')].map((count) => [
+      count.querySelector('.kudos-count__kind')?.textContent?.trim(),
+      count.querySelector('.kudos-count__value')?.textContent?.trim(),
+    ]);
+    expect(kudos).toEqual([
+      ['Puntual ⏰', '2'],
+      ['Organizó genial 📋', '1'],
+    ]);
   });
 
   it('should show their photo (HU-020), or their initials without one', async () => {

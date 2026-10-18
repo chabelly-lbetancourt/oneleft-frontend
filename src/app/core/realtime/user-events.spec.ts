@@ -5,7 +5,7 @@ import { environment } from '@env/environment';
 import { PlanJoinedNotice, PlanLeftNotice, SpotFreedNotice } from '@shared/model/published-plan';
 import { FeedActivityNotice } from '@shared/model/feed';
 import { PlanNearbyNotice } from '@shared/model/notifications';
-import { BadgeEarnedNotice } from '@shared/model/reputation';
+import { BadgeEarnedNotice, KudosNotice } from '@shared/model/reputation';
 import {
   PlanArrivalNotice,
   PlanCancelledNotice,
@@ -39,6 +39,7 @@ describe('UserEvents', () => {
     const checkIns: PlanCheckInNotice[] = [];
     const badges: BadgeEarnedNotice[] = [];
     const feed: FeedActivityNotice[] = [];
+    const kudos: KudosNotice[] = [];
     events.joined$.subscribe((notice) => joined.push(notice));
     events.joined$.subscribe((notice) => joinedToo.push(notice));
     events.left$.subscribe((notice) => left.push(notice));
@@ -50,6 +51,7 @@ describe('UserEvents', () => {
     events.checkIn$.subscribe((notice) => checkIns.push(notice));
     events.badge$.subscribe((notice) => badges.push(notice));
     events.feedActivity$.subscribe((notice) => feed.push(notice));
+    events.kudos$.subscribe((notice) => kudos.push(notice));
     TestBed.tick();
     expect(stream.openEvents).not.toHaveBeenCalled();
 
@@ -114,6 +116,13 @@ describe('UserEvents', () => {
       occurredAt: '2026-10-16T10:00:00Z',
     };
     source.next({ event: 'feed-activity', data: news });
+    const thanks: KudosNotice = {
+      giverName: 'Ana',
+      kind: 'GOOD_VIBES',
+      planId: 'p7',
+      givenAt: '2026-10-18T12:00:00Z',
+    };
+    source.next({ event: 'kudos', data: thanks });
 
     expect(stream.openEvents).toHaveBeenCalledOnce();
     expect(stream.openEvents).toHaveBeenCalledWith(
@@ -129,6 +138,7 @@ describe('UserEvents', () => {
         'plan-check-in',
         'badge-earned',
         'feed-activity',
+        'kudos',
       ],
     );
     expect(joined).toEqual([join]);
@@ -142,6 +152,7 @@ describe('UserEvents', () => {
     expect(checkIns).toEqual([here]);
     expect(badges).toEqual([badge]);
     expect(feed).toEqual([news]);
+    expect(kudos).toEqual([thanks]);
 
     authenticated.set(false);
     TestBed.tick();

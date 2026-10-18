@@ -12,8 +12,8 @@ import { clockTime, spotsKey } from '@shared/time/plan-time';
 
 /**
  * Toasts of the personal events: someone joined or left one of my plans, a spot I was waiting for is mine, a plan I
- * like has been published nearby (HU-006) or a plan I am in starts soon (HU-007), or I earned a badge (HU-044).
- * Tapping one opens the plan, or my reputation for a badge.
+ * like has been published nearby (HU-006) or a plan I am in starts soon (HU-007), I earned a badge (HU-044) or
+ * received a kudos (HU-060). Tapping one opens the plan, or my reputation for a badge or a kudos.
  */
 @Component({
   selector: 'app-join-notices',
@@ -123,6 +123,17 @@ export class JoinNotices {
         'notices.badgeTitle',
         this.transloco.translate('notices.badge', {
           name: this.transloco.translate(`badges.names.${notice.badge}`),
+        }),
+        ['/reputation'],
+      ),
+    );
+    events.kudos$.pipe(takeUntilDestroyed(destroyRef)).subscribe((notice) =>
+      this.show(
+        'pi-heart',
+        'notices.kudosTitle',
+        this.transloco.translate('notices.kudos', {
+          name: notice.giverName,
+          kind: this.transloco.translate(`kudos.kinds.${notice.kind}`),
         }),
         ['/reputation'],
       ),

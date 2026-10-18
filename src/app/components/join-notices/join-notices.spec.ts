@@ -5,7 +5,7 @@ import { Subject } from 'rxjs';
 import { translocoTesting } from '@testing/transloco-testing';
 import { UserEvents } from '@core/realtime/user-events';
 import { PlanNearbyNotice } from '@shared/model/notifications';
-import { BadgeEarnedNotice } from '@shared/model/reputation';
+import { BadgeEarnedNotice, KudosNotice } from '@shared/model/reputation';
 import {
   PlanJoinedNotice,
   PlanLeftNotice,
@@ -28,6 +28,7 @@ describe('JoinNotices', () => {
     const arrivals = new Subject<PlanArrivalNotice>();
     const checkIns = new Subject<PlanCheckInNotice>();
     const badges = new Subject<BadgeEarnedNotice>();
+    const kudos = new Subject<KudosNotice>();
     TestBed.configureTestingModule({
       imports: [JoinNotices, translocoTesting()],
       providers: [
@@ -44,6 +45,7 @@ describe('JoinNotices', () => {
             arrival$: arrivals.asObservable(),
             checkIn$: checkIns.asObservable(),
             badge$: badges.asObservable(),
+            kudos$: kudos.asObservable(),
           },
         },
       ],
@@ -192,6 +194,19 @@ describe('JoinNotices', () => {
       summary: '¡Nueva insignia!',
       icon: 'pi-star',
       detail: 'Has conseguido «Siempre puntual»',
+      data: ['/reputation'],
+    });
+
+    kudos.next({
+      giverName: 'Ana',
+      kind: 'GOOD_VIBES',
+      planId: 'p6',
+      givenAt: new Date().toISOString(),
+    });
+    expect(add.mock.calls[12][0]).toMatchObject({
+      summary: '¡Te han dado un kudos!',
+      icon: 'pi-heart',
+      detail: 'Ana: «Buen rollo 😄»',
       data: ['/reputation'],
     });
 
