@@ -168,3 +168,26 @@ p-tab {
   display: block;
   margin-bottom: space(3);
 }
+
+// The kudos someone received (HU-060): one chip per kind, with how many
+.kudos-counts {
+  @include cluster(space(2));
+  margin-top: space(2);
+}
+
+.kudos-count {
+  @include row(space(2));
+  @include radius(full);
+  @include text(sm);
+  padding: space(1) space(3);
+  background: var(--ol-surface-muted);
+}
+
+.kudos-count__kind {
+  @include weight(semibold);
+}
+
+.kudos-count__value {
+  @include weight(bold);
+  color: var(--ol-brand);
+}

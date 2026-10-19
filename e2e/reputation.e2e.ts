@@ -77,7 +77,7 @@ test('opens my reputation from the profile and explains why it went up or down',
   await expect(badges).toHaveCount(2);
   await expect(badges.first()).toContainText(t('badges.names.FIRST_PLAN_ORGANIZED'));
   await expect(badges.nth(1).getByRole('progressbar')).toHaveAttribute('value', '3');
-  await expect(page.locator('.rule')).toHaveCount(5);
+  await expect(page.locator('.rule')).toHaveCount(6);
   const entries = page.locator('.entry');
   await expect(entries).toHaveCount(2);
   await expect(entries.first()).toContainText('Running por el Retiro');

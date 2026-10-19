@@ -418,6 +418,9 @@
         @if (inChat()) {
           <app-activity-visibility [planId]="current.id" />
         }
+        @if (ended() && inChat()) {
+          <app-plan-kudos [planId]="current.id" [names]="namesById()" [photos]="photoOf()" />
+        }
         @if (justLeft()) {
           <p-message severity="info" class="left-message">{{ 'plan.left' | transloco }}</p-message>
         }

@@ -94,6 +94,20 @@
         </section>
       }
 
+      @if (kudos().length) {
+        <section class="person-kudos" aria-labelledby="person-kudos-title">
+          <h2 class="section-title" id="person-kudos-title">{{ 'kudos.received' | transloco }}</h2>
+          <ul class="kudos-counts">
+            @for (count of kudos(); track count.kind) {
+              <li class="kudos-count kudos-count--{{ count.kind }}">
+                <span class="kudos-count__kind">{{ 'kudos.kinds.' + count.kind | transloco }}</span>
+                <span class="kudos-count__value">{{ count.count }}</span>
+              </li>
+            }
+          </ul>
+        </section>
+      }
+
       @switch (current.relation) {
         @case ('SELF') {
           <a routerLink="/network" class="see-network link-action">

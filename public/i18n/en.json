@@ -289,7 +289,8 @@
       "ORGANIZED_HELD": "Organizing a plan that fills up and is held",
       "NO_SHOW": "Not showing up to a plan that was held",
       "LATE_CANCELLATION": "Cancelling your own plan less than 1 h before it starts",
-      "CONFIRMED_REPORT": "A confirmed report against you"
+      "CONFIRMED_REPORT": "A confirmed report against you",
+      "KUDOS": "Receiving a kudos from someone of your plan"
     },
     "fairNote": "If nobody of the group checks in, the plan does not count: nobody loses points for it.",
     "ledgerTitle": "Your history",
@@ -298,7 +299,8 @@
       "ORGANIZED_HELD": "You organized «{{title}}» and it was held with every spot taken",
       "NO_SHOW": "You did not show up to «{{title}}»",
       "LATE_CANCELLATION": "You cancelled «{{title}}» less than 1 h before it started",
-      "CONFIRMED_REPORT": "A report against you was confirmed"
+      "CONFIRMED_REPORT": "A report against you was confirmed",
+      "KUDOS": "A kudos in «{{title}}»"
     },
     "empty": "Nothing yet. Arrive at your plans and check in to start adding points.",
     "more": "See more",
@@ -325,6 +327,21 @@
     "progress": "{{progress}} of {{goal}}",
     "earnedOn": "Earned on {{date}}",
     "none": "No badges yet."
+  },
+  "kudos": {
+    "title": "Give kudos to your group",
+    "hint": "Recognize who came with you. One per person, until {{date}}.",
+    "closed": "Kudos can no longer be given in this plan.",
+    "given": "You gave «{{kind}}»",
+    "forPerson": "Kudos for {{name}}",
+    "someone": "Someone of the plan",
+    "received": "Kudos received",
+    "kinds": {
+      "PUNCTUAL": "Punctual ⏰",
+      "GOOD_VIBES": "Good vibes 😄",
+      "GREAT_LEVEL": "Great level 💪",
+      "GREAT_ORGANIZER": "Great organizer 📋"
+    }
   },
   "publish": {
     "title": "Publish a plan",
@@ -518,6 +535,15 @@
       "notUploaded": "The photo was not uploaded. Please try again.",
       "key": "The photo could not be saved. Please try again.",
       "unavailable": "Photos cannot be changed right now. Please try again in a while."
+    },
+    "kudosFailed": "The kudos could not be given. Try again.",
+    "kudos": {
+      "alreadyGiven": "You already gave them a kudos in this plan.",
+      "closed": "Kudos can no longer be given in this plan.",
+      "notAttended": "Only whoever arrived at the plan gives kudos.",
+      "receiverNotAttended": "Kudos go to whoever arrived at the plan.",
+      "notOrganizer": "«Great organizer» is only for whoever organized the plan.",
+      "self": "You cannot give yourself a kudos."
     }
   },
   "nearby": {
@@ -563,7 +589,9 @@
     "late": "{{name}} will be {{minutes}} min late to «{{title}}»",
     "checkIn": "{{name}} has arrived at «{{title}}»",
     "badgeTitle": "New badge!",
-    "badge": "You earned «{{name}}»"
+    "badge": "You earned «{{name}}»",
+    "kudosTitle": "You got a kudos!",
+    "kudos": "{{name}}: «{{kind}}»"
   },
   "notifications": {
     "title": "Notices of plans nearby",

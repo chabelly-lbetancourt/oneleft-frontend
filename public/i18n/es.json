@@ -289,7 +289,8 @@
       "ORGANIZED_HELD": "Organizar un plan que se llena y se celebra",
       "NO_SHOW": "No presentarte a un plan que se celebró",
       "LATE_CANCELLATION": "Cancelar tu propio plan a menos de 1 h del inicio",
-      "CONFIRMED_REPORT": "Un reporte confirmado contra ti"
+      "CONFIRMED_REPORT": "Un reporte confirmado contra ti",
+      "KUDOS": "Recibir un kudos de alguien de tu plan"
     },
     "fairNote": "Si nadie del grupo hace check-in, el plan no cuenta: nadie pierde puntos por él.",
     "ledgerTitle": "Tu historial",
@@ -298,7 +299,8 @@
       "ORGANIZED_HELD": "Organizaste «{{title}}» y se celebró con todas las plazas",
       "NO_SHOW": "No te presentaste a «{{title}}»",
       "LATE_CANCELLATION": "Cancelaste «{{title}}» a menos de 1 h del inicio",
-      "CONFIRMED_REPORT": "Se confirmó un reporte contra ti"
+      "CONFIRMED_REPORT": "Se confirmó un reporte contra ti",
+      "KUDOS": "Un kudos en «{{title}}»"
     },
     "empty": "Todavía no hay movimientos. Llega a tus planes y haz check-in para empezar a sumar.",
     "more": "Ver más",
@@ -325,6 +327,21 @@
     "progress": "{{progress}} de {{goal}}",
     "earnedOn": "Conseguida el {{date}}",
     "none": "Todavía no tiene insignias."
+  },
+  "kudos": {
+    "title": "Da kudos a tu grupo",
+    "hint": "Reconoce a quien vino contigo. Uno por persona, hasta el {{date}}.",
+    "closed": "Ya no se pueden dar kudos en este plan.",
+    "given": "Le diste «{{kind}}»",
+    "forPerson": "Kudos para {{name}}",
+    "someone": "Alguien del plan",
+    "received": "Kudos recibidos",
+    "kinds": {
+      "PUNCTUAL": "Puntual ⏰",
+      "GOOD_VIBES": "Buen rollo 😄",
+      "GREAT_LEVEL": "Gran nivel 💪",
+      "GREAT_ORGANIZER": "Organizó genial 📋"
+    }
   },
   "publish": {
     "title": "Publicar un plan",
@@ -518,6 +535,15 @@
       "notUploaded": "La foto no llegó a subirse. Inténtalo de nuevo.",
       "key": "No se ha podido guardar la foto. Inténtalo de nuevo.",
       "unavailable": "Ahora mismo no se pueden cambiar las fotos. Inténtalo en un rato."
+    },
+    "kudosFailed": "No se ha podido dar el kudos. Inténtalo de nuevo.",
+    "kudos": {
+      "alreadyGiven": "Ya le diste un kudos en este plan.",
+      "closed": "Ya no se pueden dar kudos en este plan.",
+      "notAttended": "Solo quien llegó al plan puede dar kudos.",
+      "receiverNotAttended": "Los kudos son para quien llegó al plan.",
+      "notOrganizer": "«Organizó genial» es solo para quien organizó el plan.",
+      "self": "No puedes darte un kudos a ti."
     }
   },
   "nearby": {
@@ -563,7 +589,9 @@
     "late": "{{name}} llegará {{minutes}} min tarde a «{{title}}»",
     "checkIn": "{{name}} ha llegado a «{{title}}»",
     "badgeTitle": "¡Nueva insignia!",
-    "badge": "Has conseguido «{{name}}»"
+    "badge": "Has conseguido «{{name}}»",
+    "kudosTitle": "¡Te han dado un kudos!",
+    "kudos": "{{name}}: «{{kind}}»"
   },
   "notifications": {
     "title": "Avisos de planes cerca",

@@ -1,6 +1,6 @@
 /** Why the reputation changes (HU-009). */
 export type ReputationReason =
-  'ATTENDED' | 'ORGANIZED_HELD' | 'NO_SHOW' | 'LATE_CANCELLATION' | 'CONFIRMED_REPORT';
+  'ATTENDED' | 'ORGANIZED_HELD' | 'NO_SHOW' | 'LATE_CANCELLATION' | 'CONFIRMED_REPORT' | 'KUDOS';
 
 /** The rules, in the order they are explained, with their points. */
 export const REPUTATION_RULES: readonly { reason: ReputationReason; points: number }[] = [
@@ -9,6 +9,7 @@ export const REPUTATION_RULES: readonly { reason: ReputationReason; points: numb
   { reason: 'NO_SHOW', points: -15 },
   { reason: 'LATE_CANCELLATION', points: -10 },
   { reason: 'CONFIRMED_REPORT', points: -50 },
+  { reason: 'KUDOS', points: 5 },
 ];
 
 /** The score of someone: the sum of their entries, 0 without any. */
@@ -73,3 +74,41 @@ export const BADGE_ICONS: Record<BadgeCode, string> = {
   ALWAYS_PUNCTUAL: 'pi-clock',
   NEIGHBOURHOOD_SOUL: 'pi-heart',
 };
+
+/** What a kudos recognizes (HU-060); only the organizer can be told that they organized well. */
+export type KudosKind = 'PUNCTUAL' | 'GOOD_VIBES' | 'GREAT_LEVEL' | 'GREAT_ORGANIZER';
+
+export const KUDOS_KINDS: readonly KudosKind[] = [
+  'PUNCTUAL',
+  'GOOD_VIBES',
+  'GREAT_LEVEL',
+  'GREAT_ORGANIZER',
+];
+
+/** Someone else who arrived at a plan, and the kudos I gave them, if any. */
+export interface KudosPerson {
+  userId: string;
+  organizer: boolean;
+  given: KudosKind | null;
+}
+
+/** The kudos of a plan for me: whether I can still give them and until when (null if I did not arrive). */
+export interface PlanKudos {
+  open: boolean;
+  until: string | null;
+  people: KudosPerson[];
+}
+
+/** How many kudos of a kind someone received. */
+export interface KudosCount {
+  kind: KudosKind;
+  count: number;
+}
+
+/** Real-time notice: someone of a plan gave me a kudos (event kudos). */
+export interface KudosNotice {
+  giverName: string;
+  kind: KudosKind;
+  planId: string;
+  givenAt: string;
+}

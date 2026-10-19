@@ -1,0 +1,66 @@
+@use 'abstracts' as *;
+
+:host {
+  display: block;
+}
+
+.plan-kudos {
+  @include stack(space(3));
+}
+
+.plan-kudos__title {
+  @include text(base);
+  @include weight(semibold);
+}
+
+.plan-kudos__people {
+  @include stack(space(4));
+}
+
+.kudos-person {
+  @include stack(space(2));
+}
+
+.kudos-person__who {
+  @include row(space(2));
+}
+
+.kudos-person__name {
+  @include weight(semibold);
+  @include truncate;
+}
+
+.kudos-person__given {
+  @include row(space(2));
+  @include text(sm);
+  color: var(--ol-text-muted);
+}
+
+.kudos-person__kinds {
+  @include cluster(space(2));
+}
+
+// Each kind is a chip that gives the kudos at once: large enough for the thumb
+.kudos-kind {
+  @include radius(full);
+  @include text(sm);
+  @include weight(semibold);
+  @include hover-soft;
+  @include pressable(0.96);
+  @include focus-ring;
+  min-height: space(10);
+  padding: space(2) space(3);
+  border: 1px solid var(--ol-border-strong);
+  background-color: var(--ol-surface);
+  color: inherit;
+  cursor: pointer;
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: progress;
+  }
+}
+
+.plan-kudos__error {
+  display: block;
+}

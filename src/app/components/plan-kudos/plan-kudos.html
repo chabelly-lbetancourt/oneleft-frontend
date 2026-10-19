@@ -1,0 +1,50 @@
+@if (kudos(); as plan) {
+  @if (plan.people.length) {
+    <section class="plan-kudos panel-muted" aria-labelledby="plan-kudos-title">
+      <h2 id="plan-kudos-title" class="plan-kudos__title">{{ 'kudos.title' | transloco }}</h2>
+      <p class="hint plan-kudos__hint">
+        {{
+          plan.open ? ('kudos.hint' | transloco: { date: until() }) : ('kudos.closed' | transloco)
+        }}
+      </p>
+      <ul class="plan-kudos__people">
+        @for (person of plan.people; track person.userId) {
+          <li class="kudos-person">
+            <div class="kudos-person__who">
+              <app-person-avatar [name]="nameOf(person)" [photo]="photos().get(person.userId)" />
+              <span class="kudos-person__name">{{ nameOf(person) }}</span>
+            </div>
+            @if (person.given; as given) {
+              <p class="kudos-person__given">
+                <i class="pi pi-check" aria-hidden="true"></i>
+                {{ 'kudos.given' | transloco: { kind: ('kudos.kinds.' + given | transloco) } }}
+              </p>
+            } @else if (plan.open) {
+              <div
+                class="kudos-person__kinds"
+                role="group"
+                [attr.aria-label]="'kudos.forPerson' | transloco: { name: nameOf(person) }"
+              >
+                @for (kind of kindsFor(person); track kind) {
+                  <button
+                    type="button"
+                    class="kudos-kind kudos-kind--{{ kind }}"
+                    [disabled]="busy() === person.userId"
+                    (click)="give(person, kind)"
+                  >
+                    {{ 'kudos.kinds.' + kind | transloco }}
+                  </button>
+                }
+              </div>
+            }
+          </li>
+        }
+      </ul>
+      @if (error(); as message) {
+        <p-message severity="error" class="plan-kudos__error">{{
+          message.key | transloco: message.params
+        }}</p-message>
+      }
+    </section>
+  }
+}

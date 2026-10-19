@@ -26,6 +26,7 @@ import { UserEvents } from '@core/realtime/user-events';
 import { activityKey, activityOf } from '@shared/model/activities';
 import { levelKey } from '@shared/model/profile';
 import { ActivityVisibility } from '@components/activity-visibility/activity-visibility';
+import { PlanKudosPanel } from '@components/plan-kudos/plan-kudos';
 import { CardSkeleton } from '@components/card-skeleton/card-skeleton';
 import { IconTile } from '@components/icon-tile/icon-tile';
 import { PersonAvatar } from '@components/person-avatar/person-avatar';
@@ -60,6 +61,7 @@ const ENDED: Plan['status'][] = ['IN_PROGRESS', 'FINISHED', 'CANCELLED'];
   selector: 'app-plan-detail',
   imports: [
     ActivityVisibility,
+    PlanKudosPanel,
     Button,
     CardSkeleton,
     IconTile,
@@ -183,6 +185,18 @@ export class PlanDetail {
     return plan && !this.isGuest()
       ? [plan.organizerName, ...plan.participants.map((participant) => participant.name)]
       : [];
+  });
+  /** The names of the people of the plan by id, for the kudos (HU-060) */
+  protected readonly namesById = computed(() => {
+    const plan = this.plan();
+    return new Map(
+      plan
+        ? [
+            [plan.organizerId, plan.organizerName] as const,
+            ...plan.participants.map(({ userId, name }) => [userId, name] as const),
+          ]
+        : [],
+    );
   });
   /** Their photos, in the same order as the people (HU-020) */
   protected readonly peoplePhotos = computed(() => {

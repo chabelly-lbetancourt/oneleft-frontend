@@ -10,7 +10,7 @@ import { PlansApi } from '@core/api/plans-api';
 import { ReputationApi } from '@core/api/reputation-api';
 import { PersonPhoto } from '@shared/model/photo';
 import { HiddenPlan } from '@shared/model/social';
-import { Reputation } from '@shared/model/reputation';
+import { PlanKudos, Reputation } from '@shared/model/reputation';
 import { Session } from '@core/auth/session';
 import { UserEvents } from '@core/realtime/user-events';
 import {
@@ -78,6 +78,14 @@ describe('PlanDetail', () => {
   };
   const reputationApi = {
     of: vi.fn((userId: string): Observable<Reputation> => of({ userId, score: 35 })),
+    planKudos: vi.fn((): Observable<PlanKudos> =>
+      of({
+        open: true,
+        until: '2026-10-25T12:00:00Z',
+        people: [{ userId: 'lucia', organizer: false, given: null }],
+      }),
+    ),
+    giveKudos: vi.fn((): Observable<unknown> => of({})),
   };
   const element = () => fixture.nativeElement as HTMLElement;
   const render = async () => {
@@ -464,6 +472,25 @@ describe('PlanDetail', () => {
     expect(navigate).toHaveBeenCalledWith(['/login'], {
       queryParams: { returnUrl: '/plans/plan-1' },
     });
+  });
+
+  it('should offer kudos to the group of a plan that ended (HU-060)', async () => {
+    const past = new Date(Date.now() - 3 * 3600_000).toISOString();
+    await create(
+      { ...PLAN, startsAt: past, status: 'FINISHED', participants: [LUCIA] },
+      undefined,
+      'org',
+    );
+
+    expect(reputationApi.planKudos).toHaveBeenCalledWith('plan-1');
+    const panel = element().querySelector('app-plan-kudos');
+    expect(panel?.textContent).toContain('Da kudos a tu grupo');
+    expect(panel?.querySelector('.kudos-person__name')?.textContent).toContain('Lucía Martín');
+
+    reputationApi.planKudos.mockClear();
+    await create(PLAN, undefined, 'org');
+    expect(element().querySelector('app-plan-kudos')).toBeNull();
+    expect(reputationApi.planKudos).not.toHaveBeenCalled();
   });
 
   it('should open the chat of the plan for its organizer and participants only (HU-008)', async () => {
