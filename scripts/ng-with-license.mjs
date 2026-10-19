@@ -20,5 +20,7 @@ if (license) {
   console.warn('PRIMEUI_LICENSE is not set (environment or .env): PrimeNG will show a license notice.');
 }
 
-const ng = spawn(process.platform === 'win32' ? 'ng.cmd' : 'ng', args, { stdio: 'inherit', shell: false });
+// The CLI runs with this same Node: on Windows a .cmd cannot be spawned without a shell, and a shell would split the key
+const cli = fileURLToPath(import.meta.resolve('@angular/cli/bin/ng.js'));
+const ng = spawn(process.execPath, [cli, ...args], { stdio: 'inherit' });
 ng.on('exit', (code, signal) => process.exit(signal ? 1 : (code ?? 0)));
