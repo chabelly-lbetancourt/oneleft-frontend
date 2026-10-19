@@ -1,3 +1,5 @@
+import type { Plan } from '@shared/model/published-plan';
+
 /** Start time rules of a plan, the same as in the plans service. */
 export const MIN_LEAD_MINUTES = 5;
 export const MAX_HORIZON_HOURS = 12;
@@ -43,6 +45,28 @@ export const startsIn = (startsAt: Date, now: Date): RelativeTime => {
   return rest === 0
     ? { key: 'time.inHours', params: { hours } }
     : { key: 'time.inHoursMinutes', params: { hours, minutes: rest } };
+};
+
+/**
+ * Relative start that agrees with the status of the plan: the clock alone does not know that
+ * a plan has finished (3 h after it starts) or been cancelled, so the status goes first.
+ * Null when nothing should follow the time (a cancelled plan).
+ */
+export const relativeStart = (
+  startsAt: Date,
+  status: Plan['status'],
+  now: Date,
+): RelativeTime | null => {
+  switch (status) {
+    case 'CANCELLED':
+      return null;
+    case 'FINISHED':
+      return { key: 'time.finished', params: {} };
+    case 'IN_PROGRESS':
+      return { key: 'time.started', params: {} };
+    default:
+      return startsIn(startsAt, now);
+  }
 };
 
 /** How long ago something happened: "just now", "5 min ago", "2 h ago" or "3 days ago" (keys under time.*). */

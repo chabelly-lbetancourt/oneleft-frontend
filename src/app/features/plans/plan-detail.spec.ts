@@ -276,6 +276,7 @@ describe('PlanDetail', () => {
     });
     expect(element().querySelector('.plan-state')?.textContent).toContain('En curso');
     expect(element().querySelector('.ended-hint')?.textContent).toContain('Ya ha empezado');
+    expect(element().querySelector('.plan-time')?.textContent).toContain('· ya ha empezado');
     expect(element().querySelector('.leave-button')).toBeNull();
     expect(element().querySelector('.join-button')).toBeNull();
 
@@ -286,10 +287,14 @@ describe('PlanDetail', () => {
     fixture.detectChanges();
     expect(element().querySelector('.plan-state')?.textContent).toContain('Terminado');
     expect(element().querySelector('.ended-hint')?.textContent).toContain('ya terminó');
+    // The time line follows the status, not only the clock
+    expect(element().querySelector('.plan-time')?.textContent).toContain('· ya terminó');
+    expect(element().querySelector('.plan-time')?.textContent).not.toContain('ya ha empezado');
 
-    component.plan.set({ ...PLAN, status: 'CANCELLED' });
+    component.plan.set({ ...PLAN, startsAt: past, status: 'CANCELLED' });
     fixture.detectChanges();
     expect(element().querySelector('.ended-hint')?.textContent).toContain('se canceló');
+    expect(element().querySelector('.plan-time')?.textContent).not.toContain('·');
   });
 
   it('should reload the plan when someone joins it', async () => {

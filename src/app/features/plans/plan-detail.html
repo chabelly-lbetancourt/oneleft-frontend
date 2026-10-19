@@ -59,13 +59,13 @@
           <dl class="facts">
             <dt><i class="pi pi-clock" aria-hidden="true"></i></dt>
             <dd class="plan-time">
-              <!-- A cancelled plan has no «in 20 min» nor «has already started» -->
+              <!-- The relative part follows the status: «already finished», «already started», nothing if cancelled -->
               @if (startsAt(); as start) {
                 {{ 'time.at' | transloco: { time: start.time }
                 }}{{
-                  current.status === 'CANCELLED'
-                    ? ''
-                    : ' · ' + (start.relative.key | transloco: start.relative.params)
+                  start.relative
+                    ? ' · ' + (start.relative.key | transloco: start.relative.params)
+                    : ''
                 }}
               }
             </dd>

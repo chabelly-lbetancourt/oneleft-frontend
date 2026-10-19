@@ -2,6 +2,7 @@ import {
   clockTime,
   happenedAgo,
   nextOccurrence,
+  relativeStart,
   spotsKey,
   startsIn,
   startsInRange,
@@ -41,6 +42,20 @@ describe('plan-time', () => {
       key: 'time.inHoursMinutes',
       params: { hours: 1, minutes: 30 },
     });
+  });
+
+  it('should describe the start according to the status of the plan', () => {
+    const past = new Date(now.getTime() - 3 * 60 * 60_000);
+    const soon = new Date(now.getTime() + 45 * 60_000);
+    expect(relativeStart(past, 'FINISHED', now)).toEqual({ key: 'time.finished', params: {} });
+    expect(relativeStart(past, 'IN_PROGRESS', now)).toEqual({ key: 'time.started', params: {} });
+    expect(relativeStart(past, 'CANCELLED', now)).toBeNull();
+    expect(relativeStart(soon, 'CANCELLED', now)).toBeNull();
+    expect(relativeStart(soon, 'OPEN', now)).toEqual({
+      key: 'time.inMinutes',
+      params: { minutes: 45 },
+    });
+    expect(relativeStart(soon, 'FULL', now)).toEqual(startsIn(soon, now));
   });
 
   it('should describe how long ago something happened', () => {
