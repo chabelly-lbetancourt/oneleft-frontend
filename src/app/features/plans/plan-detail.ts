@@ -42,7 +42,7 @@ import {
   Plan,
 } from '@shared/model/published-plan';
 import { photoMap } from '@shared/model/photo';
-import { clockTime, spotsKey, startsIn } from '@shared/time/plan-time';
+import { clockTime, relativeStart, spotsKey } from '@shared/time/plan-time';
 import {
   CalendarEvent,
   googleCalendarUrl,
@@ -216,7 +216,10 @@ export class PlanDetail {
       return null;
     }
     const date = new Date(plan.startsAt);
-    return { time: clockTime(date, this.language.locale()), relative: startsIn(date, new Date()) };
+    return {
+      time: clockTime(date, this.language.locale()),
+      relative: relativeStart(date, plan.status, new Date()),
+    };
   });
   protected readonly mapUrl = computed(() => {
     const point = this.plan()?.meetingPoint;

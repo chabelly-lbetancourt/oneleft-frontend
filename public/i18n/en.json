@@ -88,6 +88,7 @@
   },
   "time": {
     "started": "already started",
+    "finished": "already finished",
     "inMinutes": "in {{minutes}} min",
     "inHours": "in {{hours}} h",
     "inHoursMinutes": "in {{hours}} h {{minutes}} min",

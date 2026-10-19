@@ -4,7 +4,7 @@ import { Language } from '@core/i18n/language';
 import { formatDistance } from '@shared/geo/distance';
 import { activityKey, activityOf } from '@shared/model/activities';
 import { Plan } from '@shared/model/published-plan';
-import { clockTime, spotsKey, startsIn } from '@shared/time/plan-time';
+import { clockTime, relativeStart, spotsKey } from '@shared/time/plan-time';
 import { IconTile } from '@components/icon-tile/icon-tile';
 import { PersonAvatar } from '@components/person-avatar/person-avatar';
 import { ReputationBadge } from '@components/reputation-badge/reputation-badge';
@@ -34,8 +34,9 @@ export class PlanTicket {
   protected readonly time = computed(() =>
     clockTime(new Date(this.plan().startsAt), this.language.locale()),
   );
+  /** Follows the status: «already finished», «already started», nothing if cancelled */
   protected readonly relative = computed(() =>
-    startsIn(new Date(this.plan().startsAt), new Date()),
+    relativeStart(new Date(this.plan().startsAt), this.plan().status, new Date()),
   );
   protected readonly names = computed(() => [
     this.plan().organizerName,
