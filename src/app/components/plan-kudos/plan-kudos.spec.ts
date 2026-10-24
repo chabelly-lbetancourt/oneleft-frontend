@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { Observable, of, throwError } from 'rxjs';
+import { Observable, of, Subject, throwError } from 'rxjs';
 import { ReputationApi } from '@core/api/reputation-api';
 import { PlanKudos } from '@shared/model/reputation';
 import { translocoTesting } from '@testing/transloco-testing';
@@ -125,5 +125,59 @@ describe('PlanKudosPanel', () => {
     await create();
 
     expect(element().querySelector('.plan-kudos')).toBeNull();
+  });
+
+  it('should move the focus to what was given, instead of losing it with the chip (#143)', async () => {
+    await create();
+    const chip = person(1).querySelector<HTMLButtonElement>('.kudos-kind')!;
+    chip.focus();
+
+    chip.click();
+    await render();
+
+    const given = person(1).querySelector<HTMLElement>('.kudos-person__given')!;
+    expect(given.getAttribute('tabindex')).toBe('-1');
+    expect(document.activeElement).toBe(given);
+  });
+
+  it('should keep the panel and its error when the reload fails too (#143)', async () => {
+    await create();
+    api.giveKudos.mockReturnValueOnce(
+      throwError(() => new HttpErrorResponse({ status: 503, error: {} })),
+    );
+    api.planKudos.mockReturnValueOnce(
+      throwError(() => new HttpErrorResponse({ status: 503, error: {} })),
+    );
+
+    person(0).querySelector<HTMLButtonElement>('.kudos-kind')!.click();
+    await render();
+
+    expect(api.planKudos).toHaveBeenCalledTimes(2);
+    expect(element().querySelector('.plan-kudos')).not.toBeNull();
+    expect(kinds(0)).toHaveLength(4);
+    expect(element().querySelector('.plan-kudos__error')?.textContent).toContain(
+      'No se ha podido dar el kudos',
+    );
+  });
+
+  it('should only show the kudos of the current plan, whatever answers late (#143)', async () => {
+    const answers = new Map([
+      ['p1', new Subject<PlanKudos>()],
+      ['p2', new Subject<PlanKudos>()],
+    ]);
+    api.planKudos
+      .mockReturnValueOnce(answers.get('p1')!.asObservable())
+      .mockReturnValueOnce(answers.get('p2')!.asObservable());
+    await create();
+
+    fixture.componentRef.setInput('planId', 'p2');
+    await render();
+    answers.get('p2')!.next({ ...OPEN, people: [OPEN.people[1]] });
+    answers.get('p1')!.next(OPEN);
+    await render();
+
+    expect(element().querySelectorAll('.kudos-person')).toHaveLength(1);
+    expect(person(0).querySelector('.kudos-person__name')?.textContent).toContain('Diego');
+    expect(api.planKudos).toHaveBeenLastCalledWith('p2');
   });
 });
