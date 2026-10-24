@@ -418,7 +418,7 @@
         @if (inChat()) {
           <app-activity-visibility [planId]="current.id" />
         }
-        @if (ended() && inChat()) {
+        @if (withKudos() && inChat()) {
           <app-plan-kudos [planId]="current.id" [names]="namesById()" [photos]="photoOf()" />
         }
         @if (justLeft()) {
