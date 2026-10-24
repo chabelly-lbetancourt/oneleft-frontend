@@ -2,8 +2,9 @@
 import { createReadStream, existsSync, statSync } from 'node:fs';
 import { createServer } from 'node:http';
 import { extname, join, normalize } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-const root = new URL('../dist/oneleft/browser/', import.meta.url).pathname;
+const root = fileURLToPath(new URL('../dist/oneleft/browser/', import.meta.url));
 const port = Number(process.env.PORT ?? 4200);
 const types = {
   '.html': 'text/html; charset=utf-8',
