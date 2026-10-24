@@ -1,6 +1,19 @@
-import { Component, computed, effect, inject, input, signal, untracked } from '@angular/core';
+import {
+  afterNextRender,
+  Component,
+  computed,
+  effect,
+  ElementRef,
+  inject,
+  Injector,
+  input,
+  signal,
+  untracked,
+} from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { Message } from 'primeng/message';
+import { catchError, EMPTY, Subject, switchMap } from 'rxjs';
 import { PersonAvatar } from '@components/person-avatar/person-avatar';
 import { ReputationApi } from '@core/api/reputation-api';
 import { ApiErrorMessage, apiErrorMessage } from '@core/i18n/api-error';
@@ -21,6 +34,8 @@ export class PlanKudosPanel {
   private readonly api = inject(ReputationApi);
   private readonly transloco = inject(TranslocoService);
   private readonly language = inject(Language);
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
+  private readonly injector = inject(Injector);
 
   readonly planId = input.required<string>();
   /** The names of the people of the plan, by id */
@@ -41,10 +56,25 @@ export class PlanKudosPanel {
       : '';
   });
 
+  /** Plans to load: only the answer for the last one is shown (#143) */
+  private readonly loads = new Subject<string>();
+
   constructor() {
+    this.loads
+      .pipe(
+        // A failed reload keeps what the panel showed, with its error (#143)
+        switchMap((planId) => this.api.planKudos(planId).pipe(catchError(() => EMPTY))),
+        takeUntilDestroyed(),
+      )
+      .subscribe((kudos) => this.kudos.set(kudos));
     effect(() => {
       const planId = this.planId();
-      untracked(() => this.load(planId));
+      untracked(() => {
+        // Another plan: nothing of the previous one until its kudos arrive
+        this.kudos.set(null);
+        this.error.set(null);
+        this.loads.next(planId);
+      });
     });
   }
 
@@ -60,11 +90,15 @@ export class PlanKudosPanel {
   }
 
   protected give(person: KudosPerson, kind: KudosKind): void {
+    const planId = this.planId();
     this.busy.set(person.userId);
     this.error.set(null);
-    this.api.giveKudos(this.planId(), person.userId, kind).subscribe({
+    this.api.giveKudos(planId, person.userId, kind).subscribe({
       next: () => {
         this.busy.set(null);
+        if (planId !== this.planId()) {
+          return;
+        }
         this.kudos.update(
           (current) =>
             current && {
@@ -74,20 +108,28 @@ export class PlanKudosPanel {
               ),
             },
         );
+        this.focusGiven(person.userId);
       },
       error: (error) => {
         this.busy.set(null);
         this.error.set(apiErrorMessage(this.transloco, error, 'errors.kudosFailed'));
         // What the service says now: given, or no longer possible
-        this.load(this.planId());
+        this.loads.next(planId);
       },
     });
   }
 
-  private load(planId: string): void {
-    this.api.planKudos(planId).subscribe({
-      next: (kudos) => this.kudos.set(kudos),
-      error: () => this.kudos.set(null),
-    });
+  /**
+   * The chip that was pressed is gone: focus goes to «You gave …», which screen readers read out, instead of falling
+   * back to the page (#143)
+   */
+  private focusGiven(userId: string): void {
+    afterNextRender(
+      () =>
+        this.host.nativeElement
+          .querySelector<HTMLElement>(`[data-given-for="${CSS.escape(userId)}"]`)
+          ?.focus(),
+      { injector: this.injector },
+    );
   }
 }

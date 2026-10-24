@@ -496,6 +496,15 @@ describe('PlanDetail', () => {
     await create(PLAN, undefined, 'org');
     expect(element().querySelector('app-plan-kudos')).toBeNull();
     expect(reputationApi.planKudos).not.toHaveBeenCalled();
+
+    // A cancelled plan never has kudos: they are not even asked for (#143)
+    await create(
+      { ...PLAN, startsAt: past, status: 'CANCELLED', participants: [LUCIA] },
+      undefined,
+      'org',
+    );
+    expect(element().querySelector('app-plan-kudos')).toBeNull();
+    expect(reputationApi.planKudos).not.toHaveBeenCalled();
   });
 
   it('should open the chat of the plan for its organizer and participants only (HU-008)', async () => {

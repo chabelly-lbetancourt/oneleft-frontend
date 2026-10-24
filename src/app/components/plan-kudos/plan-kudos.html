@@ -15,7 +15,7 @@
               <span class="kudos-person__name">{{ nameOf(person) }}</span>
             </div>
             @if (person.given; as given) {
-              <p class="kudos-person__given">
+              <p class="kudos-person__given" tabindex="-1" [attr.data-given-for]="person.userId">
                 <i class="pi pi-check" aria-hidden="true"></i>
                 {{ 'kudos.given' | transloco: { kind: ('kudos.kinds.' + given | transloco) } }}
               </p>

@@ -274,6 +274,14 @@ export class PlanDetail {
   );
   /** The plan has started, finished or been cancelled (HU-007) */
   protected readonly ended = computed(() => ENDED.includes(this.plan()?.status ?? 'OPEN'));
+  /**
+   * Kudos (HU-060) only in a plan that was held: in progress or finished. A cancelled plan never closes its attendance,
+   * so it never has any (#143)
+   */
+  protected readonly withKudos = computed(() => {
+    const status = this.plan()?.status;
+    return status === 'IN_PROGRESS' || status === 'FINISHED';
+  });
   protected readonly endedHintKey = computed(() => {
     const plan = this.plan();
     if (plan?.status === 'IN_PROGRESS') {
