@@ -68,6 +68,30 @@ describe('SocialApi', () => {
     http.expectOne({ method: 'DELETE', url: `${base}/me/hidden-plans/p1` }).flush(null);
   });
 
+  it('should block, unblock and list the people I blocked (HU-033)', () => {
+    api.block('ana').subscribe();
+    http.expectOne({ method: 'PUT', url: `${base}/me/blocked/ana` }).flush(null);
+    api.unblock('ana').subscribe();
+    http.expectOne({ method: 'DELETE', url: `${base}/me/blocked/ana` }).flush(null);
+    api.blocked().subscribe();
+    http.expectOne(`${base}/me/blocked?page=0&size=20`).flush({ items: [], total: 0 });
+    api.blocked(1, 5).subscribe();
+    http.expectOne(`${base}/me/blocked?page=1&size=5`).flush({ items: [], total: 0 });
+  });
+
+  it('should report a person or a plan (HU-033)', () => {
+    const request = {
+      target: 'PLAN' as const,
+      targetId: 'p1',
+      organizerId: 'ana',
+      reason: 'FAKE' as const,
+    };
+    api.report(request).subscribe();
+    const report = http.expectOne({ method: 'POST', url: `${base}/reports` });
+    expect(report.request.body).toEqual(request);
+    report.flush({});
+  });
+
   it('should page my feed', () => {
     api.feed().subscribe();
     http.expectOne({ method: 'GET', url: `${base}/me/feed?page=0&size=20` }).flush({ items: [] });

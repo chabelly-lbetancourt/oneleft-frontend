@@ -3,6 +3,7 @@ import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '@env/environment';
 import { FeedPage } from '@shared/model/feed';
+import { BlockedPage, Report, ReportRequest } from '@shared/model/safety';
 import {
   Connection,
   ConnectionPage,
@@ -98,5 +99,24 @@ export class SocialApi {
 
   removeFollower(userId: string): Observable<void> {
     return this.http.delete<void>(`${this.base}/me/followers/${userId}`);
+  }
+
+  /** Blocks someone (HU-033): we stop following each other and they are not told. */
+  block(userId: string): Observable<void> {
+    return this.http.put<void>(`${this.base}/me/blocked/${userId}`, null);
+  }
+
+  unblock(userId: string): Observable<void> {
+    return this.http.delete<void>(`${this.base}/me/blocked/${userId}`);
+  }
+
+  /** The people I blocked, the latest first. */
+  blocked(page = 0, size = 20): Observable<BlockedPage> {
+    return this.http.get<BlockedPage>(`${this.base}/me/blocked`, { params: { page, size } });
+  }
+
+  /** Reports a person or a plan (HU-033); reporting it again while it is open gives the same report. */
+  report(request: ReportRequest): Observable<Report> {
+    return this.http.post<Report>(`${this.base}/reports`, request);
   }
 }

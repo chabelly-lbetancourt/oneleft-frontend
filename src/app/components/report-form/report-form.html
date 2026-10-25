@@ -1,0 +1,83 @@
+<section class="report-form panel-muted" [attr.aria-labelledby]="titleId()">
+  <h2 class="report-form__title" [id]="titleId()">
+    {{ (target() === 'PLAN' ? 'safety.reportPlanTitle' : 'safety.reportPersonTitle') | transloco }}
+  </h2>
+  @if (sent()) {
+    <p-message severity="success" icon="pi pi-check-circle" class="report-sent">{{
+      'safety.reported' | transloco
+    }}</p-message>
+    <p-button
+      class="report-close"
+      [label]="'safety.close' | transloco"
+      [text]="true"
+      severity="secondary"
+      (onClick)="closed.emit()"
+    />
+  } @else {
+    <form class="report-form__fields" [formGroup]="form" (ngSubmit)="send()">
+      <p class="muted">{{ 'safety.reportHint' | transloco }}</p>
+      <div class="report-form__field">
+        <label class="field-label" [for]="titleId() + '-reason'">{{
+          'safety.reason' | transloco
+        }}</label>
+        <p-select
+          class="report-reason"
+          [inputId]="titleId() + '-reason'"
+          formControlName="reason"
+          [options]="reasons()"
+          optionLabel="label"
+          optionValue="value"
+          [placeholder]="'safety.chooseReason' | transloco"
+          styleClass="w-full"
+          appendTo="body"
+        />
+        @if (form.controls.reason.touched && form.controls.reason.invalid) {
+          <small class="field-error">{{ 'safety.reasonRequired' | transloco }}</small>
+        }
+      </div>
+      <div class="report-form__field">
+        <label class="field-label" [for]="titleId() + '-comment'">
+          {{ (commentRequired() ? 'safety.commentRequired' : 'safety.comment') | transloco }}
+        </label>
+        <textarea
+          pTextarea
+          class="report-comment"
+          [id]="titleId() + '-comment'"
+          formControlName="comment"
+          rows="3"
+          [maxlength]="maxComment"
+          [attr.aria-invalid]="form.hasError('commentRequired') && form.controls.comment.touched"
+        ></textarea>
+        <small class="muted">{{
+          'safety.commentCount'
+            | transloco: { count: form.controls.comment.value.length, max: maxComment }
+        }}</small>
+        @if (form.hasError('commentRequired') && form.controls.comment.touched) {
+          <small class="field-error">{{ 'safety.commentMissing' | transloco }}</small>
+        }
+      </div>
+      @if (error(); as message) {
+        <p-message severity="error" class="report-error">{{
+          message.key | transloco: message.params
+        }}</p-message>
+      }
+      <div class="report-form__actions">
+        <p-button
+          class="report-send"
+          type="submit"
+          [label]="'safety.send' | transloco"
+          icon="pi pi-flag"
+          severity="danger"
+          [loading]="busy()"
+        />
+        <p-button
+          class="report-cancel"
+          [label]="'safety.cancel' | transloco"
+          [text]="true"
+          severity="secondary"
+          (onClick)="closed.emit()"
+        />
+      </div>
+    </form>
+  }
+</section>

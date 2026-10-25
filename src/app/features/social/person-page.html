@@ -144,6 +144,20 @@
             (onClick)="unfollow()"
           />
         }
+        @case ('BLOCKED') {
+          <p-message severity="warn" icon="pi pi-ban" class="blocked-message">{{
+            'safety.blockedPerson' | transloco: { name: current.name }
+          }}</p-message>
+          <p-button
+            class="unblock-button"
+            [label]="'safety.unblock' | transloco"
+            [outlined]="true"
+            severity="secondary"
+            styleClass="button--block"
+            [loading]="busy()"
+            (onClick)="unblock()"
+          />
+        }
         @case ('FOLLOWING') {
           <p-message severity="success" icon="pi pi-check-circle" class="following-message">{{
             'social.followingPerson' | transloco: { name: current.name }
@@ -164,20 +178,88 @@
           message.key | transloco: message.params
         }}</p-message>
       }
+      @if (current.relation !== 'SELF') {
+        <div class="person-safety">
+          @if (confirmingBlock()) {
+            <div
+              class="block-confirm panel-muted"
+              #blockConfirm
+              tabindex="-1"
+              role="group"
+              aria-labelledby="block-confirm-title"
+            >
+              <p class="block-confirm__title" id="block-confirm-title">
+                {{ 'safety.blockTitle' | transloco: { name: current.name } }}
+              </p>
+              <p class="muted">{{ 'safety.blockHint' | transloco }}</p>
+              <div class="person-safety__actions">
+                <p-button
+                  class="block-confirm-button"
+                  [label]="'safety.blockConfirm' | transloco"
+                  icon="pi pi-ban"
+                  severity="danger"
+                  [loading]="busy()"
+                  (onClick)="block()"
+                />
+                <p-button
+                  class="block-cancel"
+                  [label]="'safety.cancel' | transloco"
+                  [text]="true"
+                  severity="secondary"
+                  (onClick)="cancelBlock()"
+                />
+              </div>
+            </div>
+          } @else if (reporting()) {
+            <div class="report-panel" #reportPanel tabindex="-1">
+              <app-report-form
+                target="PERSON"
+                [targetId]="current.userId"
+                (closed)="closeReport()"
+              />
+            </div>
+          } @else {
+            <div class="person-safety__actions">
+              @if (current.relation !== 'BLOCKED') {
+                <p-button
+                  class="block-button"
+                  [label]="'safety.block' | transloco"
+                  icon="pi pi-ban"
+                  [text]="true"
+                  severity="secondary"
+                  size="small"
+                  (onClick)="askToBlock()"
+                />
+              }
+              <p-button
+                class="report-button"
+                [label]="'safety.report' | transloco"
+                icon="pi pi-flag"
+                [text]="true"
+                severity="secondary"
+                size="small"
+                (onClick)="openReport()"
+              />
+            </div>
+          }
+        </div>
+      }
     </section>
 
-    <section class="person-activity-card" aria-labelledby="person-activity-title">
-      <h2 class="section-title" id="person-activity-title">
-        {{ 'social.activityTitle' | transloco }}
-      </h2>
-      <app-person-activity
-        [userId]="current.userId"
-        [name]="current.name"
-        [visible]="current.activityVisible"
-        [followers]="current.followers"
-        [following]="current.following"
-      />
-    </section>
+    @if (current.relation !== 'BLOCKED') {
+      <section class="person-activity-card" aria-labelledby="person-activity-title">
+        <h2 class="section-title" id="person-activity-title">
+          {{ 'social.activityTitle' | transloco }}
+        </h2>
+        <app-person-activity
+          [userId]="current.userId"
+          [name]="current.name"
+          [visible]="current.activityVisible"
+          [followers]="current.followers"
+          [following]="current.following"
+        />
+      </section>
+    }
   } @else if (notFound()) {
     <div class="person-not-found alert alert--error">{{ 'social.notFound' | transloco }}</div>
   } @else {

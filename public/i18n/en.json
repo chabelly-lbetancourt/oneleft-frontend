@@ -23,7 +23,8 @@
     "network": "My network",
     "person": "Person",
     "reputation": "My reputation",
-    "feed": "OneLeft · Your network’s activity"
+    "feed": "OneLeft · Your network’s activity",
+    "blocked": "OneLeft · Blocked people"
   },
   "tabs": {
     "label": "Main navigation",
@@ -38,7 +39,8 @@
     "profile": "My profile",
     "network": "My network",
     "darkTheme": "Dark theme",
-    "lightTheme": "Light theme"
+    "lightTheme": "Light theme",
+    "blocked": "Blocked people"
   },
   "auth": {
     "login": "Sign in",
@@ -257,6 +259,43 @@
     "privateActivity": "{{name}}'s profile is private: only their followers see their plans and their network.",
     "activityError": "It could not be loaded. Please try again.",
     "loadingActivity": "Loading…"
+  },
+  "safety": {
+    "block": "Block",
+    "blockTitle": "Block {{name}}?",
+    "blockHint": "You will stop following each other, neither of you will see the other's plans and they will not be able to join yours. They are not told.",
+    "blockConfirm": "Yes, block",
+    "unblock": "Unblock",
+    "unblockPerson": "Unblock {{name}}",
+    "blockedPerson": "You blocked {{name}}: neither of you sees the other's plans and they cannot follow you.",
+    "report": "Report",
+    "reportPlan": "Report this plan",
+    "reportPersonTitle": "Report this person",
+    "reportPlanTitle": "Report this plan",
+    "reportHint": "The moderation team will review it. Nobody will know it was you.",
+    "reason": "Reason",
+    "chooseReason": "Choose a reason",
+    "reasonRequired": "Choose a reason.",
+    "comment": "What happened (optional)",
+    "commentRequired": "What happened",
+    "commentMissing": "Tell us what happened.",
+    "commentCount": "{{count}}/{{max}}",
+    "send": "Send the report",
+    "cancel": "Cancel",
+    "close": "Close",
+    "reported": "Thank you. The moderation team will review it as soon as possible.",
+    "reasons": {
+      "HARASSMENT": "Harassment or insults",
+      "INAPPROPRIATE": "Inappropriate content",
+      "DANGEROUS": "Puts someone in danger",
+      "FAKE": "Fake profile or plan",
+      "SPAM": "Spam or advertising",
+      "OTHER": "Another reason"
+    },
+    "blockedTitle": "Blocked people",
+    "blockedHint": "Neither of you sees the other's plans and you cannot follow each other. After unblocking, either of you can ask to follow the other again.",
+    "noBlocked": "You have not blocked anyone.",
+    "loadError": "The list could not be loaded. Try again."
   },
   "feed": {
     "title": "Your network’s activity",
@@ -526,7 +565,8 @@
     },
     "social": {
       "unavailable": "Nobody can be followed right now. Please try again in a while.",
-      "private": "This person's profile is private: only their followers see their plans and their network."
+      "private": "This person's profile is private: only their followers see their plans and their network.",
+      "blocked": "You blocked this person: unblock them to follow them."
     },
     "photoFailed": "Your photo could not be changed. Please try again.",
     "photo": {
@@ -545,6 +585,18 @@
       "receiverNotAttended": "Kudos go to whoever arrived at the plan.",
       "notOrganizer": "«Great organizer» is only for whoever organized the plan.",
       "self": "You cannot give yourself a kudos."
+    },
+    "reportFailed": "The report could not be sent. Try again.",
+    "blockFailed": "They could not be unblocked. Try again.",
+    "report": {
+      "target": "Say which person or plan you report.",
+      "person": "Say who organizes the plan.",
+      "reason": "Choose a reason.",
+      "comment": "Tell us what happened (up to 500 characters).",
+      "self": "You cannot report yourself."
+    },
+    "block": {
+      "self": "You cannot block yourself."
     }
   },
   "nearby": {

@@ -31,6 +31,7 @@ import { CardSkeleton } from '@components/card-skeleton/card-skeleton';
 import { IconTile } from '@components/icon-tile/icon-tile';
 import { PersonAvatar } from '@components/person-avatar/person-avatar';
 import { PlanCheckIn } from '@components/plan-check-in/plan-check-in';
+import { ReportForm } from '@components/report-form/report-form';
 import { ReputationBadge } from '@components/reputation-badge/reputation-badge';
 import { SpotSlots } from '@components/spot-slots/spot-slots';
 import { PageLayout } from '@layout/page-layout/page-layout';
@@ -69,6 +70,7 @@ const ENDED: Plan['status'][] = ['IN_PROGRESS', 'FINISHED', 'CANCELLED'];
     PageLayout,
     PersonAvatar,
     PlanCheckIn,
+    ReportForm,
     ReputationBadge,
     RouterLink,
     SpotSlots,
@@ -175,6 +177,9 @@ export class PlanDetail {
   protected readonly busy = signal(false);
   /** Opened from a shared link without a session (HU-024): the public view of the plan */
   protected readonly isGuest = computed(() => !this.session.isAuthenticated());
+  /** Reporting the plan (HU-033): with a session, for everyone but its organizer */
+  protected readonly canReport = computed(() => !this.isGuest() && this.relation() !== 'organizer');
+  protected readonly reporting = signal(false);
   /** Browsers without the native share sheet copy the link instead */
   protected readonly copied = signal(false);
   protected readonly spotsKey = spotsKey;

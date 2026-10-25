@@ -1,0 +1,58 @@
+<app-page-layout [title]="'safety.blockedTitle' | transloco">
+  <section class="blocked-people person-card" aria-labelledby="blocked-title">
+    <h1 class="section-title" id="blocked-title">{{ 'safety.blockedTitle' | transloco }}</h1>
+    <p class="hint">{{ 'safety.blockedHint' | transloco }}</p>
+    @if (loadError()) {
+      <div class="blocked-error alert alert--error">{{ 'safety.loadError' | transloco }}</div>
+    } @else if (people(); as list) {
+      @if (list.length) {
+        <ul class="connections connections--blocked">
+          @for (person of list; track person.userId) {
+            <li class="connection">
+              <a class="connection__person" [routerLink]="['/people', person.userId]">
+                <p-avatar
+                  [label]="initials(person.name)"
+                  shape="circle"
+                  class="connection__avatar avatar--participant"
+                />
+                <span class="connection__name">{{ person.name }}</span>
+              </a>
+              <span class="connection__actions">
+                <p-button
+                  class="unblock-person"
+                  [label]="'safety.unblock' | transloco"
+                  [ariaLabel]="'safety.unblockPerson' | transloco: { name: person.name }"
+                  [text]="true"
+                  severity="secondary"
+                  size="small"
+                  [loading]="busy() === person.userId"
+                  (onClick)="unblock(person)"
+                />
+              </span>
+            </li>
+          }
+        </ul>
+        @if (list.length < total()) {
+          <p-button
+            class="blocked-more"
+            [label]="'social.more' | transloco"
+            [text]="true"
+            (onClick)="more()"
+          />
+        }
+      } @else {
+        <p class="hint no-blocked">{{ 'safety.noBlocked' | transloco }}</p>
+      }
+    } @else {
+      <div class="blocked-loading" role="status">
+        <span class="sr-only">{{ 'social.loading' | transloco }}</span>
+        <app-card-skeleton [lines]="2" />
+      </div>
+    }
+    @if (error(); as message) {
+      <p-message severity="error" class="social-error">{{
+        message.key | transloco: message.params
+      }}</p-message>
+    }
+  </section>
+</app-page-layout>

@@ -39,6 +39,9 @@ describe('PersonPage', () => {
     person: vi.fn((): Observable<SocialPerson> => of(ANA)),
     follow: vi.fn((): Observable<Connection> => of({} as Connection)),
     unfollow: vi.fn((): Observable<void> => of(undefined)),
+    block: vi.fn((): Observable<void> => of(undefined)),
+    unblock: vi.fn((): Observable<void> => of(undefined)),
+    report: vi.fn(() => of({})),
     listOf: vi.fn((): Observable<ConnectionPage> => of({ items: [], page: 0, size: 20, total: 0 })),
   };
   const photosApi = { photosOf: vi.fn((): Observable<PersonPhoto[]> => of([])) };
@@ -231,6 +234,58 @@ describe('PersonPage', () => {
       'Ahora mismo no se puede seguir a nadie',
     );
     expect(element().querySelector('.follow-button button')?.hasAttribute('disabled')).toBe(false);
+  });
+
+  it('should block someone after asking, and then show them as blocked without their plans (HU-033)', async () => {
+    await create({ ...ANA, relation: 'FOLLOWING', activityVisible: true });
+
+    await click('.block-button');
+    // It asks first, saying what it means, with the focus on the question
+    const confirm = element().querySelector<HTMLElement>('.block-confirm')!;
+    expect(confirm.textContent).toContain('¿Bloquear a Ana Pruebas?');
+    expect(confirm.textContent).toContain('No se le avisa');
+    expect(document.activeElement).toBe(confirm);
+    api.person.mockReturnValue(of({ ...ANA, relation: 'BLOCKED', activityVisible: false }));
+    await click('.block-confirm-button');
+
+    expect(api.block).toHaveBeenCalledWith('ana');
+    expect(element().querySelector('.block-confirm')).toBeNull();
+    expect(element().querySelector('.blocked-message')?.textContent).toContain(
+      'Has bloqueado a Ana Pruebas',
+    );
+    expect(element().querySelector('.person-activity-card')).toBeNull();
+    expect(element().querySelector('.block-button')).toBeNull();
+    expect(element().querySelector('.follow-button, .unfollow-button')).toBeNull();
+  });
+
+  it('should not block when the question is cancelled, and unblock someone blocked', async () => {
+    await create();
+    await click('.block-button');
+    await click('.block-cancel');
+    expect(element().querySelector('.block-confirm')).toBeNull();
+    expect(api.block).not.toHaveBeenCalled();
+
+    await create({ ...ANA, relation: 'BLOCKED' });
+    api.person.mockReturnValue(of(ANA));
+    await click('.unblock-button');
+
+    expect(api.unblock).toHaveBeenCalledWith('ana');
+    expect(element().querySelector('.follow-button')).not.toBeNull();
+  });
+
+  it('should report the person in place, and offer nothing of it on my own page', async () => {
+    await create();
+    await click('.report-button');
+
+    expect(element().querySelector('.report-form__title')?.textContent).toContain(
+      'Reportar a esta persona',
+    );
+    expect(document.activeElement).toBe(element().querySelector('.report-panel'));
+    await click('.report-cancel');
+    expect(element().querySelector('app-report-form')).toBeNull();
+
+    await create({ ...ANA, relation: 'SELF' });
+    expect(element().querySelector('.person-safety')).toBeNull();
   });
 
   it('should say when the person does not exist', async () => {

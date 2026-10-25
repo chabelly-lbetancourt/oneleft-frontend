@@ -1,4 +1,14 @@
-import { Component, effect, inject, input, signal } from '@angular/core';
+import {
+  afterNextRender,
+  Component,
+  effect,
+  ElementRef,
+  inject,
+  Injector,
+  input,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { Button } from 'primeng/button';
@@ -14,6 +24,7 @@ import { BadgeList } from '@components/badge-list/badge-list';
 import { CardSkeleton } from '@components/card-skeleton/card-skeleton';
 import { PersonActivity } from '@components/person-activity/person-activity';
 import { PersonAvatar } from '@components/person-avatar/person-avatar';
+import { ReportForm } from '@components/report-form/report-form';
 import { ReputationBadge } from '@components/reputation-badge/reputation-badge';
 import { PageLayout } from '@layout/page-layout/page-layout';
 import { activityKey } from '@shared/model/activities';
@@ -24,7 +35,8 @@ import { SocialPerson } from '@shared/model/social';
 /**
  * Someone as I see them, their social profile (HU-047, HU-048): their photo, name, bio, hobbies, counts, statistics,
  * reputation and badges; following them, asking to if their profile is private, or stopping; and their recent plans
- * and their network, if their profile lets me see them.
+ * and their network, if their profile lets me see them. Blocking or reporting them (HU-033): blocking asks first and
+ * they are not told.
  */
 @Component({
   selector: 'app-person-page',
@@ -36,6 +48,7 @@ import { SocialPerson } from '@shared/model/social';
     PageLayout,
     PersonActivity,
     PersonAvatar,
+    ReportForm,
     ReputationBadge,
     RouterLink,
     Tag,
@@ -50,6 +63,7 @@ export class PersonPage {
   private readonly photosApi = inject(PhotosApi);
   private readonly usersApi = inject(UsersApi);
   private readonly transloco = inject(TranslocoService);
+  private readonly injector = inject(Injector);
 
   /** Route parameter (withComponentInputBinding) */
   readonly id = input.required<string>();
@@ -72,6 +86,11 @@ export class PersonPage {
   protected readonly error = signal<ApiErrorMessage | null>(null);
   /** Their profile photo (HU-020); null without one */
   protected readonly photo = signal<string | null>(null);
+  /** Blocking asks first, saying what it means (HU-033) */
+  protected readonly confirmingBlock = signal(false);
+  protected readonly reporting = signal(false);
+  private readonly blockConfirm = viewChild<ElementRef<HTMLElement>>('blockConfirm');
+  private readonly reportPanel = viewChild<ElementRef<HTMLElement>>('reportPanel');
 
   constructor() {
     effect(() => {
@@ -112,12 +131,41 @@ export class PersonPage {
     this.change(this.api.unfollow(this.id()));
   }
 
-  /** Follow or unfollow, and then the person again with their counts. */
+  protected askToBlock(): void {
+    this.confirmingBlock.set(true);
+    afterNextRender(() => this.blockConfirm()?.nativeElement.focus(), { injector: this.injector });
+  }
+
+  protected cancelBlock(): void {
+    this.confirmingBlock.set(false);
+  }
+
+  protected block(): void {
+    this.change(this.api.block(this.id()));
+  }
+
+  protected unblock(): void {
+    this.change(this.api.unblock(this.id()));
+  }
+
+  protected openReport(): void {
+    this.reporting.set(true);
+    afterNextRender(() => this.reportPanel()?.nativeElement.focus(), { injector: this.injector });
+  }
+
+  protected closeReport(): void {
+    this.reporting.set(false);
+  }
+
+  /** Follow, unfollow, block or unblock, and then the person again with their counts. */
   private change(request: Observable<unknown>): void {
     this.busy.set(true);
     this.error.set(null);
     request.subscribe({
-      next: () => this.load(this.id()),
+      next: () => {
+        this.confirmingBlock.set(false);
+        this.load(this.id());
+      },
       error: (error) => {
         this.busy.set(false);
         this.error.set(apiErrorMessage(this.transloco, error, 'errors.socialFailed'));
