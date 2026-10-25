@@ -194,7 +194,9 @@ const pageStyle = (): { palette: StoryPalette; fontFamily: string } => {
 @Injectable({ providedIn: 'root' })
 export class StoryCard {
   async create(texts: StoryTexts, link: string): Promise<Blob> {
-    const { create } = await import('qrcode');
+    // qrcode is CommonJS: the build only gives it as the default export (the dev server also as named exports)
+    const qrcode = await import('qrcode');
+    const { create } = qrcode.default ?? qrcode;
     const modules = create(link, { errorCorrectionLevel: 'M' }).modules;
     const canvas = document.createElement('canvas');
     canvas.width = STORY_WIDTH;
