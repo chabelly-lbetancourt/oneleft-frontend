@@ -116,6 +116,8 @@ describe('AppHeader', () => {
 
     expect(menuItem('profile')?.getAttribute('href')).toBe('/profile');
     expect(menuItem('network')?.getAttribute('href')).toBe('/network');
+    // The people I blocked (HU-033)
+    expect(menuItem('blocked')?.getAttribute('href')).toBe('/blocked');
     menuItem('profile')!.click();
     await render();
     expect(TestBed.inject(Router).url).toBe('/profile');

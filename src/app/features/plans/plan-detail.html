@@ -421,6 +421,26 @@
         @if (withKudos() && inChat()) {
           <app-plan-kudos [planId]="current.id" [names]="namesById()" [photos]="photoOf()" />
         }
+        @if (canReport()) {
+          @if (reporting()) {
+            <app-report-form
+              target="PLAN"
+              [targetId]="current.id"
+              [organizerId]="current.organizerId"
+              (closed)="reporting.set(false)"
+            />
+          } @else {
+            <p-button
+              class="report-plan"
+              [label]="'safety.reportPlan' | transloco"
+              icon="pi pi-flag"
+              [text]="true"
+              severity="secondary"
+              size="small"
+              (onClick)="reporting.set(true)"
+            />
+          }
+        }
         @if (justLeft()) {
           <p-message severity="info" class="left-message">{{ 'plan.left' | transloco }}</p-message>
         }

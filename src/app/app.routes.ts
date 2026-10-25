@@ -52,6 +52,13 @@ export const routes: Routes = [
     title: 'titles.network',
   },
   {
+    // The people I blocked (HU-033)
+    path: 'blocked',
+    canActivate: [authGuard],
+    loadComponent: () => import('@features/social/blocked-people').then((m) => m.BlockedPeople),
+    title: 'titles.blocked',
+  },
+  {
     // What the people I follow do in the plans (HU-051)
     path: 'feed',
     canActivate: [authGuard],

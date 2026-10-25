@@ -933,4 +933,19 @@ describe('PlanDetail', () => {
       false,
     ]);
   });
+
+  it('should let everyone but the organizer report the plan (HU-033)', async () => {
+    await create(PLAN);
+    element().querySelector<HTMLButtonElement>('.report-plan button')!.click();
+    await render();
+
+    const form = element().querySelector('app-report-form');
+    expect(form?.textContent).toContain('Reportar este plan');
+    element().querySelector<HTMLButtonElement>('.report-cancel button')!.click();
+    await render();
+    expect(element().querySelector('app-report-form')).toBeNull();
+
+    await create(PLAN, undefined, PLAN.organizerId);
+    expect(element().querySelector('.report-plan')).toBeNull();
+  });
 });

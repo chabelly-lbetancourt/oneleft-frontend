@@ -8,7 +8,7 @@ export type FeedAudience = 'FOLLOWERS' | 'NOBODY';
 export type FollowStatus = 'ACCEPTED' | 'PENDING';
 
 /** Where I stand with someone. */
-export type Relation = 'NONE' | 'REQUESTED' | 'FOLLOWING' | 'SELF';
+export type Relation = 'NONE' | 'REQUESTED' | 'FOLLOWING' | 'BLOCKED' | 'SELF';
 
 /** My profile in the social service and my counts. */
 export interface SocialAccount {

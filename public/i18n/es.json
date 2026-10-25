@@ -23,7 +23,8 @@
     "network": "Mi red",
     "person": "Persona",
     "reputation": "Mi reputación",
-    "feed": "OneLeft · Actividad de tu red"
+    "feed": "OneLeft · Actividad de tu red",
+    "blocked": "OneLeft · Personas bloqueadas"
   },
   "tabs": {
     "label": "Navegación principal",
@@ -38,7 +39,8 @@
     "profile": "Mi perfil",
     "network": "Mi red",
     "darkTheme": "Tema oscuro",
-    "lightTheme": "Tema claro"
+    "lightTheme": "Tema claro",
+    "blocked": "Personas bloqueadas"
   },
   "auth": {
     "login": "Entrar",
@@ -257,6 +259,43 @@
     "privateActivity": "El perfil de {{name}} es privado: solo quienes le siguen ven sus planes y su red.",
     "activityError": "No se ha podido cargar. Inténtalo de nuevo.",
     "loadingActivity": "Cargando…"
+  },
+  "safety": {
+    "block": "Bloquear",
+    "blockTitle": "¿Bloquear a {{name}}?",
+    "blockHint": "Dejaréis de seguiros, no veréis los planes del otro y no podrá unirse a los tuyos. No se le avisa.",
+    "blockConfirm": "Sí, bloquear",
+    "unblock": "Desbloquear",
+    "unblockPerson": "Desbloquear a {{name}}",
+    "blockedPerson": "Has bloqueado a {{name}}: no veis los planes del otro y no puede seguirte.",
+    "report": "Reportar",
+    "reportPlan": "Reportar este plan",
+    "reportPersonTitle": "Reportar a esta persona",
+    "reportPlanTitle": "Reportar este plan",
+    "reportHint": "Lo revisará la moderación. Nadie sabrá que has sido tú.",
+    "reason": "Motivo",
+    "chooseReason": "Elige un motivo",
+    "reasonRequired": "Elige un motivo.",
+    "comment": "Qué ha pasado (opcional)",
+    "commentRequired": "Qué ha pasado",
+    "commentMissing": "Cuéntanos qué ha pasado.",
+    "commentCount": "{{count}}/{{max}}",
+    "send": "Enviar el reporte",
+    "cancel": "Cancelar",
+    "close": "Cerrar",
+    "reported": "Gracias. La moderación lo revisará lo antes posible.",
+    "reasons": {
+      "HARASSMENT": "Acoso o insultos",
+      "INAPPROPRIATE": "Contenido inapropiado",
+      "DANGEROUS": "Pone a alguien en peligro",
+      "FAKE": "Perfil o plan falso",
+      "SPAM": "Spam o publicidad",
+      "OTHER": "Otro motivo"
+    },
+    "blockedTitle": "Personas bloqueadas",
+    "blockedHint": "No veis los planes del otro ni os podéis seguir. Al desbloquear, cada uno puede volver a pedir seguir al otro.",
+    "noBlocked": "No has bloqueado a nadie.",
+    "loadError": "No se ha podido cargar la lista. Inténtalo de nuevo."
   },
   "feed": {
     "title": "Actividad de tu red",
@@ -526,7 +565,8 @@
     },
     "social": {
       "unavailable": "Ahora mismo no se puede seguir a nadie. Inténtalo en un rato.",
-      "private": "El perfil de esta persona es privado: solo quienes le siguen ven sus planes y su red."
+      "private": "El perfil de esta persona es privado: solo quienes le siguen ven sus planes y su red.",
+      "blocked": "Has bloqueado a esta persona: desbloquéala para seguirla."
     },
     "photoFailed": "No se ha podido cambiar la foto. Inténtalo de nuevo.",
     "photo": {
@@ -545,6 +585,18 @@
       "receiverNotAttended": "Los kudos son para quien llegó al plan.",
       "notOrganizer": "«Organizó genial» es solo para quien organizó el plan.",
       "self": "No puedes darte un kudos a ti."
+    },
+    "reportFailed": "No se ha podido enviar el reporte. Inténtalo de nuevo.",
+    "blockFailed": "No se ha podido desbloquear. Inténtalo de nuevo.",
+    "report": {
+      "target": "Falta qué persona o plan reportas.",
+      "person": "Falta quién organiza el plan.",
+      "reason": "Elige un motivo.",
+      "comment": "Cuéntanos qué ha pasado (hasta 500 caracteres).",
+      "self": "No puedes reportarte a ti."
+    },
+    "block": {
+      "self": "No puedes bloquearte a ti."
     }
   },
   "nearby": {

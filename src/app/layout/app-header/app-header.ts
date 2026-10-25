@@ -68,6 +68,12 @@ export class AppHeader {
             routerLink: '/network',
             styleClass: 'user-menu__network',
           },
+          {
+            label: t('userMenu.blocked'),
+            icon: 'pi pi-ban',
+            routerLink: '/blocked',
+            styleClass: 'user-menu__blocked',
+          },
         ],
       },
       { separator: true },

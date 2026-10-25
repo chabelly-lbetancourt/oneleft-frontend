@@ -1,0 +1,24 @@
+@use 'abstracts' as *;
+
+.report-form {
+  @include stack(space(3));
+}
+
+.report-form__title {
+  @include text(base);
+  @include weight(semibold);
+  margin: 0;
+}
+
+.report-form__fields {
+  @include stack(space(3));
+}
+
+.report-form__field {
+  @include stack(space(1));
+}
+
+.report-form__actions {
+  @include row(space(2));
+  flex-wrap: wrap;
+}
