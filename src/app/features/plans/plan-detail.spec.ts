@@ -948,4 +948,21 @@ describe('PlanDetail', () => {
     await create(PLAN, undefined, PLAN.organizerId);
     expect(element().querySelector('.report-plan')).toBeNull();
   });
+
+  it('should offer the card for Stories to the organizer while the plan has free spots (HU-056)', async () => {
+    await create(PLAN, undefined, PLAN.organizerId);
+    expect(element().querySelector('app-story-share')?.textContent).toContain(
+      'Tarjeta para Stories',
+    );
+
+    // Not to whoever joined, nor once the plan is full
+    await create(PLAN);
+    expect(element().querySelector('app-story-share')).toBeNull();
+    await create(
+      { ...PLAN, status: 'FULL', occupied: 2, freeSpots: 0 },
+      undefined,
+      PLAN.organizerId,
+    );
+    expect(element().querySelector('app-story-share')).toBeNull();
+  });
 });

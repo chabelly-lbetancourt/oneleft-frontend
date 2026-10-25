@@ -33,6 +33,12 @@
   --ol-spot-border: var(--p-primary-400);
   --ol-spot-background: var(--p-primary-50);
   --ol-missing-underline: var(--p-primary-300);
+  // The card of a plan for Stories (HU-056): an image, so the same in both themes, with a dark QR code on white
+  --ol-story-background: var(--p-primary-700);
+  --ol-story-on-background: #fff;
+  --ol-story-card: #fff;
+  --ol-story-ink: #1c1917;
+  --ol-story-muted: var(--p-surface-600);
   --ol-selection: var(--p-primary-100);
   // Avatars with initials
   --ol-avatar: var(--p-primary-100);

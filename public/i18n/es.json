@@ -191,6 +191,21 @@
     "arrivalYou": "Tú",
     "chat": "Chat del plan"
   },
+  "story": {
+    "title": "Tarjeta para Stories",
+    "hint": "Una imagen del plan con un código QR, para compartirla en Instagram, WhatsApp o TikTok. Se crea en tu móvil.",
+    "create": "Crear la tarjeta",
+    "share": "Compartir",
+    "download": "Descargar",
+    "close": "Cerrar",
+    "preview": "Tarjeta de «{{title}}» para Stories",
+    "failed": "No se ha podido crear la tarjeta. Inténtalo de nuevo.",
+    "missingOne": "¡Falta 1!",
+    "missingMany": "¡Faltan {{count}}!",
+    "today": "Hoy · {{time}}",
+    "tomorrow": "Mañana · {{time}}",
+    "scan": "Escanea y apúntate"
+  },
   "checkIn": {
     "title": "¿Ya estás allí?",
     "action": "He llegado",
