@@ -32,6 +32,7 @@ import { IconTile } from '@components/icon-tile/icon-tile';
 import { PersonAvatar } from '@components/person-avatar/person-avatar';
 import { PlanCheckIn } from '@components/plan-check-in/plan-check-in';
 import { ReportForm } from '@components/report-form/report-form';
+import { StoryShare } from '@components/story-share/story-share';
 import { ReputationBadge } from '@components/reputation-badge/reputation-badge';
 import { SpotSlots } from '@components/spot-slots/spot-slots';
 import { PageLayout } from '@layout/page-layout/page-layout';
@@ -74,6 +75,7 @@ const ENDED: Plan['status'][] = ['IN_PROGRESS', 'FINISHED', 'CANCELLED'];
     ReputationBadge,
     RouterLink,
     SpotSlots,
+    StoryShare,
     Tag,
     TranslocoPipe,
   ],
@@ -180,6 +182,17 @@ export class PlanDetail {
   /** Reporting the plan (HU-033): with a session, for everyone but its organizer */
   protected readonly canReport = computed(() => !this.isGuest() && this.relation() !== 'organizer');
   protected readonly reporting = signal(false);
+  /** The card for Stories (HU-056): for the organizer, while the plan has free spots and has not started */
+  protected readonly canShareStory = computed(() => {
+    const plan = this.plan();
+    return (
+      !!plan &&
+      this.relation() === 'organizer' &&
+      plan.status === 'OPEN' &&
+      plan.freeSpots > 0 &&
+      new Date(plan.startsAt).getTime() > Date.now()
+    );
+  });
   /** Browsers without the native share sheet copy the link instead */
   protected readonly copied = signal(false);
   protected readonly spotsKey = spotsKey;

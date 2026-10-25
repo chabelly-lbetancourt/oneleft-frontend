@@ -1,0 +1,50 @@
+<section class="story-share panel-muted" aria-labelledby="story-share-title">
+  <p class="story-share__title" id="story-share-title">
+    <i class="pi pi-image" aria-hidden="true"></i>
+    {{ 'story.title' | transloco }}
+  </p>
+  @if (card(); as current) {
+    <img
+      class="story-preview"
+      [src]="current.url"
+      [alt]="'story.preview' | transloco: { title: plan().title }"
+      width="270"
+      height="480"
+    />
+    <div class="story-share__actions">
+      @if (canShare()) {
+        <p-button
+          class="story-send"
+          [label]="'story.share' | transloco"
+          icon="pi pi-share-alt"
+          (onClick)="share()"
+        />
+      }
+      <a class="story-download link-action" [href]="current.url" [attr.download]="fileName()">{{
+        'story.download' | transloco
+      }}</a>
+      <p-button
+        class="story-close"
+        [label]="'story.close' | transloco"
+        [text]="true"
+        severity="secondary"
+        (onClick)="close()"
+      />
+    </div>
+  } @else {
+    <p class="hint">{{ 'story.hint' | transloco }}</p>
+    <p-button
+      class="story-create"
+      [label]="'story.create' | transloco"
+      icon="pi pi-image"
+      [outlined]="true"
+      severity="secondary"
+      styleClass="button--block"
+      [loading]="busy()"
+      (onClick)="create()"
+    />
+  }
+  @if (failed()) {
+    <p-message severity="error" class="story-error">{{ 'story.failed' | transloco }}</p-message>
+  }
+</section>

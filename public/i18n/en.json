@@ -191,6 +191,21 @@
     "arrivalYou": "You",
     "chat": "Plan chat"
   },
+  "story": {
+    "title": "Card for Stories",
+    "hint": "An image of the plan with a QR code, to share on Instagram, WhatsApp or TikTok. It is made on your phone.",
+    "create": "Make the card",
+    "share": "Share",
+    "download": "Download",
+    "close": "Close",
+    "preview": "Card of «{{title}}» for Stories",
+    "failed": "The card could not be made. Try again.",
+    "missingOne": "One more needed!",
+    "missingMany": "{{count}} more needed!",
+    "today": "Today · {{time}}",
+    "tomorrow": "Tomorrow · {{time}}",
+    "scan": "Scan and join"
+  },
   "checkIn": {
     "title": "Are you there yet?",
     "action": "I'm here",

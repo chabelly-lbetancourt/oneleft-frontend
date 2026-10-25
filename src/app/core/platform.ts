@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { App, URLOpenListenerEvent } from '@capacitor/app';
 import { Browser } from '@capacitor/browser';
 import { Capacitor, SystemBars, SystemBarsStyle } from '@capacitor/core';
+import { Directory, Filesystem } from '@capacitor/filesystem';
 import { Share } from '@capacitor/share';
 
 /** True inside the Android app (Capacitor), false in the browser. */
@@ -35,6 +36,19 @@ export class NativePlatform {
   }
 
   /**
+   * Shares an image with the Android share sheet (HU-056): the sheet takes files, so the image goes first to the
+   * cache of the app, which Android empties when it needs room.
+   */
+  async shareImage(image: Blob, fileName: string, title: string): Promise<void> {
+    const { uri } = await Filesystem.writeFile({
+      path: fileName,
+      data: await toBase64(image),
+      directory: Directory.Cache,
+    });
+    await Share.share({ title, files: [uri], dialogTitle: title });
+  }
+
+  /**
    * Clock and icons of the system bars of the Android app (it draws edge to edge, under them): light over the dark
    * theme and dark over the light one. Nothing in the browser.
    */
@@ -53,3 +67,12 @@ export class NativePlatform {
     return App.addListener('appUrlOpen', listener);
   }
 }
+
+/** The data of an image as base64, without the «data:…;base64,» prefix (what Filesystem.writeFile takes). */
+export const toBase64 = (blob: Blob): Promise<string> =>
+  new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result).split(',')[1] ?? '');
+    reader.onerror = () => reject(reader.error);
+    reader.readAsDataURL(blob);
+  });

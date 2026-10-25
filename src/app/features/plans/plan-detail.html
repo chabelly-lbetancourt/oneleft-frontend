@@ -331,6 +331,9 @@
             <p class="ended-hint hint">{{ endedHintKey() | transloco }}</p>
           }
         }
+        @if (canShareStory()) {
+          <app-story-share [plan]="current" />
+        }
         @if (canAddToCalendar()) {
           <p-button
             class="calendar-button"
