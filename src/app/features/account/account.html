@@ -1,0 +1,99 @@
+<app-page-layout [title]="'account.title' | transloco">
+  <section class="account-card" aria-labelledby="privacy-title">
+    <h2 class="account-card__title" id="privacy-title">{{ 'account.privacyTitle' | transloco }}</h2>
+    @if (consent(); as status) {
+      @if (status.accepted) {
+        <p class="consent-status">
+          <i class="pi pi-check-circle" aria-hidden="true"></i>
+          {{ 'account.accepted' | transloco: { date: (status.acceptedAt | date: 'longDate') } }}
+        </p>
+      } @else {
+        <p class="consent-status consent-status--missing">
+          {{ 'account.notAccepted' | transloco }}
+        </p>
+        <p-button
+          class="account-accept"
+          [label]="'consent.accept' | transloco"
+          icon="pi pi-check"
+          (onClick)="accept(status.currentVersion)"
+        />
+      }
+    } @else if (consentFailed()) {
+      <p class="field-error" role="alert">{{ 'consent.failed' | transloco }}</p>
+    }
+    <a routerLink="/privacy" class="link-action privacy-link">{{ 'consent.read' | transloco }}</a>
+  </section>
+
+  <section class="account-card" aria-labelledby="download-title">
+    <h2 class="account-card__title" id="download-title">
+      {{ 'account.downloadTitle' | transloco }}
+    </h2>
+    <p class="muted">{{ 'account.downloadText' | transloco }}</p>
+    <p-button
+      class="account-download"
+      [label]="'account.download' | transloco"
+      icon="pi pi-download"
+      [outlined]="true"
+      [loading]="downloading()"
+      (onClick)="download()"
+    />
+    @if (downloaded()) {
+      <p-message severity="success" icon="pi pi-check-circle" class="download-done">{{
+        'account.downloaded' | transloco
+      }}</p-message>
+    }
+    @if (downloadError(); as message) {
+      <p-message severity="error" class="download-error">{{
+        message.key | transloco: message.params
+      }}</p-message>
+    }
+  </section>
+
+  <section class="account-card account-card--danger" aria-labelledby="delete-title">
+    <h2 class="account-card__title" id="delete-title">{{ 'account.deleteTitle' | transloco }}</h2>
+    <p class="muted">{{ 'account.deleteIntro' | transloco }}</p>
+    <h3 class="account-card__subtitle">{{ 'account.removedTitle' | transloco }}</h3>
+    <ul class="account-list">
+      @for (item of ['profile', 'social', 'notices', 'reputation', 'account']; track item) {
+        <li>{{ 'account.removed.' + item | transloco }}</li>
+      }
+    </ul>
+    <h3 class="account-card__subtitle">{{ 'account.staysTitle' | transloco }}</h3>
+    <ul class="account-list">
+      @for (item of ['chat', 'plans', 'kudos']; track item) {
+        <li>{{ 'account.stays.' + item | transloco }}</li>
+      }
+    </ul>
+    <p class="muted">
+      <strong>{{ 'account.noUndo' | transloco }}</strong>
+    </p>
+    <div class="account-confirm">
+      <label for="delete-confirmation" class="field-label">{{
+        'account.confirm' | transloco: { word: deleteWord() }
+      }}</label>
+      <input
+        pInputText
+        id="delete-confirmation"
+        class="delete-confirmation"
+        autocomplete="off"
+        autocapitalize="characters"
+        [ngModel]="confirmation()"
+        (ngModelChange)="confirmation.set($event)"
+      />
+    </div>
+    <p-button
+      class="account-delete"
+      [label]="'account.delete' | transloco"
+      icon="pi pi-trash"
+      severity="danger"
+      [disabled]="!canDelete()"
+      [loading]="deleting()"
+      (onClick)="deleteAccount()"
+    />
+    @if (deleteError(); as message) {
+      <p-message severity="error" class="delete-error">{{
+        message.key | transloco: message.params
+      }}</p-message>
+    }
+  </section>
+</app-page-layout>

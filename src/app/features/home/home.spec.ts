@@ -28,7 +28,7 @@ const providers = (session: FakeSession) => [
   { provide: Session, useValue: session },
   // The «I'm free now» card has its own tests (HU-035)
   { provide: PlansApi, useValue: { myAvailability: () => of(null) } },
-  { provide: UsersApi, useValue: { myProfile: () => of(null) } },
+  { provide: UsersApi, useValue: { myProfile: () => of(null), consent: () => of(null) } },
   {
     provide: UserEvents,
     useValue: {

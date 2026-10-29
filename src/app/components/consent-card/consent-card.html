@@ -1,0 +1,25 @@
+@if (status(); as consent) {
+  @if (!consent.accepted) {
+    <section class="consent-card" aria-labelledby="consent-title">
+      <h2 class="consent-card__title" id="consent-title">
+        {{ (consent.acceptedVersion ? 'consent.changedTitle' : 'consent.title') | transloco }}
+      </h2>
+      <p class="muted">{{ 'consent.text' | transloco }}</p>
+      <div class="consent-card__actions">
+        <p-button
+          class="consent-accept"
+          [label]="'consent.accept' | transloco"
+          icon="pi pi-check"
+          [loading]="busy()"
+          (onClick)="accept(consent.currentVersion)"
+        />
+        <a routerLink="/privacy" class="consent-read link-action">{{
+          'consent.read' | transloco
+        }}</a>
+      </div>
+      @if (failed()) {
+        <p class="field-error consent-error" role="alert">{{ 'consent.failed' | transloco }}</p>
+      }
+    </section>
+  }
+}

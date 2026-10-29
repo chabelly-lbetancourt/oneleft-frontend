@@ -36,16 +36,21 @@ export class NativePlatform {
   }
 
   /**
-   * Shares an image with the Android share sheet (HU-056): the sheet takes files, so the image goes first to the
-   * cache of the app, which Android empties when it needs room.
+   * Shares a file with the Android share sheet (HU-056, HU-045): the sheet takes files, so the file goes first to the
+   * cache of the app, which Android empties when it needs room. It is also how the Android app saves a file: the
+   * WebView cannot download one.
    */
-  async shareImage(image: Blob, fileName: string, title: string): Promise<void> {
+  async shareFile(file: Blob, fileName: string, title: string): Promise<void> {
     const { uri } = await Filesystem.writeFile({
       path: fileName,
-      data: await toBase64(image),
+      data: await toBase64(file),
       directory: Directory.Cache,
     });
     await Share.share({ title, files: [uri], dialogTitle: title });
+  }
+
+  shareImage(image: Blob, fileName: string, title: string): Promise<void> {
+    return this.shareFile(image, fileName, title);
   }
 
   /**

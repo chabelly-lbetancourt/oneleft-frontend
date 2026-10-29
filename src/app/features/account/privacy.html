@@ -1,0 +1,14 @@
+<app-page-layout [title]="'privacy.title' | transloco">
+  <article class="account-card privacy-text">
+    <p class="muted">{{ 'privacy.intro' | transloco }}</p>
+    @for (section of sections; track section) {
+      <section [attr.aria-labelledby]="'privacy-' + section">
+        <h2 class="account-card__title" [id]="'privacy-' + section">
+          {{ 'privacy.sections.' + section + '.title' | transloco }}
+        </h2>
+        <p class="muted">{{ 'privacy.sections.' + section + '.text' | transloco }}</p>
+      </section>
+    }
+    <p class="muted privacy-version">{{ 'privacy.version' | transloco }}</p>
+  </article>
+</app-page-layout>

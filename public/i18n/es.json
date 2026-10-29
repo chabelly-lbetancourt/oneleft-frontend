@@ -24,7 +24,9 @@
     "person": "Persona",
     "reputation": "Mi reputación",
     "feed": "OneLeft · Actividad de tu red",
-    "blocked": "OneLeft · Personas bloqueadas"
+    "blocked": "OneLeft · Personas bloqueadas",
+    "account": "OneLeft · Mis datos",
+    "privacy": "OneLeft · Privacidad"
   },
   "tabs": {
     "label": "Navegación principal",
@@ -40,7 +42,8 @@
     "network": "Mi red",
     "darkTheme": "Tema oscuro",
     "lightTheme": "Tema claro",
-    "blocked": "Personas bloqueadas"
+    "blocked": "Personas bloqueadas",
+    "account": "Mis datos"
   },
   "auth": {
     "login": "Entrar",
@@ -612,6 +615,17 @@
     },
     "block": {
       "self": "No puedes bloquearte a ti."
+    },
+    "dataFailed": "No se han podido reunir tus datos ahora mismo. Inténtalo de nuevo en un rato.",
+    "accountFailed": "No se ha podido eliminar la cuenta. No se ha borrado nada: inténtalo de nuevo.",
+    "data": {
+      "unavailable": "Un servicio no ha respondido, y no te damos un fichero incompleto. Inténtalo de nuevo en un rato."
+    },
+    "account": {
+      "unavailable": "No se ha podido eliminar la cuenta ahora mismo. No se ha borrado nada: inténtalo de nuevo."
+    },
+    "consent": {
+      "version": "El texto de privacidad ha cambiado. Recarga la página y vuelve a leerlo."
     }
   },
   "nearby": {
@@ -792,6 +806,79 @@
       "chat.text": "El mensaje no puede estar vacío ni pasar de 500 caracteres.",
       "chat.tooFast": "Vas muy rápido: espera un momento antes de enviar otro mensaje.",
       "chat.offline": "Sin conexión con el chat: tu mensaje no se ha enviado."
+    }
+  },
+  "consent": {
+    "title": "Tu privacidad",
+    "changedTitle": "Hemos actualizado el texto de privacidad",
+    "text": "Para seguir usando OneLeft, lee cómo tratamos tus datos y acéptalo. Puedes descargarlos o borrar tu cuenta cuando quieras.",
+    "accept": "Acepto",
+    "read": "Leer el texto de privacidad",
+    "failed": "No se ha podido guardar. Inténtalo de nuevo."
+  },
+  "account": {
+    "title": "Mis datos",
+    "privacyTitle": "Texto de privacidad",
+    "accepted": "Aceptaste el texto de privacidad el {{date}}.",
+    "notAccepted": "Aún no has aceptado el texto de privacidad en vigor.",
+    "downloadTitle": "Descargar mis datos",
+    "downloadText": "Un fichero JSON con todo lo que OneLeft guarda de ti: tu perfil, tus planes, tu red, tu reputación, tus avisos y tus mensajes. Es tu derecho de acceso y de portabilidad.",
+    "download": "Descargar mis datos",
+    "downloaded": "Listo: tus datos se han descargado.",
+    "deleteTitle": "Eliminar mi cuenta",
+    "deleteIntro": "Se borra tu cuenta y lo que solo te concierne a ti. Lo que compartes con otras personas se queda, pero sin tu nombre.",
+    "removedTitle": "Se borra",
+    "removed": {
+      "profile": "Tu perfil, tu foto, tus aficiones y tu zona",
+      "social": "A quién sigues, quién te sigue, tus bloqueos, tus reportes y tu actividad",
+      "notices": "Tus avisos, alertas guardadas y suscripciones",
+      "reputation": "Tu reputación, tus insignias y los kudos que recibiste",
+      "account": "Tu cuenta de acceso"
+    },
+    "staysTitle": "Se queda, sin tu nombre",
+    "stays": {
+      "chat": "Tus mensajes en los chats de los planes, como «Persona eliminada»",
+      "plans": "Tu participación en planes ya celebrados. Tus planes futuros se cancelan y liberas tu plaza en los de otras personas",
+      "kudos": "Los kudos que diste, para quien los recibió"
+    },
+    "noUndo": "No se puede deshacer.",
+    "confirm": "Para confirmar, escribe {{word}}",
+    "deleteWord": "ELIMINAR",
+    "delete": "Eliminar mi cuenta para siempre"
+  },
+  "privacy": {
+    "title": "Privacidad",
+    "intro": "OneLeft pone en contacto a personas que quieren completar un plan en las próximas horas. Esto es lo que guardamos de ti y por qué.",
+    "version": "Versión 2026-10-25.",
+    "sections": {
+      "who": {
+        "title": "Quién trata tus datos",
+        "text": "OneLeft es un proyecto académico (un trabajo de fin de máster). La persona que lo despliega es la responsable del tratamiento de los datos de esta instancia."
+      },
+      "data": {
+        "title": "Qué datos guardamos",
+        "text": "Tu cuenta (nombre y correo, en Keycloak), tu perfil (nombre visible, biografía, aficiones y una zona aproximada, nunca tu dirección), tu foto si la subes, los planes que publicas o a los que te apuntas, tu actividad y a quién sigues, tus mensajes en los chats de los planes, tu reputación y tus kudos, tus avisos y alertas, y tus bloqueos y reportes. La ubicación del check-in no se guarda."
+      },
+      "why": {
+        "title": "Para qué y con qué base",
+        "text": "Para que la aplicación funcione: mostrarte planes cercanos, completar los tuyos, avisarte y calcular tu reputación. La base es tu consentimiento y la ejecución del servicio que pides."
+      },
+      "sharing": {
+        "title": "Con quién los compartimos",
+        "text": "Con las demás personas, solo lo que decides mostrar: tu nombre, tu foto y tu actividad según tu privacidad. Usamos servicios técnicos como el mapa de OpenStreetMap, el tiempo de Open-Meteo y, si eliges entrar con Google, Google. No vendemos tus datos."
+      },
+      "keeping": {
+        "title": "Cuánto los guardamos",
+        "text": "Mientras tengas la cuenta. Los mensajes de un chat se borran un día después de terminar el plan. Al borrar tu cuenta se elimina lo tuyo y lo compartido queda sin tu nombre."
+      },
+      "rights": {
+        "title": "Tus derechos",
+        "text": "Acceso y portabilidad (descargar tus datos), rectificación (editar tu perfil), supresión (eliminar tu cuenta) y retirar tu consentimiento. Los ejerces tú mismo desde «Mis datos», sin pedírselo a nadie."
+      },
+      "minors": {
+        "title": "Menores",
+        "text": "OneLeft es para mayores de edad: pone en contacto a personas que no se conocen."
+      }
     }
   }
 }
