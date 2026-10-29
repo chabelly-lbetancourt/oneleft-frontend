@@ -52,6 +52,19 @@ export const routes: Routes = [
     title: 'titles.network',
   },
   {
+    // My data, my consent and deleting my account (HU-045)
+    path: 'account',
+    canActivate: [authGuard],
+    loadComponent: () => import('@features/account/account').then((m) => m.Account),
+    title: 'titles.account',
+  },
+  {
+    // The privacy text (HU-045): public, to read before signing up
+    path: 'privacy',
+    loadComponent: () => import('@features/account/privacy').then((m) => m.Privacy),
+    title: 'titles.privacy',
+  },
+  {
     // The people I blocked (HU-033)
     path: 'blocked',
     canActivate: [authGuard],

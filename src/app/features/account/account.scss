@@ -1,0 +1,46 @@
+@use 'abstracts' as *;
+
+.account-card {
+  @include card;
+  @include stack(space(3));
+  padding: space(4);
+}
+
+.account-card__title {
+  @include text(base);
+  @include weight(semibold);
+  margin: 0;
+}
+
+.account-card__subtitle {
+  @include text(sm);
+  @include weight(semibold);
+  margin: 0;
+}
+
+.consent-status {
+  @include row(space(2));
+  margin: 0;
+  color: var(--ol-brand);
+
+  &--missing {
+    color: var(--ol-text-soft);
+  }
+}
+
+// What deleting removes and what stays: short lists, easy to scan
+.account-list {
+  @include stack(space(1));
+  margin: 0;
+  padding-left: space(5);
+  color: var(--ol-text-soft);
+}
+
+.account-confirm {
+  @include stack(space(1));
+}
+
+// The page ends with the irreversible action, set apart
+.account-card--danger {
+  border-color: var(--ol-brand-ring);
+}

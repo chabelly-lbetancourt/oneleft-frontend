@@ -24,7 +24,9 @@
     "person": "Person",
     "reputation": "My reputation",
     "feed": "OneLeft · Your network’s activity",
-    "blocked": "OneLeft · Blocked people"
+    "blocked": "OneLeft · Blocked people",
+    "account": "OneLeft · My data",
+    "privacy": "OneLeft · Privacy"
   },
   "tabs": {
     "label": "Main navigation",
@@ -40,7 +42,8 @@
     "network": "My network",
     "darkTheme": "Dark theme",
     "lightTheme": "Light theme",
-    "blocked": "Blocked people"
+    "blocked": "Blocked people",
+    "account": "My data"
   },
   "auth": {
     "login": "Sign in",
@@ -612,6 +615,17 @@
     },
     "block": {
       "self": "You cannot block yourself."
+    },
+    "dataFailed": "Your data could not be gathered right now. Try again in a while.",
+    "accountFailed": "The account could not be deleted. Nothing was deleted: try again.",
+    "data": {
+      "unavailable": "A service did not answer, and we do not give you an incomplete file. Try again in a while."
+    },
+    "account": {
+      "unavailable": "The account could not be deleted right now. Nothing was deleted: try again."
+    },
+    "consent": {
+      "version": "The privacy text changed. Reload the page and read it again."
     }
   },
   "nearby": {
@@ -792,6 +806,79 @@
       "chat.text": "A message cannot be empty or longer than 500 characters.",
       "chat.tooFast": "You are going too fast: wait a moment before sending another message.",
       "chat.offline": "No connection with the chat: your message was not sent."
+    }
+  },
+  "consent": {
+    "title": "Your privacy",
+    "changedTitle": "We updated the privacy text",
+    "text": "To keep using OneLeft, read how we handle your data and accept it. You can download it or delete your account whenever you want.",
+    "accept": "I accept",
+    "read": "Read the privacy text",
+    "failed": "It could not be saved. Try again."
+  },
+  "account": {
+    "title": "My data",
+    "privacyTitle": "Privacy text",
+    "accepted": "You accepted the privacy text on {{date}}.",
+    "notAccepted": "You have not accepted the privacy text in force yet.",
+    "downloadTitle": "Download my data",
+    "downloadText": "A JSON file with everything OneLeft keeps of you: your profile, your plans, your network, your reputation, your notices and your messages. It is your right of access and portability.",
+    "download": "Download my data",
+    "downloaded": "Done: your data was downloaded.",
+    "deleteTitle": "Delete my account",
+    "deleteIntro": "Your account and what only concerns you are deleted. What you share with other people stays, but without your name.",
+    "removedTitle": "Deleted",
+    "removed": {
+      "profile": "Your profile, photo, hobbies and zone",
+      "social": "Who you follow, who follows you, your blocks, your reports and your activity",
+      "notices": "Your notices, saved alerts and subscriptions",
+      "reputation": "Your reputation, your badges and the kudos you received",
+      "account": "Your sign-in account"
+    },
+    "staysTitle": "Stays, without your name",
+    "stays": {
+      "chat": "Your messages in the chats of plans, as «Persona eliminada»",
+      "plans": "Your part in plans already held. Your upcoming plans are cancelled and your spot in other people's plans is freed",
+      "kudos": "The kudos you gave, for whoever received them"
+    },
+    "noUndo": "It cannot be undone.",
+    "confirm": "To confirm, type {{word}}",
+    "deleteWord": "DELETE",
+    "delete": "Delete my account forever"
+  },
+  "privacy": {
+    "title": "Privacy",
+    "intro": "OneLeft puts people in touch who want to complete a plan in the next few hours. This is what we keep of you and why.",
+    "version": "Version 2026-10-25.",
+    "sections": {
+      "who": {
+        "title": "Who handles your data",
+        "text": "OneLeft is an academic project (a master's thesis). Whoever deploys it is responsible for the data of this instance."
+      },
+      "data": {
+        "title": "What data we keep",
+        "text": "Your account (name and email, in Keycloak), your profile (display name, bio, hobbies and an approximate zone, never your address), your photo if you upload one, the plans you publish or join, your activity and who you follow, your messages in the chats of plans, your reputation and kudos, your notices and alerts, and your blocks and reports. The location of the check-in is not kept."
+      },
+      "why": {
+        "title": "Why and on what basis",
+        "text": "So that the app works: showing you nearby plans, completing yours, notifying you and computing your reputation. The basis is your consent and the service you ask for."
+      },
+      "sharing": {
+        "title": "Who we share it with",
+        "text": "With other people, only what you decide to show: your name, your photo and your activity according to your privacy. We use technical services such as the OpenStreetMap map, Open-Meteo weather and, if you choose to sign in with Google, Google. We do not sell your data."
+      },
+      "keeping": {
+        "title": "How long we keep it",
+        "text": "As long as you have the account. The messages of a chat are deleted a day after the plan ends. When you delete your account, what is yours is removed and what is shared stays without your name."
+      },
+      "rights": {
+        "title": "Your rights",
+        "text": "Access and portability (download your data), rectification (edit your profile), erasure (delete your account) and withdrawing your consent. You exercise them yourself from «My data», without asking anyone."
+      },
+      "minors": {
+        "title": "Minors",
+        "text": "OneLeft is for adults: it puts people who do not know each other in touch."
+      }
     }
   }
 }

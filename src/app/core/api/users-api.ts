@@ -3,6 +3,7 @@ import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '@env/environment';
 import { Catalog, MyProfile, PublicProfile, UpdateProfile } from '@shared/model/profile';
+import { ConsentStatus } from '@shared/model/account';
 import { UserProfile } from '@shared/model/user';
 
 /** Client of the users service through the API Gateway. */
@@ -30,5 +31,24 @@ export class UsersApi {
 
   catalog(): Observable<Catalog> {
     return this.http.get<Catalog>(`${this.base}/activities`);
+  }
+
+  /** Everything the services keep of me, as the file I save (HU-045). */
+  myData(): Observable<Blob> {
+    return this.http.get(`${this.base}/me/data`, { responseType: 'blob' });
+  }
+
+  /** Deletes my account: here, in Keycloak and, by an event, in every service (HU-045). */
+  deleteMyAccount(): Observable<void> {
+    return this.http.delete<void>(`${this.base}/me/account`);
+  }
+
+  /** The privacy text in force and whether I accepted it (HU-045). */
+  consent(): Observable<ConsentStatus> {
+    return this.http.get<ConsentStatus>(`${this.base}/me/consent`);
+  }
+
+  acceptConsent(version: string): Observable<ConsentStatus> {
+    return this.http.put<ConsentStatus>(`${this.base}/me/consent`, { version });
   }
 }
