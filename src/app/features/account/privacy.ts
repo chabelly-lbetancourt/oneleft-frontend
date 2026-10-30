@@ -3,7 +3,7 @@ import { TranslocoPipe } from '@jsverse/transloco';
 import { PageLayout } from '@layout/page-layout/page-layout';
 
 /** The sections of the privacy text, by their key under {@code privacy.sections} */
-const SECTIONS = ['who', 'data', 'why', 'sharing', 'keeping', 'rights', 'minors'];
+const SECTIONS = ['who', 'data', 'why', 'sharing', 'keeping', 'ai', 'rights', 'minors'];
 
 /**
  * The privacy text (HU-045), public so that it can be read before signing up. Its version is the one the consent

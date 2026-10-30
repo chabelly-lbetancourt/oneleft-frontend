@@ -24,6 +24,7 @@ import { SelectButton } from 'primeng/selectbutton';
 import { Textarea } from 'primeng/textarea';
 import { ToggleSwitch } from 'primeng/toggleswitch';
 import { PageLayout } from '@layout/page-layout/page-layout';
+import { DraftMessage, PlanDraftCard } from '@components/plan-draft/plan-draft';
 import { PlansApi } from '@core/api/plans-api';
 import { UsersApi } from '@core/api/users-api';
 import {
@@ -38,6 +39,7 @@ import { Language } from '@core/i18n/language';
 import { formatDistance } from '@shared/geo/distance';
 import { ACTIVITIES, activityKey } from '@shared/model/activities';
 import { PLACE_QUERY_MIN_LENGTH, PlaceSuggestion } from '@shared/model/places';
+import { PlanDraft } from '@shared/model/plan-draft';
 import { Level, LEVELS, levelKey } from '@shared/model/profile';
 import {
   MAX_HORIZON_HOURS,
@@ -88,6 +90,7 @@ interface StatusMessage {
     ToggleSwitch,
     TranslocoPipe,
     PageLayout,
+    PlanDraftCard,
   ],
   templateUrl: './publish-plan.html',
   styleUrl: './publish-plan.scss',
@@ -125,6 +128,10 @@ export class PublishPlan implements OnInit {
   ]);
 
   protected readonly publishing = signal(false);
+  /** The sentence is being understood (HU-010), and what came out of it */
+  protected readonly drafting = signal(false);
+  protected readonly draftMessage = signal<DraftMessage | null>(null);
+  protected readonly draftSeverity = signal<'error' | 'success' | 'info'>('info');
   protected readonly locating = signal(false);
   protected readonly error = signal<StatusMessage | null>(null);
   protected readonly placeQueryMinLength = PLACE_QUERY_MIN_LENGTH;
@@ -220,6 +227,98 @@ export class PublishPlan implements OnInit {
     }
     const candidate = nextOccurrence(customTime, now);
     return startsInRange(candidate, now) ? candidate : null;
+  }
+
+  /**
+   * «Tell it in one sentence» (HU-010): the service understands it and the form is filled in. Nothing is published:
+   * the person reviews the form and sends it as usual.
+   */
+  protected async describe(text: string): Promise<void> {
+    this.drafting.set(true);
+    this.draftMessage.set(null);
+    this.searchArea ??= this.whereToSearch();
+    const near = await this.searchArea;
+    if (!near) {
+      this.showDraft({ key: 'publish.draft.noLocation' }, 'error');
+      this.drafting.set(false);
+      return;
+    }
+    const zone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    this.api.draft(text, near, zone).subscribe({
+      next: (draft) => {
+        this.applyDraft(draft);
+        this.drafting.set(false);
+      },
+      error: (error) => {
+        this.drafting.set(false);
+        this.showDraft(apiErrorMessage(this.transloco, error, 'errors.draftFailed'), 'error');
+      },
+    });
+  }
+
+  /** Fills in what the draft understood and marks what is left for the person to complete. */
+  protected applyDraft(draft: PlanDraft): void {
+    const controls = this.form.controls;
+    const patch: Record<string, unknown> = {};
+    const put = (name: string, value: unknown) => (value == null ? null : (patch[name] = value));
+    put('activity', draft.activity);
+    put('title', draft.title);
+    put('description', draft.description);
+    put('spots', draft.spots);
+    put('level', draft.level);
+    if (draft.meetingPoint) {
+      patch['placeName'] = draft.meetingPoint.name;
+      patch['latitude'] = roundCoordinate(draft.meetingPoint.latitude, PLACE_DECIMALS);
+      patch['longitude'] = roundCoordinate(draft.meetingPoint.longitude, PLACE_DECIMALS);
+    } else if (draft.place) {
+      patch['placeName'] = draft.place;
+    }
+    if (draft.startsAt) {
+      const at = new Date(draft.startsAt);
+      patch['start'] = 'custom';
+      patch['customTime'] =
+        `${String(at.getHours()).padStart(2, '0')}:${String(at.getMinutes()).padStart(2, '0')}`;
+    }
+    if (draft.minParticipants) {
+      patch['hasMinimum'] = true;
+      patch['minParticipants'] = draft.minParticipants;
+    }
+    this.form.patchValue(patch);
+    const fields: Record<string, { markAsTouched(): void }> = {
+      activity: controls.activity,
+      title: controls.title,
+      meetingPoint: controls.latitude,
+      startsAt: controls.customTime,
+      spots: controls.spots,
+    };
+    draft.missing.forEach((field) => fields[field]?.markAsTouched());
+    this.showDraftResult(draft);
+  }
+
+  private showDraftResult(draft: PlanDraft): void {
+    if (draft.warnings.includes('startsAt.window')) {
+      this.showDraft(
+        { key: 'publish.draft.timeWindow', params: { hours: MAX_HORIZON_HOURS } },
+        'info',
+      );
+    } else if (draft.warnings.includes('meetingPoint.notFound')) {
+      this.showDraft(
+        { key: 'publish.draft.placeNotFound', params: { place: draft.place } },
+        'info',
+      );
+    } else if (draft.missing.length) {
+      const fields = draft.missing
+        .map((field) => this.transloco.translate(`publish.draft.fields.${field}`))
+        .join(', ');
+      this.showDraft({ key: 'publish.draft.missing', params: { fields } }, 'info');
+    } else {
+      this.showDraft({ key: 'publish.draft.done' }, 'success');
+    }
+  }
+
+  private showDraft(message: DraftMessage, severity: 'error' | 'success' | 'info'): void {
+    this.draftMessage.set(message);
+    this.draftSeverity.set(severity);
   }
 
   protected async useMyLocation(): Promise<void> {

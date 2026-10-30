@@ -1,5 +1,9 @@
 @use 'abstracts' as *;
 
+.publish-page {
+  @include stack(space(6));
+}
+
 .publish-form {
   @include stack(space(6));
   @include stagger(ol-fade-up, 60ms);

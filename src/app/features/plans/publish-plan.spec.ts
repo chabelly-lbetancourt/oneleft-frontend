@@ -11,7 +11,7 @@ import { translocoTesting } from '@testing/transloco-testing';
 describe('PublishPlan', () => {
   let fixture: ComponentFixture<PublishPlan>;
   let component: PublishPlan & Record<string, unknown>;
-  const api = { publish: vi.fn(), suggestPlaces: vi.fn() };
+  const api = { publish: vi.fn(), suggestPlaces: vi.fn(), draft: vi.fn() };
   const users = { myProfile: vi.fn() };
   const location = { current: vi.fn() };
   const element = () => fixture.nativeElement as HTMLElement;
@@ -359,5 +359,137 @@ describe('PublishPlan', () => {
     expect((component['levelOptions'] as () => { label: string }[])()[0].label).toBe('Any');
     expect((component['activities'] as () => { name: string }[])()[7].name).toBe('Board games');
     expect(element().querySelector('h1')?.textContent).toContain('Publish a plan');
+  });
+
+  describe('plan from a sentence (HU-010)', () => {
+    const draft = (changes: object = {}) => ({
+      activity: 'PADEL',
+      title: 'Pádel, falta uno',
+      description: 'Nivel medio',
+      place: 'la Albufera',
+      meetingPoint: { name: 'Pistas de la Albufera', latitude: 40.39641, longitude: -3.62974 },
+      startsAt: new Date(2026, 10, 16, 19, 5).toISOString(),
+      spots: 1,
+      level: 'INTERMEDIATE',
+      minParticipants: null,
+      missing: [],
+      warnings: [],
+      ...changes,
+    });
+    const message = () =>
+      (component['draftMessage'] as () => { key: string; params?: object } | null)();
+
+    beforeEach(() => location.current.mockResolvedValue({ latitude: 40.39, longitude: -3.63 }));
+
+    it('should ask the service with the position and the time zone and fill in the form', async () => {
+      api.draft.mockReturnValue(of(draft()));
+
+      await call<Promise<void>>('describe', 'Pádel hoy a las 7 en la Albufera, falta uno');
+
+      expect(api.draft).toHaveBeenCalledWith(
+        'Pádel hoy a las 7 en la Albufera, falta uno',
+        { latitude: 40.39, longitude: -3.63 },
+        Intl.DateTimeFormat().resolvedOptions().timeZone,
+      );
+      expect(form().getRawValue()).toMatchObject({
+        activity: 'PADEL',
+        title: 'Pádel, falta uno',
+        description: 'Nivel medio',
+        placeName: 'Pistas de la Albufera',
+        latitude: 40.3964,
+        longitude: -3.6297,
+        start: 'custom',
+        customTime: '19:05',
+        spots: 1,
+        level: 'INTERMEDIATE',
+      });
+      expect(message()).toEqual({ key: 'publish.draft.done' });
+      expect(api.publish).not.toHaveBeenCalled();
+    });
+
+    it('should list what is missing and keep what the person already wrote', async () => {
+      form().patchValue({ description: 'Mis detalles' });
+      api.draft.mockReturnValue(
+        of(
+          draft({
+            title: null,
+            description: null,
+            startsAt: null,
+            meetingPoint: null,
+            missing: ['title', 'meetingPoint', 'startsAt'],
+          }),
+        ),
+      );
+
+      await call<Promise<void>>('describe', 'Pádel esta tarde');
+
+      expect(form().getRawValue()).toMatchObject({
+        description: 'Mis detalles',
+        placeName: 'la Albufera',
+        title: '',
+      });
+      expect(message()?.key).toBe('publish.draft.missing');
+      expect(JSON.stringify(message()?.params)).toContain('título');
+      expect(
+        (component['form'] as { controls: { title: { touched: boolean } } }).controls.title.touched,
+      ).toBe(true);
+    });
+
+    it('should explain a time outside the next hours and a place that was not found', async () => {
+      api.draft.mockReturnValue(
+        of(draft({ startsAt: null, missing: ['startsAt'], warnings: ['startsAt.window'] })),
+      );
+      await call<Promise<void>>('describe', 'Pádel dentro de tres días');
+      expect(message()).toEqual({ key: 'publish.draft.timeWindow', params: { hours: 12 } });
+
+      api.draft.mockReturnValue(
+        of(
+          draft({
+            meetingPoint: null,
+            missing: ['meetingPoint'],
+            warnings: ['meetingPoint.notFound'],
+          }),
+        ),
+      );
+      await call<Promise<void>>('describe', 'Pádel en un sitio raro');
+      expect(message()).toEqual({
+        key: 'publish.draft.placeNotFound',
+        params: { place: 'la Albufera' },
+      });
+    });
+
+    it('should turn a minimum of participants on', async () => {
+      api.draft.mockReturnValue(of(draft({ spots: 4, minParticipants: 3 })));
+
+      await call<Promise<void>>('describe', 'Fútbol, faltan cuatro, mínimo tres');
+
+      expect(form().getRawValue()).toMatchObject({
+        spots: 4,
+        hasMinimum: true,
+        minParticipants: 3,
+      });
+    });
+
+    it('should say that the assistant is not available and leave the form as it is', async () => {
+      api.draft.mockReturnValue(throwError(() => ({ error: { code: 'draft.unavailable' } })));
+
+      await call<Promise<void>>('describe', 'Pádel hoy');
+
+      expect(message()).toEqual({ key: 'errors.draft.unavailable' });
+      expect(form().getRawValue()).toMatchObject({ activity: '', title: '' });
+      expect(component['drafting']).toBeDefined();
+      expect((component['drafting'] as () => boolean)()).toBe(false);
+    });
+
+    it('should say that the position is needed when there is none', async () => {
+      location.current.mockRejectedValue(new LocationError('denied'));
+      users.myProfile.mockReturnValue(of({ zone: null }));
+
+      await call<Promise<void>>('describe', 'Pádel hoy');
+
+      expect(message()).toEqual({ key: 'publish.draft.noLocation' });
+      expect(api.draft).not.toHaveBeenCalled();
+      location.current.mockReset();
+    });
   });
 });

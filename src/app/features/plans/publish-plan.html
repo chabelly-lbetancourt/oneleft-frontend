@@ -1,196 +1,208 @@
 <app-page-layout [title]="'publish.title' | transloco">
-  <form class="publish-form" [formGroup]="form" (ngSubmit)="publish()">
-    <section class="form-section">
-      <label for="activity" class="section-title">{{ 'publish.what' | transloco }}</label>
-      <p-select
-        inputId="activity"
-        formControlName="activity"
-        [options]="activities()"
-        optionLabel="name"
-        optionValue="code"
-        [placeholder]="'publish.chooseActivity' | transloco"
-        class="field-full"
-      />
-      <label for="title" class="section-title section-title--spaced">{{
-        'publish.planTitle' | transloco
-      }}</label>
-      <input
-        pInputText
-        id="title"
-        formControlName="title"
-        [placeholder]="'publish.planTitlePlaceholder' | transloco"
-        maxlength="80"
-      />
-      @if (form.controls.title.invalid && form.controls.title.touched) {
-        <small class="field-error">{{ 'publish.titleError' | transloco }}</small>
-      }
-      <label for="description" class="section-title section-title--spaced">
-        {{ 'publish.details' | transloco }}
-        <span class="optional">{{ 'publish.optional' | transloco }}</span>
-      </label>
-      <textarea
-        pTextarea
-        id="description"
-        formControlName="description"
-        rows="2"
-        maxlength="280"
-        [placeholder]="'publish.detailsPlaceholder' | transloco"
-      ></textarea>
-    </section>
-
-    <section class="form-section">
-      <span class="section-title">{{ 'publish.when' | transloco }}</span>
-      <p-selectbutton
-        formControlName="start"
-        [options]="startOptions()"
-        optionLabel="label"
-        optionValue="value"
-        [allowEmpty]="false"
-        size="small"
-        class="start-options"
-      />
-      @if (form.controls.start.value === 'custom') {
+  <div class="publish-page">
+    <app-plan-draft
+      [busy]="drafting()"
+      [message]="draftMessage()"
+      [severity]="draftSeverity()"
+      (describe)="describe($event)"
+    />
+    <form class="publish-form" [formGroup]="form" (ngSubmit)="publish()">
+      <section class="form-section">
+        <label for="activity" class="section-title">{{ 'publish.what' | transloco }}</label>
+        <p-select
+          inputId="activity"
+          formControlName="activity"
+          [options]="activities()"
+          optionLabel="name"
+          optionValue="code"
+          [placeholder]="'publish.chooseActivity' | transloco"
+          class="field-full"
+        />
+        <label for="title" class="section-title section-title--spaced">{{
+          'publish.planTitle' | transloco
+        }}</label>
         <input
           pInputText
-          type="time"
-          id="customTime"
-          formControlName="customTime"
-          class="custom-time"
-          [attr.aria-label]="'publish.startTime' | transloco"
+          id="title"
+          formControlName="title"
+          [placeholder]="'publish.planTitlePlaceholder' | transloco"
+          maxlength="80"
         />
-      }
-      <small class="muted">{{ 'publish.horizon' | transloco: { hours: maxHours } }}</small>
-    </section>
-
-    <section class="form-section">
-      <label for="placeName" class="section-title">{{ 'publish.where' | transloco }}</label>
-      <!-- HU-071: nearby places that match what is typed; a free name still works. Without suggestions nothing
-           covers «I'm here»: only screen readers hear that there are none -->
-      <p-autocomplete
-        class="place-field"
-        inputId="placeName"
-        formControlName="placeName"
-        [suggestions]="placeSuggestions()"
-        optionLabel="name"
-        [optionValue]="placeValue"
-        [minQueryLength]="placeQueryMinLength"
-        [delay]="300"
-        [fluid]="true"
-        panelStyleClass="place-panel"
-        scrollHeight="22rem"
-        [maxlength]="100"
-        [placeholder]="'publish.wherePlaceholder' | transloco"
-        [searchMessage]="'publish.placesFound' | transloco"
-        [showEmptyMessage]="false"
-        [emptyMessage]="'publish.noPlaces' | transloco"
-        (completeMethod)="searchPlaces($event.query)"
-        (onSelect)="choosePlace($event.value)"
-      >
-        <ng-template #item let-place>
-          <span class="place-option">
-            <span class="place-option__name">{{ place.name }}</span>
-            <span class="place-option__detail">
-              {{ place.address ? place.address + ' · ' : ''
-              }}<span class="place-option__distance">{{ distance(place.distanceMeters) }}</span>
-            </span>
-          </span>
-        </ng-template>
-      </p-autocomplete>
-      <div class="place-actions">
-        <p-button
-          [label]="'publish.here' | transloco"
-          icon="pi pi-map-marker"
-          severity="secondary"
-          size="small"
-          [outlined]="true"
-          [loading]="locating()"
-          (onClick)="useMyLocation()"
-        />
-        @if (form.controls.latitude.value !== null) {
-          <span class="meeting-coordinates hint">
-            {{ form.controls.latitude.value }}, {{ form.controls.longitude.value }}
-          </span>
-        } @else if (form.controls.latitude.touched) {
-          <small class="field-error">{{ 'publish.whereError' | transloco }}</small>
+        @if (form.controls.title.invalid && form.controls.title.touched) {
+          <small class="field-error">{{ 'publish.titleError' | transloco }}</small>
         }
-      </div>
-    </section>
+        <label for="description" class="section-title section-title--spaced">
+          {{ 'publish.details' | transloco }}
+          <span class="optional">{{ 'publish.optional' | transloco }}</span>
+        </label>
+        <textarea
+          pTextarea
+          id="description"
+          formControlName="description"
+          rows="2"
+          maxlength="280"
+          [placeholder]="'publish.detailsPlaceholder' | transloco"
+        ></textarea>
+      </section>
 
-    <section class="form-section">
-      <label for="spots" class="section-title">{{ 'publish.spots' | transloco }}</label>
-      <p-inputnumber
-        inputId="spots"
-        formControlName="spots"
-        [showButtons]="true"
-        buttonLayout="horizontal"
-        [min]="1"
-        [max]="20"
-        incrementButtonIcon="pi pi-plus"
-        decrementButtonIcon="pi pi-minus"
-      />
-      <span class="section-title section-title--spaced">{{ 'publish.level' | transloco }}</span>
-      <p-selectbutton
-        formControlName="level"
-        [options]="levelOptions()"
-        optionLabel="label"
-        optionValue="value"
-        [allowEmpty]="false"
-        size="small"
-      />
-    </section>
-
-    <section class="form-section minimum-section">
-      <div class="switch-row">
-        <div class="switch-text">
-          <label for="hasMinimum" class="section-title">{{
-            'publish.minimumToggle' | transloco
-          }}</label>
-          <p class="hint">{{ 'publish.minimumHint' | transloco }}</p>
-        </div>
-        <p-toggleswitch inputId="hasMinimum" formControlName="hasMinimum" class="minimum-switch" />
-      </div>
-      @if (form.controls.hasMinimum.value) {
-        <label for="minParticipants" class="section-title section-title--spaced">{{
-          'publish.minimumParticipants' | transloco
-        }}</label>
-        <p-inputnumber
-          inputId="minParticipants"
-          formControlName="minParticipants"
-          [showButtons]="true"
-          buttonLayout="horizontal"
-          [min]="1"
-          [max]="form.controls.spots.value"
-          incrementButtonIcon="pi pi-plus"
-          decrementButtonIcon="pi pi-minus"
-        />
-        <span class="section-title section-title--spaced">{{
-          'publish.minimumDeadline' | transloco
-        }}</span>
+      <section class="form-section">
+        <span class="section-title">{{ 'publish.when' | transloco }}</span>
         <p-selectbutton
-          formControlName="minimumLead"
-          [options]="deadlineOptions()"
+          formControlName="start"
+          [options]="startOptions()"
           optionLabel="label"
           optionValue="value"
           [allowEmpty]="false"
           size="small"
-          class="deadline-options"
+          class="start-options"
         />
+        @if (form.controls.start.value === 'custom') {
+          <input
+            pInputText
+            type="time"
+            id="customTime"
+            formControlName="customTime"
+            class="custom-time"
+            [attr.aria-label]="'publish.startTime' | transloco"
+          />
+        }
+        <small class="muted">{{ 'publish.horizon' | transloco: { hours: maxHours } }}</small>
+      </section>
+
+      <section class="form-section">
+        <label for="placeName" class="section-title">{{ 'publish.where' | transloco }}</label>
+        <!-- HU-071: nearby places that match what is typed; a free name still works. Without suggestions nothing
+           covers «I'm here»: only screen readers hear that there are none -->
+        <p-autocomplete
+          class="place-field"
+          inputId="placeName"
+          formControlName="placeName"
+          [suggestions]="placeSuggestions()"
+          optionLabel="name"
+          [optionValue]="placeValue"
+          [minQueryLength]="placeQueryMinLength"
+          [delay]="300"
+          [fluid]="true"
+          panelStyleClass="place-panel"
+          scrollHeight="22rem"
+          [maxlength]="100"
+          [placeholder]="'publish.wherePlaceholder' | transloco"
+          [searchMessage]="'publish.placesFound' | transloco"
+          [showEmptyMessage]="false"
+          [emptyMessage]="'publish.noPlaces' | transloco"
+          (completeMethod)="searchPlaces($event.query)"
+          (onSelect)="choosePlace($event.value)"
+        >
+          <ng-template #item let-place>
+            <span class="place-option">
+              <span class="place-option__name">{{ place.name }}</span>
+              <span class="place-option__detail">
+                {{ place.address ? place.address + ' · ' : ''
+                }}<span class="place-option__distance">{{ distance(place.distanceMeters) }}</span>
+              </span>
+            </span>
+          </ng-template>
+        </p-autocomplete>
+        <div class="place-actions">
+          <p-button
+            [label]="'publish.here' | transloco"
+            icon="pi pi-map-marker"
+            severity="secondary"
+            size="small"
+            [outlined]="true"
+            [loading]="locating()"
+            (onClick)="useMyLocation()"
+          />
+          @if (form.controls.latitude.value !== null) {
+            <span class="meeting-coordinates hint">
+              {{ form.controls.latitude.value }}, {{ form.controls.longitude.value }}
+            </span>
+          } @else if (form.controls.latitude.touched) {
+            <small class="field-error">{{ 'publish.whereError' | transloco }}</small>
+          }
+        </div>
+      </section>
+
+      <section class="form-section">
+        <label for="spots" class="section-title">{{ 'publish.spots' | transloco }}</label>
+        <p-inputnumber
+          inputId="spots"
+          formControlName="spots"
+          [showButtons]="true"
+          buttonLayout="horizontal"
+          [min]="1"
+          [max]="20"
+          incrementButtonIcon="pi pi-plus"
+          decrementButtonIcon="pi pi-minus"
+        />
+        <span class="section-title section-title--spaced">{{ 'publish.level' | transloco }}</span>
+        <p-selectbutton
+          formControlName="level"
+          [options]="levelOptions()"
+          optionLabel="label"
+          optionValue="value"
+          [allowEmpty]="false"
+          size="small"
+        />
+      </section>
+
+      <section class="form-section minimum-section">
+        <div class="switch-row">
+          <div class="switch-text">
+            <label for="hasMinimum" class="section-title">{{
+              'publish.minimumToggle' | transloco
+            }}</label>
+            <p class="hint">{{ 'publish.minimumHint' | transloco }}</p>
+          </div>
+          <p-toggleswitch
+            inputId="hasMinimum"
+            formControlName="hasMinimum"
+            class="minimum-switch"
+          />
+        </div>
+        @if (form.controls.hasMinimum.value) {
+          <label for="minParticipants" class="section-title section-title--spaced">{{
+            'publish.minimumParticipants' | transloco
+          }}</label>
+          <p-inputnumber
+            inputId="minParticipants"
+            formControlName="minParticipants"
+            [showButtons]="true"
+            buttonLayout="horizontal"
+            [min]="1"
+            [max]="form.controls.spots.value"
+            incrementButtonIcon="pi pi-plus"
+            decrementButtonIcon="pi pi-minus"
+          />
+          <span class="section-title section-title--spaced">{{
+            'publish.minimumDeadline' | transloco
+          }}</span>
+          <p-selectbutton
+            formControlName="minimumLead"
+            [options]="deadlineOptions()"
+            optionLabel="label"
+            optionValue="value"
+            [allowEmpty]="false"
+            size="small"
+            class="deadline-options"
+          />
+        }
+      </section>
+
+      @if (error(); as message) {
+        <p-message severity="error" class="status-message">{{
+          message.key | transloco: message.params
+        }}</p-message>
       }
-    </section>
 
-    @if (error(); as message) {
-      <p-message severity="error" class="status-message">{{
-        message.key | transloco: message.params
-      }}</p-message>
-    }
-
-    <p-button
-      type="submit"
-      [label]="'publish.submit' | transloco"
-      icon="pi pi-send"
-      [loading]="publishing()"
-      styleClass="button--block"
-      size="large"
-    />
-  </form>
+      <p-button
+        type="submit"
+        [label]="'publish.submit' | transloco"
+        icon="pi pi-send"
+        [loading]="publishing()"
+        styleClass="button--block"
+        size="large"
+      />
+    </form>
+  </div>
 </app-page-layout>

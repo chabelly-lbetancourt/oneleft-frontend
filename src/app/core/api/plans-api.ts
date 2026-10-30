@@ -5,6 +5,7 @@ import { environment } from '@env/environment';
 import { Coordinates } from '@core/geo/approximate-location';
 import { nearbyParams, NearbyQuery, toQueryString } from '@shared/model/nearby';
 import { PlaceSuggestion } from '@shared/model/places';
+import { PlanDraft } from '@shared/model/plan-draft';
 import {
   ArrivalStatus,
   CheckIn,
@@ -26,6 +27,19 @@ export class PlansApi {
 
   publish(plan: PublishPlan): Observable<Plan> {
     return this.http.post<Plan>(this.base, plan);
+  }
+
+  /**
+   * A plan understood from a sentence (HU-010): the service checks it against the rules of a plan and nothing is
+   * published. The approximate position only puts the closest places first; the time zone resolves «at 7».
+   */
+  draft(text: string, near: Coordinates, timeZone: string): Observable<PlanDraft> {
+    return this.http.post<PlanDraft>(`${this.base}/draft`, {
+      text,
+      latitude: near.latitude,
+      longitude: near.longitude,
+      timeZone,
+    });
   }
 
   plan(id: string): Observable<Plan> {

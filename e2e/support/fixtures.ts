@@ -171,7 +171,8 @@ export const signIn = async (page: Page, user: TestUser) => {
     .locator('#password')
     .evaluate((input: HTMLInputElement, value) => (input.value = value), user.password);
   await page.locator('#kc-login').click();
-  await page.waitForURL((url) => url.port === '4200' && !url.searchParams.has('code'));
+  const appPort = new URL(process.env['ONELEFT_APP_URL'] ?? 'http://localhost:4200').port;
+  await page.waitForURL((url) => url.port === appPort && !url.searchParams.has('code'));
 };
 
 const token = async (request: APIRequestContext, user: TestUser) => {
