@@ -29,6 +29,7 @@ describe('Privacy', () => {
       'Para qué y con qué base',
       'Con quién los compartimos',
       'Cuánto los guardamos',
+      'Crear un plan con una frase',
       'Tus derechos',
       'Menores',
     ]);

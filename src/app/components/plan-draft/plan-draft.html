@@ -1,0 +1,52 @@
+<section class="plan-draft" aria-labelledby="plan-draft-title">
+  <h2 class="plan-draft__title" id="plan-draft-title">
+    <i class="pi pi-sparkles" aria-hidden="true"></i>{{ 'publish.draft.title' | transloco }}
+  </h2>
+  <p class="plan-draft__hint">{{ 'publish.draft.hint' | transloco }}</p>
+  <label for="draft-text" class="plan-draft__label">{{ 'publish.draft.label' | transloco }}</label>
+  <textarea
+    pTextarea
+    id="draft-text"
+    class="plan-draft__text"
+    rows="3"
+    [maxlength]="maxLength"
+    [ngModel]="text()"
+    (ngModelChange)="text.set($event)"
+    [placeholder]="'publish.draft.placeholder' | transloco"
+  ></textarea>
+  <div class="plan-draft__actions">
+    <p-button
+      class="plan-draft__submit"
+      type="button"
+      icon="pi pi-sparkles"
+      [label]="'publish.draft.submit' | transloco"
+      [loading]="busy()"
+      [disabled]="!ready()"
+      (onClick)="submit()"
+    />
+    @if (canDictate) {
+      <p-button
+        class="plan-draft__dictate"
+        type="button"
+        severity="secondary"
+        [outlined]="true"
+        [icon]="listening() ? 'pi pi-stop-circle' : 'pi pi-microphone'"
+        [label]="(listening() ? 'publish.draft.stop' : 'publish.draft.dictate') | transloco"
+        [attr.aria-pressed]="listening()"
+        (onClick)="toggleDictation()"
+      />
+    }
+  </div>
+  <p class="plan-draft__privacy">{{ 'publish.draft.privacy' | transloco }}</p>
+  <!-- Said to screen readers when it appears: the form below has changed -->
+  <div aria-live="polite">
+    @if (listening()) {
+      <p class="plan-draft__listening">{{ 'publish.draft.listening' | transloco }}</p>
+    }
+    @if (message(); as note) {
+      <p-message class="plan-draft__message" [severity]="severity()">{{
+        note.key | transloco: note.params
+      }}</p-message>
+    }
+  </div>
+</section>

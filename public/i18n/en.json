@@ -439,7 +439,30 @@
     "deadline30": "30 min before",
     "deadline60": "1 h before",
     "deadline120": "2 h before",
-    "chooseDeadline": "Choose a deadline at least 5 minutes away."
+    "chooseDeadline": "Choose a deadline at least 5 minutes away.",
+    "draft": {
+      "title": "Tell it in one sentence",
+      "hint": "Write it or dictate it and we fill in the form. You review it before publishing.",
+      "label": "Your plan in one sentence",
+      "placeholder": "Padel tomorrow at 7 at the Albufera courts, one player missing",
+      "submit": "Fill in the form",
+      "dictate": "Dictate",
+      "stop": "Stop",
+      "listening": "Listening…",
+      "privacy": "The sentence is sent to an AI service (Anthropic) to understand it. It is not stored.",
+      "done": "Done: review the form and publish when you are happy with it.",
+      "missing": "Review the form. Still to complete: {{fields}}.",
+      "timeWindow": "That time does not fit: OneLeft is for plans in the next {{hours}} hours. Choose the time in the form.",
+      "placeNotFound": "We could not find “{{place}}” near you. Search for it in the form or use “I'm here”.",
+      "noLocation": "We need your approximate zone to look for the place. Turn it on or add it in your profile.",
+      "fields": {
+        "activity": "activity",
+        "title": "title",
+        "meetingPoint": "place",
+        "startsAt": "time",
+        "spots": "spots"
+      }
+    }
   },
   "profile": {
     "title": "My profile",
@@ -626,6 +649,11 @@
     },
     "consent": {
       "version": "The privacy text changed. Reload the page and read it again."
+    },
+    "draftFailed": "We could not understand the sentence. Fill in the form by hand.",
+    "draft": {
+      "unavailable": "The assistant is not available now. Fill in the form by hand.",
+      "text": "Write your plan in a sentence of 3 to 300 characters."
     }
   },
   "nearby": {
@@ -878,6 +906,10 @@
       "minors": {
         "title": "Minors",
         "text": "OneLeft is for adults: it puts people who do not know each other in touch."
+      },
+      "ai": {
+        "title": "Creating a plan with a sentence",
+        "text": "If you use “Tell it in one sentence”, that sentence is sent to Anthropic to turn it into a draft. It is not stored in OneLeft and it is only sent when you press the button. If you dictate, speech recognition is done by your browser."
       }
     }
   }

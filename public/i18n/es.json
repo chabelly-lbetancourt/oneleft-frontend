@@ -439,7 +439,30 @@
     "deadline30": "30 min antes",
     "deadline60": "1 h antes",
     "deadline120": "2 h antes",
-    "chooseDeadline": "Elige una hora límite que quede al menos a 5 minutos."
+    "chooseDeadline": "Elige una hora límite que quede al menos a 5 minutos.",
+    "draft": {
+      "title": "Cuéntalo con una frase",
+      "hint": "Escríbelo o díctalo y rellenamos el formulario. Tú lo revisas antes de publicar.",
+      "label": "Tu plan en una frase",
+      "placeholder": "Pádel mañana a las 7 en las pistas de la Albufera, falta uno",
+      "submit": "Rellenar el formulario",
+      "dictate": "Dictar",
+      "stop": "Parar",
+      "listening": "Escuchando…",
+      "privacy": "La frase se envía a un servicio de IA (Anthropic) para entenderla. No se guarda.",
+      "done": "Listo: revisa el formulario y publica cuando estés conforme.",
+      "missing": "Revisa el formulario. Te falta por completar: {{fields}}.",
+      "timeWindow": "Esa hora no entra: OneLeft es para planes de las próximas {{hours}} horas. Elige la hora en el formulario.",
+      "placeNotFound": "No encontramos «{{place}}» cerca de ti. Búscalo en el formulario o usa «Estoy aquí».",
+      "noLocation": "Necesitamos tu zona aproximada para buscar el lugar. Actívala o añádela en tu perfil.",
+      "fields": {
+        "activity": "actividad",
+        "title": "título",
+        "meetingPoint": "lugar",
+        "startsAt": "hora",
+        "spots": "plazas"
+      }
+    }
   },
   "profile": {
     "title": "Mi perfil",
@@ -626,6 +649,11 @@
     },
     "consent": {
       "version": "El texto de privacidad ha cambiado. Recarga la página y vuelve a leerlo."
+    },
+    "draftFailed": "No hemos podido entender la frase. Rellena el formulario a mano.",
+    "draft": {
+      "unavailable": "El asistente no está disponible ahora. Rellena el formulario a mano.",
+      "text": "Escribe tu plan en una frase de entre 3 y 300 caracteres."
     }
   },
   "nearby": {
@@ -878,6 +906,10 @@
       "minors": {
         "title": "Menores",
         "text": "OneLeft es para mayores de edad: pone en contacto a personas que no se conocen."
+      },
+      "ai": {
+        "title": "Crear un plan con una frase",
+        "text": "Si usas «Cuéntalo con una frase», esa frase se envía a Anthropic para convertirla en un borrador. No se guarda en OneLeft y solo se envía cuando pulsas el botón. Si dictas, el reconocimiento de voz lo hace tu navegador."
       }
     }
   }

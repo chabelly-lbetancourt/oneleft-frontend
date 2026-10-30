@@ -144,4 +144,29 @@ describe('PlansApi', () => {
       }),
     ).toBe(`${base}/nearby/stream?latitude=40.39&longitude=-3.63&radius=1000&withinHours=12`);
   });
+
+  it('should send the sentence with the zone and the time zone to draft a plan', () => {
+    TestBed.configureTestingModule({
+      providers: [provideHttpClient(), provideHttpClientTesting()],
+    });
+    const api = TestBed.inject(PlansApi);
+    const http = TestBed.inject(HttpTestingController);
+    const drafts: unknown[] = [];
+
+    api
+      .draft('Pádel mañana a las 7', { latitude: 40.39, longitude: -3.63 }, 'Europe/Madrid')
+      .subscribe((draft) => drafts.push(draft));
+    const request = http.expectOne(`${environment.apiUrl}/api/v1/plans/draft`);
+    request.flush({ activity: 'PADEL', missing: [], warnings: [] });
+
+    expect(request.request.method).toBe('POST');
+    expect(request.request.body).toEqual({
+      text: 'Pádel mañana a las 7',
+      latitude: 40.39,
+      longitude: -3.63,
+      timeZone: 'Europe/Madrid',
+    });
+    expect(drafts).toHaveLength(1);
+    http.verify();
+  });
 });
