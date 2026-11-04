@@ -53,7 +53,10 @@ describe('StoryShare', () => {
     vi.clearAllMocks();
     URL.createObjectURL = vi.fn(() => 'blob:card');
     URL.revokeObjectURL = vi.fn();
-    Object.assign(navigator, { share, canShare: vi.fn(() => true) });
+    // Defined, not assigned: another spec may have left them as read-only properties of the navigator
+    for (const [name, value] of Object.entries({ share, canShare: vi.fn(() => true) })) {
+      Object.defineProperty(navigator, name, { value, configurable: true, writable: true });
+    }
     TestBed.configureTestingModule({
       imports: [StoryShare, translocoTesting()],
       providers: [
