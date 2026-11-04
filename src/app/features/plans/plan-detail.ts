@@ -398,7 +398,7 @@ export class PlanDetail {
   /** Once the plan has started nobody can join: the text says how it is instead of inviting */
   private shareText(plan: Plan): string {
     const params = {
-      activity: this.transloco.translate(this.activityKey()),
+      activity: plan.activityOther || this.transloco.translate(this.activityKey()),
       time: this.startsAt()?.time,
     };
     const started = new Date(plan.startsAt).getTime() <= Date.now();

@@ -13,11 +13,31 @@
           inputId="activity"
           formControlName="activity"
           [options]="activities()"
+          [group]="true"
+          optionGroupLabel="label"
+          optionGroupChildren="items"
           optionLabel="name"
           optionValue="code"
           [placeholder]="'publish.chooseActivity' | transloco"
           class="field-full"
         />
+        @if (isOther()) {
+          <label for="activityOther" class="section-title section-title--spaced">{{
+            'publish.otherName' | transloco
+          }}</label>
+          <input
+            pInputText
+            id="activityOther"
+            formControlName="activityOther"
+            [placeholder]="'publish.otherPlaceholder' | transloco"
+            [maxlength]="otherMaxLength"
+          />
+          @if (form.controls.activityOther.invalid && form.controls.activityOther.touched) {
+            <small class="field-error">{{
+              'publish.otherError' | transloco: { max: otherMaxLength }
+            }}</small>
+          }
+        }
         <label for="title" class="section-title section-title--spaced">{{
           'publish.planTitle' | transloco
         }}</label>

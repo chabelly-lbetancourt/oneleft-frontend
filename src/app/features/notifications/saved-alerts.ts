@@ -20,7 +20,7 @@ import { NotificationsApi } from '@core/api/notifications-api';
 import { UsersApi } from '@core/api/users-api';
 import { ApproximateLocation, LocationError } from '@core/geo/approximate-location';
 import { apiErrorMessage } from '@core/i18n/api-error';
-import { ACTIVITIES, activityKey } from '@shared/model/activities';
+import { activityKey, INTEREST_ACTIVITIES } from '@shared/model/activities';
 import { Day, DAYS, MAX_ALERTS, RADIUS_OPTIONS, SavedAlert } from '@shared/model/notifications';
 import { Level, LEVELS, levelKey, Zone } from '@shared/model/profile';
 import { CardSkeleton } from '@components/card-skeleton/card-skeleton';
@@ -94,7 +94,7 @@ export class SavedAlerts implements OnInit {
       value,
     }));
   });
-  protected readonly activities = ACTIVITIES;
+  protected readonly activities = INTEREST_ACTIVITIES;
   protected readonly activityKey = activityKey;
   protected readonly days = DAYS;
 

@@ -9,7 +9,7 @@ import { environment } from '@env/environment';
 import { Session } from '@core/auth/session';
 import { NativePlatform } from '@core/platform';
 import { UserEvents } from '@core/realtime/user-events';
-import { ACTIVITIES, activityOf } from '@shared/model/activities';
+import { INTEREST_ACTIVITIES, activityOf } from '@shared/model/activities';
 import { Plan } from '@shared/model/published-plan';
 import { FreeNow } from '@components/free-now/free-now';
 import { ConsentCard } from '@components/consent-card/consent-card';
@@ -49,7 +49,7 @@ export class Home {
     this.session.isAuthenticated() ? `${environment.apiUrl}/api/v1/plans/mine` : undefined,
   );
   protected readonly firstName = computed(() => this.session.userName().split(/\s+/)[0] ?? '');
-  protected readonly activities = ACTIVITIES;
+  protected readonly activities = INTEREST_ACTIVITIES;
   /** Activity of the example plan of the landing */
   protected readonly demoActivity = activityOf('PADEL');
   protected readonly steps = ['step1', 'step2', 'step3'];

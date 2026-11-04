@@ -44,9 +44,23 @@
           size="small"
         />
       </div>
+      <p-selectbutton
+        class="category-filter"
+        [options]="categoryOptions()"
+        [ngModel]="categories()"
+        (ngModelChange)="categories.set($event ?? [])"
+        optionLabel="label"
+        optionValue="value"
+        [multiple]="true"
+        size="small"
+        [ariaLabel]="'nearby.categories' | transloco"
+      />
       <p-multiselect
         class="activity-filter"
         [options]="activityOptions()"
+        [group]="true"
+        optionGroupLabel="label"
+        optionGroupChildren="items"
         [ngModel]="activities()"
         (ngModelChange)="activities.set($event)"
         optionLabel="name"
