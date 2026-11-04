@@ -424,6 +424,7 @@ describe('PublishPlan', () => {
     });
 
     it('should forget the name when another activity is chosen and not send it', async () => {
+      vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
       api.publish.mockReturnValue(of({ id: 'plan-1' }));
       fillValidPlan();
       form().patchValue({ activity: 'OTHER', activityOther: 'Cerámica' });
