@@ -74,7 +74,26 @@
     "HIKING": "Hiking",
     "BOARD_GAMES": "Board games",
     "CINEMA": "Cinema",
-    "CONCERTS": "Concerts"
+    "CONCERTS": "Concerts",
+    "VOLLEYBALL": "Volleyball",
+    "SWIMMING": "Swimming",
+    "CLIMBING": "Climbing",
+    "GYM": "Gym",
+    "YOGA": "Yoga",
+    "SKATING": "Skating",
+    "PADEL_SURF": "Padel surf",
+    "PING_PONG": "Ping-pong",
+    "PETANQUE": "Petanque",
+    "THEATER": "Theatre",
+    "MUSEUMS_EXHIBITIONS": "Museums and exhibitions",
+    "VIDEO_GAMES": "Video games",
+    "DANCING": "Dancing",
+    "LANGUAGE_EXCHANGE": "Language exchange",
+    "ESCAPE_ROOM": "Escape room",
+    "TAPAS": "Tapas",
+    "MEAL": "Meal",
+    "COFFEE": "Coffee",
+    "OTHER": "Other"
   },
   "levels": {
     "BEGINNER": "Beginner",
@@ -462,7 +481,10 @@
         "startsAt": "time",
         "spots": "spots"
       }
-    }
+    },
+    "otherName": "What plan is it?",
+    "otherPlaceholder": "Pottery workshop",
+    "otherError": "Give it a name of up to {{max}} characters"
   },
   "profile": {
     "title": "My profile",
@@ -535,7 +557,8 @@
       "waitlistFull": "The waiting list is full.",
       "minimum": "The minimum of participants must be between 1 and the spots of the plan.",
       "minimumDeadline": "The deadline of the minimum cannot be after the start of the plan.",
-      "minimumDeadlineTooSoon": "The deadline of the minimum must be at least 5 minutes away."
+      "minimumDeadlineTooSoon": "The deadline of the minimum must be at least 5 minutes away.",
+      "activityOther": "«Other» needs a name of up to 30 characters."
     },
     "meetingPoint": {
       "name": "The meeting point needs a name of up to 100 characters"
@@ -677,7 +700,8 @@
     "open": "View plan",
     "you": "You are here",
     "privacy": "Your location is only used to search, with about 100 m precision, and it is not stored.",
-    "loading": "Looking for plans nearby…"
+    "loading": "Looking for plans nearby…",
+    "categories": "Categories"
   },
   "notices": {
     "joinedTitle": "Someone joined",
@@ -912,5 +936,12 @@
         "text": "If you use “Tell it in one sentence”, that sentence is sent to Anthropic to turn it into a draft. It is not stored in OneLeft and it is only sent when you press the button. If you dictate, speech recognition is done by your browser."
       }
     }
+  },
+  "categories": {
+    "SPORT": "Sport",
+    "CULTURE": "Culture",
+    "LEISURE": "Leisure",
+    "FOOD_DRINK": "Food and drink",
+    "OTHER": "Other"
   }
 }

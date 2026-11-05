@@ -197,15 +197,22 @@ describe('NearbyPlans', () => {
     set('radius', 1000);
     set('withinHours', 3);
     set('activities', ['PADEL', 'TENNIS']);
+    set('categories', ['FOOD_DRINK', 'CULTURE']);
     await render();
 
     const request = nearbyRequest();
     expect(request.request.params.get('radius')).toBe('1000');
     expect(request.request.params.get('withinHours')).toBe('3');
     expect(request.request.params.getAll('activity')).toEqual(['PADEL', 'TENNIS']);
+    expect(request.request.params.getAll('category')).toEqual(['FOOD_DRINK', 'CULTURE']);
     request.flush([]);
     expect(stream.watch).toHaveBeenLastCalledWith(
-      expect.objectContaining({ radius: 1000, withinHours: 3, activities: ['PADEL', 'TENNIS'] }),
+      expect.objectContaining({
+        radius: 1000,
+        withinHours: 3,
+        activities: ['PADEL', 'TENNIS'],
+        categories: ['FOOD_DRINK', 'CULTURE'],
+      }),
     );
     expect(events.observed).toBe(true);
   });
@@ -284,9 +291,24 @@ describe('NearbyPlans', () => {
     expect(labels('windowOptions')).toEqual(['1 h', '3 h', '12 h']);
     expect(labels('viewOptions')).toEqual(['List', 'Map']);
     expect(labels('radiusOptions')).toEqual(['1 km', '3 km', '5 km', '10 km']);
-    expect((component['activityOptions'] as () => { name: string }[])()[7].name).toBe(
-      'Board games',
-    );
+    const groups = (
+      component['activityOptions'] as () => { label: string; items: { name: string }[] }[]
+    )();
+    expect(groups.map((group) => group.label)).toEqual([
+      'Sport',
+      'Culture',
+      'Leisure',
+      'Food and drink',
+      'Other',
+    ]);
+    expect(groups[2].items[0].name).toBe('Board games');
+    expect(labels('categoryOptions')).toEqual([
+      'Sport',
+      'Culture',
+      'Leisure',
+      'Food and drink',
+      'Other',
+    ]);
     expect(element().querySelector('h1')?.textContent).toContain('Nearby plans');
   });
 });

@@ -8,6 +8,8 @@ export interface MeetingPoint {
 
 export interface PublishPlan {
   activity: string;
+  /** The name of the activity when it is OTHER (HU-068); null or absent for any other */
+  activityOther?: string | null;
   title: string;
   description: string | null;
   meetingPoint: MeetingPoint;

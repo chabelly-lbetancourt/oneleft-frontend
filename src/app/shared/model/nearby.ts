@@ -6,8 +6,10 @@ export interface NearbyQuery {
   longitude: number;
   /** Radius in metres (500 to 25,000) */
   radius: number;
-  /** Activity codes; empty means all of them */
+  /** Activity codes; empty means all of them (together with the categories) */
   activities: string[];
+  /** Categories of activities (HU-068): all their activities are searched, added to {@code activities} */
+  categories?: string[];
   /** Plans starting within the next hours (1 to 12) */
   withinHours: number;
 }
@@ -33,10 +35,13 @@ export const nearbyParams = (query: NearbyQuery): Record<string, string | number
   radius: query.radius,
   withinHours: query.withinHours,
   ...(query.activities.length ? { activity: query.activities } : {}),
+  ...(query.categories?.length ? { category: query.categories } : {}),
 });
 
 export const toQueryString = (params: Record<string, string | number | string[]>): string =>
   Object.entries(params)
-    .flatMap(([key, value]) => (Array.isArray(value) ? value : [value]).map((item) => [key, String(item)]))
+    .flatMap(([key, value]) =>
+      (Array.isArray(value) ? value : [value]).map((item) => [key, String(item)]),
+    )
     .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
     .join('&');

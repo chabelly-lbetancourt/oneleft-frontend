@@ -95,7 +95,7 @@ export class StoryShare {
       missing: t(plan.freeSpots === 1 ? 'story.missingOne' : 'story.missingMany', {
         count: plan.freeSpots,
       }),
-      activity: t(activityKey(plan.activity)),
+      activity: plan.activityOther || t(activityKey(plan.activity)),
       title: plan.title,
       when: t(today ? 'story.today' : 'story.tomorrow', { time }),
       place: plan.meetingPoint.name,

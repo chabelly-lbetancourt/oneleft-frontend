@@ -9,7 +9,8 @@
       }}</span>
     </div>
     <p class="plan-ticket__meta">
-      {{ activityKey() | transloco }} · <span class="plan-ticket__strong">{{ time() }}</span>
+      {{ plan().activityOther || (activityKey() | transloco) }} ·
+      <span class="plan-ticket__strong">{{ time() }}</span>
       @if (relative(); as rel) {
         · <span class="plan-ticket__relative">{{ rel.key | transloco: rel.params }}</span>
       }

@@ -37,7 +37,7 @@ import {
 import { apiErrorMessage } from '@core/i18n/api-error';
 import { Language } from '@core/i18n/language';
 import { formatDistance } from '@shared/geo/distance';
-import { ACTIVITIES, activityKey } from '@shared/model/activities';
+import { groupActivities, OTHER, OTHER_MAX_LENGTH } from '@shared/model/activities';
 import { PLACE_QUERY_MIN_LENGTH, PlaceSuggestion } from '@shared/model/places';
 import { PlanDraft } from '@shared/model/plan-draft';
 import { Level, LEVELS, levelKey } from '@shared/model/profile';
@@ -116,9 +116,10 @@ export class PublishPlan implements OnInit {
   };
 
   protected readonly maxHours = MAX_HORIZON_HOURS;
-  protected readonly activities = computed(() =>
-    ACTIVITIES.map(({ code }) => ({ code, name: this.translate(activityKey(code)) })),
-  );
+  /** The activities grouped by category (HU-068) */
+  protected readonly activities = computed(() => groupActivities(this.translate));
+  protected readonly otherMaxLength = OTHER_MAX_LENGTH;
+  protected readonly isOther = signal(false);
   protected readonly startOptions = computed(() =>
     START_OPTIONS.map(({ key, value }) => ({ label: this.translate(key), value })),
   );
@@ -150,6 +151,7 @@ export class PublishPlan implements OnInit {
 
   protected readonly form = this.fb.group({
     activity: ['', Validators.required],
+    activityOther: ['', Validators.maxLength(OTHER_MAX_LENGTH)],
     title: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(80)]],
     description: ['', Validators.maxLength(280)],
     placeName: ['', [Validators.required, Validators.maxLength(100)]],
@@ -197,6 +199,10 @@ export class PublishPlan implements OnInit {
     this.form.valueChanges
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(() => this.changeDetector.markForCheck());
+    // «Other» (HU-068) is the only activity that asks for a name of its own
+    this.form.controls.activity.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((activity) => this.chooseActivity(activity));
     // The minimum can never be more than the spots: it follows them down
     this.form.controls.spots.valueChanges
       .pipe(takeUntilDestroyed(this.destroyRef))
@@ -205,6 +211,22 @@ export class PublishPlan implements OnInit {
           this.form.controls.minParticipants.setValue(spots);
         }
       });
+  }
+
+  /** The name of an activity that is «other» is required, and only for it; for any other it is forgotten. */
+  private chooseActivity(activity: string): void {
+    const name = this.form.controls.activityOther;
+    const other = activity === OTHER;
+    this.isOther.set(other);
+    name.setValidators(
+      other
+        ? [Validators.required, Validators.maxLength(OTHER_MAX_LENGTH)]
+        : Validators.maxLength(OTHER_MAX_LENGTH),
+    );
+    if (!other) {
+      name.setValue('', { emitEvent: false });
+    }
+    name.updateValueAndValidity({ emitEvent: false });
   }
 
   /**
@@ -404,6 +426,7 @@ export class PublishPlan implements OnInit {
     this.api
       .publish({
         activity: value.activity,
+        activityOther: value.activity === OTHER ? value.activityOther.trim() : null,
         title: value.title.trim(),
         description: value.description.trim() || null,
         meetingPoint: {

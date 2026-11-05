@@ -21,7 +21,7 @@ import { UsersApi } from '@core/api/users-api';
 import { ApproximateLocation, LocationError } from '@core/geo/approximate-location';
 import { apiErrorMessage } from '@core/i18n/api-error';
 import { WebPush } from '@core/push/web-push';
-import { ACTIVITIES, activityKey } from '@shared/model/activities';
+import { activityKey, INTEREST_ACTIVITIES } from '@shared/model/activities';
 import { MAX_PER_DAY, NotificationPreferences, RADIUS_OPTIONS } from '@shared/model/notifications';
 import { Zone } from '@shared/model/profile';
 import { CardSkeleton } from '@components/card-skeleton/card-skeleton';
@@ -85,7 +85,7 @@ export class NotificationSettings implements OnInit {
       value: meters,
     }));
   });
-  protected readonly activities = ACTIVITIES;
+  protected readonly activities = INTEREST_ACTIVITIES;
   protected readonly activityKey = activityKey;
   protected readonly perDayOptions = [1, 3, 5, 10, MAX_PER_DAY].map((count) => ({
     label: String(count),

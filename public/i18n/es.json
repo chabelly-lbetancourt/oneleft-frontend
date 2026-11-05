@@ -74,7 +74,26 @@
     "HIKING": "Senderismo",
     "BOARD_GAMES": "Juegos de mesa",
     "CINEMA": "Cine",
-    "CONCERTS": "Conciertos"
+    "CONCERTS": "Conciertos",
+    "VOLLEYBALL": "Vóley",
+    "SWIMMING": "Natación",
+    "CLIMBING": "Escalada",
+    "GYM": "Gimnasio",
+    "YOGA": "Yoga",
+    "SKATING": "Patinaje",
+    "PADEL_SURF": "Pádel surf",
+    "PING_PONG": "Pin-pon",
+    "PETANQUE": "Petanca",
+    "THEATER": "Teatro",
+    "MUSEUMS_EXHIBITIONS": "Museos y exposiciones",
+    "VIDEO_GAMES": "Videojuegos",
+    "DANCING": "Baile",
+    "LANGUAGE_EXCHANGE": "Intercambio de idiomas",
+    "ESCAPE_ROOM": "Escape room",
+    "TAPAS": "Tapas",
+    "MEAL": "Comida o cena",
+    "COFFEE": "Café",
+    "OTHER": "Otra"
   },
   "levels": {
     "BEGINNER": "Principiante",
@@ -462,7 +481,10 @@
         "startsAt": "hora",
         "spots": "plazas"
       }
-    }
+    },
+    "otherName": "¿Qué plan es?",
+    "otherPlaceholder": "Taller de cerámica",
+    "otherError": "Ponle un nombre de hasta {{max}} caracteres"
   },
   "profile": {
     "title": "Mi perfil",
@@ -535,7 +557,8 @@
       "waitlistFull": "La lista de espera está completa.",
       "minimum": "El mínimo de participantes debe estar entre 1 y las plazas del plan.",
       "minimumDeadline": "La hora límite del mínimo no puede ser después de que empiece el plan.",
-      "minimumDeadlineTooSoon": "La hora límite del mínimo debe quedar al menos a 5 minutos."
+      "minimumDeadlineTooSoon": "La hora límite del mínimo debe quedar al menos a 5 minutos.",
+      "activityOther": "La actividad «Otra» necesita un nombre de hasta 30 caracteres."
     },
     "meetingPoint": {
       "name": "El lugar necesita un nombre de hasta 100 caracteres"
@@ -677,7 +700,8 @@
     "open": "Ver plan",
     "you": "Estás aquí",
     "privacy": "Tu ubicación solo se usa para buscar, con unos 100 m de precisión, y no se guarda.",
-    "loading": "Buscando planes cerca…"
+    "loading": "Buscando planes cerca…",
+    "categories": "Categorías"
   },
   "notices": {
     "joinedTitle": "Alguien se ha apuntado",
@@ -912,5 +936,12 @@
         "text": "Si usas «Cuéntalo con una frase», esa frase se envía a Anthropic para convertirla en un borrador. No se guarda en OneLeft y solo se envía cuando pulsas el botón. Si dictas, el reconocimiento de voz lo hace tu navegador."
       }
     }
+  },
+  "categories": {
+    "SPORT": "Deporte",
+    "CULTURE": "Cultura",
+    "LEISURE": "Ocio",
+    "FOOD_DRINK": "Comer y beber",
+    "OTHER": "Otra"
   }
 }

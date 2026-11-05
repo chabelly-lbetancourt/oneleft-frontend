@@ -357,8 +357,88 @@ describe('PublishPlan', () => {
     const labels = (component['startOptions'] as () => { label: string }[])().map((o) => o.label);
     expect(labels).toEqual(['In 30 min', 'In 1 h', 'In 2 h', 'In 3 h', 'Another time']);
     expect((component['levelOptions'] as () => { label: string }[])()[0].label).toBe('Any');
-    expect((component['activities'] as () => { name: string }[])()[7].name).toBe('Board games');
+    const groups = (
+      component['activities'] as () => { label: string; items: { name: string }[] }[]
+    )();
+    expect(groups.map((group) => group.label)).toEqual([
+      'Sport',
+      'Culture',
+      'Leisure',
+      'Food and drink',
+      'Other',
+    ]);
+    expect(groups[2].items[0].name).toBe('Board games');
     expect(element().querySelector('h1')?.textContent).toContain('Publish a plan');
+  });
+
+  describe('activities by category (HU-068)', () => {
+    const control = (name: string) =>
+      (
+        component['form'] as unknown as {
+          controls: Record<string, { value: string; valid: boolean }>;
+        }
+      ).controls[name];
+    const isOther = () => (component['isOther'] as () => boolean)();
+
+    it('should group the activities and put «other» last, with the new ones among their category', () => {
+      const groups = (
+        component['activities'] as () => { category: string; items: { code: string }[] }[]
+      )();
+
+      expect(groups.map((group) => group.category)).toEqual([
+        'SPORT',
+        'CULTURE',
+        'LEISURE',
+        'FOOD_DRINK',
+        'OTHER',
+      ]);
+      const codes = (category: string) =>
+        groups.find((group) => group.category === category)?.items.map((item) => item.code);
+      expect(codes('SPORT')).toContain('YOGA');
+      expect(codes('CULTURE')).toEqual(['CINEMA', 'CONCERTS', 'THEATER', 'MUSEUMS_EXHIBITIONS']);
+      expect(codes('FOOD_DRINK')).toEqual(['TAPAS', 'MEAL', 'COFFEE']);
+      expect(codes('OTHER')).toEqual(['OTHER']);
+    });
+
+    it('should ask for a name only when the activity is «other» and send it trimmed', async () => {
+      const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
+      api.publish.mockReturnValue(of({ id: 'plan-1' }));
+      fillValidPlan();
+      form().patchValue({ activity: 'OTHER' });
+      await render();
+
+      expect(isOther()).toBe(true);
+      expect(element().querySelector('#activityOther')).not.toBeNull();
+      expect(control('activityOther').valid).toBe(false);
+      call('publish');
+      expect(api.publish).not.toHaveBeenCalled();
+
+      form().patchValue({ activityOther: '  Taller de cerámica ' });
+      call('publish');
+
+      expect(api.publish.mock.calls[0][0]).toMatchObject({
+        activity: 'OTHER',
+        activityOther: 'Taller de cerámica',
+      });
+      expect(navigate).toHaveBeenCalled();
+    });
+
+    it('should forget the name when another activity is chosen and not send it', async () => {
+      vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
+      api.publish.mockReturnValue(of({ id: 'plan-1' }));
+      fillValidPlan();
+      form().patchValue({ activity: 'OTHER', activityOther: 'Cerámica' });
+      await render();
+
+      form().patchValue({ activity: 'YOGA' });
+      await render();
+
+      expect(isOther()).toBe(false);
+      expect(element().querySelector('#activityOther')).toBeNull();
+      expect(control('activityOther').value).toBe('');
+      call('publish');
+      expect(api.publish.mock.calls[0][0]).toMatchObject({ activity: 'YOGA', activityOther: null });
+    });
   });
 
   describe('plan from a sentence (HU-010)', () => {

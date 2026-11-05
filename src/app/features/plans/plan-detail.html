@@ -35,7 +35,9 @@
         <div class="plan-card__head">
           <app-icon-tile [icon]="activity().icon" [tone]="activity().tone" size="lg" />
           <div class="plan-card__when">
-            <p class="plan-card__activity">{{ activityKey() | transloco }}</p>
+            <p class="plan-card__activity">
+              {{ plan()?.activityOther || (activityKey() | transloco) }}
+            </p>
             @if (startsAt(); as start) {
               <p class="plan-card__time">{{ start.time }}</p>
             }

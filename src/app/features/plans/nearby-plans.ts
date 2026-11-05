@@ -24,7 +24,7 @@ import { Language } from '@core/i18n/language';
 import { NativePlatform } from '@core/platform';
 import { NearbyStream } from '@core/realtime/nearby-stream';
 import { formatDistance } from '@shared/geo/distance';
-import { ACTIVITIES, activityKey } from '@shared/model/activities';
+import { activityKey, CATEGORIES, categoryKey, groupActivities } from '@shared/model/activities';
 import { BottomBar } from '@layout/bottom-bar/bottom-bar';
 import { PageLayout } from '@layout/page-layout/page-layout';
 import { NearbyPlan, NearbyPlanEvent, nearbyParams, NearbyQuery } from '@shared/model/nearby';
@@ -89,6 +89,8 @@ export class NearbyPlans {
   protected readonly radius = signal(DEFAULT_RADIUS);
   protected readonly withinHours = signal(DEFAULT_WINDOW);
   protected readonly activities = signal<string[]>([]);
+  /** Categories of activities to search (HU-068) */
+  protected readonly categories = signal<string[]>([]);
   protected readonly view = signal<View>('list');
   protected readonly newPlan = signal<NearbyPlanEvent | null>(null);
 
@@ -103,8 +105,9 @@ export class NearbyPlans {
   protected readonly windowOptions = computed(() =>
     WINDOW_OPTIONS.map((value) => ({ label: this.translate(`nearby.within${value}`), value })),
   );
-  protected readonly activityOptions = computed(() =>
-    ACTIVITIES.map(({ code }) => ({ code, name: this.translate(activityKey(code)) })),
+  protected readonly activityOptions = computed(() => groupActivities(this.translate));
+  protected readonly categoryOptions = computed(() =>
+    CATEGORIES.map((value) => ({ label: this.translate(categoryKey(value)), value })),
   );
   protected readonly viewOptions = computed(() => [
     { label: this.translate('nearby.list'), value: 'list' as View, icon: 'pi pi-list' },
@@ -118,6 +121,7 @@ export class NearbyPlans {
           ...position,
           radius: this.radius(),
           activities: this.activities(),
+          categories: this.categories(),
           withinHours: this.withinHours(),
         }
       : undefined;

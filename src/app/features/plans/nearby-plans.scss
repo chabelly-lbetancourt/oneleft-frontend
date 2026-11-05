@@ -33,6 +33,10 @@
   @include stack(space(1));
 }
 
+.category-filter {
+  flex-wrap: wrap;
+}
+
 .activity-filter {
   width: 100%;
 }
