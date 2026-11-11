@@ -66,8 +66,11 @@ test('asks for a spot with a message in a plan where the organizer chooses who c
       return route.fulfill({ status: 201, json: myRequest });
     },
   );
-  await page.goto(`/plans/${PLAN_ID}`);
+  // The plan page is public (HU-024): sign in first and then open it
+  await page.goto('/profile');
   await signIn(page, ADMIN);
+  await expect(page.locator('.profile-card')).toBeVisible();
+  await page.goto(`/plans/${PLAN_ID}`);
 
   // Nobody joins directly: there is no «join» button, but a request with an optional message
   await expect(page.locator('.request-spot__ask')).toBeVisible();
@@ -127,8 +130,11 @@ test('the organizer sees who asked, with their message, and accepts one request'
       });
     },
   );
-  await page.goto(`/plans/${PLAN_ID}`);
+  // The plan page is public (HU-024): sign in first and then open it
+  await page.goto('/profile');
   await signIn(page, ADMIN);
+  await expect(page.locator('.profile-card')).toBeVisible();
+  await page.goto(`/plans/${PLAN_ID}`);
 
   await expect(page.locator('.join-requests__item')).toContainText('Lucía');
   await expect(page.locator('.join-requests__item')).toContainText('¡Me encantaría!');
