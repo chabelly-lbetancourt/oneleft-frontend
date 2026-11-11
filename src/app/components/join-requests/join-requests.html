@@ -14,6 +14,9 @@
                   'plan.requestAgeBand' | transloco: { band: request.ageBand }
                 }}</span>
               }
+              @if (request.level) {
+                <span class="join-requests__age">{{ levelKey(request.level) | transloco }}</span>
+              }
             </span>
             @if (request.message) {
               <span class="join-requests__message">{{ request.message }}</span>
