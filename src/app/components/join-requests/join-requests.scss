@@ -34,3 +34,10 @@
 .join-requests__actions {
   @include cluster(space(2));
 }
+
+// Age band of who asks (HU-070)
+.join-requests__age {
+  @include text(sm);
+  font-weight: normal;
+  color: var(--ol-text-muted);
+}

@@ -7,7 +7,14 @@
       @for (request of pending(); track request.userId) {
         <li class="join-requests__item">
           <div class="join-requests__who">
-            <span class="join-requests__name">{{ request.name }}</span>
+            <span class="join-requests__name"
+              >{{ request.name }}
+              @if (request.ageBand) {
+                <span class="join-requests__age">{{
+                  'plan.requestAgeBand' | transloco: { band: request.ageBand }
+                }}</span>
+              }
+            </span>
             @if (request.message) {
               <span class="join-requests__message">{{ request.message }}</span>
             }

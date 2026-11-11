@@ -223,7 +223,8 @@
     "requestsTitle": "Requests",
     "requestsEmpty": "Nobody has asked for a spot yet.",
     "requestAccept": "Accept",
-    "requestReject": "Reject"
+    "requestReject": "Reject",
+    "requestAgeBand": "{{ band }} years old"
   },
   "story": {
     "title": "Card for Stories",
