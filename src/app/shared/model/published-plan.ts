@@ -130,6 +130,8 @@ export interface JoinRequest {
   status: RequestStatus;
   requestedAt: string;
   decidedAt: string | null;
+  /** Age band of the person when they asked (HU-070); null if they have not set their date of birth */
+  ageBand?: string | null;
 }
 
 /** Someone asked for a spot in one of my plans (HU-069) */

@@ -223,7 +223,8 @@
     "requestsTitle": "Solicitudes",
     "requestsEmpty": "Nadie ha pedido plaza todavía.",
     "requestAccept": "Aceptar",
-    "requestReject": "Rechazar"
+    "requestReject": "Rechazar",
+    "requestAgeBand": "{{ band }} años"
   },
   "story": {
     "title": "Tarjeta para Stories",
