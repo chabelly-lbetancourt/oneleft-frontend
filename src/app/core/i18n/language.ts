@@ -17,7 +17,10 @@ const isLanguage = (value: string | null | undefined): value is LanguageCode =>
  * Language on the first visit: the stored choice, else the first supported browser or device language,
  * else Spanish.
  */
-export const initialLanguage = (stored: string | null, preferred: readonly string[]): LanguageCode => {
+export const initialLanguage = (
+  stored: string | null,
+  preferred: readonly string[],
+): LanguageCode => {
   if (isLanguage(stored)) {
     return stored;
   }
@@ -41,7 +44,10 @@ export class Language {
    */
   init(): Promise<unknown> {
     const navigator = this.document.defaultView?.navigator;
-    const language = initialLanguage(this.read(), navigator?.languages ?? [navigator?.language ?? '']);
+    const language = initialLanguage(
+      this.read(),
+      navigator?.languages ?? [navigator?.language ?? ''],
+    );
     this.use(language, false);
     return firstValueFrom(this.transloco.load(language));
   }

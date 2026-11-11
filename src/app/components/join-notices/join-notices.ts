@@ -143,6 +143,32 @@ export class JoinNotices {
       .subscribe((notice) =>
         this.show('pi-map-marker', 'notices.nearbyTitle', this.nearby(notice), notice.planId),
       );
+    events.joinRequest$.pipe(takeUntilDestroyed(destroyRef)).subscribe((notice) =>
+      this.show(
+        'pi-user-plus',
+        'notices.requestTitle',
+        this.transloco.translate('notices.requestNew', {
+          name: notice.requesterName,
+          title: notice.title,
+        }),
+        notice.planId,
+      ),
+    );
+    events.requestDecided$.pipe(takeUntilDestroyed(destroyRef)).subscribe((notice) => {
+      const accepted = notice.decision === 'ACCEPTED';
+      const key = accepted
+        ? 'notices.requestAccepted'
+        : notice.planFull
+          ? 'notices.requestFull'
+          : 'notices.requestRejected';
+      this.show(
+        accepted ? 'pi-check-circle' : 'pi-info-circle',
+        'notices.requestTitle',
+        this.transloco.translate(key, { title: notice.title }),
+        notice.planId,
+        accepted ? 'success' : 'info',
+      );
+    });
     events.joined$.pipe(takeUntilDestroyed(destroyRef)).subscribe((notice) =>
       this.messages.add({
         key: 'joins',

@@ -40,6 +40,8 @@ describe('UserEvents', () => {
     const badges: BadgeEarnedNotice[] = [];
     const feed: FeedActivityNotice[] = [];
     const kudos: KudosNotice[] = [];
+    const requests: unknown[] = [];
+    const decisions: unknown[] = [];
     events.joined$.subscribe((notice) => joined.push(notice));
     events.joined$.subscribe((notice) => joinedToo.push(notice));
     events.left$.subscribe((notice) => left.push(notice));
@@ -52,6 +54,8 @@ describe('UserEvents', () => {
     events.badge$.subscribe((notice) => badges.push(notice));
     events.feedActivity$.subscribe((notice) => feed.push(notice));
     events.kudos$.subscribe((notice) => kudos.push(notice));
+    events.joinRequest$.subscribe((notice) => requests.push(notice));
+    events.requestDecided$.subscribe((notice) => decisions.push(notice));
     TestBed.tick();
     expect(stream.openEvents).not.toHaveBeenCalled();
 
@@ -123,6 +127,10 @@ describe('UserEvents', () => {
       givenAt: '2026-10-18T12:00:00Z',
     };
     source.next({ event: 'kudos', data: thanks });
+    const asked = { planId: 'p8', title: 'Pádel', requesterId: 'u1', requesterName: 'Lucía' };
+    source.next({ event: 'join-request', data: asked });
+    const decided = { planId: 'p8', title: 'Pádel', decision: 'ACCEPTED', planFull: false };
+    source.next({ event: 'request-decided', data: decided });
 
     expect(stream.openEvents).toHaveBeenCalledOnce();
     expect(stream.openEvents).toHaveBeenCalledWith(
@@ -139,6 +147,8 @@ describe('UserEvents', () => {
         'badge-earned',
         'feed-activity',
         'kudos',
+        'join-request',
+        'request-decided',
       ],
     );
     expect(joined).toEqual([join]);
@@ -153,6 +163,8 @@ describe('UserEvents', () => {
     expect(badges).toEqual([badge]);
     expect(feed).toEqual([news]);
     expect(kudos).toEqual([thanks]);
+    expect(requests).toEqual([asked]);
+    expect(decisions).toEqual([decided]);
 
     authenticated.set(false);
     TestBed.tick();

@@ -5,12 +5,14 @@ import { FeedActivityNotice } from '@shared/model/feed';
 import { PlanNearbyNotice } from '@shared/model/notifications';
 import { BadgeEarnedNotice, KudosNotice } from '@shared/model/reputation';
 import {
+  JoinRequestNotice,
   PlanArrivalNotice,
   PlanCancelledNotice,
   PlanCheckInNotice,
   PlanJoinedNotice,
   PlanLeftNotice,
   PlanReminderNotice,
+  RequestDecidedNotice,
   SpotFreedNotice,
 } from '@shared/model/published-plan';
 import { PlansApi } from '@core/api/plans-api';
@@ -28,6 +30,8 @@ const PLAN_CHECK_IN = 'plan-check-in';
 const BADGE_EARNED = 'badge-earned';
 const FEED_ACTIVITY = 'feed-activity';
 const KUDOS = 'kudos';
+const JOIN_REQUEST = 'join-request';
+const REQUEST_DECIDED = 'request-decided';
 
 /**
  * Personal events of the signed-in user while the app is open: someone has joined (HU-005) or left (HU-023) one of
@@ -60,6 +64,8 @@ export class UserEvents {
             BADGE_EARNED,
             FEED_ACTIVITY,
             KUDOS,
+            JOIN_REQUEST,
+            REQUEST_DECIDED,
           ])
         : EMPTY,
     ),
@@ -68,6 +74,10 @@ export class UserEvents {
 
   readonly joined$ = this.of<PlanJoinedNotice>(PLAN_JOINED);
   readonly left$ = this.of<PlanLeftNotice>(PLAN_LEFT);
+  /** Someone asked for a spot in a plan of mine (HU-069) */
+  readonly joinRequest$ = this.of<JoinRequestNotice>(JOIN_REQUEST);
+  /** The organizer decided on my request, or the plan filled up first (HU-069) */
+  readonly requestDecided$ = this.of<RequestDecidedNotice>(REQUEST_DECIDED);
   readonly spotFreed$ = this.of<SpotFreedNotice>(SPOT_FREED);
   readonly nearby$ = this.of<PlanNearbyNotice>(PLAN_NEARBY);
   readonly reminder$ = this.of<PlanReminderNotice>(PLAN_REMINDER);

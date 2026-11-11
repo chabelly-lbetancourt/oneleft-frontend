@@ -211,7 +211,19 @@
     "arrivalOnTheWay": "De camino",
     "arrivalLate": "Llega {{minutes}} min tarde",
     "arrivalYou": "Tú",
-    "chat": "Chat del plan"
+    "chat": "Chat del plan",
+    "requestTitle": "Pide plaza",
+    "requestHint": "El organizador elige quién viene: pídele plaza y te avisará.",
+    "requestMessage": "Un mensaje para el organizador (opcional)",
+    "requestMessagePlaceholder": "Cuéntale algo de ti…",
+    "request": "Solicitar plaza",
+    "requestPending": "Solicitud enviada. El organizador te avisará.",
+    "requestWithdraw": "Retirar mi solicitud",
+    "requestRejected": "El organizador no ha podido aceptarte esta vez.",
+    "requestsTitle": "Solicitudes",
+    "requestsEmpty": "Nadie ha pedido plaza todavía.",
+    "requestAccept": "Aceptar",
+    "requestReject": "Rechazar"
   },
   "story": {
     "title": "Tarjeta para Stories",
@@ -484,7 +496,9 @@
     },
     "otherName": "¿Cómo se llama la actividad?",
     "otherPlaceholder": "Taller de cerámica",
-    "otherError": "Ponle un nombre de hasta {{max}} caracteres"
+    "otherError": "Ponle un nombre de hasta {{max}} caracteres",
+    "chooseCompanion": "Elegir a quién acompaño",
+    "chooseCompanionHint": "Las personas te piden plaza y tú decides. Recomendado cuando solo falta una persona."
   },
   "profile": {
     "title": "Mi perfil",
@@ -558,7 +572,13 @@
       "minimum": "El mínimo de participantes debe estar entre 1 y las plazas del plan.",
       "minimumDeadline": "La hora límite del mínimo no puede ser después de que empiece el plan.",
       "minimumDeadlineTooSoon": "La hora límite del mínimo debe quedar al menos a 5 minutos.",
-      "activityOther": "La actividad «Otra» necesita un nombre de hasta 30 caracteres."
+      "activityOther": "La actividad «Otra» necesita un nombre de hasta 30 caracteres.",
+      "approvalRequired": "El organizador elige quién viene: pídele plaza.",
+      "approvalNotRequired": "A este plan te apuntas directamente.",
+      "alreadyRequested": "Ya has pedido plaza en este plan.",
+      "requestRejected": "El organizador no pudo aceptar tu solicitud.",
+      "noPendingRequest": "No hay ninguna solicitud pendiente.",
+      "notOrganizer": "Solo el organizador puede hacer esto."
     },
     "meetingPoint": {
       "name": "El lugar necesita un nombre de hasta 100 caracteres"
@@ -677,6 +697,10 @@
     "draft": {
       "unavailable": "El asistente no está disponible ahora. Rellena el formulario a mano.",
       "text": "Escribe tu plan en una frase de entre 3 y 300 caracteres."
+    },
+    "requestFailed": "No hemos podido completar la solicitud.",
+    "request": {
+      "message": "El mensaje puede tener hasta 140 caracteres."
     }
   },
   "nearby": {
@@ -725,7 +749,12 @@
     "badgeTitle": "¡Nueva insignia!",
     "badge": "Has conseguido «{{name}}»",
     "kudosTitle": "¡Te han dado un kudos!",
-    "kudos": "{{name}}: «{{kind}}»"
+    "kudos": "{{name}}: «{{kind}}»",
+    "requestTitle": "Solicitud de plaza",
+    "requestNew": "{{name}} quiere unirse a «{{title}}».",
+    "requestAccepted": "Te han aceptado en «{{title}}».",
+    "requestRejected": "No ha podido ser en «{{title}}»: el organizador ha elegido a otra persona.",
+    "requestFull": "«{{title}}» se ha completado con otra persona. ¡Gracias por pedir plaza!"
   },
   "notifications": {
     "title": "Avisos de planes cerca",

@@ -161,6 +161,8 @@ export class PublishPlan implements OnInit {
     customTime: [''],
     spots: this.fb.control<number>(1, [Validators.required, Validators.min(1), Validators.max(20)]),
     level: this.fb.control<Level | null>(null),
+    // The organizer chooses who comes (HU-069): on by default when only one spot is missing
+    chooseCompanion: this.fb.control(true),
     hasMinimum: this.fb.control(false),
     minParticipants: this.fb.control<number>(1, [Validators.min(1), Validators.max(20)]),
     minimumLead: this.fb.control<number>(30),
@@ -207,6 +209,10 @@ export class PublishPlan implements OnInit {
     this.form.controls.spots.valueChanges
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((spots) => {
+        // Until the person decides, the option follows the spots: on for one, off for more
+        if (this.form.controls.chooseCompanion.pristine) {
+          this.form.controls.chooseCompanion.setValue(spots === 1, { emitEvent: false });
+        }
         if (this.form.controls.minParticipants.value > spots) {
           this.form.controls.minParticipants.setValue(spots);
         }
@@ -437,6 +443,7 @@ export class PublishPlan implements OnInit {
         startsAt: startsAt.toISOString(),
         spots: value.spots,
         level: value.level,
+        chooseCompanion: value.chooseCompanion,
         minParticipants: deadline ? Math.min(value.minParticipants, value.spots) : null,
         minimumDeadline: deadline?.toISOString() ?? null,
       })

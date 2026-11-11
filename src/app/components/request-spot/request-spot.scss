@@ -1,0 +1,15 @@
+@use 'abstracts' as *;
+
+// «Ask for a spot» (HU-069)
+.request-spot {
+  @include stack(space(2));
+}
+
+.request-spot__label {
+  @include weight(semibold);
+}
+
+.request-spot__message {
+  width: 100%;
+  resize: vertical;
+}

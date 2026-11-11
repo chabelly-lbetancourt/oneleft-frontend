@@ -13,6 +13,7 @@ import {
   Forecast,
   FreePerson,
   Interest,
+  JoinRequest,
   Plan,
   PublicPlan,
   PublishPlan,
@@ -157,6 +158,28 @@ export class PlansApi {
   }
 
   /** Waits for a spot of a full plan (HU-023). */
+  /** Asks for a spot in a plan whose organizer chooses who comes (HU-069), with an optional short message. */
+  askForSpot(id: string, message: string | null): Observable<JoinRequest> {
+    return this.http.post<JoinRequest>(`${this.base}/${id}/requests`, { message });
+  }
+
+  /** The requests of my plan (HU-069): only its organizer sees them. */
+  requests(id: string): Observable<JoinRequest[]> {
+    return this.http.get<JoinRequest[]>(`${this.base}/${id}/requests`);
+  }
+
+  acceptRequest(id: string, userId: string): Observable<JoinRequest> {
+    return this.http.post<JoinRequest>(`${this.base}/${id}/requests/${userId}/accept`, null);
+  }
+
+  rejectRequest(id: string, userId: string): Observable<JoinRequest> {
+    return this.http.post<JoinRequest>(`${this.base}/${id}/requests/${userId}/reject`, null);
+  }
+
+  withdrawRequest(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.base}/${id}/requests/me`);
+  }
+
   joinWaitlist(id: string): Observable<Plan> {
     return this.http.post<Plan>(`${this.base}/${id}/waitlist`, null);
   }

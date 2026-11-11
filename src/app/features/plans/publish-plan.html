@@ -164,6 +164,19 @@
           [allowEmpty]="false"
           size="small"
         />
+        <div class="switch-row companion-row">
+          <div class="switch-text">
+            <label for="chooseCompanion" class="section-title">{{
+              'publish.chooseCompanion' | transloco
+            }}</label>
+            <p class="hint">{{ 'publish.chooseCompanionHint' | transloco }}</p>
+          </div>
+          <p-toggleswitch
+            inputId="chooseCompanion"
+            formControlName="chooseCompanion"
+            class="companion-switch"
+          />
+        </div>
       </section>
 
       <section class="form-section minimum-section">
