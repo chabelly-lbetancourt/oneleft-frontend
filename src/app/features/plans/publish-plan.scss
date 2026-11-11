@@ -69,3 +69,16 @@
 .place-actions {
   @include cluster(space(2));
 }
+
+// For whom the plan is (HU-070)
+.audience-ages {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: space(3);
+}
+
+.audience-ages__field {
+  display: flex;
+  flex-direction: column;
+  gap: space(1);
+}

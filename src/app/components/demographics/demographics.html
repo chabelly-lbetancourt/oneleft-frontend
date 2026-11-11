@@ -1,0 +1,50 @@
+<section class="demographics form-section" aria-labelledby="demographics-title">
+  <h2 class="section-title" id="demographics-title">{{ 'demographics.title' | transloco }}</h2>
+  <p class="hint">{{ 'demographics.why' | transloco }}</p>
+  @if (loaded()) {
+    @if (saved(); as mine) {
+      <p class="demographics__band">
+        {{ 'demographics.band' | transloco: { band: mine.ageBand.label } }}
+        · {{ 'demographics.changesLeft' | transloco: { count: mine.changesLeft } }}
+      </p>
+    }
+    <label for="birth-date" class="demographics__label">{{ 'demographics.birthDate' | transloco }}</label>
+    <input
+      type="date"
+      id="birth-date"
+      class="demographics__date p-inputtext"
+      [max]="latest"
+      [ngModel]="birthDate()"
+      (ngModelChange)="birthDate.set($event)"
+    />
+    <small class="muted">{{ 'demographics.adults' | transloco }}</small>
+    <label for="gender" class="demographics__label">{{ 'demographics.gender' | transloco }}</label>
+    <p-select
+      inputId="gender"
+      class="demographics__gender"
+      [options]="genderOptions()"
+      optionLabel="name"
+      optionValue="code"
+      [ngModel]="gender()"
+      (ngModelChange)="gender.set($event)"
+      [placeholder]="'demographics.chooseGender' | transloco"
+    />
+    <p-button
+      class="demographics__save"
+      type="button"
+      icon="pi pi-check"
+      [label]="'demographics.save' | transloco"
+      [loading]="saving()"
+      [disabled]="!ready()"
+      (onClick)="save()"
+    />
+    <p aria-live="polite">
+      @if (done()) {
+        <p-message severity="success" class="demographics__done">{{ 'demographics.saved' | transloco }}</p-message>
+      }
+      @if (error(); as problem) {
+        <p-message severity="error" class="demographics__error">{{ problem.key | transloco: problem.params }}</p-message>
+      }
+    </p>
+  }
+</section>

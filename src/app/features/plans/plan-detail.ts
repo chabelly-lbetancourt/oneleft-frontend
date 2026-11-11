@@ -9,7 +9,7 @@ import {
   untracked,
 } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { Button } from 'primeng/button';
 import { Message } from 'primeng/message';
@@ -18,12 +18,15 @@ import { catchError, filter, merge, Observable, of } from 'rxjs';
 import { PlansApi } from '@core/api/plans-api';
 import { PhotosApi } from '@core/api/photos-api';
 import { ReputationApi } from '@core/api/reputation-api';
+import { UsersApi } from '@core/api/users-api';
 import { Session } from '@core/auth/session';
 import { ApiErrorMessage, apiErrorMessage } from '@core/i18n/api-error';
 import { Language } from '@core/i18n/language';
 import { NativePlatform } from '@core/platform';
 import { UserEvents } from '@core/realtime/user-events';
 import { activityKey, activityOf } from '@shared/model/activities';
+import { audienceParts, fits, isEveryone } from '@shared/model/audience';
+import { ageOf, Demographics } from '@shared/model/demographics';
 import { levelKey } from '@shared/model/profile';
 import { ActivityVisibility } from '@components/activity-visibility/activity-visibility';
 import { PlanKudosPanel } from '@components/plan-kudos/plan-kudos';
@@ -183,6 +186,29 @@ export class PlanDetail {
   protected readonly busy = signal(false);
   /** Opened from a shared link without a session (HU-024): the public view of the plan */
   protected readonly isGuest = computed(() => !this.session.isAuthenticated());
+  /** For whom the plan is (HU-070), as translation keys; empty for everyone */
+  protected readonly audience = computed(() => audienceParts(this.plan()?.audience));
+  /** My own date of birth and gender, to know whether I fit the plan; null if I have not set them (HU-070) */
+  protected readonly mine = toSignal(
+    this.ownDemographics(inject(UsersApi)),
+    { initialValue: undefined },
+  );
+  private ownDemographics(users: UsersApi): Observable<Demographics | null> {
+    const own: Observable<Demographics | null> = this.session.isAuthenticated() ? users.demographics() : of(null);
+    return own.pipe(catchError(() => of(null)));
+  }
+  /** Whether I fit who the plan is for: the service decides in the end, this keeps the button from who cannot join */
+  protected readonly fit = computed<'fits' | 'mismatch' | 'unknown'>(() => {
+    const audience = this.plan()?.audience;
+    const mine = this.mine();
+    if (isEveryone(audience)) {
+      return 'fits';
+    }
+    if (!mine) {
+      return 'unknown';
+    }
+    return fits(audience, { gender: mine.gender, age: ageOf(mine.birthDate) }) ? 'fits' : 'mismatch';
+  });
   /** Reporting the plan (HU-033): with a session, for everyone but its organizer */
   protected readonly canReport = computed(() => !this.isGuest() && this.relation() !== 'organizer');
   protected readonly reporting = signal(false);

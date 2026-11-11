@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { environment } from '@env/environment';
 import { Catalog, MyProfile, PublicProfile, UpdateProfile } from '@shared/model/profile';
 import { ConsentStatus } from '@shared/model/account';
+import { Demographics, SaveDemographics } from '@shared/model/demographics';
 import { UserProfile } from '@shared/model/user';
 
 /** Client of the users service through the API Gateway. */
@@ -41,6 +42,15 @@ export class UsersApi {
   /** Deletes my account: here, in Keycloak and, by an event, in every service (HU-045). */
   deleteMyAccount(): Observable<void> {
     return this.http.delete<void>(`${this.base}/me/account`);
+  }
+
+  /** My date of birth and gender (HU-070); 404 while they are not set. */
+  demographics(): Observable<Demographics> {
+    return this.http.get<Demographics>(`${this.base}/me/demographics`);
+  }
+
+  saveDemographics(demographics: SaveDemographics): Observable<Demographics> {
+    return this.http.put<Demographics>(`${this.base}/me/demographics`, demographics);
   }
 
   /** The privacy text in force and whether I accepted it (HU-045). */

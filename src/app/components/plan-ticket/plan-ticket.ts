@@ -3,6 +3,7 @@ import { TranslocoPipe } from '@jsverse/transloco';
 import { Language } from '@core/i18n/language';
 import { formatDistance } from '@shared/geo/distance';
 import { activityKey, activityOf } from '@shared/model/activities';
+import { audienceParts } from '@shared/model/audience';
 import { Plan } from '@shared/model/published-plan';
 import { clockTime, relativeStart, spotsKey } from '@shared/time/plan-time';
 import { IconTile } from '@components/icon-tile/icon-tile';
@@ -38,6 +39,7 @@ export class PlanTicket {
   protected readonly relative = computed(() =>
     relativeStart(new Date(this.plan().startsAt), this.plan().status, new Date()),
   );
+  protected readonly audience = computed(() => audienceParts(this.plan().audience));
   protected readonly names = computed(() => [
     this.plan().organizerName,
     ...(this.plan().participants ?? []).map((participant) => participant.name),

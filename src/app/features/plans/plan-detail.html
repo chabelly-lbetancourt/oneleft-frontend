@@ -41,6 +41,14 @@
             @if (startsAt(); as start) {
               <p class="plan-card__time">{{ start.time }}</p>
             }
+            @if (audience().length > 0) {
+              <p class="plan-card__audience">
+                <i class="pi pi-users icon-xs" aria-hidden="true"></i>
+                @for (part of audience(); track part.key; let last = $last) {
+                  {{ part.key | transloco: part.params }}{{ last ? '' : ' · ' }}
+                }
+              </p>
+            }
           </div>
           @if (ended()) {
             <span class="plan-card__spots plan-state pill pill--md">
@@ -212,7 +220,17 @@
             <p class="hint">{{ 'plan.guestHint' | transloco }}</p>
           }
           @case ('canJoin') {
-            @if (current.requiresApproval) {
+            @if (fit() === 'mismatch') {
+              <p-message severity="warn" class="audience-mismatch">{{ 'audience.notForYou' | transloco }}</p-message>
+            } @else if (fit() === 'unknown' && mine() !== undefined) {
+              <p class="hint audience-missing">
+                {{ 'demographics.missing' | transloco }}
+                <a routerLink="/profile">{{ 'demographics.goToProfile' | transloco }}</a>
+              </p>
+            }
+            @if (fit() === 'mismatch') {
+              <!-- not for you: no button -->
+            } @else if (current.requiresApproval) {
               <app-request-spot [plan]="current" (changed)="reload()" />
             } @else {
               <p-button

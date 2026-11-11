@@ -1,3 +1,4 @@
+import { Audience } from './audience';
 import { Level } from './profile';
 
 export interface MeetingPoint {
@@ -12,6 +13,8 @@ export interface PublishPlan {
   activityOther?: string | null;
   /** The organizer chooses who comes (HU-069): people ask for a spot and the organizer decides */
   chooseCompanion?: boolean | null;
+  /** For whom the plan is (HU-070): everyone if absent */
+  audience?: Audience | null;
   title: string;
   description: string | null;
   meetingPoint: MeetingPoint;

@@ -37,6 +37,8 @@ describe('Profile', () => {
     myProfile: vi.fn(),
     catalog: vi.fn(),
     updateMyProfile: vi.fn(),
+    demographics: vi.fn(() => throwError(() => ({ status: 404 }))),
+    saveDemographics: vi.fn(),
   };
   const location = { current: vi.fn() };
   const myPhoto = {

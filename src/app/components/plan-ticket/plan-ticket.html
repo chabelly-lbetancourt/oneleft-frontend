@@ -15,6 +15,14 @@
         · <span class="plan-ticket__relative">{{ rel.key | transloco: rel.params }}</span>
       }
     </p>
+    @if (audience().length > 0) {
+      <p class="plan-ticket__audience">
+        <i class="pi pi-users icon-xs" aria-hidden="true"></i>
+        @for (part of audience(); track part.key; let last = $last) {
+          {{ part.key | transloco: part.params }}{{ last ? '' : ' · ' }}
+        }
+      </p>
+    }
     @if (organizerReputation() !== null || organizerPhoto()) {
       <p class="plan-ticket__organizer">
         @if (organizerPhoto(); as photo) {
