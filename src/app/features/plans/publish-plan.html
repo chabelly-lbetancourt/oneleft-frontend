@@ -179,6 +179,30 @@
         </div>
       </section>
 
+      <section class="form-section audience-section">
+        <span class="section-title" id="audience-title">{{ 'audience.title' | transloco }}</span>
+        <p class="hint">{{ 'audience.hint' | transloco }}</p>
+        <p-selectbutton
+          formControlName="audienceGender"
+          [options]="audienceOptions()"
+          optionLabel="label"
+          optionValue="value"
+          [allowEmpty]="false"
+          ariaLabelledBy="audience-title"
+          size="small"
+        />
+        <div class="audience-ages">
+          <label for="minAge" class="audience-ages__field">
+            <span>{{ 'audience.minAge' | transloco }}</span>
+            <p-inputnumber inputId="minAge" formControlName="minAge" [min]="minAgeLimit" [max]="99" />
+          </label>
+          <label for="maxAge" class="audience-ages__field">
+            <span>{{ 'audience.maxAge' | transloco }}</span>
+            <p-inputnumber inputId="maxAge" formControlName="maxAge" [min]="minAgeLimit" [max]="99" />
+          </label>
+        </div>
+      </section>
+
       <section class="form-section minimum-section">
         <div class="switch-row">
           <div class="switch-text">

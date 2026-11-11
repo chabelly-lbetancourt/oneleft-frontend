@@ -29,6 +29,7 @@ import { Tag } from 'primeng/tag';
 import { Textarea } from 'primeng/textarea';
 import { catchError, forkJoin, of } from 'rxjs';
 import { CardSkeleton } from '@components/card-skeleton/card-skeleton';
+import { DemographicsCard } from '@components/demographics/demographics';
 import { LanguageSwitcher } from '@components/language-switcher/language-switcher';
 import { PersonAvatar } from '@components/person-avatar/person-avatar';
 import { ReputationBadge } from '@components/reputation-badge/reputation-badge';
@@ -66,6 +67,7 @@ const zoneComplete = (group: AbstractControl): ValidationErrors | null => {
     ReactiveFormsModule,
     Button,
     CardSkeleton,
+    DemographicsCard,
     InputText,
     LanguageSwitcher,
     Message,

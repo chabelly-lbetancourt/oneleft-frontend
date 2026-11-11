@@ -1,0 +1,20 @@
+@use 'abstracts' as *;
+
+// Date of birth and gender (HU-070)
+.demographics {
+  @include stack(space(2));
+}
+
+.demographics__label {
+  @include weight(semibold);
+}
+
+.demographics__date {
+  width: 100%;
+}
+
+.demographics__band {
+  @include text(sm);
+  margin: 0;
+  color: var(--ol-text-muted);
+}

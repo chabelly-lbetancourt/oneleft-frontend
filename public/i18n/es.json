@@ -578,7 +578,9 @@
       "alreadyRequested": "Ya has pedido plaza en este plan.",
       "requestRejected": "El organizador no pudo aceptar tu solicitud.",
       "noPendingRequest": "No hay ninguna solicitud pendiente.",
-      "notOrganizer": "Solo el organizador puede hacer esto."
+      "notOrganizer": "Solo el organizador puede hacer esto.",
+      "audienceMismatch": "Este plan no encaja con tu perfil (género o edad).",
+      "audienceAge": "La edad mínima no puede ser mayor que la máxima y debe ser de 18 o más"
     },
     "meetingPoint": {
       "name": "El lugar necesita un nombre de hasta 100 caracteres"
@@ -701,7 +703,15 @@
     "requestFailed": "No hemos podido completar la solicitud.",
     "request": {
       "message": "El mensaje puede tener hasta 140 caracteres."
-    }
+    },
+    "demographics": {
+      "required": "Para unirte a este plan indica tu fecha de nacimiento y tu género en el perfil.",
+      "unavailable": "No se ha podido comprobar tu perfil. Inténtalo de nuevo.",
+      "minor": "OneLeft es solo para mayores de 18 años",
+      "birthDateLocked": "Ya no puedes cambiar tu fecha de nacimiento",
+      "birthDate": "La fecha de nacimiento no es válida"
+    },
+    "demographicsFailed": "No se han podido guardar los datos"
   },
   "nearby": {
     "title": "Planes cerca",
@@ -972,5 +982,43 @@
     "LEISURE": "Ocio",
     "FOOD_DRINK": "Comer y beber",
     "OTHER": "Otra"
+  },
+  "genders": {
+    "WOMAN": "Mujer",
+    "MAN": "Hombre",
+    "NON_BINARY": "No binario",
+    "PREFER_NOT_TO_SAY": "Prefiero no decirlo"
+  },
+  "demographics": {
+    "title": "Fecha de nacimiento y género",
+    "why": "Algunos planes son solo para mujeres, hombres o un rango de edad. Tu fecha de nacimiento no la ve nadie: los demás solo ven tu tramo de edad.",
+    "birthDate": "Fecha de nacimiento",
+    "adults": "OneLeft es solo para mayores de 18 años.",
+    "gender": "Género",
+    "chooseGender": "Elige una opción",
+    "save": "Guardar",
+    "saved": "Datos guardados",
+    "band": "Tu tramo de edad: {{ band }}",
+    "changesLeft": "Cambios de fecha que te quedan: {{ count }}",
+    "missing": "Indica tu fecha de nacimiento y tu género en el perfil para unirte a este plan.",
+    "goToProfile": "Ir al perfil"
+  },
+  "audience": {
+    "title": "¿Para quién es el plan?",
+    "gender": "Género",
+    "minAge": "Edad mínima",
+    "maxAge": "Edad máxima",
+    "hint": "Solo podrán unirse personas que encajen. Déjalo en «Todos» para abrirlo a cualquiera.",
+    "all": "Todos",
+    "woman": "Mujeres",
+    "man": "Hombres",
+    "only": {
+      "WOMAN": "Solo mujeres",
+      "MAN": "Solo hombres"
+    },
+    "between": "{{ min }}–{{ max }} años",
+    "from": "Desde {{ min }} años",
+    "upTo": "Hasta {{ max }} años",
+    "notForYou": "Este plan no encaja con tu perfil."
   }
 }

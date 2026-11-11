@@ -23,6 +23,7 @@ import {
   PlanJoinedNotice,
   PlanLeftNotice,
 } from '@shared/model/published-plan';
+import { UsersApi } from '@core/api/users-api';
 import { PlanDetail } from './plan-detail';
 import { NativePlatform } from '@core/platform';
 
@@ -94,6 +95,8 @@ describe('PlanDetail', () => {
     fixture.detectChanges();
   };
 
+  const usersApi = { demographics: vi.fn() };
+
   const create = async (plan: unknown, published?: string, me = 'me') => {
     api.plan.mockReturnValue(plan instanceof Error ? throwError(() => plan) : of(plan));
     session.signIn('Me', me);
@@ -108,6 +111,7 @@ describe('PlanDetail', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     // No forecast nor free people unless a test gives them (HU-026, HU-035)
+    usersApi.demographics.mockReturnValue(of(null));
     api.weather.mockReturnValue(of(null));
     api.freePeople.mockReturnValue(of([]));
     api.checkIns.mockReturnValue(of([]));
@@ -121,6 +125,7 @@ describe('PlanDetail', () => {
       providers: [
         provideRouter([]),
         { provide: PlansApi, useValue: api },
+        { provide: UsersApi, useValue: usersApi },
         { provide: PhotosApi, useValue: photosApi },
         { provide: SocialApi, useValue: socialApi },
         { provide: ReputationApi, useValue: reputationApi },
@@ -138,6 +143,41 @@ describe('PlanDetail', () => {
           },
         },
       ],
+    });
+  });
+
+  describe('audience (HU-070)', () => {
+    const forWomen = { ...PLAN, audience: { gender: 'WOMAN', minAge: 25, maxAge: 40 } };
+    const demographics = (birthYearsAgo: number, gender: string) => ({
+      birthDate: `${new Date().getFullYear() - birthYearsAgo}-01-01`,
+      gender,
+      ageBand: { from: 25, to: 29, label: '' },
+      changesLeft: 2,
+    });
+
+    it('should say for whom the plan is', async () => {
+      await create(forWomen);
+      expect(element().querySelector('.plan-card__audience')!.textContent).toContain('Solo mujeres');
+    });
+
+    it('should offer to join when I fit', async () => {
+      usersApi.demographics.mockReturnValue(of(demographics(32, 'WOMAN')));
+      await create(forWomen);
+      expect(element().querySelector('.join-button')).not.toBeNull();
+      expect(element().querySelector('.audience-mismatch')).toBeNull();
+    });
+
+    it('should not offer to join when I do not fit, and say why', async () => {
+      usersApi.demographics.mockReturnValue(of(demographics(32, 'MAN')));
+      await create(forWomen);
+      expect(element().querySelector('.join-button')).toBeNull();
+      expect(element().querySelector('.audience-mismatch')).not.toBeNull();
+    });
+
+    it('should lead to the profile when my date of birth and gender are not set', async () => {
+      await create(forWomen);
+      expect(element().querySelector('.audience-missing a')!.getAttribute('href')).toBe('/profile');
+      expect(element().querySelector('.join-button')).not.toBeNull();
     });
   });
 

@@ -37,6 +37,8 @@ import {
 import { apiErrorMessage } from '@core/i18n/api-error';
 import { Language } from '@core/i18n/language';
 import { formatDistance } from '@shared/geo/distance';
+import { AUDIENCE_GENDERS, AudienceGender } from '@shared/model/audience';
+import { MIN_AGE } from '@shared/model/demographics';
 import { groupActivities, OTHER, OTHER_MAX_LENGTH } from '@shared/model/activities';
 import { PLACE_QUERY_MIN_LENGTH, PlaceSuggestion } from '@shared/model/places';
 import { PlanDraft } from '@shared/model/plan-draft';
@@ -128,6 +130,11 @@ export class PublishPlan implements OnInit {
     ...LEVELS.map((value) => ({ label: this.translate(levelKey(value)), value })),
   ]);
 
+  protected readonly audienceOptions = computed(() =>
+    AUDIENCE_GENDERS.map((value) => ({ label: this.translate(`audience.${value.toLowerCase()}`), value })),
+  );
+  protected readonly minAgeLimit = MIN_AGE;
+
   protected readonly publishing = signal(false);
   /** The sentence is being understood (HU-010), and what came out of it */
   protected readonly drafting = signal(false);
@@ -163,6 +170,10 @@ export class PublishPlan implements OnInit {
     level: this.fb.control<Level | null>(null),
     // The organizer chooses who comes (HU-069): on by default when only one spot is missing
     chooseCompanion: this.fb.control(true),
+    // For whom the plan is (HU-070): everyone, at any age, unless the organizer narrows it
+    audienceGender: this.fb.control<AudienceGender>('ALL'),
+    minAge: this.fb.control<number | null>(null, [Validators.min(MIN_AGE), Validators.max(99)]),
+    maxAge: this.fb.control<number | null>(null, [Validators.min(MIN_AGE), Validators.max(99)]),
     hasMinimum: this.fb.control(false),
     minParticipants: this.fb.control<number>(1, [Validators.min(1), Validators.max(20)]),
     minimumLead: this.fb.control<number>(30),
@@ -444,6 +455,11 @@ export class PublishPlan implements OnInit {
         spots: value.spots,
         level: value.level,
         chooseCompanion: value.chooseCompanion,
+        audience: {
+          gender: value.audienceGender,
+          minAge: value.minAge,
+          maxAge: value.maxAge,
+        },
         minParticipants: deadline ? Math.min(value.minParticipants, value.spots) : null,
         minimumDeadline: deadline?.toISOString() ?? null,
       })

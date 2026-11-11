@@ -209,3 +209,9 @@
   display: flex;
   gap: space(2);
 }
+
+// For whom the plan is (HU-070)
+.plan-card__audience {
+  margin: 0;
+  color: var(--ol-text-muted);
+}

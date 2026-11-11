@@ -578,7 +578,9 @@
       "alreadyRequested": "You have already asked for a spot in this plan.",
       "requestRejected": "The organizer could not accept your request.",
       "noPendingRequest": "There is no pending request.",
-      "notOrganizer": "Only the organizer can do this."
+      "notOrganizer": "Only the organizer can do this.",
+      "audienceMismatch": "This plan does not fit your profile (gender or age).",
+      "audienceAge": "The minimum age cannot be above the maximum and must be 18 or more"
     },
     "meetingPoint": {
       "name": "The meeting point needs a name of up to 100 characters"
@@ -701,7 +703,15 @@
     "requestFailed": "We could not complete the request.",
     "request": {
       "message": "The message can have up to 140 characters."
-    }
+    },
+    "demographics": {
+      "required": "To join this plan, set your date of birth and gender in your profile.",
+      "unavailable": "Your profile could not be checked. Try again.",
+      "minor": "OneLeft is for people aged 18 or over",
+      "birthDateLocked": "You can no longer change your date of birth",
+      "birthDate": "The date of birth is not valid"
+    },
+    "demographicsFailed": "The details could not be saved"
   },
   "nearby": {
     "title": "Nearby plans",
@@ -972,5 +982,43 @@
     "LEISURE": "Leisure",
     "FOOD_DRINK": "Food and drink",
     "OTHER": "Other"
+  },
+  "genders": {
+    "WOMAN": "Woman",
+    "MAN": "Man",
+    "NON_BINARY": "Non-binary",
+    "PREFER_NOT_TO_SAY": "Prefer not to say"
+  },
+  "demographics": {
+    "title": "Date of birth and gender",
+    "why": "Some plans are only for women, men or an age range. Nobody sees your date of birth: others only see your age band.",
+    "birthDate": "Date of birth",
+    "adults": "OneLeft is for people aged 18 or over.",
+    "gender": "Gender",
+    "chooseGender": "Choose an option",
+    "save": "Save",
+    "saved": "Details saved",
+    "band": "Your age band: {{ band }}",
+    "changesLeft": "Date changes left: {{ count }}",
+    "missing": "Set your date of birth and gender in your profile to join this plan.",
+    "goToProfile": "Go to profile"
+  },
+  "audience": {
+    "title": "Who is the plan for?",
+    "gender": "Gender",
+    "minAge": "Minimum age",
+    "maxAge": "Maximum age",
+    "hint": "Only people who fit can join. Leave it on “Everyone” to open it to anyone.",
+    "all": "Everyone",
+    "woman": "Women",
+    "man": "Men",
+    "only": {
+      "WOMAN": "Women only",
+      "MAN": "Men only"
+    },
+    "between": "{{ min }}–{{ max }} years",
+    "from": "From {{ min }} years",
+    "upTo": "Up to {{ max }} years",
+    "notForYou": "This plan does not fit your profile."
   }
 }

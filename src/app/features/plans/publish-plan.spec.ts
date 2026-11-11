@@ -470,6 +470,19 @@ describe('PublishPlan', () => {
       expect(api.publish.mock.calls[0][0]).toMatchObject({ spots: 1, chooseCompanion: false });
     });
 
+    it('should send who the plan is for, everyone at any age unless chosen', async () => {
+      vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
+      api.publish.mockReturnValue(of({ id: 'plan-1' }));
+      fillValidPlan();
+      call('publish');
+      expect(api.publish.mock.calls[0][0].audience).toEqual({ gender: 'ALL', minAge: null, maxAge: null });
+
+      fillValidPlan();
+      form().patchValue({ audienceGender: 'WOMAN', minAge: 25, maxAge: 40 });
+      call('publish');
+      expect(api.publish.mock.calls[1][0].audience).toEqual({ gender: 'WOMAN', minAge: 25, maxAge: 40 });
+    });
+
     it('should show the option in the form', async () => {
       await render();
 
