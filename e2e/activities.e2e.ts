@@ -71,7 +71,8 @@ const fillAndPublish = async (
   t: (key: string) => string,
 ) => {
   await page.locator('p-select').click();
-  await page.getByRole('option', { name: activity }).click();
+  // «Other» is also the name of a category: the activity is the last option with that name
+  await page.getByRole('option', { name: activity, exact: true }).last().click();
   return async (otherName?: string) => {
     if (otherName) {
       await page.locator('#activityOther').fill(otherName);
