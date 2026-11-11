@@ -211,7 +211,19 @@
     "arrivalOnTheWay": "On the way",
     "arrivalLate": "{{minutes}} min late",
     "arrivalYou": "You",
-    "chat": "Plan chat"
+    "chat": "Plan chat",
+    "requestTitle": "Ask for a spot",
+    "requestHint": "The organizer chooses who comes: ask for a spot and they will let you know.",
+    "requestMessage": "A message for the organizer (optional)",
+    "requestMessagePlaceholder": "Tell them something about you…",
+    "request": "Ask for a spot",
+    "requestPending": "Request sent. The organizer will let you know.",
+    "requestWithdraw": "Withdraw my request",
+    "requestRejected": "The organizer could not accept you this time.",
+    "requestsTitle": "Requests",
+    "requestsEmpty": "Nobody has asked for a spot yet.",
+    "requestAccept": "Accept",
+    "requestReject": "Reject"
   },
   "story": {
     "title": "Card for Stories",
@@ -484,7 +496,9 @@
     },
     "otherName": "What is the activity called?",
     "otherPlaceholder": "Pottery workshop",
-    "otherError": "Give it a name of up to {{max}} characters"
+    "otherError": "Give it a name of up to {{max}} characters",
+    "chooseCompanion": "Choose who comes with me",
+    "chooseCompanionHint": "People ask for a spot and you decide. Recommended when only one person is missing."
   },
   "profile": {
     "title": "My profile",
@@ -558,7 +572,13 @@
       "minimum": "The minimum of participants must be between 1 and the spots of the plan.",
       "minimumDeadline": "The deadline of the minimum cannot be after the start of the plan.",
       "minimumDeadlineTooSoon": "The deadline of the minimum must be at least 5 minutes away.",
-      "activityOther": "«Other» needs a name of up to 30 characters."
+      "activityOther": "«Other» needs a name of up to 30 characters.",
+      "approvalRequired": "The organizer chooses who comes: ask for a spot.",
+      "approvalNotRequired": "You join this plan directly.",
+      "alreadyRequested": "You have already asked for a spot in this plan.",
+      "requestRejected": "The organizer could not accept your request.",
+      "noPendingRequest": "There is no pending request.",
+      "notOrganizer": "Only the organizer can do this."
     },
     "meetingPoint": {
       "name": "The meeting point needs a name of up to 100 characters"
@@ -677,6 +697,10 @@
     "draft": {
       "unavailable": "The assistant is not available now. Fill in the form by hand.",
       "text": "Write your plan in a sentence of 3 to 300 characters."
+    },
+    "requestFailed": "We could not complete the request.",
+    "request": {
+      "message": "The message can have up to 140 characters."
     }
   },
   "nearby": {
@@ -725,7 +749,12 @@
     "badgeTitle": "New badge!",
     "badge": "You earned «{{name}}»",
     "kudosTitle": "You got a kudos!",
-    "kudos": "{{name}}: «{{kind}}»"
+    "kudos": "{{name}}: «{{kind}}»",
+    "requestTitle": "Request for a spot",
+    "requestNew": "{{name}} wants to join “{{title}}”.",
+    "requestAccepted": "You have been accepted in “{{title}}”.",
+    "requestRejected": "It could not be in “{{title}}”: the organizer chose someone else.",
+    "requestFull": "“{{title}}” was completed with someone else. Thanks for asking!"
   },
   "notifications": {
     "title": "Notices of plans nearby",

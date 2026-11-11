@@ -441,6 +441,45 @@ describe('PublishPlan', () => {
     });
   });
 
+  describe('who comes with me (HU-069)', () => {
+    const controls = () =>
+      (component['form'] as unknown as { controls: Record<string, { value: unknown }> }).controls;
+
+    it('should be on by default for one spot and follow the spots until the person decides', () => {
+      expect(controls()['chooseCompanion'].value).toBe(true);
+
+      form().patchValue({ spots: 3 });
+      expect(controls()['chooseCompanion'].value).toBe(false);
+      form().patchValue({ spots: 1 });
+      expect(controls()['chooseCompanion'].value).toBe(true);
+    });
+
+    it('should stop following the spots once the person chose, and send the choice', async () => {
+      vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
+      api.publish.mockReturnValue(of({ id: 'plan-1' }));
+      fillValidPlan();
+      const control = (
+        component['form'] as unknown as { controls: Record<string, { markAsDirty(): void }> }
+      ).controls['chooseCompanion'];
+      form().patchValue({ chooseCompanion: false });
+      control.markAsDirty();
+
+      form().patchValue({ spots: 1 });
+      call('publish');
+
+      expect(api.publish.mock.calls[0][0]).toMatchObject({ spots: 1, chooseCompanion: false });
+    });
+
+    it('should show the option in the form', async () => {
+      await render();
+
+      expect(element().querySelector('.companion-switch')).not.toBeNull();
+      expect(element().querySelector('.companion-row')?.textContent).toContain(
+        'Elegir a quién acompaño',
+      );
+    });
+  });
+
   describe('plan from a sentence (HU-010)', () => {
     const draft = (changes: object = {}) => ({
       activity: 'PADEL',

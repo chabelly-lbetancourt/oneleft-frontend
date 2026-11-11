@@ -1,0 +1,46 @@
+<section class="join-requests" aria-labelledby="join-requests-title">
+  <h3 class="section-title" id="join-requests-title">{{ 'plan.requestsTitle' | transloco }}</h3>
+  @if (pending().length === 0) {
+    <p class="hint join-requests__empty">{{ 'plan.requestsEmpty' | transloco }}</p>
+  } @else {
+    <ul class="join-requests__list">
+      @for (request of pending(); track request.userId) {
+        <li class="join-requests__item">
+          <div class="join-requests__who">
+            <span class="join-requests__name">{{ request.name }}</span>
+            @if (request.message) {
+              <span class="join-requests__message">{{ request.message }}</span>
+            }
+          </div>
+          <div class="join-requests__actions">
+            <p-button
+              class="join-requests__accept"
+              type="button"
+              size="small"
+              icon="pi pi-check"
+              [label]="'plan.requestAccept' | transloco"
+              [loading]="busy() === request.userId"
+              (onClick)="accept(request)"
+            />
+            <p-button
+              class="join-requests__reject"
+              type="button"
+              size="small"
+              severity="secondary"
+              [outlined]="true"
+              icon="pi pi-times"
+              [label]="'plan.requestReject' | transloco"
+              [disabled]="busy() === request.userId"
+              (onClick)="reject(request)"
+            />
+          </div>
+        </li>
+      }
+    </ul>
+  }
+  @if (error(); as problem) {
+    <p-message severity="error" class="join-requests__error">{{
+      problem.key | transloco: problem.params
+    }}</p-message>
+  }
+</section>

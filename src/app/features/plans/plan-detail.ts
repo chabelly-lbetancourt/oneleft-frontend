@@ -36,6 +36,8 @@ import { StoryShare } from '@components/story-share/story-share';
 import { ReputationBadge } from '@components/reputation-badge/reputation-badge';
 import { SpotSlots } from '@components/spot-slots/spot-slots';
 import { PageLayout } from '@layout/page-layout/page-layout';
+import { JoinRequests } from '@components/join-requests/join-requests';
+import { RequestSpot } from '@components/request-spot/request-spot';
 import {
   ArrivalStatus,
   Forecast,
@@ -62,6 +64,8 @@ const ENDED: Plan['status'][] = ['IN_PROGRESS', 'FINISHED', 'CANCELLED'];
 @Component({
   selector: 'app-plan-detail',
   imports: [
+    RequestSpot,
+    JoinRequests,
     ActivityVisibility,
     PlanKudosPanel,
     Button,
@@ -338,12 +342,24 @@ export class PlanDetail {
     effect(() => this.load(this.id()));
     // The plan is refreshed at once when a notice about it arrives: someone joined or left, or my spot came up
     const events = inject(UserEvents);
-    merge(events.joined$, events.left$, events.spotFreed$, events.cancelled$, events.arrival$)
+    merge(
+      events.joined$,
+      events.left$,
+      events.spotFreed$,
+      events.cancelled$,
+      events.arrival$,
+      events.requestDecided$,
+    )
       .pipe(
         filter((notice) => notice.planId === this.id()),
         takeUntilDestroyed(inject(DestroyRef)),
       )
       .subscribe(() => this.load(this.id()));
+  }
+
+  /** Loads the plan again, when something about its requests changed (HU-069). */
+  protected reload(): void {
+    this.load(this.id());
   }
 
   protected join(): void {

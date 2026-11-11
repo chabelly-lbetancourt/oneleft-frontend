@@ -1,0 +1,36 @@
+@use 'abstracts' as *;
+
+// The requests for a spot in my plan (HU-069)
+.join-requests {
+  @include stack(space(2));
+}
+
+.join-requests__list {
+  @include stack(space(2));
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.join-requests__item {
+  @include card;
+  @include stack(space(2));
+  padding: space(3);
+}
+
+.join-requests__who {
+  @include stack(space(0.5));
+}
+
+.join-requests__name {
+  @include weight(semibold);
+}
+
+.join-requests__message {
+  @include text(sm);
+  color: var(--ol-text-muted);
+}
+
+.join-requests__actions {
+  @include cluster(space(2));
+}

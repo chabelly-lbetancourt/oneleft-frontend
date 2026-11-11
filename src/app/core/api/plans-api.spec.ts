@@ -169,4 +169,25 @@ describe('PlansApi', () => {
     expect(drafts).toHaveLength(1);
     http.verify();
   });
+
+  it('should ask for a spot, list, accept, reject and withdraw requests (HU-069)', () => {
+    TestBed.configureTestingModule({
+      providers: [provideHttpClient(), provideHttpClientTesting()],
+    });
+    const api = TestBed.inject(PlansApi);
+    const http = TestBed.inject(HttpTestingController);
+    const base = `${environment.apiUrl}/api/v1/plans/plan-1/requests`;
+
+    api.askForSpot('plan-1', '¡Hola!').subscribe();
+    expect(http.expectOne(base).request.body).toEqual({ message: '¡Hola!' });
+    api.requests('plan-1').subscribe();
+    expect(http.expectOne(base).request.method).toBe('GET');
+    api.acceptRequest('plan-1', 'lucia').subscribe();
+    expect(http.expectOne(`${base}/lucia/accept`).request.method).toBe('POST');
+    api.rejectRequest('plan-1', 'lucia').subscribe();
+    expect(http.expectOne(`${base}/lucia/reject`).request.method).toBe('POST');
+    api.withdrawRequest('plan-1').subscribe();
+    expect(http.expectOne(`${base}/me`).request.method).toBe('DELETE');
+    http.verify();
+  });
 });

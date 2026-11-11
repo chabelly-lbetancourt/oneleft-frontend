@@ -1,0 +1,55 @@
+<section class="request-spot" aria-labelledby="request-spot-title">
+  @switch (status()) {
+    @case ('PENDING') {
+      <p-message severity="info" class="request-spot__pending">{{
+        'plan.requestPending' | transloco
+      }}</p-message>
+      <p-button
+        class="request-spot__withdraw"
+        type="button"
+        severity="secondary"
+        [outlined]="true"
+        [label]="'plan.requestWithdraw' | transloco"
+        [loading]="busy()"
+        (onClick)="withdraw()"
+      />
+    }
+    @case ('REJECTED') {
+      <p-message severity="warn" class="request-spot__rejected">{{
+        'plan.requestRejected' | transloco
+      }}</p-message>
+    }
+    @default {
+      <h3 class="section-title" id="request-spot-title">{{ 'plan.requestTitle' | transloco }}</h3>
+      <p class="hint">{{ 'plan.requestHint' | transloco }}</p>
+      <label for="request-message" class="request-spot__label">{{
+        'plan.requestMessage' | transloco
+      }}</label>
+      <textarea
+        pTextarea
+        id="request-message"
+        class="request-spot__message"
+        rows="2"
+        [maxlength]="maxLength"
+        [ngModel]="message()"
+        (ngModelChange)="message.set($event)"
+        [placeholder]="'plan.requestMessagePlaceholder' | transloco"
+      ></textarea>
+      <p-button
+        class="request-spot__ask join-button"
+        type="button"
+        icon="pi pi-send"
+        size="large"
+        styleClass="button--block"
+        [label]="'plan.request' | transloco"
+        [loading]="busy()"
+        (onClick)="ask()"
+      />
+    }
+  }
+  @if (error(); as problem) {
+    <p-message severity="error" class="request-spot__error">{{
+      problem.key | transloco: problem.params
+    }}</p-message>
+  }
+</section>

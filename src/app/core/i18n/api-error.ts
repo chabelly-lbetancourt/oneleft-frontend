@@ -16,7 +16,11 @@ interface ProblemDetails {
  * (for example {@code plan.startsTooLate}); unknown codes fall back to a generic message. When the
  * gateway rejects a request for exceeding the rate limit, the waiting time is passed as {@code minutes}.
  */
-export const apiErrorMessage = (transloco: TranslocoService, error: unknown, fallback: string): ApiErrorMessage => {
+export const apiErrorMessage = (
+  transloco: TranslocoService,
+  error: unknown,
+  fallback: string,
+): ApiErrorMessage => {
   const problem = (error as { error?: ProblemDetails } | null)?.error;
   const code = problem?.code;
   if (typeof code !== 'string') {
@@ -27,5 +31,7 @@ export const apiErrorMessage = (transloco: TranslocoService, error: unknown, fal
     return { key: fallback };
   }
   const retryAfter = problem?.retryAfterSeconds;
-  return typeof retryAfter === 'number' ? { key, params: { minutes: Math.max(1, Math.ceil(retryAfter / 60)) } } : { key };
+  return typeof retryAfter === 'number'
+    ? { key, params: { minutes: Math.max(1, Math.ceil(retryAfter / 60)) } }
+    : { key };
 };

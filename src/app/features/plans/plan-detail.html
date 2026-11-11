@@ -195,6 +195,10 @@
           <p class="hint">{{ 'plan.noParticipants' | transloco }}</p>
         }
 
+        @if (relation() === 'organizer' && current.requiresApproval) {
+          <app-join-requests [plan]="current" (changed)="reload()" />
+        }
+
         @switch (relation()) {
           @case ('guest') {
             <p-button
@@ -208,15 +212,19 @@
             <p class="hint">{{ 'plan.guestHint' | transloco }}</p>
           }
           @case ('canJoin') {
-            <p-button
-              class="join-button"
-              [label]="'plan.join' | transloco"
-              icon="pi pi-user-plus"
-              size="large"
-              styleClass="button--block"
-              [loading]="joining()"
-              (onClick)="join()"
-            />
+            @if (current.requiresApproval) {
+              <app-request-spot [plan]="current" (changed)="reload()" />
+            } @else {
+              <p-button
+                class="join-button"
+                [label]="'plan.join' | transloco"
+                icon="pi pi-user-plus"
+                size="large"
+                styleClass="button--block"
+                [loading]="joining()"
+                (onClick)="join()"
+              />
+            }
           }
           @case ('participant') {
             <p-message severity="success" class="joined-message">

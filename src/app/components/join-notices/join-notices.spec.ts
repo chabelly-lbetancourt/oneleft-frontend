@@ -1,13 +1,15 @@
 import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
-import { Subject } from 'rxjs';
+import { EMPTY, Subject } from 'rxjs';
 import { translocoTesting } from '@testing/transloco-testing';
 import { UserEvents } from '@core/realtime/user-events';
 import { PlanNearbyNotice } from '@shared/model/notifications';
 import { BadgeEarnedNotice, KudosNotice } from '@shared/model/reputation';
 import {
+  JoinRequestNotice,
   PlanJoinedNotice,
+  RequestDecidedNotice,
   PlanLeftNotice,
   PlanArrivalNotice,
   PlanCancelledNotice,
@@ -46,6 +48,8 @@ describe('JoinNotices', () => {
             checkIn$: checkIns.asObservable(),
             badge$: badges.asObservable(),
             kudos$: kudos.asObservable(),
+            joinRequest$: EMPTY,
+            requestDecided$: EMPTY,
           },
         },
       ],
@@ -217,5 +221,60 @@ describe('JoinNotices', () => {
     expect(navigate).toHaveBeenCalledWith(['/plans', 'p1']);
     open.call(fixture.componentInstance, ['/reputation']);
     expect(navigate).toHaveBeenLastCalledWith(['/reputation']);
+  });
+
+  it('should tell the organizer who asked for a spot and the requester what became of it (HU-069)', () => {
+    const requests = new Subject<JoinRequestNotice>();
+    const decisions = new Subject<RequestDecidedNotice>();
+    TestBed.configureTestingModule({
+      imports: [JoinNotices, translocoTesting()],
+      providers: [
+        provideRouter([]),
+        {
+          provide: UserEvents,
+          useValue: {
+            joined$: EMPTY,
+            left$: EMPTY,
+            spotFreed$: EMPTY,
+            nearby$: EMPTY,
+            reminder$: EMPTY,
+            cancelled$: EMPTY,
+            arrival$: EMPTY,
+            checkIn$: EMPTY,
+            badge$: EMPTY,
+            kudos$: EMPTY,
+            joinRequest$: requests.asObservable(),
+            requestDecided$: decisions.asObservable(),
+          },
+        },
+      ],
+    });
+    const fixture = TestBed.createComponent(JoinNotices);
+    const add = vi.spyOn(fixture.debugElement.injector.get(MessageService), 'add');
+    fixture.detectChanges();
+
+    requests.next({ planId: 'p1', title: 'Pádel', requesterId: 'u1', requesterName: 'Lucía' });
+    decisions.next({ planId: 'p1', title: 'Pádel', decision: 'ACCEPTED', planFull: false });
+    decisions.next({ planId: 'p1', title: 'Pádel', decision: 'REJECTED', planFull: false });
+    decisions.next({ planId: 'p1', title: 'Pádel', decision: 'REJECTED', planFull: true });
+
+    expect(add.mock.calls[0][0]).toMatchObject({
+      summary: 'Solicitud de plaza',
+      icon: 'pi-user-plus',
+      detail: 'Lucía quiere unirse a «Pádel».',
+      data: 'p1',
+    });
+    expect(add.mock.calls[1][0]).toMatchObject({
+      icon: 'pi-check-circle',
+      severity: 'success',
+      detail: 'Te han aceptado en «Pádel».',
+    });
+    expect(add.mock.calls[2][0]).toMatchObject({
+      severity: 'info',
+      detail: 'No ha podido ser en «Pádel»: el organizador ha elegido a otra persona.',
+    });
+    expect(add.mock.calls[3][0]).toMatchObject({
+      detail: '«Pádel» se ha completado con otra persona. ¡Gracias por pedir plaza!',
+    });
   });
 });

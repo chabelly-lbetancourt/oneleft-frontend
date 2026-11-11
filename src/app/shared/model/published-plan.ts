@@ -10,6 +10,8 @@ export interface PublishPlan {
   activity: string;
   /** The name of the activity when it is OTHER (HU-068); null or absent for any other */
   activityOther?: string | null;
+  /** The organizer chooses who comes (HU-069): people ask for a spot and the organizer decides */
+  chooseCompanion?: boolean | null;
   title: string;
   description: string | null;
   meetingPoint: MeetingPoint;
@@ -114,6 +116,35 @@ export interface Participant {
 }
 
 /** Someone has joined one of my plans (personal real-time stream). */
+/** What became of a request for a spot (HU-069); a pending one expires when the plan starts. */
+export type RequestStatus = 'PENDING' | 'ACCEPTED' | 'REJECTED' | 'WITHDRAWN' | 'EXPIRED';
+
+/** A request for a spot in a plan whose organizer chooses who comes (HU-069). */
+export interface JoinRequest {
+  userId: string;
+  name: string;
+  message: string | null;
+  status: RequestStatus;
+  requestedAt: string;
+  decidedAt: string | null;
+}
+
+/** Someone asked for a spot in one of my plans (HU-069) */
+export interface JoinRequestNotice {
+  planId: string;
+  title: string;
+  requesterId: string;
+  requesterName: string;
+}
+
+/** The organizer decided on my request, or the plan filled up first (HU-069) */
+export interface RequestDecidedNotice {
+  planId: string;
+  title: string;
+  decision: RequestStatus;
+  planFull: boolean;
+}
+
 export interface PlanJoinedNotice {
   planId: string;
   title: string;
@@ -165,6 +196,10 @@ export interface PublicPlan extends PublishPlan {
 }
 
 export interface Plan extends PublishPlan {
+  /** Whether the organizer chooses who comes (HU-069) */
+  requiresApproval?: boolean;
+  /** My request for a spot, if I asked (HU-069) */
+  myRequest?: JoinRequest | null;
   id: string;
   organizerId: string;
   organizerName: string;
