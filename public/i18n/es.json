@@ -482,7 +482,7 @@
         "spots": "plazas"
       }
     },
-    "otherName": "¿Qué plan es?",
+    "otherName": "¿Cómo se llama la actividad?",
     "otherPlaceholder": "Taller de cerámica",
     "otherError": "Ponle un nombre de hasta {{max}} caracteres"
   },

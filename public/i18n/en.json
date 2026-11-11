@@ -482,7 +482,7 @@
         "spots": "spots"
       }
     },
-    "otherName": "What plan is it?",
+    "otherName": "What is the activity called?",
     "otherPlaceholder": "Pottery workshop",
     "otherError": "Give it a name of up to {{max}} characters"
   },
