@@ -131,14 +131,15 @@ describe('JoinRequests', () => {
   it('should show the age band of who asks, when they set it (HU-070)', async () => {
     api.requests.mockReturnValue(
       of([
-        { ...ask('lucia', 'Lucía', 'PENDING'), ageBand: '25–34' },
+        { ...ask('lucia', 'Lucía', 'PENDING'), ageBand: '25–34', level: 'ADVANCED' as const },
         ask('diego', 'Diego', 'PENDING'),
       ]),
     );
     await create();
 
     const bands = element().querySelectorAll('.join-requests__age');
-    expect(bands).toHaveLength(1);
+    expect(bands).toHaveLength(2);
     expect(bands[0].textContent).toContain('25–34');
+    expect(bands[1].textContent).toContain('Avanzado');
   });
 });

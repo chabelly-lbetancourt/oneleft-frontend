@@ -132,6 +132,8 @@ export interface JoinRequest {
   decidedAt: string | null;
   /** Age band of the person when they asked (HU-070); null if they have not set their date of birth */
   ageBand?: string | null;
+  /** Level of the person in the activity of the plan when they asked (HU-070); null if unknown */
+  level?: Level | null;
 }
 
 /** Someone asked for a spot in one of my plans (HU-069) */
