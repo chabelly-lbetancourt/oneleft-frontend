@@ -1,3 +1,4 @@
+import { provideRouter } from '@angular/router';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
 import { UsersApi } from '@core/api/users-api';
@@ -23,7 +24,7 @@ describe('DemographicsCard', () => {
   const create = async () => {
     TestBed.configureTestingModule({
       imports: [DemographicsCard, translocoTesting()],
-      providers: [{ provide: UsersApi, useValue: api }],
+      providers: [{ provide: UsersApi, useValue: api }, provideRouter([])],
     });
     fixture = TestBed.createComponent(DemographicsCard);
     await render();
@@ -73,5 +74,12 @@ describe('DemographicsCard', () => {
     await render();
 
     expect(element().querySelector('.demographics__error')).not.toBeNull();
+  });
+
+  it('should link to the privacy policy that explains the legal basis (HU-070)', () => {
+    const link = (fixture.nativeElement as HTMLElement).querySelector('.demographics__legal');
+
+    expect(link?.getAttribute('href')).toBe('/privacy');
+    expect(link?.textContent).toContain('consentimiento');
   });
 });

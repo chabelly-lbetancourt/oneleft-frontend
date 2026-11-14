@@ -941,7 +941,7 @@
   "privacy": {
     "title": "Privacidad",
     "intro": "OneLeft pone en contacto a personas que quieren completar un plan en las próximas horas. Esto es lo que guardamos de ti y por qué.",
-    "version": "Versión 2026-10-25.",
+    "version": "Versión 2026-11-16.",
     "sections": {
       "who": {
         "title": "Quién trata tus datos",
@@ -949,11 +949,15 @@
       },
       "data": {
         "title": "Qué datos guardamos",
-        "text": "Tu cuenta (nombre y correo, en Keycloak), tu perfil (nombre visible, biografía, aficiones y una zona aproximada, nunca tu dirección), tu foto si la subes, los planes que publicas o a los que te apuntas, tu actividad y a quién sigues, tus mensajes en los chats de los planes, tu reputación y tus kudos, tus avisos y alertas, y tus bloqueos y reportes. La ubicación del check-in no se guarda."
+        "text": "Tu cuenta (nombre y correo, en Keycloak), tu perfil (nombre visible, biografía, aficiones y una zona aproximada, nunca tu dirección), tu fecha de nacimiento y tu género, tu foto si la subes, los planes que publicas o a los que te apuntas, tu actividad y a quién sigues, tus mensajes en los chats de los planes, tu reputación y tus kudos, tus avisos y alertas, y tus bloqueos y reportes. La ubicación del check-in no se guarda."
       },
       "why": {
         "title": "Para qué y con qué base",
         "text": "Para que la aplicación funcione: mostrarte planes cercanos, completar los tuyos, avisarte y calcular tu reputación. La base es tu consentimiento y la ejecución del servicio que pides."
+      },
+      "demographics": {
+        "title": "Fecha de nacimiento y género",
+        "text": "Los pedimos para comprobar que eres mayor de edad y para que los planes pensados solo para mujeres, para hombres o para un rango de edad lleguen a quien corresponde. La base es tu consentimiento, que puedes retirar cuando quieras, y la seguridad del servicio (solo adultos). Tu fecha de nacimiento no la ve nadie ni sale del servicio de usuarios: los demás ven solo tu tramo de edad (por ejemplo, 25–34) y los demás servicios reciben únicamente tu género y tu edad en años. Puedes cambiar la fecha un máximo de dos veces para evitar abusos. «No binario» y «prefiero no decirlo» encajan solo en los planes para todas las personas. Se incluyen al descargar tus datos y se borran con tu cuenta."
       },
       "sharing": {
         "title": "Con quién los compartimos",
@@ -1002,7 +1006,8 @@
     "band": "Tu tramo de edad: {{ band }}",
     "changesLeft": "Cambios de fecha que te quedan: {{ count }}",
     "missing": "Indica tu fecha de nacimiento y tu género en el perfil para unirte a este plan.",
-    "goToProfile": "Ir al perfil"
+    "goToProfile": "Ir al perfil",
+    "legal": "Base legal: tu consentimiento. Más información en la política de privacidad."
   },
   "audience": {
     "title": "¿Para quién es el plan?",

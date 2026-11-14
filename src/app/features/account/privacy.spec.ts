@@ -27,12 +27,13 @@ describe('Privacy', () => {
       'Quién trata tus datos',
       'Qué datos guardamos',
       'Para qué y con qué base',
+      'Fecha de nacimiento y género',
       'Con quién los compartimos',
       'Cuánto los guardamos',
       'Crear un plan con una frase',
       'Tus derechos',
       'Menores',
     ]);
-    expect(element.querySelector('.privacy-version')?.textContent).toContain('2026-10-25');
+    expect(element.querySelector('.privacy-version')?.textContent).toContain('2026-11-16');
   });
 });

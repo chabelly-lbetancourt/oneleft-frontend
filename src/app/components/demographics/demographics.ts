@@ -1,5 +1,6 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { Button } from 'primeng/button';
 import { Message } from 'primeng/message';
@@ -20,7 +21,7 @@ import {
  */
 @Component({
   selector: 'app-demographics',
-  imports: [FormsModule, Button, Message, Select, TranslocoPipe],
+  imports: [FormsModule, RouterLink, Button, Message, Select, TranslocoPipe],
   templateUrl: './demographics.html',
   styleUrl: './demographics.scss',
 })
