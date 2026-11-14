@@ -45,7 +45,9 @@ describe('DemographicsCard', () => {
 
     expect(element().querySelector<HTMLInputElement>('#birth-date')!.value).toBe('');
     expect(element().querySelector('.demographics__band')).toBeNull();
-    expect(element().querySelector<HTMLButtonElement>('.demographics__save button')!.disabled).toBe(true);
+    expect(element().querySelector<HTMLButtonElement>('.demographics__save button')!.disabled).toBe(
+      true,
+    );
   });
 
   it('should save the date and gender and say it was saved', async () => {
@@ -62,7 +64,9 @@ describe('DemographicsCard', () => {
 
   it('should show the error of the service when it refuses the date', async () => {
     api.demographics.mockReturnValue(of(mine));
-    api.saveDemographics.mockReturnValue(throwError(() => ({ error: { code: 'demographics.minor' } })));
+    api.saveDemographics.mockReturnValue(
+      throwError(() => ({ error: { code: 'demographics.minor' } })),
+    );
     await create();
 
     element().querySelector<HTMLButtonElement>('.demographics__save button')!.click();

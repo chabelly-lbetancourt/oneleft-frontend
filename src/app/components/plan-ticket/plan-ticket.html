@@ -19,7 +19,8 @@
       <p class="plan-ticket__audience">
         <i class="pi pi-users icon-xs" aria-hidden="true"></i>
         @for (part of audience(); track part.key; let last = $last) {
-          {{ part.key | transloco: part.params }}{{ last ? '' : ' · ' }}
+          <span class="audience-part">{{ part.key | transloco: part.params }}</span
+          >{{ last ? '' : ' · ' }}
         }
       </p>
     }

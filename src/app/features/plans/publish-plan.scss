@@ -73,7 +73,7 @@
 // For whom the plan is (HU-070)
 .audience-ages {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: space(3);
 }
 
@@ -81,4 +81,9 @@
   display: flex;
   flex-direction: column;
   gap: space(1);
+}
+
+.audience-ages__field p-inputnumber {
+  display: block;
+  min-width: 0;
 }

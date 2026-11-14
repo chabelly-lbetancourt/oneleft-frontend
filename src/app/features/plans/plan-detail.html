@@ -45,7 +45,8 @@
               <p class="plan-card__audience">
                 <i class="pi pi-users icon-xs" aria-hidden="true"></i>
                 @for (part of audience(); track part.key; let last = $last) {
-                  {{ part.key | transloco: part.params }}{{ last ? '' : ' · ' }}
+                  <span class="audience-part">{{ part.key | transloco: part.params }}</span
+                  >{{ last ? '' : ' · ' }}
                 }
               </p>
             }
@@ -221,7 +222,9 @@
           }
           @case ('canJoin') {
             @if (fit() === 'mismatch') {
-              <p-message severity="warn" class="audience-mismatch">{{ 'audience.notForYou' | transloco }}</p-message>
+              <p-message severity="warn" class="audience-mismatch">{{
+                'audience.notForYou' | transloco
+              }}</p-message>
             } @else if (fit() === 'unknown' && mine() !== undefined) {
               <p class="hint audience-missing">
                 {{ 'demographics.missing' | transloco }}

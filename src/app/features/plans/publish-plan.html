@@ -194,11 +194,23 @@
         <div class="audience-ages">
           <label for="minAge" class="audience-ages__field">
             <span>{{ 'audience.minAge' | transloco }}</span>
-            <p-inputnumber inputId="minAge" formControlName="minAge" [min]="minAgeLimit" [max]="99" />
+            <p-inputnumber
+              inputId="minAge"
+              formControlName="minAge"
+              [min]="minAgeLimit"
+              [max]="99"
+              [inputStyle]="ageInputStyle"
+            />
           </label>
           <label for="maxAge" class="audience-ages__field">
             <span>{{ 'audience.maxAge' | transloco }}</span>
-            <p-inputnumber inputId="maxAge" formControlName="maxAge" [min]="minAgeLimit" [max]="99" />
+            <p-inputnumber
+              inputId="maxAge"
+              formControlName="maxAge"
+              [min]="minAgeLimit"
+              [max]="99"
+              [inputStyle]="ageInputStyle"
+            />
           </label>
         </div>
       </section>

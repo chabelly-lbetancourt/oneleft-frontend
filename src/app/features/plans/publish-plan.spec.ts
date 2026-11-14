@@ -475,12 +475,20 @@ describe('PublishPlan', () => {
       api.publish.mockReturnValue(of({ id: 'plan-1' }));
       fillValidPlan();
       call('publish');
-      expect(api.publish.mock.calls[0][0].audience).toEqual({ gender: 'ALL', minAge: null, maxAge: null });
+      expect(api.publish.mock.calls[0][0].audience).toEqual({
+        gender: 'ALL',
+        minAge: null,
+        maxAge: null,
+      });
 
       fillValidPlan();
       form().patchValue({ audienceGender: 'WOMAN', minAge: 25, maxAge: 40 });
       call('publish');
-      expect(api.publish.mock.calls[1][0].audience).toEqual({ gender: 'WOMAN', minAge: 25, maxAge: 40 });
+      expect(api.publish.mock.calls[1][0].audience).toEqual({
+        gender: 'WOMAN',
+        minAge: 25,
+        maxAge: 40,
+      });
     });
 
     it('should show the option in the form', async () => {

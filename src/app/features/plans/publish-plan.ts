@@ -131,9 +131,14 @@ export class PublishPlan implements OnInit {
   ]);
 
   protected readonly audienceOptions = computed(() =>
-    AUDIENCE_GENDERS.map((value) => ({ label: this.translate(`audience.${value.toLowerCase()}`), value })),
+    AUDIENCE_GENDERS.map((value) => ({
+      label: this.translate(`audience.${value.toLowerCase()}`),
+      value,
+    })),
   );
   protected readonly minAgeLimit = MIN_AGE;
+  /** The number inputs fill their column instead of their own width, so they do not overflow the card */
+  protected readonly ageInputStyle = { width: '100%', minWidth: '0' };
 
   protected readonly publishing = signal(false);
   /** The sentence is being understood (HU-010), and what came out of it */
