@@ -40,7 +40,8 @@ export class DemographicsCard implements OnInit {
     GENDERS.map((code) => ({ code, name: this.transloco.translate(genderKey(code)) })),
   );
   protected readonly ready = computed(
-    () => !!this.birthDate() && !!this.gender() && this.birthDate() <= this.latest && !this.saving(),
+    () =>
+      !!this.birthDate() && !!this.gender() && this.birthDate() <= this.latest && !this.saving(),
   );
 
   ngOnInit(): void {

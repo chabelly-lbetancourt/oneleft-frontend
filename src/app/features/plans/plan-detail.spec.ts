@@ -157,7 +157,9 @@ describe('PlanDetail', () => {
 
     it('should say for whom the plan is', async () => {
       await create(forWomen);
-      expect(element().querySelector('.plan-card__audience')!.textContent).toContain('Solo mujeres');
+      expect(element().querySelector('.plan-card__audience')!.textContent).toContain(
+        'Solo mujeres',
+      );
     });
 
     it('should offer to join when I fit', async () => {

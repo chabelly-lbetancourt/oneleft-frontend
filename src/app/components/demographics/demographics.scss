@@ -1,6 +1,11 @@
 @use 'abstracts' as *;
 
 // Date of birth and gender (HU-070)
+:host {
+  display: block;
+  margin-top: space(4);
+}
+
 .demographics {
   @include stack(space(2));
 }

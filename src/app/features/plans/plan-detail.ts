@@ -189,12 +189,13 @@ export class PlanDetail {
   /** For whom the plan is (HU-070), as translation keys; empty for everyone */
   protected readonly audience = computed(() => audienceParts(this.plan()?.audience));
   /** My own date of birth and gender, to know whether I fit the plan; null if I have not set them (HU-070) */
-  protected readonly mine = toSignal(
-    this.ownDemographics(inject(UsersApi)),
-    { initialValue: undefined },
-  );
+  protected readonly mine = toSignal(this.ownDemographics(inject(UsersApi)), {
+    initialValue: undefined,
+  });
   private ownDemographics(users: UsersApi): Observable<Demographics | null> {
-    const own: Observable<Demographics | null> = this.session.isAuthenticated() ? users.demographics() : of(null);
+    const own: Observable<Demographics | null> = this.session.isAuthenticated()
+      ? users.demographics()
+      : of(null);
     return own.pipe(catchError(() => of(null)));
   }
   /** Whether I fit who the plan is for: the service decides in the end, this keeps the button from who cannot join */
@@ -207,7 +208,9 @@ export class PlanDetail {
     if (!mine) {
       return 'unknown';
     }
-    return fits(audience, { gender: mine.gender, age: ageOf(mine.birthDate) }) ? 'fits' : 'mismatch';
+    return fits(audience, { gender: mine.gender, age: ageOf(mine.birthDate) })
+      ? 'fits'
+      : 'mismatch';
   });
   /** Reporting the plan (HU-033): with a session, for everyone but its organizer */
   protected readonly canReport = computed(() => !this.isGuest() && this.relation() !== 'organizer');
