@@ -941,7 +941,7 @@
   "privacy": {
     "title": "Privacy",
     "intro": "OneLeft puts people in touch who want to complete a plan in the next few hours. This is what we keep of you and why.",
-    "version": "Version 2026-10-25.",
+    "version": "Version 2026-11-16.",
     "sections": {
       "who": {
         "title": "Who handles your data",
@@ -949,11 +949,15 @@
       },
       "data": {
         "title": "What data we keep",
-        "text": "Your account (name and email, in Keycloak), your profile (display name, bio, hobbies and an approximate zone, never your address), your photo if you upload one, the plans you publish or join, your activity and who you follow, your messages in the chats of plans, your reputation and kudos, your notices and alerts, and your blocks and reports. The location of the check-in is not kept."
+        "text": "Your account (name and email, in Keycloak), your profile (display name, bio, hobbies and an approximate zone, never your address), your date of birth and gender, your photo if you upload one, the plans you publish or join, your activity and who you follow, your messages in the chats of plans, your reputation and kudos, your notices and alerts, and your blocks and reports. The location of the check-in is not kept."
       },
       "why": {
         "title": "Why and on what basis",
         "text": "So that the app works: showing you nearby plans, completing yours, notifying you and computing your reputation. The basis is your consent and the service you ask for."
+      },
+      "demographics": {
+        "title": "Date of birth and gender",
+        "text": "We ask for them to check that you are of age and so that plans meant only for women, only for men or for an age range reach the right people. The basis is your consent, which you can withdraw at any time, and the safety of the service (adults only). Nobody sees your date of birth and it never leaves the users service: others only see your age band (for example, 25–34) and the other services receive only your gender and your age in years. You can change the date at most twice, to avoid abuse. «Non-binary» and «prefer not to say» fit only the plans for everyone. They are included when you download your data and deleted with your account."
       },
       "sharing": {
         "title": "Who we share it with",
@@ -1002,7 +1006,8 @@
     "band": "Your age band: {{ band }}",
     "changesLeft": "Date changes left: {{ count }}",
     "missing": "Set your date of birth and gender in your profile to join this plan.",
-    "goToProfile": "Go to profile"
+    "goToProfile": "Go to profile",
+    "legal": "Legal basis: your consent. More information in the privacy policy."
   },
   "audience": {
     "title": "Who is the plan for?",

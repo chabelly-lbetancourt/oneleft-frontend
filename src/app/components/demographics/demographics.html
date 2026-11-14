@@ -1,6 +1,9 @@
 <section class="demographics form-section" aria-labelledby="demographics-title">
   <h2 class="section-title" id="demographics-title">{{ 'demographics.title' | transloco }}</h2>
   <p class="hint">{{ 'demographics.why' | transloco }}</p>
+  <p class="hint">
+    <a class="demographics__legal" routerLink="/privacy">{{ 'demographics.legal' | transloco }}</a>
+  </p>
   @if (loaded()) {
     @if (saved(); as mine) {
       <p class="demographics__band">
