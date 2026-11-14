@@ -16,6 +16,7 @@ import { Message } from 'primeng/message';
 import { PlansApi } from '@core/api/plans-api';
 import { ApiErrorMessage, apiErrorMessage } from '@core/i18n/api-error';
 import { UserEvents } from '@core/realtime/user-events';
+import { levelKey } from '@shared/model/profile';
 import { JoinRequest, Plan } from '@shared/model/published-plan';
 
 /**
@@ -31,6 +32,7 @@ import { JoinRequest, Plan } from '@shared/model/published-plan';
 export class JoinRequests {
   private readonly api = inject(PlansApi);
   private readonly transloco = inject(TranslocoService);
+  protected readonly levelKey = levelKey;
 
   readonly plan = input.required<Plan>();
   /** A request was decided: the page reloads the plan (the accepted person now takes a spot) */
