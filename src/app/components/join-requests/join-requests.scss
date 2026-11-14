@@ -37,6 +37,7 @@
 
 // Age band of who asks (HU-070)
 .join-requests__age {
+  margin-inline-start: space(2);
   @include text(sm);
   font-weight: normal;
   color: var(--ol-text-muted);
