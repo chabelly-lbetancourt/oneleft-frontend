@@ -1,0 +1,175 @@
+@if (state() !== 'hidden') {
+  <section class="plan-memories panel-muted" aria-labelledby="plan-memories-title">
+    <h2 id="plan-memories-title" class="plan-memories__title">
+      {{ 'memories.title' | transloco }}
+    </h2>
+    <p class="hint">{{ 'memories.hint' | transloco }}</p>
+    @switch (state()) {
+      @case ('loading') {
+        <div class="plan-memories__grid" role="status">
+          <span class="sr-only">{{ 'memories.loading' | transloco }}</span>
+          @for (skeleton of skeletons; track skeleton) {
+            <app-skeleton class="memory__photo" shape="block" />
+          }
+        </div>
+      }
+      @case ('unavailable') {
+        <p class="plan-memories__unavailable">{{ 'memories.unavailable' | transloco }}</p>
+        <p-button
+          class="plan-memories__retry"
+          [label]="'memories.retry' | transloco"
+          icon="pi pi-refresh"
+          [outlined]="true"
+          severity="secondary"
+          size="small"
+          (onClick)="retry()"
+        />
+      }
+      @case ('ready') {
+        @if (photos().length) {
+          <ul class="plan-memories__grid">
+            @for (photo of photos(); track photo.id) {
+              <li class="memory" tabindex="-1" [attr.data-memory]="photo.id">
+                @if (photo.broken) {
+                  <p class="memory__photo memory__broken">
+                    <i class="pi pi-image" aria-hidden="true"></i>
+                    {{ 'memories.broken' | transloco }}
+                  </p>
+                } @else {
+                  <img
+                    class="memory__photo"
+                    loading="lazy"
+                    decoding="async"
+                    [src]="photo.url"
+                    [alt]="
+                      photo.mine
+                        ? ('memories.altMine' | transloco: { date: photo.date })
+                        : ('memories.altOther'
+                          | transloco
+                            : {
+                                name: photo.name ?? ('memories.someone' | transloco),
+                                date: photo.date,
+                              })
+                    "
+                    (error)="markBroken(photo.id)"
+                  />
+                }
+                <p class="memory__who">
+                  {{
+                    photo.mine
+                      ? ('memories.you' | transloco)
+                      : (photo.name ?? ('memories.someone' | transloco))
+                  }}
+                </p>
+                @if (photo.mine) {
+                  @if (confirming() === photo.id) {
+                    <div
+                      class="memory__confirm"
+                      role="group"
+                      [attr.aria-label]="'memories.removeConfirm' | transloco"
+                      [attr.data-confirm-for]="photo.id"
+                    >
+                      <p class="memory__question">{{ 'memories.removeConfirm' | transloco }}</p>
+                      <p-button
+                        class="memory__remove-yes"
+                        [label]="'memories.removeYes' | transloco"
+                        severity="danger"
+                        size="small"
+                        [rounded]="true"
+                        [loading]="removing() === photo.id"
+                        (onClick)="remove(photo.id)"
+                      />
+                      <p-button
+                        class="memory__remove-cancel"
+                        [label]="'memories.cancel' | transloco"
+                        [text]="true"
+                        severity="secondary"
+                        size="small"
+                        [disabled]="removing() === photo.id"
+                        (onClick)="cancelRemove(photo.id)"
+                      />
+                    </div>
+                  } @else {
+                    <p-button
+                      class="memory__remove"
+                      [attr.data-remove-for]="photo.id"
+                      [label]="'memories.remove' | transloco"
+                      [ariaLabel]="'memories.removeLabel' | transloco: { date: photo.date }"
+                      icon="pi pi-trash"
+                      [text]="true"
+                      severity="secondary"
+                      size="small"
+                      (onClick)="askRemove(photo.id)"
+                    />
+                  }
+                }
+              </li>
+            }
+          </ul>
+          @if (hasMore()) {
+            <p class="hint plan-memories__count">
+              {{ 'memories.count' | transloco: { shown: shown(), total: albumTotal() } }}
+            </p>
+            <p-button
+              class="plan-memories__more"
+              [label]="'memories.more' | transloco"
+              [outlined]="true"
+              severity="secondary"
+              size="small"
+              [loading]="loadingMore()"
+              (onClick)="more()"
+            />
+          }
+        } @else {
+          <app-empty-state class="plan-memories__empty" [message]="'memories.empty' | transloco" />
+        }
+        <div class="plan-memories__upload">
+          <input
+            #files
+            hidden
+            type="file"
+            accept="image/*"
+            multiple
+            class="memories-file"
+            (change)="choose($event)"
+          />
+          <p-button
+            class="plan-memories__add"
+            [label]="'memories.add' | transloco"
+            icon="pi pi-camera"
+            [rounded]="true"
+            [loading]="!!uploading()"
+            (onClick)="files.click()"
+          />
+          @if (uploading(); as upload) {
+            <label class="plan-memories__progress hint">
+              {{
+                'memories.uploading' | transloco: { current: upload.current, total: upload.total }
+              }}
+              <progress max="100" [value]="upload.percent"></progress>
+            </label>
+          }
+        </div>
+      }
+    }
+    <!-- Always in the page, so screen readers read out what is written in it -->
+    <p
+      class="plan-memories__outcome"
+      role="status"
+      tabindex="-1"
+      [class.alert]="outcome()?.severity === 'error'"
+      [class.alert--error]="outcome()?.severity === 'error'"
+      [class.plan-memories__outcome--done]="outcome()?.severity === 'success'"
+    >
+      @if (outcome(); as message) {
+        <i
+          class="pi"
+          [class.pi-check]="message.severity === 'success'"
+          [class.pi-exclamation-triangle]="message.severity === 'error'"
+          aria-hidden="true"
+        ></i>
+        {{ message.key | transloco: message.params }}
+      }
+    </p>
+  </section>
+}

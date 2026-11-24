@@ -511,6 +511,35 @@
       "GREAT_ORGANIZER": "Great organizer 📋"
     }
   },
+  "memories": {
+    "title": "Memories",
+    "hint": "The photos of the plan, only for those of you who were in it. Up to 10 each.",
+    "loading": "Loading the memories…",
+    "empty": "There are no photos of this plan yet. Upload the first one.",
+    "add": "Upload photos",
+    "uploading": "Uploading photo {{current}} of {{total}}…",
+    "uploaded": "Photo added to the album.",
+    "uploadedMany": "{{count}} photos added to the album.",
+    "more": "See more photos",
+    "count": "{{shown}} of {{total}} photos",
+    "you": "You",
+    "someone": "Someone of the plan",
+    "altMine": "Photo you uploaded on {{date}}",
+    "altOther": "Photo by {{name}}, uploaded on {{date}}",
+    "remove": "Remove",
+    "removeLabel": "Remove the photo you uploaded on {{date}}",
+    "removeConfirm": "Remove this photo from the album?",
+    "removeYes": "Yes, remove",
+    "cancel": "Cancel",
+    "removed": "You removed the photo from the album.",
+    "broken": "This photo could not be shown.",
+    "unavailable": "The memories of this plan cannot be seen right now. Please try again in a while.",
+    "retry": "Try again",
+    "errors": {
+      "notImage": "That file is not an image that can be read. Try a JPEG, PNG or WebP photo.",
+      "tooBig": "The photo is too big. Try another one."
+    }
+  },
   "publish": {
     "title": "Publish a plan",
     "what": "What's the plan?",
@@ -742,6 +771,23 @@
       "notUploaded": "The photo was not uploaded. Please try again.",
       "key": "The photo could not be saved. Please try again.",
       "unavailable": "Photos cannot be changed right now. Please try again in a while."
+    },
+    "memoriesFailed": "More photos could not be loaded. Please try again.",
+    "memoryUploadFailed": "The photo could not be uploaded. Please try again.",
+    "memoryRemoveFailed": "The photo could not be removed. Please try again.",
+    "memory": {
+      "planNotFinished": "Photos can be uploaded once the plan has finished.",
+      "personLimit": "You have already uploaded 10 photos to this plan, the most each person can. Remove one to upload another.",
+      "planLimit": "The album of this plan is full: it has 100 photos.",
+      "format": "The photo must be WebP or JPEG.",
+      "empty": "The photo is empty. Try another one.",
+      "tooBig": "Even made smaller, the photo is bigger than 2 MB. Try another one.",
+      "key": "The photo could not be saved. Please try again.",
+      "notUploaded": "The photo was not uploaded. Please try again.",
+      "notAPhoto": "That file is not a WebP or JPEG photo. Try another one.",
+      "notFound": "That photo is no longer in the album.",
+      "notYours": "You can only remove the photos you uploaded.",
+      "unavailable": "Photos cannot be saved or removed right now. Please try again in a while."
     },
     "kudosFailed": "The kudos could not be given. Try again.",
     "kudos": {

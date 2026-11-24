@@ -26,8 +26,12 @@ export const centeredSquare = (width: number, height: number) => {
 const encode = (canvas: HTMLCanvasElement, type: string): Promise<Blob | null> =>
   new Promise((resolve) => canvas.toBlob(resolve, type, QUALITY));
 
-/** The square photo ready to upload; it keeps the orientation the camera wrote in the file. */
-export const squarePhoto = async (file: File): Promise<Blob> => {
+/**
+ * The file as an image, with the orientation the camera wrote in it.
+ *
+ * @throws PhotoFileError if it is not a photo that can be read, or it is too big to read here
+ */
+export const readPhoto = async (file: File): Promise<ImageBitmap> => {
   // Some pickers give no type: then decoding the file decides
   if (file.type && !file.type.startsWith('image/')) {
     throw new PhotoFileError('notImage');
@@ -35,9 +39,24 @@ export const squarePhoto = async (file: File): Promise<Blob> => {
   if (file.size > MAX_ORIGINAL_BYTES) {
     throw new PhotoFileError('tooBig');
   }
-  const image = await createImageBitmap(file, { imageOrientation: 'from-image' }).catch(() => {
+  return createImageBitmap(file, { imageOrientation: 'from-image' }).catch(() => {
     throw new PhotoFileError('notImage');
   });
+};
+
+/** What is drawn on the canvas as WebP or, where the browser cannot encode WebP, as JPEG. */
+export const encodePhoto = async (canvas: HTMLCanvasElement): Promise<Blob> => {
+  const webp = await encode(canvas, 'image/webp');
+  const photo = webp?.type === 'image/webp' ? webp : await encode(canvas, 'image/jpeg');
+  if (!photo) {
+    throw new PhotoFileError('notImage');
+  }
+  return photo;
+};
+
+/** The square photo ready to upload; it keeps the orientation the camera wrote in the file. */
+export const squarePhoto = async (file: File): Promise<Blob> => {
+  const image = await readPhoto(file);
   const { x, y, side } = centeredSquare(image.width, image.height);
   const target = Math.min(side, PHOTO_SIDE);
   const canvas = document.createElement('canvas');
@@ -45,10 +64,5 @@ export const squarePhoto = async (file: File): Promise<Blob> => {
   canvas.height = target;
   canvas.getContext('2d')!.drawImage(image, x, y, side, side, 0, 0, target, target);
   image.close();
-  const webp = await encode(canvas, 'image/webp');
-  const photo = webp?.type === 'image/webp' ? webp : await encode(canvas, 'image/jpeg');
-  if (!photo) {
-    throw new PhotoFileError('notImage');
-  }
-  return photo;
+  return encodePhoto(canvas);
 };
