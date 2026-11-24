@@ -250,6 +250,24 @@
     "you": "You",
     "nobody": "Nobody has arrived yet."
   },
+  "route": {
+    "title": "How to get there",
+    "modes": "How you go",
+    "mode": {
+      "foot": "On foot",
+      "bike": "By bike"
+    },
+    "show": "Show the route",
+    "hint": "To work it out we use your approximate location (about 100 m) and send it to the OpenStreetMap routing service (FOSSGIS). Only when you ask; we do not store it.",
+    "minutes": "{{minutes}} min",
+    "hours": "{{hours}} h {{minutes}} min",
+    "arrival": "you arrive around {{time}} if you leave now",
+    "start": "You are here",
+    "mapLabel": "Map with the route to {{name}}",
+    "unavailable": "We cannot work out the route right now. Open the navigation in your maps app.",
+    "openInMaps": "Open in the maps app",
+    "openInOsm": "Open the route in OpenStreetMap"
+  },
   "social": {
     "networkTitle": "My network",
     "personTitle": "Person",
@@ -961,7 +979,7 @@
       },
       "sharing": {
         "title": "Who we share it with",
-        "text": "With other people, only what you decide to show: your name, your photo and your activity according to your privacy. We use technical services such as the OpenStreetMap map, Open-Meteo weather and, if you choose to sign in with Google, Google. We do not sell your data."
+        "text": "With other people, only what you decide to show: your name, your photo and your activity according to your privacy. We use technical services such as the OpenStreetMap map, Open-Meteo weather and, if you choose to sign in with Google, Google. If you ask for the route to a meeting point, at that moment we send your approximate location to the OpenStreetMap routing service (FOSSGIS) to work it out, and to openstreetmap.org if you open the route there; we do not store it. We do not sell your data."
       },
       "keeping": {
         "title": "How long we keep it",

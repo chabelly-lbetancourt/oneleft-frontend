@@ -710,6 +710,20 @@ describe('PlanDetail', () => {
     expect(element().querySelector('.calendar-button')).toBeNull();
   });
 
+  it('should show how to get to the meeting point to the group until the start (HU-042)', async () => {
+    await create({ ...PLAN, participants: [{ ...LUCIA, userId: 'me' }] });
+    expect(element().querySelector('app-plan-route')?.textContent).toContain('Cómo llegar');
+
+    await create(PLAN, undefined, 'org');
+    expect(element().querySelector('app-plan-route')).not.toBeNull();
+
+    await create(PLAN);
+    expect(element().querySelector('app-plan-route')).toBeNull();
+
+    await create({ ...PLAN, status: 'FINISHED' }, undefined, 'org');
+    expect(element().querySelector('app-plan-route')).toBeNull();
+  });
+
   it('should download the plan as an iCalendar file', async () => {
     await create(PLAN, undefined, 'org');
     const createObjectURL = vi.fn().mockReturnValue('blob:plan');

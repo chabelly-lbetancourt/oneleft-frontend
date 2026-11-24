@@ -1,0 +1,57 @@
+<section class="plan-route panel-muted" aria-labelledby="plan-route-title">
+  <h3 class="plan-route__title" id="plan-route-title">{{ 'route.title' | transloco }}</h3>
+  <span class="sr-only" id="plan-route-modes">{{ 'route.modes' | transloco }}</span>
+  <p-selectbutton
+    class="plan-route__modes"
+    [options]="modeOptions()"
+    [ngModel]="mode()"
+    (ngModelChange)="choose($event)"
+    optionLabel="label"
+    optionValue="value"
+    [allowEmpty]="false"
+    size="small"
+    ariaLabelledBy="plan-route-modes"
+  />
+  @if (!route()) {
+    <p-button
+      class="plan-route__show"
+      [label]="'route.show' | transloco"
+      icon="pi pi-directions"
+      styleClass="button--block"
+      [outlined]="true"
+      [loading]="busy()"
+      (onClick)="show()"
+    />
+    <p class="hint">{{ 'route.hint' | transloco }}</p>
+  }
+  <div aria-live="polite">
+    @if (summary(); as trip) {
+      <p class="plan-route__summary">
+        <span class="plan-route__duration">{{ trip.duration }}</span> · {{ trip.distance }} ·
+        {{ 'route.arrival' | transloco: { time: trip.arrival } }}
+      </p>
+    }
+    @if (errorKey(); as key) {
+      <p-message severity="warn" icon="pi pi-exclamation-triangle" class="plan-route__error">{{
+        key | transloco
+      }}</p-message>
+    }
+  </div>
+  @if (route()) {
+    <div
+      #map
+      class="plan-route__map"
+      role="img"
+      [attr.aria-label]="'route.mapLabel' | transloco: { name: meetingPoint().name }"
+    ></div>
+  }
+  <a
+    class="plan-route__open link-action"
+    [href]="mapsUrl()"
+    [attr.target]="isNative ? null : '_blank'"
+    [attr.rel]="isNative ? null : 'noopener'"
+  >
+    <i class="pi pi-external-link" aria-hidden="true"></i>
+    {{ (isNative ? 'route.openInMaps' : 'route.openInOsm') | transloco }}
+  </a>
+</section>

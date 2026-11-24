@@ -391,6 +391,9 @@
           <app-plan-check-in [plan]="current" />
         }
         @if (canAnnounce()) {
+          <app-plan-route [meetingPoint]="current.meetingPoint" />
+        }
+        @if (canAnnounce()) {
           <div class="arrivals panel-muted">
             <p class="arrivals__title">{{ 'plan.arrivalsTitle' | transloco }}</p>
             @if (arrivals().length) {

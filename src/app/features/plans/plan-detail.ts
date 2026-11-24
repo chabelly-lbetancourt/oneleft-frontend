@@ -34,6 +34,7 @@ import { CardSkeleton } from '@components/card-skeleton/card-skeleton';
 import { IconTile } from '@components/icon-tile/icon-tile';
 import { PersonAvatar } from '@components/person-avatar/person-avatar';
 import { PlanCheckIn } from '@components/plan-check-in/plan-check-in';
+import { PlanRoute } from '@components/plan-route/plan-route';
 import { ReportForm } from '@components/report-form/report-form';
 import { StoryShare } from '@components/story-share/story-share';
 import { ReputationBadge } from '@components/reputation-badge/reputation-badge';
@@ -78,6 +79,7 @@ const ENDED: Plan['status'][] = ['IN_PROGRESS', 'FINISHED', 'CANCELLED'];
     PageLayout,
     PersonAvatar,
     PlanCheckIn,
+    PlanRoute,
     ReportForm,
     ReputationBadge,
     RouterLink,

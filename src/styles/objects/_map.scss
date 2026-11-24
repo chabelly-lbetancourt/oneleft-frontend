@@ -26,3 +26,24 @@
     }
   }
 }
+
+// The route to the meeting point (HU-042): Leaflet draws it as SVG paths with these classes, and CSS wins over the
+// colours Leaflet writes as attributes, so the line follows the tokens in both themes.
+.route-line {
+  stroke: var(--ol-brand);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.route-start,
+.route-end {
+  stroke: var(--ol-surface);
+}
+
+.route-start {
+  fill: var(--ol-ink);
+}
+
+.route-end {
+  fill: var(--ol-brand);
+}
