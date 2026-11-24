@@ -148,3 +148,39 @@ test('tells me in real time that I earned a badge and opens my reputation', asyn
   await notice.click();
   await expect(page).toHaveURL(/\/reputation$/);
 });
+
+test('says why an entry of my history gave fewer points (HU-066)', async ({ openPage, t }) => {
+  const page = await openPage();
+  await page.route(
+    (url) => url.pathname.startsWith(REPUTATION),
+    (route) =>
+      route.fulfill({
+        json: route.request().url().includes('/ledger')
+          ? {
+              items: [
+                {
+                  reason: 'KUDOS',
+                  points: 0,
+                  planId: 'p1',
+                  planTitle: 'Pádel 2 contra 2',
+                  occurredAt: new Date().toISOString(),
+                  limitedBy: 'MUTUAL_PAIR',
+                },
+              ],
+              page: 0,
+              size: 20,
+              total: 1,
+            }
+          : route.request().url().includes('/badges')
+            ? []
+            : { userId: 'me', score: 0 },
+      }),
+  );
+  await page.goto('/reputation');
+  await signIn(page, ANA);
+
+  const entry = page.locator('.entry');
+  await expect(entry).toHaveCount(1);
+  await expect(entry.locator('.entry__limit')).toHaveText(t('reputation.limits.MUTUAL_PAIR'));
+  await expect(entry.locator('.points')).toHaveText('0');
+});

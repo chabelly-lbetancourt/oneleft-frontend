@@ -87,6 +87,7 @@
         }
       </ul>
       <p class="hint">{{ 'reputation.fairNote' | transloco }}</p>
+      <p class="hint limits-note">{{ 'reputation.limitsNote' | transloco: dailyCaps }}</p>
     </section>
 
     <section class="ledger" aria-labelledby="ledger-title">
@@ -104,6 +105,12 @@
                   <span class="entry__reason">{{
                     'reputation.reasons.' + entry.reason | transloco
                   }}</span>
+                }
+                @if (entry.limitedBy) {
+                  <span class="entry__limit">
+                    <i class="pi pi-info-circle" aria-hidden="true"></i>
+                    {{ 'reputation.limits.' + entry.limitedBy | transloco }}
+                  </span>
                 }
                 <span class="entry__date hint">{{ date(entry) }}</span>
               </div>

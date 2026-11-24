@@ -403,6 +403,12 @@
       "KUDOS": "Recibir un kudos de alguien de tu plan"
     },
     "fairNote": "Si nadie del grupo hace check-in, el plan no cuenta: nadie pierde puntos por él.",
+    "limitsNote": "Para que sea justa, cada día solo suman hasta {{attended}} planes a los que llegas, {{organized}} planes organizados y {{kudos}} kudos. Los kudos seguidos de la misma persona valen cada vez la mitad, y los de dos personas que se dan kudos siempre entre sí no suman.",
+    "limits": {
+      "DAILY_CAP": "Ese día ya habías llegado al máximo de puntos por este motivo.",
+      "SAME_PERSON": "Vale menos: esa persona ya te había dado kudos hace poco, y cada uno vale la mitad que el anterior.",
+      "MUTUAL_PAIR": "No suma: os dais kudos muy a menudo el uno al otro."
+    },
     "ledgerTitle": "Tu historial",
     "reasons": {
       "ATTENDED": "Llegaste a «{{title}}»",

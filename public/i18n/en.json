@@ -403,6 +403,12 @@
       "KUDOS": "Receiving a kudos from someone of your plan"
     },
     "fairNote": "If nobody of the group checks in, the plan does not count: nobody loses points for it.",
+    "limitsNote": "To keep it fair, each day only up to {{attended}} plans you arrive at, {{organized}} plans you organize and {{kudos}} kudos add points. Kudos in a row from the same person are worth half each time, and those of two people who always give each other kudos add nothing.",
+    "limits": {
+      "DAILY_CAP": "That day you had already reached the most points for this reason.",
+      "SAME_PERSON": "Worth less: that person had already given you kudos lately, and each one is worth half the one before.",
+      "MUTUAL_PAIR": "Adds nothing: the two of you give each other kudos very often."
+    },
     "ledgerTitle": "Your history",
     "reasons": {
       "ATTENDED": "You arrived at «{{title}}»",
