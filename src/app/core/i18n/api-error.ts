@@ -9,12 +9,14 @@ export interface ApiErrorMessage {
 interface ProblemDetails {
   code?: unknown;
   retryAfterSeconds?: unknown;
+  max?: unknown;
 }
 
 /**
  * Translation of an API error. The services send a stable {@code code} in their Problem Details
  * (for example {@code plan.startsTooLate}); unknown codes fall back to a generic message. When the
- * gateway rejects a request for exceeding the rate limit, the waiting time is passed as {@code minutes}.
+ * gateway rejects a request for exceeding the rate limit, the waiting time is passed as {@code minutes}; when a limit
+ * of the person is reached (for example {@code plan.tooManyActive}, HU-063), the limit is passed as {@code max}.
  */
 export const apiErrorMessage = (
   transloco: TranslocoService,
@@ -31,7 +33,9 @@ export const apiErrorMessage = (
     return { key: fallback };
   }
   const retryAfter = problem?.retryAfterSeconds;
-  return typeof retryAfter === 'number'
-    ? { key, params: { minutes: Math.max(1, Math.ceil(retryAfter / 60)) } }
-    : { key };
+  if (typeof retryAfter === 'number') {
+    return { key, params: { minutes: Math.max(1, Math.ceil(retryAfter / 60)) } };
+  }
+  const max = problem?.max;
+  return typeof max === 'number' ? { key, params: { max } } : { key };
 };

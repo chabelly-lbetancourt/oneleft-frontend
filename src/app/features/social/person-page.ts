@@ -73,6 +73,8 @@ export class PersonPage {
   protected readonly reputation = signal<number | null>(null);
   /** Their level (HU-062), when the service gives it */
   protected readonly reputationLevel = signal<ReputationLevel | null>(null);
+  /** Whether they have the seal of trusted organizer (HU-063) */
+  protected readonly trustedOrganizer = signal(false);
   /** The badges they earned (HU-044) */
   protected readonly badges = signal<BadgeProgress[]>([]);
   /** The kudos they received, by kind, the ones they have (HU-060) */
@@ -104,6 +106,7 @@ export class PersonPage {
         .subscribe((reputation) => {
           this.reputation.set(reputation?.score ?? null);
           this.reputationLevel.set(reputation?.level ?? null);
+          this.trustedOrganizer.set(reputation?.trustedOrganizer === true);
         });
       this.photosApi
         .photosOf([id])

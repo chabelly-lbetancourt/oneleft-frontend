@@ -30,6 +30,8 @@ export class PlanTicket {
   readonly organizerReputation = input<number | null>(null);
   /** The level of the organizer (HU-062), next to their reputation */
   readonly organizerLevel = input<ReputationLevel | null>(null);
+  /** Whether the organizer has the seal of trusted organizer (HU-063) */
+  readonly organizerTrusted = input(false);
   /** The photo of the organizer (HU-020), next to their name */
   readonly organizerPhoto = input<string | null>(null);
 

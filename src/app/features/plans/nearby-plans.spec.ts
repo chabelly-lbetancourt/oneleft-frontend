@@ -147,6 +147,24 @@ describe('NearbyPlans', () => {
     expect(organizer?.textContent?.replace(/\s+/g, ' ')).toContain(
       'Organiza Ana · Reputación 135 Nivel⚡ Habitual',
     );
+    // Without the seal in the answer, none (HU-063)
+    expect(element().querySelector('.reputation-badge__trusted')).toBeNull();
+  });
+
+  it('should show the seal of trusted organizer of the organizers who have it (HU-063)', async () => {
+    await create();
+    nearbyRequest().flush([nearby('a', 'PADEL', 34)]);
+    await render();
+    http
+      .expectOne((request) => request.url.endsWith('/api/v1/reputation/scores'))
+      .flush([
+        { userId: 'org', score: 135, level: 'REGULAR', nextLevelAt: 500, trustedOrganizer: true },
+      ]);
+    await render();
+
+    expect(
+      element().querySelector('.nearby-card .reputation-badge__trusted')?.textContent?.trim(),
+    ).toBe('Organizador de confianza');
   });
 
   it('should show the photo of each organizer, asking once for the whole list', async () => {

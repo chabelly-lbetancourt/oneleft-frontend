@@ -39,14 +39,31 @@ export function levelEmoji(level: ReputationLevel): string {
 }
 
 /**
- * The score of someone: the sum of their entries, 0 without any. The level and the score of the next one (HU-062) may
- * be missing while the service does not give them; {@code nextLevelAt} is null at the last level.
+ * The score of someone: the sum of their entries, 0 without any. The level and the score of the next one (HU-062) and
+ * the seal of trusted organizer (HU-063) may be missing while the service does not give them; {@code nextLevelAt} is
+ * null at the last level.
  */
 export interface Reputation {
   userId: string;
   score: number;
   level?: ReputationLevel;
   nextLevelAt?: number | null;
+  trustedOrganizer?: boolean;
+}
+
+/**
+ * What my level is worth (HU-063). The numbers of each level are only in the reputation service: the app shows the
+ * ones it is given and never works them out.
+ */
+export interface Perks {
+  level: ReputationLevel;
+  /** Who goes first on a waiting list: the higher first; 0 is the order of arrival */
+  waitlistPriority: number;
+  /** What multiplies my chances of being among the first notified of a nearby plan; 1 is no advantage */
+  noticeWeight: number;
+  maxActivePlans: number;
+  maxSavedAlerts: number;
+  trustedOrganizer: boolean;
 }
 
 /** My weekly streak (HU-062): weeks in a row with a plan checked in, and the points of the next week of it. */

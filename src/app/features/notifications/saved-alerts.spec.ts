@@ -4,6 +4,7 @@ import { TranslocoService } from '@jsverse/transloco';
 import { of, throwError } from 'rxjs';
 import { translocoTesting } from '@testing/transloco-testing';
 import { NotificationsApi } from '@core/api/notifications-api';
+import { ReputationApi } from '@core/api/reputation-api';
 import { UsersApi } from '@core/api/users-api';
 import { ApproximateLocation, LocationError } from '@core/geo/approximate-location';
 import { SavedAlert } from '@shared/model/notifications';
@@ -32,6 +33,7 @@ describe('SavedAlerts', () => {
     deleteAlert: vi.fn(),
   };
   const users = { myProfile: vi.fn() };
+  const reputation = { myPerks: vi.fn() };
   const location = { current: vi.fn() };
 
   const element = () => fixture.nativeElement as HTMLElement;
@@ -72,12 +74,15 @@ describe('SavedAlerts', () => {
     api.createAlert.mockImplementation((alert: SavedAlert) => of({ ...alert, id: 'new' }));
     api.updateAlert.mockImplementation((id: string, alert: SavedAlert) => of({ ...alert, id }));
     api.deleteAlert.mockReturnValue(of(undefined));
+    // The reputation service gives no perks yet: what everyone has
+    reputation.myPerks.mockReturnValue(throwError(() => ({ status: 404 })));
     TestBed.configureTestingModule({
       imports: [SavedAlerts, translocoTesting()],
       providers: [
         provideRouter([]),
         { provide: NotificationsApi, useValue: api },
         { provide: UsersApi, useValue: users },
+        { provide: ReputationApi, useValue: reputation },
         { provide: ApproximateLocation, useValue: location },
       ],
     });
@@ -176,6 +181,26 @@ describe('SavedAlerts', () => {
     expect(element().querySelector('.status-message')?.textContent).toContain(
       'Ya tienes el máximo de alertas',
     );
+  });
+
+  it('should let me keep as many alerts as my level gives (HU-063)', async () => {
+    const five = Array.from({ length: 5 }, (_, index) => ({ ...AFTER_WORK, id: `a${index}` }));
+    reputation.myPerks.mockReturnValue(of({ level: 'REGULAR', maxSavedAlerts: 6 }));
+
+    await create(five);
+    expect(element().querySelector('.alerts-limit')).toBeNull();
+    expect(element().querySelector('.new-alert')).not.toBeNull();
+
+    await create([...five, { ...AFTER_WORK, id: 'a5' }]);
+    expect(element().querySelector('.new-alert')).toBeNull();
+    expect(element().querySelector('.alerts-limit')?.textContent).toContain('hasta 6 alertas');
+  });
+
+  it('should keep the limit of everyone when my perks say nothing usable', async () => {
+    reputation.myPerks.mockReturnValue(of({ level: 'NEW' }));
+
+    await create(Array.from({ length: 5 }, (_, index) => ({ ...AFTER_WORK, id: `a${index}` })));
+    expect(element().querySelector('.alerts-limit')?.textContent).toContain('hasta 5 alertas');
   });
 
   it('should ask for a zone and take the location of the device', async () => {

@@ -56,4 +56,24 @@ describe('PlanTicket', () => {
   it('should leave the distance out when there is none', () => {
     expect(render(null).querySelector('.nearby-distance')).toBeNull();
   });
+
+  it('should say who organizes with their reputation, their level and the seal of trusted organizer', () => {
+    TestBed.configureTestingModule({ imports: [translocoTesting()] });
+    const fixture = TestBed.createComponent(PlanTicket);
+    fixture.componentRef.setInput('plan', plan);
+    fixture.componentRef.setInput('organizerReputation', 135);
+    fixture.componentRef.setInput('organizerLevel', 'REGULAR');
+    fixture.detectChanges();
+    const organizer = () =>
+      (fixture.nativeElement as HTMLElement)
+        .querySelector('.plan-ticket__organizer')
+        ?.textContent?.replace(/\s+/g, ' ');
+
+    expect(organizer()).toContain('Organiza Ana Pruebas · Reputación 135 Nivel⚡ Habitual');
+    expect(organizer()).not.toContain('Organizador de confianza');
+
+    fixture.componentRef.setInput('organizerTrusted', true);
+    fixture.detectChanges();
+    expect(organizer()).toContain('Nivel⚡ Habitual Organizador de confianza');
+  });
 });

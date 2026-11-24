@@ -115,6 +115,8 @@ export class PlanDetail {
   protected readonly organizerReputation = signal<number | null>(null);
   /** The level of the organizer (HU-062), when the service gives it */
   protected readonly organizerLevel = signal<ReputationLevel | null>(null);
+  /** Whether they have the seal of trusted organizer (HU-063) */
+  protected readonly organizerTrusted = signal(false);
   /** The photos of the people of the plan (HU-020); without them, the initials as before */
   protected readonly photoOf = signal(new Map<string, string>());
   /** Whose photos were asked last: a reload of the same people asks nothing */
@@ -575,6 +577,7 @@ export class PlanDetail {
             .subscribe((reputation) => {
               this.organizerReputation.set(reputation?.score ?? null);
               this.organizerLevel.set(reputation?.level ?? null);
+              this.organizerTrusted.set(reputation?.trustedOrganizer === true);
             });
           // Only the organizer sees who is free nearby (HU-035)
           if (plan.organizerId === this.session.userId()) {

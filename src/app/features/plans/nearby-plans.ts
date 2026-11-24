@@ -160,6 +160,15 @@ export class NearbyPlans {
         ),
       ),
   );
+  /** Who has the seal of trusted organizer (HU-063), from the same answer */
+  protected readonly trustedOf = computed(
+    () =>
+      new Set(
+        (this.organizerScores.hasValue() ? this.organizerScores.value() : [])
+          .filter(({ trustedOrganizer }) => trustedOrganizer === true)
+          .map(({ userId }) => userId),
+      ),
+  );
   /** The photos of the organizers of the list (HU-020), also in one question */
   protected readonly organizerPhotos = httpResource<PersonPhoto[]>(() => {
     const ids = [...new Set(this.plans().map(({ plan }) => plan.organizerId))].slice(0, 50);

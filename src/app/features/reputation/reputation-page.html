@@ -66,6 +66,38 @@
       </section>
     }
 
+    @if (perks(); as mine) {
+      <section class="perks-card" aria-labelledby="perks-title">
+        <h2 class="section-title" id="perks-title">{{ 'reputation.perks.title' | transloco }}</h2>
+        <p class="hint">
+          {{
+            'reputation.perks.intro'
+              | transloco
+                : { level: perksEmoji() + ' ' + ('reputation.levels.' + mine.level | transloco) }
+          }}
+        </p>
+        <ul class="perks-card__list">
+          @for (line of perkLines(); track line.id) {
+            <li class="perk">
+              <i class="pi {{ line.icon }}" aria-hidden="true"></i>
+              <span>{{ 'reputation.perks.' + line.key | transloco: line.params }}</span>
+            </li>
+          }
+          @if (mine.trustedOrganizer) {
+            <li class="perk perk--trusted">
+              <i class="pi pi-verified" aria-hidden="true"></i>
+              <span>{{ 'reputation.perks.trusted' | transloco }}</span>
+            </li>
+          }
+        </ul>
+        @if (!mine.trustedOrganizer) {
+          <p class="hint perks-card__trusted-hint">
+            {{ 'reputation.perks.trustedHint' | transloco }}
+          </p>
+        }
+      </section>
+    }
+
     @if (badges().length) {
       <section class="badges-section" aria-labelledby="badges-title">
         <h2 class="section-title" id="badges-title">{{ 'badges.title' | transloco }}</h2>

@@ -4,11 +4,12 @@ import { ReputationLevel } from '@shared/model/reputation';
 import { ReputationBadge } from './reputation-badge';
 
 describe('ReputationBadge', () => {
-  const render = (score: number, level: ReputationLevel | null = null) => {
+  const render = (score: number, level: ReputationLevel | null = null, trusted?: boolean) => {
     TestBed.configureTestingModule({ imports: [ReputationBadge, translocoTesting()] });
     const fixture = TestBed.createComponent(ReputationBadge);
     fixture.componentRef.setInput('score', score);
     fixture.componentRef.setInput('level', level);
+    fixture.componentRef.setInput('trusted', trusted);
     fixture.detectChanges();
     return fixture.nativeElement as HTMLElement;
   };
@@ -36,5 +37,20 @@ describe('ReputationBadge', () => {
 
   it('should show no level while it is unknown', () => {
     expect(render(35).querySelector('.reputation-badge__level')).toBeNull();
+  });
+
+  it('should show the seal of trusted organizer as text, not only an icon', () => {
+    const seal = render(600, 'REGULAR', true).querySelector('.reputation-badge__trusted')!;
+
+    expect(seal.textContent?.trim()).toBe('Organizador de confianza');
+    expect(seal.querySelector('.pi')?.getAttribute('aria-hidden')).toBe('true');
+  });
+
+  it('should show no seal without it', () => {
+    expect(render(600, 'REGULAR', false).querySelector('.reputation-badge__trusted')).toBeNull();
+  });
+
+  it('should show no seal while it is unknown', () => {
+    expect(render(600, 'REGULAR').querySelector('.reputation-badge__trusted')).toBeNull();
   });
 });

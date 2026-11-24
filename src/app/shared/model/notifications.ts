@@ -69,7 +69,10 @@ export interface SavedAlert {
   to: string | null;
 }
 
-/** Most alerts a person can keep (the service says the same). */
+/**
+ * The alerts everyone can keep. A level can give more (HU-063, {@code maxSavedAlerts} of my perks): this is only what
+ * the page falls back to while the reputation service does not say.
+ */
 export const MAX_ALERTS = 5;
 
 export const RADIUS_OPTIONS = [1000, 3000, 5000, 10000] as const;

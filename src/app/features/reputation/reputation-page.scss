@@ -72,6 +72,27 @@
   color: var(--ol-brand);
 }
 
+// What my level gives me (HU-063)
+.perks-card {
+  @include card;
+  @include stack(space(2));
+  padding: space(4) space(5);
+  margin-bottom: space(6);
+}
+
+.perks-card__list {
+  @include stack(space(2));
+}
+
+.perk {
+  @include row(space(2), baseline);
+
+  .pi {
+    flex-shrink: 0;
+    color: var(--ol-brand);
+  }
+}
+
 .badges-section {
   @include stack(space(3));
   margin-bottom: space(6);
