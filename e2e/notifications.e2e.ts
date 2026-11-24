@@ -37,7 +37,10 @@ test('chooses the notices: zone, activities and quiet hours', async ({ openPage,
   }
   await page.locator('.use-location button').click();
   await expect(page.locator('.zone-coordinates')).toContainText('40.39');
-  const padel = page.locator('.activity-chip').filter({ hasText: t('activities.PADEL') });
+  // Exact name: «Pádel surf» is also an activity
+  const padel = page
+    .locator('.activity-chip')
+    .and(page.getByRole('button', { name: t('activities.PADEL'), exact: true }));
   if ((await padel.getAttribute('aria-pressed')) !== 'true') {
     await padel.click();
   }

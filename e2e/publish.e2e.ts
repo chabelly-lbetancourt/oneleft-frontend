@@ -16,7 +16,7 @@ test('publishes a plan with a minimum of participants and finds it in its page a
   await expect(page.locator('.publish-form')).toBeVisible();
 
   await page.locator('p-select').click();
-  await page.getByRole('option', { name: t('activities.PADEL') }).click();
+  await page.getByRole('option', { name: t('activities.PADEL'), exact: true }).click();
   await page.locator('#title').fill(title);
   await page.locator(`p-togglebutton[aria-label="${t('publish.in120')}"]`).click();
   await page.locator('#placeName').fill(t('publish.wherePlaceholder'));
