@@ -1,13 +1,13 @@
 <section class="story-share panel-muted" aria-labelledby="story-share-title">
   <p class="story-share__title" id="story-share-title">
     <i class="pi pi-image" aria-hidden="true"></i>
-    {{ 'story.title' | transloco }}
+    {{ scope() + '.title' | transloco }}
   </p>
   @if (card(); as current) {
     <img
       class="story-preview"
       [src]="current.url"
-      [alt]="'story.preview' | transloco: { title: plan().title }"
+      [alt]="scope() + '.preview' | transloco: { title: plan().title }"
       width="270"
       height="480"
     />
@@ -32,10 +32,10 @@
       />
     </div>
   } @else {
-    <p class="hint">{{ 'story.hint' | transloco }}</p>
+    <p class="hint">{{ scope() + '.hint' | transloco }}</p>
     <p-button
       class="story-create"
-      [label]="'story.create' | transloco"
+      [label]="scope() + '.create' | transloco"
       icon="pi pi-image"
       [outlined]="true"
       severity="secondary"

@@ -367,6 +367,9 @@
         @if (canShareStory()) {
           <app-story-share [plan]="current" />
         }
+        @if (canShareSummary()) {
+          <app-story-share class="summary-share" kind="summary" [plan]="current" />
+        }
         @if (canAddToCalendar()) {
           <p-button
             class="calendar-button"

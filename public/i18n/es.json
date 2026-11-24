@@ -241,6 +241,15 @@
     "tomorrow": "Mañana · {{time}}",
     "scan": "Escanea y apúntate"
   },
+  "summary": {
+    "title": "Resumen del plan",
+    "hint": "Una imagen con lo que fue el plan, para compartirla en Instagram, WhatsApp o TikTok. Se crea en tu móvil.",
+    "create": "Crear el resumen",
+    "preview": "Resumen de «{{title}}» para Stories",
+    "headline": "¡Plan hecho!",
+    "person": "persona",
+    "people": "personas"
+  },
   "checkIn": {
     "title": "¿Ya estás allí?",
     "action": "He llegado",

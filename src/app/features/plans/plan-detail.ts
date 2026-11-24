@@ -231,6 +231,10 @@ export class PlanDetail {
       new Date(plan.startsAt).getTime() > Date.now()
     );
   });
+  /** The summary for Stories (HU-057): for the organizer and whoever joined, once the plan has finished */
+  protected readonly canShareSummary = computed(
+    () => this.plan()?.status === 'FINISHED' && this.inChat(),
+  );
   /** Browsers without the native share sheet copy the link instead */
   protected readonly copied = signal(false);
   protected readonly spotsKey = spotsKey;

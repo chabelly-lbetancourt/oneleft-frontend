@@ -69,3 +69,72 @@ test('makes the card of my plan for Stories and downloads it', async ({ openPage
   expect(download.suggestedFilename()).toBe(`oneleft-${PLAN_ID}.png`);
   expect(pngSize(readFileSync(await download.path()))).toEqual({ width: 1080, height: 1920 });
 });
+
+/**
+ * HU-057 in the web: someone of a finished plan makes its summary for Stories and downloads it. The plan and the
+ * services its page asks are answered in the browser, so the test creates nothing.
+ */
+test('makes the summary of a finished plan for Stories and downloads it', async ({
+  openPage,
+  t,
+}) => {
+  const page = await openPage();
+  const joinedAt = new Date(Date.now() - 5 * 3600_000).toISOString();
+  await page.route(
+    (url) => url.pathname === `/api/v1/plans/${PLAN_ID}`,
+    (route) =>
+      route.fulfill({
+        json: {
+          id: PLAN_ID,
+          organizerId: '5d1c7c2e-2f0b-4d6e-9a43-0c1e7a9b0002',
+          organizerName: 'Diego',
+          activity: 'PADEL',
+          title: 'Pádel 2 contra 2',
+          description: null,
+          meetingPoint: { name: 'Pistas de la Albufera', latitude: 40.3912, longitude: -3.6288 },
+          startsAt: new Date(Date.now() - 4 * 3600_000).toISOString(),
+          spots: 3,
+          occupied: 3,
+          freeSpots: 0,
+          level: null,
+          status: 'FINISHED',
+          publishedAt: joinedAt,
+          participants: [
+            { userId: subjectOf(route), name: 'Ana', joinedAt },
+            { userId: '5d1c7c2e-2f0b-4d6e-9a43-0c1e7a9b0003', name: 'Marta', joinedAt },
+          ],
+          waitlist: [],
+          arrivals: [],
+        },
+      }),
+  );
+  await page.route(
+    (url) => url.pathname.startsWith(`/api/v1/plans/${PLAN_ID}/`),
+    (route) => route.fulfill({ status: 204 }),
+  );
+  // No kudos to give: that panel is not what this test is about
+  await page.route(
+    (url) => url.pathname === `/api/v1/reputation/plans/${PLAN_ID}/kudos`,
+    (route) => route.fulfill({ json: { open: false, until: joinedAt, people: [] } }),
+  );
+  await page.goto('/profile');
+  await signIn(page, ANA);
+  await expect(page.locator('.profile-card')).toBeVisible();
+
+  await page.goto(`/plans/${PLAN_ID}`);
+  const summary = page.locator('.summary-share');
+  await expect(summary).toContainText(t('summary.title'));
+  await summary.getByRole('button', { name: t('summary.create') }).click();
+
+  const preview = summary.locator('.story-preview');
+  await expect(preview).toBeVisible();
+  await expect(preview).toHaveAttribute('alt', /Pádel 2 contra 2/);
+  // Vertical, ready for Stories: 1080 × 1920
+  expect(await preview.evaluate((image: HTMLImageElement) => image.naturalWidth)).toBe(1080);
+  const [download] = await Promise.all([
+    page.waitForEvent('download'),
+    summary.locator('.story-download').click(),
+  ]);
+  expect(download.suggestedFilename()).toBe(`oneleft-summary-${PLAN_ID}.png`);
+  expect(pngSize(readFileSync(await download.path()))).toEqual({ width: 1080, height: 1920 });
+});

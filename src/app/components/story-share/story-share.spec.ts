@@ -7,7 +7,7 @@ import { NativePlatform } from '@core/platform';
 import { StoryCard } from '@core/story/story-card';
 import { Plan } from '@shared/model/published-plan';
 import { clockTime } from '@shared/time/plan-time';
-import { StoryShare } from './story-share';
+import { StoryKind, StoryShare } from './story-share';
 
 const startsAt = new Date(Date.now() + 90 * 60_000);
 const PLAN = {
@@ -29,7 +29,10 @@ const PLAN = {
 describe('StoryShare', () => {
   let fixture: ComponentFixture<StoryShare>;
   const image = new Blob(['png'], { type: 'image/png' });
-  const stories = { create: vi.fn(() => Promise.resolve(image)) };
+  const stories = {
+    create: vi.fn(() => Promise.resolve(image)),
+    createSummary: vi.fn(() => Promise.resolve(image)),
+  };
   const platform = { isNative: vi.fn(() => false), shareImage: vi.fn(() => Promise.resolve()) };
   const share = vi.fn(() => Promise.resolve());
   const element = () => fixture.nativeElement as HTMLElement;
@@ -38,9 +41,12 @@ describe('StoryShare', () => {
     await fixture.whenStable();
     fixture.detectChanges();
   };
-  const create = async (plan: Plan = PLAN) => {
+  const create = async (plan: Plan = PLAN, kind?: StoryKind) => {
     fixture = TestBed.createComponent(StoryShare);
     fixture.componentRef.setInput('plan', plan);
+    if (kind) {
+      fixture.componentRef.setInput('kind', kind);
+    }
     await render();
   };
   const click = async (selector: string) => {
@@ -139,6 +145,78 @@ describe('StoryShare', () => {
     );
     expect(share).not.toHaveBeenCalled();
     platform.isNative.mockReturnValue(false);
+  });
+
+  describe('summary of a finished plan (HU-057)', () => {
+    const FINISHED = {
+      ...PLAN,
+      status: 'FINISHED',
+      occupied: 3,
+      freeSpots: 0,
+      participants: [
+        { userId: 'lucia', name: 'Lucía', joinedAt: startsAt.toISOString() },
+        { userId: 'diego', name: 'Diego', joinedAt: startsAt.toISOString() },
+        { userId: 'marta', name: 'Marta', joinedAt: startsAt.toISOString() },
+      ],
+    } as Plan;
+
+    it('should make the summary in the device with the people, the activity and the place', async () => {
+      await create(FINISHED, 'summary');
+      expect(element().querySelector('.story-share__title')?.textContent).toContain(
+        'Resumen del plan',
+      );
+
+      await click('.story-create');
+
+      expect(stories.create).not.toHaveBeenCalled();
+      expect(stories.createSummary).toHaveBeenCalledWith({
+        brand: 'OneLeft',
+        headline: '¡Plan hecho!',
+        activity: 'Pádel',
+        title: 'Pádel 2 contra 2',
+        people: '4',
+        peopleLabel: 'personas',
+        when: startsAt.toLocaleDateString('es-ES', { day: 'numeric', month: 'long' }),
+        place: 'Pistas de la Albufera',
+        link: 'oneleft.example.com',
+      });
+      const preview = element().querySelector<HTMLImageElement>('.story-preview')!;
+      expect(preview.getAttribute('src')).toBe('blob:card');
+      expect(preview.alt).toBe('Resumen de «Pádel 2 contra 2» para Stories');
+    });
+
+    it('should say «persona» when the organizer was alone, and the name of an activity of their own', async () => {
+      await create(
+        { ...FINISHED, participants: [], activity: 'OTHER', activityOther: 'Petanca' },
+        'summary',
+      );
+      await click('.story-create');
+
+      expect(stories.createSummary).toHaveBeenCalledWith(
+        expect.objectContaining({ people: '1', peopleLabel: 'persona', activity: 'Petanca' }),
+      );
+    });
+
+    it('should share the summary with the share sheet, under its own file name', async () => {
+      await create(FINISHED, 'summary');
+      await click('.story-create');
+      await click('.story-send');
+
+      const [{ files }] = share.mock.calls[0] as unknown as [{ files: File[] }];
+      expect(files[0].name).toBe('oneleft-summary-plan-1.png');
+      expect(files[0].type).toBe('image/png');
+
+      platform.isNative.mockReturnValue(true);
+      await create(FINISHED, 'summary');
+      await click('.story-create');
+      await click('.story-send');
+      expect(platform.shareImage).toHaveBeenCalledWith(
+        image,
+        'oneleft-summary-plan-1.png',
+        'Pádel 2 contra 2',
+      );
+      platform.isNative.mockReturnValue(false);
+    });
   });
 
   it('should explain when the card cannot be made, and close it', async () => {
