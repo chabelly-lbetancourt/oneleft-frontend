@@ -1,12 +1,14 @@
 import { TestBed } from '@angular/core/testing';
 import {
   drawStory,
+  drawSummary,
   QrModules,
   STORY_HEIGHT,
   STORY_WIDTH,
   StoryCard,
   StoryContext,
   StoryTexts,
+  SummaryTexts,
   wrapText,
 } from './story-card';
 
@@ -94,6 +96,64 @@ describe('drawStory', () => {
   });
 });
 
+const SUMMARY: SummaryTexts = {
+  brand: 'OneLeft',
+  headline: '¡Plan hecho!',
+  activity: 'Pádel',
+  title: 'Pádel 2 contra 2',
+  people: '4',
+  peopleLabel: 'personas',
+  when: '24 de noviembre',
+  place: 'Pistas de la Albufera',
+  link: 'oneleft.example.com',
+};
+
+describe('drawSummary', () => {
+  it('should write how the plan went, with how many people came as the big figure (HU-057)', () => {
+    const { ctx, texts, rects } = fakeContext();
+
+    drawSummary(ctx, SUMMARY, PALETTE, 'Plus Jakarta Sans');
+
+    expect(texts.map(({ text }) => text)).toEqual([
+      'OneLeft',
+      '¡Plan hecho!',
+      'PÁDEL',
+      'Pádel 2 contra 2',
+      '4',
+      'PERSONAS',
+      '24 de noviembre',
+      'Pistas de la Albufera',
+      'oneleft.example.com',
+    ]);
+    expect(texts[4]).toEqual({ text: '4', font: '800 340px Plus Jakarta Sans', color: 'orange' });
+    // The color of OneLeft fills the whole story, and nothing else is painted: no QR code
+    expect(rects).toEqual([
+      { x: 0, y: 0, width: STORY_WIDTH, height: STORY_HEIGHT, color: 'orange' },
+    ]);
+  });
+
+  it('should keep a long title and a long place inside the card', () => {
+    const { ctx, texts } = fakeContext();
+
+    drawSummary(
+      ctx,
+      {
+        ...SUMMARY,
+        title: 'Un partido de pádel muy largo con mucha gente del barrio y más palabras todavía',
+        place: 'Polideportivo municipal de las pistas de la Albufera en Puente de Vallecas',
+      },
+      PALETTE,
+      'Plus Jakarta Sans',
+    );
+
+    const written = texts.map(({ text }) => text);
+    // 30 px per character and 760 px of card: 25 characters per line, two lines each
+    expect(written.filter((text) => text.endsWith('…'))).toHaveLength(2);
+    expect(written).toHaveLength(11);
+    expect(written.every((text) => text.length <= 26)).toBe(true);
+  });
+});
+
 describe('wrapText', () => {
   it('should split a long text in the lines that fit and end the last one with an ellipsis', () => {
     const { ctx } = fakeContext();
@@ -135,6 +195,36 @@ describe('StoryCard', () => {
     expect([canvas.width, canvas.height]).toEqual([STORY_WIDTH, STORY_HEIGHT]);
     // Every dark module of the code of the link, as small squares
     expect(rects.filter(({ width }) => width < 50)).toHaveLength(await dark(link));
+  });
+
+  it('should make the summary of a finished plan as a PNG of 1080 × 1920, with no QR code (HU-057)', async () => {
+    const { ctx, texts, rects } = fakeContext();
+    vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue(
+      ctx as unknown as CanvasRenderingContext2D,
+    );
+    const toBlob = vi
+      .spyOn(HTMLCanvasElement.prototype, 'toBlob')
+      .mockImplementation((callback) => callback(new Blob(['png'], { type: 'image/png' })));
+
+    const image = await TestBed.inject(StoryCard).createSummary(SUMMARY);
+
+    expect(image.type).toBe('image/png');
+    const canvas = toBlob.mock.contexts[0] as HTMLCanvasElement;
+    expect([canvas.width, canvas.height]).toEqual([STORY_WIDTH, STORY_HEIGHT]);
+    expect(texts.map(({ text }) => text)).toContain('¡Plan hecho!');
+    expect(rects).toHaveLength(1);
+  });
+
+  it('should fail when the image cannot be made', async () => {
+    const { ctx } = fakeContext();
+    vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue(
+      ctx as unknown as CanvasRenderingContext2D,
+    );
+    vi.spyOn(HTMLCanvasElement.prototype, 'toBlob').mockImplementation((callback) =>
+      callback(null),
+    );
+
+    await expect(TestBed.inject(StoryCard).createSummary(SUMMARY)).rejects.toThrow();
   });
 
   it('should fail where the browser cannot draw', async () => {

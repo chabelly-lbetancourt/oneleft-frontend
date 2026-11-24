@@ -241,6 +241,15 @@
     "tomorrow": "Tomorrow · {{time}}",
     "scan": "Scan and join"
   },
+  "summary": {
+    "title": "Summary of the plan",
+    "hint": "An image of how the plan went, to share on Instagram, WhatsApp or TikTok. It is made on your phone.",
+    "create": "Make the summary",
+    "preview": "Summary of «{{title}}» for Stories",
+    "headline": "Plan done!",
+    "person": "person",
+    "people": "people"
+  },
   "checkIn": {
     "title": "Are you there yet?",
     "action": "I'm here",

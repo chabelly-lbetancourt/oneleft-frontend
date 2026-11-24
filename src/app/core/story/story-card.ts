@@ -20,6 +20,23 @@ export interface StoryTexts {
   link: string;
 }
 
+/** Everything the summary of a finished plan says (HU-057), already translated. */
+export interface SummaryTexts {
+  brand: string;
+  /** «¡Plan hecho!» */
+  headline: string;
+  activity: string;
+  title: string;
+  /** How many people were in the plan: the figure, big, and its word («4», «personas») */
+  people: string;
+  peopleLabel: string;
+  /** The day of the plan: «24 de noviembre» */
+  when: string;
+  place: string;
+  /** The host of the app, at the bottom */
+  link: string;
+}
+
 /** Colors of the card: the --ol-story-* tokens, the same in both themes so that the QR code is always dark on light. */
 export interface StoryPalette {
   background: string;
@@ -55,6 +72,7 @@ const CARD_TOP = 470;
 const CARD_BOTTOM = 1720;
 const CARD_PADDING = 70;
 const QR_SIZE = 500;
+const SUMMARY_HEADLINE_SIZE = 130;
 
 /** The lines of a text that fit in a width, at most {@code maxLines}; the last one ends with «…» if it is cut. */
 export const wrapText = (
@@ -94,6 +112,36 @@ const ellipsis = (ctx: StoryContext, text: string, maxWidth: number): string => 
   return `${cut}…`;
 };
 
+/** Writes a centered line of the card. */
+type Write = (text: string, y: number, weight: number, size: number, color: string) => void;
+
+/**
+ * What both cards share: the color of OneLeft filling the story, the brand on top and the white card below. Gives back
+ * how to write a centered line.
+ */
+const startCard = (
+  ctx: StoryContext,
+  brand: string,
+  palette: StoryPalette,
+  fontFamily: string,
+): Write => {
+  const write: Write = (text, y, weight, size, color) => {
+    ctx.font = `${weight} ${size}px ${fontFamily}`;
+    ctx.fillStyle = color;
+    ctx.fillText(text, STORY_WIDTH / 2, y);
+  };
+  ctx.fillStyle = palette.background;
+  ctx.fillRect(0, 0, STORY_WIDTH, STORY_HEIGHT);
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'alphabetic';
+  write(brand, 180, 800, 76, palette.onBackground);
+  ctx.fillStyle = palette.card;
+  ctx.beginPath();
+  ctx.roundRect(MARGIN, CARD_TOP, STORY_WIDTH - 2 * MARGIN, CARD_BOTTOM - CARD_TOP, 56);
+  ctx.fill();
+  return write;
+};
+
 /**
  * Draws the card (HU-056): the brand and «¡Falta 1!» on the color of OneLeft; below, on a white card, the activity,
  * the title, when and where, and the QR code that opens the plan.
@@ -105,25 +153,10 @@ export const drawStory = (
   palette: StoryPalette,
   fontFamily: string,
 ): void => {
-  const center = STORY_WIDTH / 2;
   const textWidth = STORY_WIDTH - 2 * (MARGIN + CARD_PADDING);
-  const write = (text: string, y: number, weight: number, size: number, color: string) => {
-    ctx.font = `${weight} ${size}px ${fontFamily}`;
-    ctx.fillStyle = color;
-    ctx.fillText(text, center, y);
-  };
-  ctx.fillStyle = palette.background;
-  ctx.fillRect(0, 0, STORY_WIDTH, STORY_HEIGHT);
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'alphabetic';
+  const write = startCard(ctx, texts.brand, palette, fontFamily);
 
-  write(texts.brand, 180, 800, 76, palette.onBackground);
   write(texts.missing, 360, 800, 150, palette.onBackground);
-
-  ctx.fillStyle = palette.card;
-  ctx.beginPath();
-  ctx.roundRect(MARGIN, CARD_TOP, STORY_WIDTH - 2 * MARGIN, CARD_BOTTOM - CARD_TOP, 56);
-  ctx.fill();
 
   let y = CARD_TOP + 120;
   write(texts.activity.toLocaleUpperCase(), y, 800, 46, palette.background);
@@ -144,6 +177,45 @@ export const drawStory = (
   const qrTop = CARD_BOTTOM - CARD_PADDING - 80 - QR_SIZE;
   drawQr(ctx, qr, (STORY_WIDTH - QR_SIZE) / 2, qrTop, QR_SIZE, palette);
   write(texts.scan, CARD_BOTTOM - CARD_PADDING - 10, 600, 40, palette.muted);
+  write(texts.link, STORY_HEIGHT - 90, 600, 40, palette.onBackground);
+};
+
+/**
+ * Draws the summary of a finished plan (HU-057), in the way of the cards of Strava: the brand and «¡Plan hecho!» on
+ * the color of OneLeft; below, on a white card, the activity, the title, how many people came (the big figure), the
+ * day and the place.
+ */
+export const drawSummary = (
+  ctx: StoryContext,
+  texts: SummaryTexts,
+  palette: StoryPalette,
+  fontFamily: string,
+): void => {
+  const textWidth = STORY_WIDTH - 2 * (MARGIN + CARD_PADDING);
+  const write = startCard(ctx, texts.brand, palette, fontFamily);
+
+  ctx.font = `800 ${SUMMARY_HEADLINE_SIZE}px ${fontFamily}`;
+  const [headline] = wrapText(ctx, texts.headline, STORY_WIDTH - 2 * MARGIN, 1);
+  write(headline ?? '', 360, 800, SUMMARY_HEADLINE_SIZE, palette.onBackground);
+
+  let y = CARD_TOP + 140;
+  write(texts.activity.toLocaleUpperCase(), y, 800, 46, palette.background);
+  ctx.font = `800 70px ${fontFamily}`;
+  for (const line of wrapText(ctx, texts.title, textWidth, 2)) {
+    y += 90;
+    write(line, y, 800, 70, palette.ink);
+  }
+
+  // The figure of the summary, in the middle of the card
+  write(texts.people, 1250, 800, 340, palette.background);
+  write(texts.peopleLabel.toLocaleUpperCase(), 1340, 700, 54, palette.muted);
+
+  write(texts.when, 1500, 700, 54, palette.ink);
+  ctx.font = `500 46px ${fontFamily}`;
+  const places = wrapText(ctx, texts.place, textWidth, 2);
+  for (const [index, line] of places.entries()) {
+    write(line, 1580 + index * 60, 500, 46, palette.muted);
+  }
   write(texts.link, STORY_HEIGHT - 90, 600, 40, palette.onBackground);
 };
 
@@ -198,6 +270,23 @@ export class StoryCard {
     const qrcode = await import('qrcode');
     const { create } = qrcode.default ?? qrcode;
     const modules = create(link, { errorCorrectionLevel: 'M' }).modules;
+    const qr = {
+      size: modules.size,
+      get: (row: number, column: number) => modules.get(row, column) === 1,
+    };
+    return this.render((ctx, palette, fontFamily) =>
+      drawStory(ctx, texts, qr, palette, fontFamily),
+    );
+  }
+
+  /** The summary of a finished plan (HU-057): the same PNG of 1080 × 1920, with no QR code. */
+  createSummary(texts: SummaryTexts): Promise<Blob> {
+    return this.render((ctx, palette, fontFamily) => drawSummary(ctx, texts, palette, fontFamily));
+  }
+
+  private async render(
+    draw: (ctx: StoryContext, palette: StoryPalette, fontFamily: string) => void,
+  ): Promise<Blob> {
     const canvas = document.createElement('canvas');
     canvas.width = STORY_WIDTH;
     canvas.height = STORY_HEIGHT;
@@ -208,13 +297,7 @@ export class StoryCard {
     // The card uses the font of the app: it must be loaded before drawing
     await document.fonts?.ready;
     const { palette, fontFamily } = pageStyle();
-    drawStory(
-      ctx,
-      texts,
-      { size: modules.size, get: (row, column) => modules.get(row, column) === 1 },
-      palette,
-      fontFamily,
-    );
+    draw(ctx, palette, fontFamily);
     return new Promise((resolve, reject) =>
       canvas.toBlob(
         (blob) => (blob ? resolve(blob) : reject(new Error('The card could not be made'))),

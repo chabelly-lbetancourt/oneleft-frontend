@@ -1018,4 +1018,24 @@ describe('PlanDetail', () => {
     );
     expect(element().querySelector('app-story-share')).toBeNull();
   });
+
+  it('should offer the summary for Stories to the group of a finished plan (HU-057)', async () => {
+    const past = new Date(Date.now() - 3 * 3600_000).toISOString();
+    const finished = { ...PLAN, startsAt: past, status: 'FINISHED', participants: [LUCIA] };
+    await create(finished, undefined, PLAN.organizerId);
+    expect(element().querySelector('.summary-share')?.textContent).toContain('Resumen del plan');
+    // The invitation is for a plan with free spots: never both
+    expect(element().querySelectorAll('app-story-share')).toHaveLength(1);
+
+    await create(finished, undefined, LUCIA.userId);
+    expect(element().querySelector('.summary-share')).not.toBeNull();
+
+    // Not to someone who was not in the plan, nor while it is going on, nor if it was cancelled
+    await create(finished, undefined, 'someone-else');
+    expect(element().querySelector('.summary-share')).toBeNull();
+    for (const status of ['OPEN', 'IN_PROGRESS', 'CANCELLED']) {
+      await create({ ...finished, status }, undefined, PLAN.organizerId);
+      expect(element().querySelector('.summary-share')).toBeNull();
+    }
+  });
 });

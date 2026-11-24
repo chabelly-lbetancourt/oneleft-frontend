@@ -5,7 +5,7 @@ import { Message } from 'primeng/message';
 import { PlansApi } from '@core/api/plans-api';
 import { Language } from '@core/i18n/language';
 import { NativePlatform } from '@core/platform';
-import { StoryCard, StoryTexts } from '@core/story/story-card';
+import { StoryCard, StoryTexts, SummaryTexts } from '@core/story/story-card';
 import { activityKey } from '@shared/model/activities';
 import { Plan } from '@shared/model/published-plan';
 import { clockTime } from '@shared/time/plan-time';
@@ -14,9 +14,13 @@ import { clockTime } from '@shared/time/plan-time';
 const sharesFiles = (file: File): boolean =>
   typeof navigator.canShare === 'function' && navigator.canShare({ files: [file] });
 
+/** What the card is: the invitation to a plan with free spots (HU-056) or the summary of a finished one (HU-057). */
+export type StoryKind = 'invite' | 'summary';
+
 /**
- * The card of a plan for Stories (HU-056): made in the device, shown before sharing it, and shared with the share
- * sheet (Instagram, WhatsApp, TikTok…). A browser that cannot share files downloads it instead.
+ * The card of a plan for Stories: the invitation with its QR code (HU-056) or the summary of a finished plan
+ * (HU-057). Made in the device, shown before sharing it, and shared with the share sheet (Instagram, WhatsApp,
+ * TikTok…). A browser that cannot share files downloads it instead.
  */
 @Component({
   selector: 'app-story-share',
@@ -32,13 +36,19 @@ export class StoryShare {
   private readonly transloco = inject(TranslocoService);
 
   readonly plan = input.required<Plan>();
+  readonly kind = input<StoryKind>('invite');
+
+  /** Where the texts of this kind of card are in the translations */
+  protected readonly scope = computed(() => (this.kind() === 'summary' ? 'summary' : 'story'));
 
   protected readonly busy = signal(false);
   protected readonly failed = signal(false);
   /** The card made, with the address of its preview */
   protected readonly card = signal<{ image: Blob; url: string } | null>(null);
   protected readonly canShare = signal(false);
-  protected readonly fileName = computed(() => `oneleft-${this.plan().id}.png`);
+  protected readonly fileName = computed(
+    () => `oneleft-${this.kind() === 'summary' ? 'summary-' : ''}${this.plan().id}.png`,
+  );
 
   constructor() {
     inject(DestroyRef).onDestroy(() => this.forget());
@@ -49,7 +59,10 @@ export class StoryShare {
     this.failed.set(false);
     try {
       const link = this.api.shareUrl(this.plan().id);
-      const image = await this.stories.create(this.texts(link), link);
+      const image =
+        this.kind() === 'summary'
+          ? await this.stories.createSummary(this.summaryTexts(link))
+          : await this.stories.create(this.texts(link), link);
       this.forget();
       this.card.set({ image, url: URL.createObjectURL(image) });
       this.canShare.set(this.platform.isNative() || sharesFiles(this.file(image)));
@@ -100,6 +113,28 @@ export class StoryShare {
       when: t(today ? 'story.today' : 'story.tomorrow', { time }),
       place: plan.meetingPoint.name,
       scan: t('story.scan'),
+      link: new URL(link).host,
+    };
+  }
+
+  private summaryTexts(link: string): SummaryTexts {
+    const plan = this.plan();
+    const t = (key: string, params?: Record<string, unknown>) =>
+      this.transloco.translate(key, params);
+    // The organizer and whoever joined
+    const people = plan.participants.length + 1;
+    return {
+      brand: t('app.name'),
+      headline: t('summary.headline'),
+      activity: plan.activityOther || t(activityKey(plan.activity)),
+      title: plan.title,
+      people: String(people),
+      peopleLabel: t(people === 1 ? 'summary.person' : 'summary.people'),
+      when: new Date(plan.startsAt).toLocaleDateString(this.language.locale(), {
+        day: 'numeric',
+        month: 'long',
+      }),
+      place: plan.meetingPoint.name,
       link: new URL(link).host,
     };
   }
