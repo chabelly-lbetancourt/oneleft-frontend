@@ -35,6 +35,7 @@ describe('StoryShare', () => {
   };
   const platform = { isNative: vi.fn(() => false), shareImage: vi.fn(() => Promise.resolve()) };
   const share = vi.fn(() => Promise.resolve());
+  const writeText = vi.fn<(text: string) => Promise<void>>(() => Promise.resolve());
   const element = () => fixture.nativeElement as HTMLElement;
   const render = async () => {
     fixture.detectChanges();
@@ -60,7 +61,11 @@ describe('StoryShare', () => {
     URL.createObjectURL = vi.fn(() => 'blob:card');
     URL.revokeObjectURL = vi.fn();
     // Defined, not assigned: another spec may have left them as read-only properties of the navigator
-    for (const [name, value] of Object.entries({ share, canShare: vi.fn(() => true) })) {
+    for (const [name, value] of Object.entries({
+      share,
+      canShare: vi.fn(() => true),
+      clipboard: { writeText },
+    })) {
       Object.defineProperty(navigator, name, { value, configurable: true, writable: true });
     }
     TestBed.configureTestingModule({
@@ -216,6 +221,70 @@ describe('StoryShare', () => {
         'Pádel 2 contra 2',
       );
       platform.isNative.mockReturnValue(false);
+    });
+  });
+
+  describe('link sticker of Instagram (HU-058)', () => {
+    const LINK = 'https://oneleft.example.com/share/plans/plan-1';
+    const status = () => element().querySelector<HTMLElement>('.story-link__status')!;
+
+    it('should show the link to the public page of the plan and how to add the sticker', async () => {
+      await create();
+      expect(element().querySelector('.story-link')).toBeNull();
+
+      await click('.story-create');
+
+      expect(element().querySelector('.story-link__url')?.textContent?.trim()).toBe(LINK);
+      const steps = [...element().querySelectorAll('.story-link__steps li')].map((step) =>
+        step.textContent?.trim(),
+      );
+      expect(steps).toEqual([
+        'Copia el enlace del plan.',
+        'Comparte o descarga la tarjeta y úsala en una Story de Instagram.',
+        'En la Story, toca el icono de stickers y elige «Enlace».',
+        'Pega el enlace, toca «Listo» y coloca el sticker donde quieras.',
+      ]);
+      const group = element().querySelector<HTMLElement>('.story-link')!;
+      expect(group.getAttribute('role')).toBe('group');
+      expect(
+        document.getElementById(group.getAttribute('aria-labelledby')!)?.textContent,
+      ).toContain('Enlace para el sticker de Instagram');
+    });
+
+    it('should copy the link of the plan and announce it', async () => {
+      await create();
+      await click('.story-create');
+      expect(status().getAttribute('aria-live')).toBe('polite');
+      expect(status().textContent?.trim()).toBe('');
+      const copy = element().querySelector<HTMLButtonElement>('.story-copy button')!;
+      expect(copy.textContent).toContain('Copiar el enlace');
+
+      await click('.story-copy');
+
+      expect(writeText).toHaveBeenCalledExactlyOnceWith(LINK);
+      expect(status().textContent).toContain('Enlace copiado: pégalo en el sticker «Enlace».');
+    });
+
+    it('should say so when the link cannot be copied, and forget it when the card is closed', async () => {
+      writeText.mockReturnValueOnce(Promise.reject(new Error('no permission')));
+      await create();
+      await click('.story-create');
+      await click('.story-copy');
+      expect(status().textContent).toContain('No se ha podido copiar el enlace');
+
+      await click('.story-copy');
+      expect(status().textContent).toContain('Enlace copiado');
+      await click('.story-close');
+      await click('.story-create');
+      expect(status().textContent?.trim()).toBe('');
+    });
+
+    it('should not offer the link in the summary of a finished plan', async () => {
+      await create({ ...PLAN, status: 'FINISHED', freeSpots: 0 } as Plan, 'summary');
+      await click('.story-create');
+
+      expect(element().querySelector('.story-preview')).not.toBeNull();
+      expect(element().querySelector('.story-link')).toBeNull();
     });
   });
 

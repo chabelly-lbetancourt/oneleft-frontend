@@ -239,7 +239,18 @@
     "missingMany": "{{count}} more needed!",
     "today": "Today · {{time}}",
     "tomorrow": "Tomorrow · {{time}}",
-    "scan": "Scan and join"
+    "scan": "Scan and join",
+    "link": {
+      "title": "Link for the Instagram sticker",
+      "hint": "An image carries no link: add it to your Story with the “Link” sticker and whoever taps it will get to the plan.",
+      "stepCopy": "Copy the link of the plan.",
+      "stepStory": "Share or download the card and use it in an Instagram Story.",
+      "stepSticker": "In the Story, tap the sticker icon and choose “Link”.",
+      "stepPaste": "Paste the link, tap “Done” and place the sticker wherever you like.",
+      "copy": "Copy the link",
+      "copied": "Link copied: paste it into the “Link” sticker.",
+      "copyFailed": "The link could not be copied. Press and hold it to copy it."
+    }
   },
   "summary": {
     "title": "Summary of the plan",

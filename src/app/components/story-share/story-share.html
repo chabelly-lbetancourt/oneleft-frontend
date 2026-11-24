@@ -31,6 +31,44 @@
         (onClick)="close()"
       />
     </div>
+    @if (hasLinkSticker()) {
+      <div class="story-link" role="group" aria-labelledby="story-link-title">
+        <p class="story-link__title" id="story-link-title">
+          <i class="pi pi-link" aria-hidden="true"></i>
+          {{ 'story.link.title' | transloco }}
+        </p>
+        <p class="hint">{{ 'story.link.hint' | transloco }}</p>
+        <ol class="story-link__steps">
+          <li>{{ 'story.link.stepCopy' | transloco }}</li>
+          <li>{{ 'story.link.stepStory' | transloco }}</li>
+          <li>{{ 'story.link.stepSticker' | transloco }}</li>
+          <li>{{ 'story.link.stepPaste' | transloco }}</li>
+        </ol>
+        <p class="story-link__url">{{ link() }}</p>
+        <p-button
+          class="story-copy"
+          [label]="'story.link.copy' | transloco"
+          icon="pi pi-copy"
+          [outlined]="true"
+          severity="secondary"
+          styleClass="button--block"
+          (onClick)="copyLink()"
+        />
+        <p class="story-link__status" role="status" aria-live="polite">
+          @switch (linkCopy()) {
+            @case ('copied') {
+              <span class="story-link__copied">
+                <i class="pi pi-check" aria-hidden="true"></i>
+                {{ 'story.link.copied' | transloco }}
+              </span>
+            }
+            @case ('failed') {
+              <span class="story-link__failed">{{ 'story.link.copyFailed' | transloco }}</span>
+            }
+          }
+        </p>
+      </div>
+    }
   } @else {
     <p class="hint">{{ scope() + '.hint' | transloco }}</p>
     <p-button
