@@ -10,6 +10,7 @@ import { SocialApi } from '@core/api/social-api';
 import { UsersApi } from '@core/api/users-api';
 import { PersonPhoto } from '@shared/model/photo';
 import { PublicProfile } from '@shared/model/profile';
+import { Reputation } from '@shared/model/reputation';
 import { Connection, ConnectionPage, SocialPerson } from '@shared/model/social';
 import { PersonPage } from './person-page';
 
@@ -44,6 +45,9 @@ describe('PersonPage', () => {
     report: vi.fn(() => of({})),
     listOf: vi.fn((): Observable<ConnectionPage> => of({ items: [], page: 0, size: 20, total: 0 })),
   };
+  const reputationOf = vi.fn((): Observable<Reputation> =>
+    of({ userId: 'ana', score: -15, level: 'NEW', nextLevelAt: 100 }),
+  );
   const photosApi = { photosOf: vi.fn((): Observable<PersonPhoto[]> => of([])) };
   const usersApi = {
     profileOf: vi.fn((): Observable<PublicProfile> =>
@@ -86,7 +90,7 @@ describe('PersonPage', () => {
         {
           provide: ReputationApi,
           useValue: {
-            of: () => of({ userId: 'ana', score: -15, level: 'NEW', nextLevelAt: 100 }),
+            of: reputationOf,
             statsOf: () =>
               of({ userId: 'ana', plansCompleted: 12, plansOrganized: 3, activities: 4 }),
             badgesOf: () =>
@@ -111,6 +115,17 @@ describe('PersonPage', () => {
     });
   });
 
+  it('should show their seal of trusted organizer next to their level (HU-063)', async () => {
+    reputationOf.mockReturnValueOnce(
+      of({ userId: 'ana', score: 600, level: 'NEIGHBOURHOOD_REFERENCE', trustedOrganizer: true }),
+    );
+    await create();
+
+    expect(
+      element().querySelector('.person-reputation')?.textContent?.replace(/\s+/g, ' '),
+    ).toContain('Nivel🔥 Referente del barrio Organizador de confianza');
+  });
+
   it('should show the person, their counts and that their profile is private', async () => {
     await create({ ...ANA, followsMe: true });
 
@@ -123,6 +138,7 @@ describe('PersonPage', () => {
     expect(element().querySelector('.following-count')?.textContent).toBe('1');
     expect(element().querySelector('.person-reputation')?.textContent).toContain('-15');
     expect(element().querySelector('.person-reputation')?.textContent).toContain('🌱 Nuevo');
+    expect(element().querySelector('.reputation-badge__trusted')).toBeNull();
     expect(element().querySelector('.person-badges .badge__name')?.textContent).toContain(
       '10 actividades distintas',
     );

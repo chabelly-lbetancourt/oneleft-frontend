@@ -1,7 +1,7 @@
 import { expect, signIn, test, ANA } from './support/fixtures';
 
 /**
- * HU-009 and HU-062 in the web: the reputation service is answered in the browser, so the test needs no reputation service and
+ * HU-009, HU-062 and HU-063 in the web: the reputation service is answered in the browser, so the test needs no reputation service and
  * creates nothing. Only the sign-in goes to Keycloak.
  */
 const REPUTATION = '/api/v1/reputation';
@@ -14,7 +14,30 @@ test('opens my reputation from the profile and explains why it went up or down',
   await page.route(
     (url) => url.pathname === `${REPUTATION}/me`,
     (route) =>
-      route.fulfill({ json: { userId: 'me', score: 135, level: 'REGULAR', nextLevelAt: 500 } }),
+      route.fulfill({
+        json: {
+          userId: 'me',
+          score: 135,
+          level: 'REGULAR',
+          nextLevelAt: 500,
+          trustedOrganizer: true,
+        },
+      }),
+  );
+  // What my level gives me (HU-063)
+  await page.route(
+    (url) => url.pathname === `${REPUTATION}/me/perks`,
+    (route) =>
+      route.fulfill({
+        json: {
+          level: 'REGULAR',
+          waitlistPriority: 1,
+          noticeWeight: 1.1,
+          maxActivePlans: 6,
+          maxSavedAlerts: 6,
+          trustedOrganizer: true,
+        },
+      }),
   );
   // The level and the weekly streak (HU-062)
   await page.route(
@@ -80,6 +103,7 @@ test('opens my reputation from the profile and explains why it went up or down',
   const link = page.getByRole('link', { name: new RegExp(t('profile.reputation')) });
   await expect(link).toContainText('135');
   await expect(link).toContainText(t('reputation.levels.REGULAR'));
+  await expect(link).toContainText(t('reputation.trustedOrganizer'));
   await expect(async () => {
     await link.click();
     await expect(page).toHaveURL(/\/reputation$/, { timeout: 2000 });
@@ -95,6 +119,12 @@ test('opens my reputation from the profile and explains why it went up or down',
   await expect(bar).toHaveAttribute('aria-valuemax', '500');
   await expect(page.getByRole('heading', { name: t('reputation.streak.title') })).toBeVisible();
   await expect(page.locator('.streak-card__weeks')).toContainText('3');
+  await expect(page.getByRole('heading', { name: t('reputation.perks.title') })).toBeVisible();
+  const perks = page.locator('.perk');
+  await expect(perks).toHaveCount(5);
+  await expect(perks.nth(0)).toHaveText(t('reputation.perks.waitlistAhead'));
+  await expect(perks.nth(2)).toHaveText(t('reputation.perks.plans').replace('{{max}}', '6'));
+  await expect(perks.nth(4)).toHaveText(t('reputation.perks.trusted'));
   const badges = page.locator('.badge');
   await expect(badges).toHaveCount(2);
   await expect(badges.first()).toContainText(t('badges.names.FIRST_PLAN_ORGANIZED'));

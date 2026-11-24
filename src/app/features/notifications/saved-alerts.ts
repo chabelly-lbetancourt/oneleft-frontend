@@ -17,6 +17,7 @@ import { SelectButton } from 'primeng/selectbutton';
 import { ToggleSwitch } from 'primeng/toggleswitch';
 import { catchError, of } from 'rxjs';
 import { NotificationsApi } from '@core/api/notifications-api';
+import { ReputationApi } from '@core/api/reputation-api';
 import { UsersApi } from '@core/api/users-api';
 import { ApproximateLocation, LocationError } from '@core/geo/approximate-location';
 import { apiErrorMessage } from '@core/i18n/api-error';
@@ -58,6 +59,7 @@ interface Status {
 export class SavedAlerts implements OnInit {
   private readonly api = inject(NotificationsApi);
   private readonly users = inject(UsersApi);
+  private readonly reputation = inject(ReputationApi);
   private readonly location = inject(ApproximateLocation);
   private readonly transloco = inject(TranslocoService);
   private readonly fb = inject(NonNullableFormBuilder);
@@ -73,8 +75,9 @@ export class SavedAlerts implements OnInit {
   /** The alert being edited: null when the form is closed, 'new' for a new one */
   protected readonly editing = signal<string | null>(null);
   protected readonly profileZone = signal<Zone | null>(null);
-  protected readonly atLimit = computed(() => this.alerts().length >= MAX_ALERTS);
-  protected readonly maxAlerts = MAX_ALERTS;
+  /** How many alerts I can keep: what my level gives (HU-063), or what everyone has while it cannot be known */
+  protected readonly maxAlerts = signal(MAX_ALERTS);
+  protected readonly atLimit = computed(() => this.alerts().length >= this.maxAlerts());
 
   /** Option labels are recomputed when the language changes. */
   private readonly lang = toSignal(this.transloco.langChanges$, {
@@ -120,6 +123,15 @@ export class SavedAlerts implements OnInit {
       .myProfile()
       .pipe(catchError(() => of(null)))
       .subscribe((profile) => this.profileZone.set(profile?.zone ?? null));
+    this.reputation
+      .myPerks()
+      .pipe(catchError(() => of(null)))
+      .subscribe((perks) => {
+        const max = perks?.maxSavedAlerts;
+        if (typeof max === 'number' && Number.isInteger(max) && max > 0) {
+          this.maxAlerts.set(max);
+        }
+      });
     this.api.alerts().subscribe({
       next: (alerts) => {
         this.alerts.set(alerts);

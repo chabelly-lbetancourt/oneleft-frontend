@@ -2,7 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
-import { of, throwError } from 'rxjs';
+import { Observable, of, throwError } from 'rxjs';
 import { FakeSession } from '@testing/fake-session';
 import { UsersApi } from '@core/api/users-api';
 import { Session } from '@core/auth/session';
@@ -10,6 +10,7 @@ import { ApproximateLocation, LocationError } from '@core/geo/approximate-locati
 import { MyPhoto } from '@core/photos/my-photo';
 import { PhotoFileError } from '@shared/image/square-photo';
 import { Catalog, MyProfile } from '@shared/model/profile';
+import { Reputation } from '@shared/model/reputation';
 import { TranslocoService } from '@jsverse/transloco';
 import { Profile } from './profile';
 import { translocoTesting } from '@testing/transloco-testing';
@@ -41,6 +42,11 @@ describe('Profile', () => {
     saveDemographics: vi.fn(),
   };
   const location = { current: vi.fn() };
+  const reputationApi = {
+    mine: vi.fn((): Observable<Reputation> =>
+      of({ userId: 'a624d063', score: 20, level: 'NEW', nextLevelAt: 100 }),
+    ),
+  };
   const myPhoto = {
     url: signal<string | null>(null),
     change: vi.fn(async (): Promise<void> => undefined),
@@ -81,12 +87,7 @@ describe('Profile', () => {
         provideRouter([]),
         { provide: Session, useValue: session },
         { provide: UsersApi, useValue: api },
-        {
-          provide: ReputationApi,
-          useValue: {
-            mine: () => of({ userId: 'a624d063', score: 20, level: 'NEW', nextLevelAt: 100 }),
-          },
-        },
+        { provide: ReputationApi, useValue: reputationApi },
         { provide: ApproximateLocation, useValue: location },
         { provide: MyPhoto, useValue: myPhoto },
       ],
@@ -113,6 +114,19 @@ describe('Profile', () => {
     expect(reputation?.textContent?.replace(/\s+/g, ' ')).toContain(
       'Mi reputación Reputación 20 Nivel🌱 Nuevo',
     );
+    expect(reputation?.querySelector('.reputation-badge__trusted')).toBeNull();
+  });
+
+  it('should show my seal of trusted organizer next to my level (HU-063)', async () => {
+    reputationApi.mine.mockReturnValueOnce(
+      of({ userId: 'a624d063', score: 135, level: 'REGULAR', trustedOrganizer: true }),
+    );
+    fixture = TestBed.createComponent(Profile);
+    await render();
+
+    expect(
+      element().querySelector('.profile-reputation')?.textContent?.replace(/\s+/g, ' '),
+    ).toContain('Reputación 135 Nivel⚡ Habitual Organizador de confianza');
   });
 
   it('should offer to add a photo, open the file picker and confirm the new one (HU-020)', async () => {

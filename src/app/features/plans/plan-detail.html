@@ -122,6 +122,7 @@
                     class="organizer-reputation"
                     [score]="organizerReputation()!"
                     [level]="organizerLevel()"
+                    [trusted]="organizerTrusted()"
                   />
                 }
               } @else if (current.organizerName) {
@@ -132,6 +133,7 @@
                     class="organizer-reputation"
                     [score]="organizerReputation()!"
                     [level]="organizerLevel()"
+                    [trusted]="organizerTrusted()"
                   />
                 }
               } @else {

@@ -440,6 +440,19 @@
       "CONFIRMED_REPORT": "Un reporte confirmado contra ti",
       "KUDOS": "Recibir un kudos de alguien de tu plan"
     },
+    "trustedOrganizer": "Organizador de confianza",
+    "perks": {
+      "title": "Mis ventajas",
+      "intro": "Esto es lo que te da tu nivel, {{level}}. Las ventajas mejoran con cada nivel.",
+      "waitlistBase": "En las listas de espera vas por orden de llegada.",
+      "waitlistAhead": "En las listas de espera pasas por delante de quien tiene menos nivel que tú.",
+      "noticesBase": "Recibes los avisos de planes cercanos como todo el mundo.",
+      "noticesBoost": "Tienes un {{percent}} % más de opciones de estar entre las primeras personas avisadas de un plan cercano.",
+      "plans": "Puedes tener hasta {{max}} planes publicados a la vez.",
+      "alerts": "Puedes guardar hasta {{max}} alertas.",
+      "trusted": "Tienes el sello «Organizador de confianza»: lo ve quien mira tus planes.",
+      "trustedHint": "El sello «Organizador de confianza» llega con el nivel Habitual y 5 planes organizados que se celebraron."
+    },
     "fairNote": "Si nadie del grupo hace check-in, el plan no cuenta: nadie pierde puntos por él.",
     "limitsNote": "Para que sea justa, cada día solo suman hasta {{attended}} planes a los que llegas, {{organized}} planes organizados y {{kudos}} kudos. Los kudos seguidos de la misma persona valen cada vez la mitad, y los de dos personas que se dan kudos siempre entre sí no suman.",
     "limits": {
@@ -646,7 +659,8 @@
       "noPendingRequest": "No hay ninguna solicitud pendiente.",
       "notOrganizer": "Solo el organizador puede hacer esto.",
       "audienceMismatch": "Este plan no encaja con tu perfil (género o edad).",
-      "audienceAge": "La edad mínima no puede ser mayor que la máxima y debe ser de 18 o más"
+      "audienceAge": "La edad mínima no puede ser mayor que la máxima y debe ser de 18 o más",
+      "tooManyActive": "Ya tienes {{max}} planes publicados sin empezar, el máximo de tu nivel. Espera a que empiece alguno para publicar otro."
     },
     "meetingPoint": {
       "name": "El lugar necesita un nombre de hasta 100 caracteres"

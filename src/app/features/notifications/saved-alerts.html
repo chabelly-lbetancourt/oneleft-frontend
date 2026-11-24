@@ -52,7 +52,7 @@
         }
 
         @if (atLimit()) {
-          <p class="alerts-limit hint">{{ 'alerts.limit' | transloco: { max: maxAlerts } }}</p>
+          <p class="alerts-limit hint">{{ 'alerts.limit' | transloco: { max: maxAlerts() } }}</p>
         } @else {
           <p-button
             class="new-alert"

@@ -7,6 +7,7 @@ import {
   KudosCount,
   KudosKind,
   LedgerPage,
+  Perks,
   PersonStats,
   PlanKudos,
   Reputation,
@@ -31,6 +32,11 @@ export class ReputationApi {
   /** My weekly streak (HU-062). */
   myStreak(): Observable<Streak> {
     return this.http.get<Streak>(`${this.base}/me/streak`);
+  }
+
+  /** What my level is worth (HU-063): waiting list priority, weight in the notices and my limits. */
+  myPerks(): Observable<Perks> {
+    return this.http.get<Perks>(`${this.base}/me/perks`);
   }
 
   of(userId: string): Observable<Reputation> {

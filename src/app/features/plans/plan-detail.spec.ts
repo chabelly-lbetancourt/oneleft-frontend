@@ -623,6 +623,16 @@ describe('PlanDetail', () => {
     );
     await create({ ...PLAN, id: 'plan-3' });
     expect(element().querySelector('.organizer-reputation')?.textContent).toContain('👑 Leyenda');
+    // Nor the seal of trusted organizer while the service does not give it (HU-063)
+    expect(element().querySelector('.reputation-badge__trusted')).toBeNull();
+
+    reputationApi.of.mockReturnValueOnce(
+      of({ userId: 'org', score: 600, level: 'NEIGHBOURHOOD_REFERENCE', trustedOrganizer: true }),
+    );
+    await create({ ...PLAN, id: 'plan-4' });
+    expect(element().querySelector('.organizer-reputation')?.textContent).toContain(
+      'Organizador de confianza',
+    );
 
     reputationApi.of.mockReturnValueOnce(throwError(() => new Error('down')));
     await create({ ...PLAN, id: 'plan-2' });

@@ -49,4 +49,20 @@ describe('apiErrorMessage', () => {
     );
     expect(tooFast(5).params).toEqual({ minutes: 1 });
   });
+
+  it('should tell the limit of plans at once when it is reached, in both languages', () => {
+    const message = apiErrorMessage(
+      transloco,
+      { status: 409, error: { code: 'plan.tooManyActive', max: 6 } },
+      'errors.publishFailed',
+    );
+
+    expect(message).toEqual({ key: 'errors.plan.tooManyActive', params: { max: 6 } });
+    expect(transloco.translate(message.key, message.params)).toBe(
+      'Ya tienes 6 planes publicados sin empezar, el máximo de tu nivel. Espera a que empiece alguno para publicar otro.',
+    );
+    expect(transloco.translate(message.key, message.params, 'en')).toBe(
+      'You already have 6 published plans that have not started, the most your level allows. Wait for one to start to publish another.',
+    );
+  });
 });

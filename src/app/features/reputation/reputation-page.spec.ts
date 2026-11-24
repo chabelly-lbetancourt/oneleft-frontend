@@ -9,6 +9,7 @@ import {
   BadgeProgress,
   LedgerEntry,
   LedgerPage,
+  Perks,
   Reputation,
   Streak,
 } from '@shared/model/reputation';
@@ -33,6 +34,16 @@ describe('ReputationPage', () => {
     mine: vi.fn((): Observable<Reputation> => of({ userId: 'me', score: 15 })),
     myStreak: vi.fn((): Observable<Streak> =>
       of({ weeks: 3, thisWeek: true, nextBonus: 20, maxBonus: 25 }),
+    ),
+    myPerks: vi.fn((): Observable<Perks> =>
+      of({
+        level: 'REGULAR',
+        waitlistPriority: 1,
+        noticeWeight: 1.1,
+        maxActivePlans: 6,
+        maxSavedAlerts: 6,
+        trustedOrganizer: true,
+      }),
     ),
     myBadges: vi.fn((): Observable<BadgeProgress[]> =>
       of([
@@ -227,6 +238,65 @@ describe('ReputationPage', () => {
 
     expect(element().querySelector('.streak-card')).toBeNull();
     expect(element().querySelector('.score-card__value')?.textContent).toContain('15');
+  });
+
+  it('should explain what my level gives me in plain words (HU-063)', async () => {
+    await create();
+
+    const perks = element().querySelector('.perks-card')!;
+    expect(perks.getAttribute('aria-labelledby')).toBe('perks-title');
+    expect(perks.querySelector('#perks-title')?.textContent).toBe('Mis ventajas');
+    expect(perks.querySelector('.hint')?.textContent).toContain('tu nivel, ⚡ Habitual');
+    const lines = Array.from(perks.querySelectorAll('.perk')).map((line) =>
+      line.textContent?.trim(),
+    );
+    expect(lines).toEqual([
+      'En las listas de espera pasas por delante de quien tiene menos nivel que tú.',
+      'Tienes un 10 % más de opciones de estar entre las primeras personas avisadas de un plan cercano.',
+      'Puedes tener hasta 6 planes publicados a la vez.',
+      'Puedes guardar hasta 6 alertas.',
+      'Tienes el sello «Organizador de confianza»: lo ve quien mira tus planes.',
+    ]);
+    expect(perks.querySelector('.perks-card__trusted-hint')).toBeNull();
+    // The icons are decoration: the text says it all
+    expect(perks.querySelectorAll('.perk .pi[aria-hidden="true"]')).toHaveLength(5);
+  });
+
+  it('should tell what everyone has at the first level, and how the seal is earned', async () => {
+    api.myPerks.mockReturnValueOnce(
+      of({
+        level: 'NEW',
+        waitlistPriority: 0,
+        noticeWeight: 1,
+        maxActivePlans: 5,
+        maxSavedAlerts: 5,
+        trustedOrganizer: false,
+      }),
+    );
+    await create();
+
+    const perks = element().querySelector('.perks-card')!;
+    const lines = Array.from(perks.querySelectorAll('.perk')).map((line) =>
+      line.textContent?.trim(),
+    );
+    expect(lines).toEqual([
+      'En las listas de espera vas por orden de llegada.',
+      'Recibes los avisos de planes cercanos como todo el mundo.',
+      'Puedes tener hasta 5 planes publicados a la vez.',
+      'Puedes guardar hasta 5 alertas.',
+    ]);
+    expect(perks.querySelector('.perks-card__trusted-hint')?.textContent).toContain(
+      'llega con el nivel Habitual y 5 planes organizados',
+    );
+  });
+
+  it('should hide my perks when they cannot be known, without hiding the rest', async () => {
+    api.myPerks.mockReturnValueOnce(throwError(() => new Error('not found')));
+    await create();
+
+    expect(element().querySelector('.perks-card')).toBeNull();
+    expect(element().querySelector('.score-card__value')?.textContent).toContain('15');
+    expect(element().querySelectorAll('.entry')).toHaveLength(2);
   });
 
   it('should explain the bonus of the weekly streak in the ledger', async () => {

@@ -335,6 +335,19 @@ describe('PublishPlan', () => {
     );
   });
 
+  it('should say how many plans at once my level allows when I reach the limit (HU-063)', async () => {
+    api.publish.mockReturnValue(
+      throwError(() => ({ status: 409, error: { code: 'plan.tooManyActive', max: 5 } })),
+    );
+    fillValidPlan();
+    call('publish');
+    await render();
+
+    expect(element().querySelector('.status-message')?.textContent).toContain(
+      'Ya tienes 5 planes publicados sin empezar, el máximo de tu nivel.',
+    );
+  });
+
   it('should ask to wait when the publication limit is reached and keep the form', async () => {
     api.publish.mockReturnValue(
       throwError(() => ({ status: 429, error: { code: 'rate.limited', retryAfterSeconds: 610 } })),

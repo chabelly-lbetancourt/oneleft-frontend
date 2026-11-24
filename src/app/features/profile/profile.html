@@ -91,7 +91,11 @@
             <i class="pi pi-star" aria-hidden="true"></i>
             {{ 'profile.reputation' | transloco }}
             @if (reputation(); as score) {
-              <app-reputation-badge [score]="score.score" [level]="score.level" />
+              <app-reputation-badge
+                [score]="score.score"
+                [level]="score.level"
+                [trusted]="score.trustedOrganizer"
+              />
             }
           </a>
         </div>

@@ -50,7 +50,11 @@
           <div class="social-counts__item">
             <dt>{{ 'reputation.label' | transloco }}</dt>
             <dd class="person-reputation">
-              <app-reputation-badge [score]="reputation()!" [level]="reputationLevel()" />
+              <app-reputation-badge
+                [score]="reputation()!"
+                [level]="reputationLevel()"
+                [trusted]="trustedOrganizer()"
+              />
             </dd>
           </div>
         }

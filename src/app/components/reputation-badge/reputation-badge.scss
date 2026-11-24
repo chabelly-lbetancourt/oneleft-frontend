@@ -3,6 +3,8 @@
 :host {
   @include weight(bold);
   display: inline-flex;
+  // The seal of trusted organizer goes below on a narrow screen instead of overflowing
+  flex-wrap: wrap;
   align-items: center;
   gap: space(1);
   white-space: nowrap;
@@ -24,4 +26,14 @@
   gap: space(1);
   margin-left: space(1);
   color: var(--ol-text-muted);
+}
+
+// Trusted organizer (HU-063): an icon with its text, in the colour of the text, so it never depends on a colour alone
+.reputation-badge__trusted {
+  @include weight(medium);
+  display: inline-flex;
+  align-items: center;
+  gap: space(1);
+  margin-left: space(1);
+  color: var(--ol-text);
 }

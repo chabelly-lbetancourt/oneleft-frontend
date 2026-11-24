@@ -440,6 +440,19 @@
       "CONFIRMED_REPORT": "A confirmed report against you",
       "KUDOS": "Receiving a kudos from someone of your plan"
     },
+    "trustedOrganizer": "Trusted organizer",
+    "perks": {
+      "title": "My perks",
+      "intro": "This is what your level, {{level}}, gives you. The perks get better with each level.",
+      "waitlistBase": "On waiting lists you go in order of arrival.",
+      "waitlistAhead": "On waiting lists you go ahead of people with a lower level than yours.",
+      "noticesBase": "You get the notices of nearby plans like everyone else.",
+      "noticesBoost": "You are {{percent}}% more likely to be among the first people told about a nearby plan.",
+      "plans": "You can have up to {{max}} published plans at once.",
+      "alerts": "You can keep up to {{max}} alerts.",
+      "trusted": "You have the “Trusted organizer” seal: people who look at your plans see it.",
+      "trustedHint": "The “Trusted organizer” seal comes with the Regular level and 5 plans you organized that were held."
+    },
     "fairNote": "If nobody of the group checks in, the plan does not count: nobody loses points for it.",
     "limitsNote": "To keep it fair, each day only up to {{attended}} plans you arrive at, {{organized}} plans you organize and {{kudos}} kudos add points. Kudos in a row from the same person are worth half each time, and those of two people who always give each other kudos add nothing.",
     "limits": {
@@ -646,7 +659,8 @@
       "noPendingRequest": "There is no pending request.",
       "notOrganizer": "Only the organizer can do this.",
       "audienceMismatch": "This plan does not fit your profile (gender or age).",
-      "audienceAge": "The minimum age cannot be above the maximum and must be 18 or more"
+      "audienceAge": "The minimum age cannot be above the maximum and must be 18 or more",
+      "tooManyActive": "You already have {{max}} published plans that have not started, the most your level allows. Wait for one to start to publish another."
     },
     "meetingPoint": {
       "name": "The meeting point needs a name of up to 100 characters"

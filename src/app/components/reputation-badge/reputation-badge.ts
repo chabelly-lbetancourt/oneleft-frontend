@@ -4,7 +4,8 @@ import { levelEmoji, ReputationLevel } from '@shared/model/reputation';
 
 /**
  * The reputation of someone next to their name (HU-009): a star and the score, read as «Reputation 35» by screen
- * readers, and their level when it is known (HU-062): «⚡ Regular», read as «Level Regular».
+ * readers, and their level when it is known (HU-062): «⚡ Regular», read as «Level Regular». Someone with the seal
+ * of trusted organizer (HU-063) has it after the level, as an icon with its text.
  */
 @Component({
   selector: 'app-reputation-badge',
@@ -18,6 +19,12 @@ import { levelEmoji, ReputationLevel } from '@shared/model/reputation';
         ><span aria-hidden="true">{{ emoji() }}</span>
         {{ 'reputation.levels.' + current | transloco }}</span
       >
+    }
+    @if (trusted()) {
+      <span class="reputation-badge__trusted"
+        ><i class="pi pi-verified" aria-hidden="true"></i>
+        {{ 'reputation.trustedOrganizer' | transloco }}</span
+      >
     }`,
   styleUrl: './reputation-badge.scss',
 })
@@ -25,6 +32,8 @@ export class ReputationBadge {
   readonly score = input.required<number>();
   /** The level of someone (HU-062); none while the service does not give it */
   readonly level = input<ReputationLevel | null | undefined>(null);
+  /** The seal of trusted organizer (HU-063); none while the service does not give it */
+  readonly trusted = input<boolean | null | undefined>(false);
 
   protected readonly emoji = computed(() => {
     const level = this.level();

@@ -14,6 +14,7 @@ import {
   DAILY_CAPS,
   LedgerEntry,
   levelEmoji,
+  Perks,
   Reputation,
   REPUTATION_LEVELS,
   REPUTATION_RULES,
@@ -31,9 +32,17 @@ interface LevelProgress {
   next: (typeof REPUTATION_LEVELS)[number];
 }
 
+/** One of my perks (HU-063), as a sentence: its icon, its translation key and the numbers the sentence needs */
+interface PerkLine {
+  id: string;
+  icon: string;
+  key: string;
+  params?: Record<string, number>;
+}
+
 /**
- * «My reputation» (HU-009): my score, my level and how far the next one is, my weekly streak (HU-062), my badges
- * (HU-044), how it works and every entry of my ledger, so I know why it went up or down.
+ * «My reputation» (HU-009): my score, my level and how far the next one is, my weekly streak (HU-062), what my level
+ * gives me (HU-063), my badges (HU-044), how it works and every entry of my ledger, so I know why it went up or down.
  */
 @Component({
   selector: 'app-reputation-page',
@@ -59,6 +68,13 @@ export class ReputationPage implements OnInit {
   protected readonly progress = computed(() => levelProgress(this.reputation()));
   /** My weekly streak (HU-062); null while unknown, without hiding the rest */
   protected readonly streak = signal<Streak | null>(null);
+  /** What my level is worth (HU-063); null while unknown, without hiding the rest */
+  protected readonly perks = signal<Perks | null>(null);
+  protected readonly perkLines = computed(() => perkLines(this.perks()));
+  protected readonly perksEmoji = computed(() => {
+    const perks = this.perks();
+    return perks ? levelEmoji(perks.level) : '';
+  });
   protected readonly entries = signal<LedgerEntry[]>([]);
   protected readonly total = signal(0);
   protected readonly loadError = signal(false);
@@ -83,6 +99,9 @@ export class ReputationPage implements OnInit {
     this.api
       .myStreak()
       .subscribe({ next: (streak) => this.streak.set(streak), error: () => undefined });
+    this.api
+      .myPerks()
+      .subscribe({ next: (perks) => this.perks.set(perks), error: () => undefined });
     this.read(0);
     this.api
       .myBadges()
@@ -138,6 +157,26 @@ export class ReputationPage implements OnInit {
       error: () => this.loadError.set(true),
     });
   }
+}
+
+/** My perks in plain words: the base sentence when my level gives nothing extra, and never a number I was not given */
+function perkLines(perks: Perks | null): PerkLine[] {
+  if (!perks) {
+    return [];
+  }
+  const boost = Math.round((perks.noticeWeight - 1) * 100);
+  return [
+    {
+      id: 'waitlist',
+      icon: 'pi-list',
+      key: perks.waitlistPriority > 0 ? 'waitlistAhead' : 'waitlistBase',
+    },
+    boost > 0
+      ? { id: 'notices', icon: 'pi-bell', key: 'noticesBoost', params: { percent: boost } }
+      : { id: 'notices', icon: 'pi-bell', key: 'noticesBase' },
+    { id: 'plans', icon: 'pi-calendar-plus', key: 'plans', params: { max: perks.maxActivePlans } },
+    { id: 'alerts', icon: 'pi-bookmark', key: 'alerts', params: { max: perks.maxSavedAlerts } },
+  ];
 }
 
 function levelProgress(reputation: Reputation | null): LevelProgress | null {
