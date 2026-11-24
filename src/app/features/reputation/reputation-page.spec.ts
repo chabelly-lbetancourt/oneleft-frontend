@@ -240,6 +240,43 @@ describe('ReputationPage', () => {
     expect(first.querySelector('.points')?.textContent).toBe('+15');
   });
 
+  it('should say why an entry gave fewer points (HU-066)', async () => {
+    api.ledger.mockReturnValueOnce(
+      of({
+        items: [
+          { ...entry('ATTENDED', 0, 'Pádel'), limitedBy: 'DAILY_CAP' },
+          { ...entry('KUDOS', 2, 'Running'), limitedBy: 'SAME_PERSON' },
+          { ...entry('KUDOS', 0, 'Yoga'), limitedBy: 'MUTUAL_PAIR' },
+          { ...entry('KUDOS', 5, 'Tenis'), limitedBy: null },
+        ],
+        page: 0,
+        size: 20,
+        total: 4,
+      }),
+    );
+    await create();
+
+    const entries = element().querySelectorAll('.entry');
+    const limit = (index: number) =>
+      entries[index].querySelector('.entry__limit')?.textContent?.trim();
+    expect(limit(0)).toBe('Ese día ya habías llegado al máximo de puntos por este motivo.');
+    expect(entries[0].querySelector('.points')?.textContent).toBe('0');
+    expect(entries[0].querySelector('.points--negative')).toBeNull();
+    expect(limit(1)).toContain('esa persona ya te había dado kudos hace poco');
+    expect(entries[1].querySelector('.points')?.textContent).toBe('+2');
+    expect(limit(2)).toBe('No suma: os dais kudos muy a menudo el uno al otro.');
+    expect(entries[3].querySelector('.entry__limit')).toBeNull();
+    expect(entries[0].querySelector('.entry__limit .pi')?.getAttribute('aria-hidden')).toBe('true');
+  });
+
+  it('should explain the limits that keep the reputation fair', async () => {
+    await create();
+
+    expect(element().querySelector('.limits-note')?.textContent).toContain(
+      'hasta 4 planes a los que llegas, 3 planes organizados y 10 kudos',
+    );
+  });
+
   it('should explain an entry without a plan and read more pages', async () => {
     api.ledger
       .mockReturnValueOnce(

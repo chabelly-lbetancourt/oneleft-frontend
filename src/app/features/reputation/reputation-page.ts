@@ -11,6 +11,7 @@ import { CardSkeleton } from '@components/card-skeleton/card-skeleton';
 import { PageLayout } from '@layout/page-layout/page-layout';
 import {
   BadgeProgress,
+  DAILY_CAPS,
   LedgerEntry,
   levelEmoji,
   Reputation,
@@ -64,6 +65,8 @@ export class ReputationPage implements OnInit {
   /** My badges (HU-044); empty while unknown, without hiding the rest */
   protected readonly badges = signal<BadgeProgress[]>([]);
   protected readonly rules = REPUTATION_RULES;
+  /** The daily caps, for the note on the limits that keep the reputation fair (HU-066) */
+  protected readonly dailyCaps = DAILY_CAPS;
   private page = 0;
 
   ngOnInit(): void {
@@ -106,8 +109,11 @@ export class ReputationPage implements OnInit {
     return streak.weeks === 0 ? 'reputation.streak.start' : 'reputation.streak.keep';
   }
 
-  /** «+10», «−15» */
+  /** «+10», «−15», and «0» for an entry that gave nothing (HU-066) */
   protected signed(points: number): string {
+    if (points === 0) {
+      return '0';
+    }
     return points > 0 ? `+${points}` : `−${Math.abs(points)}`;
   }
 

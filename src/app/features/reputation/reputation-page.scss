@@ -107,6 +107,13 @@
   color: inherit;
 }
 
+// Why an entry gave fewer points (HU-066): text, not only a colour
+.entry__limit {
+  @include row(space(1), baseline);
+  @include text(sm);
+  color: var(--ol-text-muted);
+}
+
 .points {
   @include weight(bold);
   flex-shrink: 0;

@@ -65,13 +65,26 @@ export interface PersonStats {
   activities: number;
 }
 
-/** An entry of my ledger: why my reputation went up or down. */
+/**
+ * Why an entry gave fewer points than its reason is worth (HU-066): the daily cap of its reason, kudos repeated from
+ * the same person, or two people who keep giving kudos to each other.
+ */
+export type PointsLimit = 'DAILY_CAP' | 'SAME_PERSON' | 'MUTUAL_PAIR';
+
+/** The daily caps of the reasons that have one (HU-066), as the reputation service applies them. */
+export const DAILY_CAPS = { attended: 4, organized: 3, kudos: 10 } as const;
+
+/**
+ * An entry of my ledger: why my reputation went up or down. {@code limitedBy} may be missing while the service does
+ * not give it.
+ */
 export interface LedgerEntry {
   reason: ReputationReason;
   points: number;
   planId: string | null;
   planTitle: string | null;
   occurredAt: string;
+  limitedBy?: PointsLimit | null;
 }
 
 /** A page of the ledger, the latest first. */
