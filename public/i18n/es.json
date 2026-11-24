@@ -250,6 +250,24 @@
     "you": "Tú",
     "nobody": "Todavía no ha llegado nadie."
   },
+  "route": {
+    "title": "Cómo llegar",
+    "modes": "Cómo vas",
+    "mode": {
+      "foot": "A pie",
+      "bike": "En bici"
+    },
+    "show": "Ver la ruta",
+    "hint": "Para calcularla usamos tu ubicación aproximada (unos 100 m) y la enviamos al servicio de rutas de OpenStreetMap (FOSSGIS). Solo cuando lo pides; no la guardamos.",
+    "minutes": "{{minutes}} min",
+    "hours": "{{hours}} h {{minutes}} min",
+    "arrival": "llegas hacia las {{time}} si sales ahora",
+    "start": "Estás aquí",
+    "mapLabel": "Mapa con la ruta hasta {{name}}",
+    "unavailable": "Ahora no podemos calcular la ruta. Abre la navegación en tu app de mapas.",
+    "openInMaps": "Abrir en la app de mapas",
+    "openInOsm": "Abrir la ruta en OpenStreetMap"
+  },
   "social": {
     "networkTitle": "Mi red",
     "personTitle": "Persona",
@@ -988,7 +1006,7 @@
       },
       "sharing": {
         "title": "Con quién los compartimos",
-        "text": "Con las demás personas, solo lo que decides mostrar: tu nombre, tu foto y tu actividad según tu privacidad. Usamos servicios técnicos como el mapa de OpenStreetMap, el tiempo de Open-Meteo y, si eliges entrar con Google, Google. No vendemos tus datos."
+        "text": "Con las demás personas, solo lo que decides mostrar: tu nombre, tu foto y tu actividad según tu privacidad. Usamos servicios técnicos como el mapa de OpenStreetMap, el tiempo de Open-Meteo y, si eliges entrar con Google, Google. Si pides la ruta hasta un punto de encuentro, en ese momento enviamos tu ubicación aproximada al servicio de rutas de OpenStreetMap (FOSSGIS) para calcularla, y a openstreetmap.org si abres allí la ruta; no la guardamos. No vendemos tus datos."
       },
       "keeping": {
         "title": "Cuánto los guardamos",
