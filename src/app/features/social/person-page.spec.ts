@@ -86,7 +86,7 @@ describe('PersonPage', () => {
         {
           provide: ReputationApi,
           useValue: {
-            of: () => of({ userId: 'ana', score: -15 }),
+            of: () => of({ userId: 'ana', score: -15, level: 'NEW', nextLevelAt: 100 }),
             statsOf: () =>
               of({ userId: 'ana', plansCompleted: 12, plansOrganized: 3, activities: 4 }),
             badgesOf: () =>
@@ -122,6 +122,7 @@ describe('PersonPage', () => {
     expect(element().querySelector('.followers-count')?.textContent).toBe('3');
     expect(element().querySelector('.following-count')?.textContent).toBe('1');
     expect(element().querySelector('.person-reputation')?.textContent).toContain('-15');
+    expect(element().querySelector('.person-reputation')?.textContent).toContain('🌱 Nuevo');
     expect(element().querySelector('.person-badges .badge__name')?.textContent).toContain(
       '10 actividades distintas',
     );

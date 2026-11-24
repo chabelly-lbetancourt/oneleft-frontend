@@ -1,6 +1,12 @@
-/** Why the reputation changes (HU-009). */
+/** Why the reputation changes (HU-009); the weekly streak (HU-062) gives a bonus that grows week after week. */
 export type ReputationReason =
-  'ATTENDED' | 'ORGANIZED_HELD' | 'NO_SHOW' | 'LATE_CANCELLATION' | 'CONFIRMED_REPORT' | 'KUDOS';
+  | 'ATTENDED'
+  | 'ORGANIZED_HELD'
+  | 'NO_SHOW'
+  | 'LATE_CANCELLATION'
+  | 'CONFIRMED_REPORT'
+  | 'KUDOS'
+  | 'WEEKLY_STREAK';
 
 /** The rules, in the order they are explained, with their points. */
 export const REPUTATION_RULES: readonly { reason: ReputationReason; points: number }[] = [
@@ -12,10 +18,43 @@ export const REPUTATION_RULES: readonly { reason: ReputationReason; points: numb
   { reason: 'KUDOS', points: 5 },
 ];
 
-/** The score of someone: the sum of their entries, 0 without any. */
+/** The level of someone, from their score (HU-062). */
+export type ReputationLevel = 'NEW' | 'REGULAR' | 'NEIGHBOURHOOD_REFERENCE' | 'LEGEND';
+
+/** The levels, from the lowest, with the score at which each one starts and its emoji. */
+export const REPUTATION_LEVELS: readonly {
+  level: ReputationLevel;
+  minScore: number;
+  emoji: string;
+}[] = [
+  { level: 'NEW', minScore: 0, emoji: '🌱' },
+  { level: 'REGULAR', minScore: 100, emoji: '⚡' },
+  { level: 'NEIGHBOURHOOD_REFERENCE', minScore: 500, emoji: '🔥' },
+  { level: 'LEGEND', minScore: 1500, emoji: '👑' },
+];
+
+/** The emoji of a level. */
+export function levelEmoji(level: ReputationLevel): string {
+  return REPUTATION_LEVELS.find((each) => each.level === level)?.emoji ?? '';
+}
+
+/**
+ * The score of someone: the sum of their entries, 0 without any. The level and the score of the next one (HU-062) may
+ * be missing while the service does not give them; {@code nextLevelAt} is null at the last level.
+ */
 export interface Reputation {
   userId: string;
   score: number;
+  level?: ReputationLevel;
+  nextLevelAt?: number | null;
+}
+
+/** My weekly streak (HU-062): weeks in a row with a plan checked in, and the points of the next week of it. */
+export interface Streak {
+  weeks: number;
+  thisWeek: boolean;
+  nextBonus: number;
+  maxBonus: number;
 }
 
 /** What someone has done (HU-048): only plans held, with a check-in, count. */

@@ -49,7 +49,9 @@
         @if (reputation() !== null) {
           <div class="social-counts__item">
             <dt>{{ 'reputation.label' | transloco }}</dt>
-            <dd class="person-reputation"><app-reputation-badge [score]="reputation()!" /></dd>
+            <dd class="person-reputation">
+              <app-reputation-badge [score]="reputation()!" [level]="reputationLevel()" />
+            </dd>
           </div>
         }
       </dl>

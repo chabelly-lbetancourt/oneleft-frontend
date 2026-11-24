@@ -146,6 +146,7 @@
                   [plan]="nearby.plan"
                   [distanceMeters]="nearby.distanceMeters"
                   [organizerReputation]="scoreOf().get(nearby.plan.organizerId) ?? null"
+                  [organizerLevel]="levelOf().get(nearby.plan.organizerId) ?? null"
                   [organizerPhoto]="photoOf().get(nearby.plan.organizerId) ?? null"
                 />
               </a>

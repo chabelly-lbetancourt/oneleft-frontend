@@ -81,7 +81,12 @@ describe('Profile', () => {
         provideRouter([]),
         { provide: Session, useValue: session },
         { provide: UsersApi, useValue: api },
-        { provide: ReputationApi, useValue: { mine: () => of({ userId: 'a624d063', score: 20 }) } },
+        {
+          provide: ReputationApi,
+          useValue: {
+            mine: () => of({ userId: 'a624d063', score: 20, level: 'NEW', nextLevelAt: 100 }),
+          },
+        },
         { provide: ApproximateLocation, useValue: location },
         { provide: MyPhoto, useValue: myPhoto },
       ],
@@ -105,7 +110,9 @@ describe('Profile', () => {
     expect(element().querySelector('.profile-network')?.getAttribute('href')).toBe('/network');
     const reputation = element().querySelector('.profile-reputation');
     expect(reputation?.getAttribute('href')).toBe('/reputation');
-    expect(reputation?.textContent?.replace(/\s+/g, ' ')).toContain('Mi reputación Reputación 20');
+    expect(reputation?.textContent?.replace(/\s+/g, ' ')).toContain(
+      'Mi reputación Reputación 20 Nivel🌱 Nuevo',
+    );
   });
 
   it('should offer to add a photo, open the file picker and confirm the new one (HU-020)', async () => {

@@ -121,6 +121,7 @@
                   <app-reputation-badge
                     class="organizer-reputation"
                     [score]="organizerReputation()!"
+                    [level]="organizerLevel()"
                   />
                 }
               } @else if (current.organizerName) {
@@ -130,6 +131,7 @@
                   <app-reputation-badge
                     class="organizer-reputation"
                     [score]="organizerReputation()!"
+                    [level]="organizerLevel()"
                   />
                 }
               } @else {

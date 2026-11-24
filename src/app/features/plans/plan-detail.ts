@@ -49,6 +49,7 @@ import {
   Plan,
 } from '@shared/model/published-plan';
 import { photoMap } from '@shared/model/photo';
+import { ReputationLevel } from '@shared/model/reputation';
 import { clockTime, relativeStart, spotsKey } from '@shared/time/plan-time';
 import {
   CalendarEvent,
@@ -110,6 +111,8 @@ export class PlanDetail {
   private forecastOf: string | null = null;
   /** The reputation of the organizer (HU-009); null for guests or when it cannot be known */
   protected readonly organizerReputation = signal<number | null>(null);
+  /** The level of the organizer (HU-062), when the service gives it */
+  protected readonly organizerLevel = signal<ReputationLevel | null>(null);
   /** The photos of the people of the plan (HU-020); without them, the initials as before */
   protected readonly photoOf = signal(new Map<string, string>());
   /** Whose photos were asked last: a reload of the same people asks nothing */
@@ -563,7 +566,10 @@ export class PlanDetail {
           this.reputationApi
             .of(plan.organizerId)
             .pipe(catchError(() => of(null)))
-            .subscribe((reputation) => this.organizerReputation.set(reputation?.score ?? null));
+            .subscribe((reputation) => {
+              this.organizerReputation.set(reputation?.score ?? null);
+              this.organizerLevel.set(reputation?.level ?? null);
+            });
           // Only the organizer sees who is free nearby (HU-035)
           if (plan.organizerId === this.session.userId()) {
             this.api

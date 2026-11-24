@@ -31,7 +31,7 @@
         }
         {{ 'plan.organizer' | transloco: { name: current.organizerName } }}
         @if (organizerReputation() !== null) {
-          · <app-reputation-badge [score]="organizerReputation()!" />
+          · <app-reputation-badge [score]="organizerReputation()!" [level]="organizerLevel()" />
         }
       </p>
     }

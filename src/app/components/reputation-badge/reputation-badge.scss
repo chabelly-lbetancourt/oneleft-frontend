@@ -16,3 +16,12 @@
 :host(.reputation-badge--negative) {
   color: var(--ol-danger-text);
 }
+
+.reputation-badge__level {
+  @include weight(medium);
+  display: inline-flex;
+  align-items: center;
+  gap: space(1);
+  margin-left: space(1);
+  color: var(--ol-text-muted);
+}

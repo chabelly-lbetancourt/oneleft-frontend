@@ -29,7 +29,7 @@ import { ReputationBadge } from '@components/reputation-badge/reputation-badge';
 import { PageLayout } from '@layout/page-layout/page-layout';
 import { activityKey } from '@shared/model/activities';
 import { levelKey, PublicProfile } from '@shared/model/profile';
-import { BadgeProgress, KudosCount, PersonStats } from '@shared/model/reputation';
+import { BadgeProgress, KudosCount, PersonStats, ReputationLevel } from '@shared/model/reputation';
 import { SocialPerson } from '@shared/model/social';
 
 /**
@@ -71,6 +71,8 @@ export class PersonPage {
   protected readonly person = signal<SocialPerson | null>(null);
   /** Their reputation (HU-009); null when it cannot be known */
   protected readonly reputation = signal<number | null>(null);
+  /** Their level (HU-062), when the service gives it */
+  protected readonly reputationLevel = signal<ReputationLevel | null>(null);
   /** The badges they earned (HU-044) */
   protected readonly badges = signal<BadgeProgress[]>([]);
   /** The kudos they received, by kind, the ones they have (HU-060) */
@@ -99,7 +101,10 @@ export class PersonPage {
       this.reputationApi
         .of(id)
         .pipe(catchError(() => of(null)))
-        .subscribe((reputation) => this.reputation.set(reputation?.score ?? null));
+        .subscribe((reputation) => {
+          this.reputation.set(reputation?.score ?? null);
+          this.reputationLevel.set(reputation?.level ?? null);
+        });
       this.photosApi
         .photosOf([id])
         .pipe(catchError(() => of([])))

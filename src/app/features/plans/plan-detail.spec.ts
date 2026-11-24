@@ -615,6 +615,14 @@ describe('PlanDetail', () => {
     await create(PLAN);
     expect(reputationApi.of).toHaveBeenCalledWith('org');
     expect(element().querySelector('.organizer-reputation')?.textContent).toContain('35');
+    // Without a level from the service, the score alone; with it, the level next to it (HU-062)
+    expect(element().querySelector('.reputation-badge__level')).toBeNull();
+
+    reputationApi.of.mockReturnValueOnce(
+      of({ userId: 'org', score: 1500, level: 'LEGEND', nextLevelAt: null }),
+    );
+    await create({ ...PLAN, id: 'plan-3' });
+    expect(element().querySelector('.organizer-reputation')?.textContent).toContain('👑 Leyenda');
 
     reputationApi.of.mockReturnValueOnce(throwError(() => new Error('down')));
     await create({ ...PLAN, id: 'plan-2' });

@@ -373,6 +373,26 @@
     "label": "Reputación",
     "score": "Tu reputación",
     "scoreHint": "Sube cuando llegas a tus planes y baja si no te presentas. La ven quienes quedan contigo.",
+    "levelLabel": "Nivel",
+    "levels": {
+      "NEW": "Nuevo",
+      "REGULAR": "Habitual",
+      "NEIGHBOURHOOD_REFERENCE": "Referente del barrio",
+      "LEGEND": "Leyenda"
+    },
+    "progressValue": "{{score}} de {{next}} puntos",
+    "nextLevel": "Te faltan {{missing}} puntos para {{level}}",
+    "topLevel": "Has llegado al nivel más alto.",
+    "streak": {
+      "title": "Racha semanal",
+      "none": "Todavía no tienes racha",
+      "weeksOne": "1 semana seguida",
+      "weeks": "{{weeks}} semanas seguidas",
+      "nextWeek": "Esta semana ya cuenta. La semana que viene, tu primer check-in suma +{{bonus}}.",
+      "keep": "Haz check-in en un plan esta semana para no perderla: suma +{{bonus}}.",
+      "start": "Haz check-in en un plan esta semana para empezar una racha: suma +{{bonus}}.",
+      "hint": "El primer check-in de cada semana suma 5 puntos más por cada semana seguida, hasta +{{max}}. Las semanas van de lunes a domingo; una semana sin planes corta la racha."
+    },
     "howTitle": "Cómo funciona",
     "rules": {
       "ATTENDED": "Llegar al punto de encuentro (check-in)",
@@ -390,7 +410,8 @@
       "NO_SHOW": "No te presentaste a «{{title}}»",
       "LATE_CANCELLATION": "Cancelaste «{{title}}» a menos de 1 h del inicio",
       "CONFIRMED_REPORT": "Se confirmó un reporte contra ti",
-      "KUDOS": "Un kudos en «{{title}}»"
+      "KUDOS": "Un kudos en «{{title}}»",
+      "WEEKLY_STREAK": "Racha semanal: otra semana seguida con planes"
     },
     "empty": "Todavía no hay movimientos. Llega a tus planes y haz check-in para empezar a sumar.",
     "more": "Ver más",

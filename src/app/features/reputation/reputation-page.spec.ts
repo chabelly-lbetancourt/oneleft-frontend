@@ -10,6 +10,7 @@ import {
   LedgerEntry,
   LedgerPage,
   Reputation,
+  Streak,
 } from '@shared/model/reputation';
 import { ReputationPage } from './reputation-page';
 
@@ -30,6 +31,9 @@ describe('ReputationPage', () => {
   let badgesEarned: Subject<BadgeEarnedNotice>;
   const api = {
     mine: vi.fn((): Observable<Reputation> => of({ userId: 'me', score: 15 })),
+    myStreak: vi.fn((): Observable<Streak> =>
+      of({ weeks: 3, thisWeek: true, nextBonus: 20, maxBonus: 25 }),
+    ),
     myBadges: vi.fn((): Observable<BadgeProgress[]> =>
       of([
         {
@@ -123,6 +127,117 @@ describe('ReputationPage', () => {
 
     expect(api.myBadges).toHaveBeenCalledTimes(2);
     expect(api.mine).toHaveBeenCalledTimes(2);
+  });
+
+  it('should show my level and how far the next one is, as an accessible progress bar', async () => {
+    api.mine.mockReturnValueOnce(
+      of({ userId: 'me', score: 135, level: 'REGULAR', nextLevelAt: 500 }),
+    );
+    await create();
+
+    expect(element().querySelector('.score-card__level')?.textContent).toContain('⚡');
+    expect(element().querySelector('.score-card__level')?.textContent).toContain('Nivel');
+    expect(element().querySelector('.score-card__level')?.textContent).toContain('Habitual');
+    const bar = element().querySelector('[role="progressbar"]')!;
+    expect(bar.getAttribute('aria-valuemin')).toBe('100');
+    expect(bar.getAttribute('aria-valuemax')).toBe('500');
+    expect(bar.getAttribute('aria-valuenow')).toBe('135');
+    expect(bar.getAttribute('aria-valuetext')).toBe('135 de 500 puntos');
+    const label = element().querySelector(`#${bar.getAttribute('aria-labelledby')}`);
+    expect(label?.textContent?.trim()).toBe('Te faltan 365 puntos para 🔥 Referente del barrio');
+    expect(element().querySelector<HTMLElement>('.level-progress__fill')?.style.width).toBe(
+      '8.75%',
+    );
+  });
+
+  it('should start the bar empty with a negative score', async () => {
+    api.mine.mockReturnValueOnce(of({ userId: 'me', score: -10, level: 'NEW', nextLevelAt: 100 }));
+    await create();
+
+    const bar = element().querySelector('[role="progressbar"]')!;
+    expect(bar.getAttribute('aria-valuenow')).toBe('0');
+    expect(element().querySelector('.level-progress')?.textContent).toContain(
+      'Te faltan 110 puntos para ⚡ Habitual',
+    );
+  });
+
+  it('should say that the last level is reached, without a bar', async () => {
+    api.mine.mockReturnValueOnce(
+      of({ userId: 'me', score: 1600, level: 'LEGEND', nextLevelAt: null }),
+    );
+    await create();
+
+    expect(element().querySelector('.score-card__level')?.textContent).toContain('👑');
+    expect(element().querySelector('[role="progressbar"]')).toBeNull();
+    expect(element().querySelector('.level-progress__top')?.textContent).toContain(
+      'Has llegado al nivel más alto',
+    );
+  });
+
+  it('should show the score alone while the service gives no level', async () => {
+    await create();
+
+    expect(element().querySelector('.score-card__level')).toBeNull();
+    expect(element().querySelector('[role="progressbar"]')).toBeNull();
+  });
+
+  it('should show my weekly streak and what the next week gives', async () => {
+    await create();
+
+    const streak = element().querySelector('.streak-card')!;
+    expect(streak.querySelector('h2')?.textContent).toBe('Racha semanal');
+    expect(streak.querySelector('.streak-card__weeks')?.textContent).toContain(
+      '3 semanas seguidas',
+    );
+    expect(streak.querySelector('.streak-card__next')?.textContent).toContain(
+      'Esta semana ya cuenta. La semana que viene, tu primer check-in suma +20.',
+    );
+    expect(streak.textContent).toContain('hasta +25');
+  });
+
+  it('should tell how to keep a streak that has no plan this week yet', async () => {
+    api.myStreak.mockReturnValueOnce(
+      of({ weeks: 1, thisWeek: false, nextBonus: 10, maxBonus: 25 }),
+    );
+    await create();
+
+    const streak = element().querySelector('.streak-card')!;
+    expect(streak.querySelector('.streak-card__weeks')?.textContent).toContain('1 semana seguida');
+    expect(streak.querySelector('.streak-card__next')?.textContent).toContain(
+      'para no perderla: suma +10',
+    );
+  });
+
+  it('should invite to start a streak', async () => {
+    api.myStreak.mockReturnValueOnce(of({ weeks: 0, thisWeek: false, nextBonus: 5, maxBonus: 25 }));
+    await create();
+
+    const streak = element().querySelector('.streak-card')!;
+    expect(streak.querySelector('.streak-card__weeks')?.textContent).toContain(
+      'Todavía no tienes racha',
+    );
+    expect(streak.querySelector('.streak-card__next')?.textContent).toContain(
+      'para empezar una racha: suma +5',
+    );
+  });
+
+  it('should hide the streak when it cannot be known, without hiding the rest', async () => {
+    api.myStreak.mockReturnValueOnce(throwError(() => new Error('not found')));
+    await create();
+
+    expect(element().querySelector('.streak-card')).toBeNull();
+    expect(element().querySelector('.score-card__value')?.textContent).toContain('15');
+  });
+
+  it('should explain the bonus of the weekly streak in the ledger', async () => {
+    api.ledger.mockReturnValueOnce(
+      of({ items: [entry('WEEKLY_STREAK', 15, null)], page: 0, size: 20, total: 1 }),
+    );
+    await create();
+
+    const first = element().querySelector('.entry')!;
+    expect(first.textContent).toContain('Racha semanal: otra semana seguida con planes');
+    expect(first.querySelector('.points')?.textContent).toBe('+15');
   });
 
   it('should explain an entry without a plan and read more pages', async () => {
