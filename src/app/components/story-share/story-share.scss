@@ -24,3 +24,52 @@
   @include cluster(space(3));
   justify-content: center;
 }
+
+// The link of the plan for the link sticker of Instagram (HU-058), under the card
+.story-link {
+  @include stack(space(2));
+  padding-top: space(3);
+  border-top: 1px solid var(--ol-border);
+}
+
+.story-link__title {
+  @include row(space(2));
+  @include weight(semibold);
+  margin: 0;
+}
+
+.story-link__steps {
+  @include text(sm);
+  @include stack(space(1));
+  margin: 0;
+  padding-inline-start: space(5);
+  list-style: decimal;
+}
+
+// The whole link, to copy it by hand where there is no clipboard
+.story-link__url {
+  @include text(sm);
+  @include radius(sm);
+  margin: 0;
+  padding: space(2) space(3);
+  background-color: var(--ol-surface);
+  color: var(--ol-text);
+  overflow-wrap: anywhere;
+  user-select: all;
+}
+
+.story-link__status {
+  @include text(sm);
+  min-height: 1.5em;
+  margin: 0;
+}
+
+.story-link__copied {
+  @include row(space(2));
+  @include weight(semibold);
+  color: var(--ol-text);
+}
+
+.story-link__failed {
+  color: var(--ol-danger-text);
+}

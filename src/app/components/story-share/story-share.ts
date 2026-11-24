@@ -17,10 +17,17 @@ const sharesFiles = (file: File): boolean =>
 /** What the card is: the invitation to a plan with free spots (HU-056) or the summary of a finished one (HU-057). */
 export type StoryKind = 'invite' | 'summary';
 
+/** What happened with the last try to copy the link of the plan */
+export type LinkCopy = 'idle' | 'copied' | 'failed';
+
 /**
  * The card of a plan for Stories: the invitation with its QR code (HU-056) or the summary of a finished plan
  * (HU-057). Made in the device, shown before sharing it, and shared with the share sheet (Instagram, WhatsApp,
  * TikTok…). A browser that cannot share files downloads it instead.
+ *
+ * The invitation comes with the link of the plan for the link sticker of Instagram (HU-058): an image shared with the
+ * share sheet carries no link, and only Instagram itself can add the sticker, so the app copies the link and says how
+ * to paste it. No account of Meta is needed.
  */
 @Component({
   selector: 'app-story-share',
@@ -49,6 +56,11 @@ export class StoryShare {
   protected readonly fileName = computed(
     () => `oneleft-${this.kind() === 'summary' ? 'summary-' : ''}${this.plan().id}.png`,
   );
+  /** The public page of the plan (HU-024): what the QR code and the link sticker open */
+  protected readonly link = computed(() => this.api.shareUrl(this.plan().id));
+  /** Only the invitation asks people to join: a finished plan has nobody to send to it */
+  protected readonly hasLinkSticker = computed(() => this.kind() === 'invite');
+  protected readonly linkCopy = signal<LinkCopy>('idle');
 
   constructor() {
     inject(DestroyRef).onDestroy(() => this.forget());
@@ -58,12 +70,13 @@ export class StoryShare {
     this.busy.set(true);
     this.failed.set(false);
     try {
-      const link = this.api.shareUrl(this.plan().id);
+      const link = this.link();
       const image =
         this.kind() === 'summary'
           ? await this.stories.createSummary(this.summaryTexts(link))
           : await this.stories.create(this.texts(link), link);
       this.forget();
+      this.linkCopy.set('idle');
       this.card.set({ image, url: URL.createObjectURL(image) });
       this.canShare.set(this.platform.isNative() || sharesFiles(this.file(image)));
     } catch {
@@ -90,9 +103,21 @@ export class StoryShare {
     }
   }
 
+  /** Copies the link of the plan, to paste it in the link sticker of the Story (HU-058). */
+  protected async copyLink(): Promise<void> {
+    try {
+      await navigator.clipboard.writeText(this.link());
+      this.linkCopy.set('copied');
+    } catch {
+      // No clipboard (an old browser, or no permission): the link is on the screen to copy it by hand
+      this.linkCopy.set('failed');
+    }
+  }
+
   protected close(): void {
     this.forget();
     this.card.set(null);
+    this.linkCopy.set('idle');
   }
 
   private texts(link: string): StoryTexts {

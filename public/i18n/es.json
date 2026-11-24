@@ -239,7 +239,18 @@
     "missingMany": "¡Faltan {{count}}!",
     "today": "Hoy · {{time}}",
     "tomorrow": "Mañana · {{time}}",
-    "scan": "Escanea y apúntate"
+    "scan": "Escanea y apúntate",
+    "link": {
+      "title": "Enlace para el sticker de Instagram",
+      "hint": "Una imagen no lleva enlace: añádelo en tu Story con el sticker «Enlace» y quien lo toque llegará al plan.",
+      "stepCopy": "Copia el enlace del plan.",
+      "stepStory": "Comparte o descarga la tarjeta y úsala en una Story de Instagram.",
+      "stepSticker": "En la Story, toca el icono de stickers y elige «Enlace».",
+      "stepPaste": "Pega el enlace, toca «Listo» y coloca el sticker donde quieras.",
+      "copy": "Copiar el enlace",
+      "copied": "Enlace copiado: pégalo en el sticker «Enlace».",
+      "copyFailed": "No se ha podido copiar el enlace. Mantenlo pulsado para copiarlo."
+    }
   },
   "summary": {
     "title": "Resumen del plan",

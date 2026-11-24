@@ -19,6 +19,27 @@ const subjectOf = (route: Route): string => {
 /** Width and height of a PNG, from its IHDR chunk */
 const pngSize = (file: Buffer) => ({ width: file.readUInt32BE(16), height: file.readUInt32BE(20) });
 
+/** An open plan of the signed-in person with a free spot, as the service gives it */
+const openPlan = (organizerId: string) => ({
+  id: PLAN_ID,
+  organizerId,
+  organizerName: 'Ana',
+  activity: 'PADEL',
+  title: 'Pádel 2 contra 2',
+  description: null,
+  meetingPoint: { name: 'Pistas de la Albufera', latitude: 40.3912, longitude: -3.6288 },
+  startsAt: new Date(Date.now() + 2 * 3600_000).toISOString(),
+  spots: 3,
+  occupied: 2,
+  freeSpots: 1,
+  level: null,
+  status: 'OPEN',
+  publishedAt: new Date().toISOString(),
+  participants: [],
+  waitlist: [],
+  arrivals: [],
+});
+
 test('makes the card of my plan for Stories and downloads it', async ({ openPage, t }) => {
   const page = await openPage();
   await page.route(
@@ -68,6 +89,45 @@ test('makes the card of my plan for Stories and downloads it', async ({ openPage
   ]);
   expect(download.suggestedFilename()).toBe(`oneleft-${PLAN_ID}.png`);
   expect(pngSize(readFileSync(await download.path()))).toEqual({ width: 1080, height: 1920 });
+});
+
+/**
+ * HU-058 in the web: with the card comes the link of the plan for the link sticker of Instagram. The organizer copies
+ * it and the page says so; the link is the public page of the plan (HU-024). The plan is answered in the browser, so
+ * the test creates nothing.
+ */
+test('copies the link of my plan for the link sticker of the Story', async ({ openPage, t }) => {
+  const page = await openPage();
+  await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
+  await page.route(
+    (url) => url.pathname === `/api/v1/plans/${PLAN_ID}`,
+    (route) => route.fulfill({ json: openPlan(subjectOf(route)) }),
+  );
+  await page.route(
+    (url) => url.pathname.startsWith(`/api/v1/plans/${PLAN_ID}/`),
+    (route) => route.fulfill({ status: 204 }),
+  );
+  await page.goto('/profile');
+  await signIn(page, ANA);
+  await expect(page.locator('.profile-card')).toBeVisible();
+
+  await page.goto(`/plans/${PLAN_ID}`);
+  await page.getByRole('button', { name: t('story.create') }).click();
+
+  const sticker = page.getByRole('group', { name: t('story.link.title') });
+  await expect(sticker.getByRole('listitem')).toHaveText([
+    t('story.link.stepCopy'),
+    t('story.link.stepStory'),
+    t('story.link.stepSticker'),
+    t('story.link.stepPaste'),
+  ]);
+  const link = (await sticker.locator('.story-link__url').innerText()).trim();
+  expect(new URL(link).pathname).toBe(`/share/plans/${PLAN_ID}`);
+
+  await sticker.getByRole('button', { name: t('story.link.copy') }).click();
+
+  await expect(sticker.getByRole('status')).toHaveText(t('story.link.copied'));
+  expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(link);
 });
 
 /**
