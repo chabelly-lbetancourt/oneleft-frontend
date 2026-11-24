@@ -373,6 +373,26 @@
     "label": "Reputation",
     "score": "Your reputation",
     "scoreHint": "It goes up when you arrive at your plans and down if you do not show up. The people you meet can see it.",
+    "levelLabel": "Level",
+    "levels": {
+      "NEW": "New",
+      "REGULAR": "Regular",
+      "NEIGHBOURHOOD_REFERENCE": "Neighbourhood reference",
+      "LEGEND": "Legend"
+    },
+    "progressValue": "{{score}} of {{next}} points",
+    "nextLevel": "{{missing}} points to go until {{level}}",
+    "topLevel": "You reached the highest level.",
+    "streak": {
+      "title": "Weekly streak",
+      "none": "No streak yet",
+      "weeksOne": "1 week in a row",
+      "weeks": "{{weeks}} weeks in a row",
+      "nextWeek": "This week already counts. Next week, your first check-in adds +{{bonus}}.",
+      "keep": "Check in at a plan this week to keep it: it adds +{{bonus}}.",
+      "start": "Check in at a plan this week to start a streak: it adds +{{bonus}}.",
+      "hint": "The first check-in of each week adds 5 more points for every week in a row, up to +{{max}}. Weeks go from Monday to Sunday; a week without plans ends the streak."
+    },
     "howTitle": "How it works",
     "rules": {
       "ATTENDED": "Arriving at the meeting point (check-in)",
@@ -390,7 +410,8 @@
       "NO_SHOW": "You did not show up to «{{title}}»",
       "LATE_CANCELLATION": "You cancelled «{{title}}» less than 1 h before it started",
       "CONFIRMED_REPORT": "A report against you was confirmed",
-      "KUDOS": "A kudos in «{{title}}»"
+      "KUDOS": "A kudos in «{{title}}»",
+      "WEEKLY_STREAK": "Weekly streak: one more week in a row with plans"
     },
     "empty": "Nothing yet. Arrive at your plans and check in to start adding points.",
     "more": "See more",

@@ -18,6 +18,8 @@ describe('ReputationApi', () => {
     http.expectOne({ method: 'GET', url: `${base}/me` }).flush({});
     api.ledger(1).subscribe();
     http.expectOne(`${base}/me/ledger?page=1&size=20`).flush({ items: [] });
+    api.myStreak().subscribe();
+    http.expectOne({ method: 'GET', url: `${base}/me/streak` }).flush({});
     api.of('ana').subscribe();
     http.expectOne({ method: 'GET', url: `${base}/people/ana` }).flush({});
     api.myBadges().subscribe();

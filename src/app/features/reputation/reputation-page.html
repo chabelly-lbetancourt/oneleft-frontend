@@ -7,8 +7,64 @@
       <p class="score-card__value" [class.score-card__value--negative]="score()! < 0">
         <i class="pi pi-star-fill" aria-hidden="true"></i> {{ score() }}
       </p>
+      @if (level(); as current) {
+        <p class="score-card__level">
+          <span class="sr-only">{{ 'reputation.levelLabel' | transloco }}</span>
+          <span aria-hidden="true">{{ levelEmoji() }}</span>
+          {{ 'reputation.levels.' + current | transloco }}
+        </p>
+        @if (progress(); as bar) {
+          <div class="level-progress">
+            <div
+              class="level-progress__bar"
+              role="progressbar"
+              [attr.aria-valuemin]="bar.min"
+              [attr.aria-valuemax]="bar.max"
+              [attr.aria-valuenow]="bar.now"
+              [attr.aria-valuetext]="
+                'reputation.progressValue' | transloco: { score: score(), next: bar.max }
+              "
+              aria-labelledby="level-progress-label"
+            >
+              <span
+                class="level-progress__fill"
+                [style.width.%]="((bar.now - bar.min) * 100) / (bar.max - bar.min)"
+              ></span>
+            </div>
+            <p class="hint" id="level-progress-label">
+              {{
+                'reputation.nextLevel'
+                  | transloco
+                    : {
+                        missing: bar.missing,
+                        level:
+                          bar.next.emoji +
+                          ' ' +
+                          ('reputation.levels.' + bar.next.level | transloco),
+                      }
+              }}
+            </p>
+          </div>
+        } @else {
+          <p class="hint level-progress__top">{{ 'reputation.topLevel' | transloco }}</p>
+        }
+      }
       <p class="hint">{{ 'reputation.scoreHint' | transloco }}</p>
     </section>
+
+    @if (streak(); as current) {
+      <section class="streak-card" aria-labelledby="streak-title">
+        <h2 class="section-title" id="streak-title">{{ 'reputation.streak.title' | transloco }}</h2>
+        <p class="streak-card__weeks">
+          <i class="pi pi-calendar" aria-hidden="true"></i>
+          {{ streakKey(current) | transloco: { weeks: current.weeks } }}
+        </p>
+        <p class="streak-card__next">
+          {{ streakNextKey(current) | transloco: { bonus: current.nextBonus } }}
+        </p>
+        <p class="hint">{{ 'reputation.streak.hint' | transloco: { max: current.maxBonus } }}</p>
+      </section>
+    }
 
     @if (badges().length) {
       <section class="badges-section" aria-labelledby="badges-title">

@@ -5,6 +5,7 @@ import { formatDistance } from '@shared/geo/distance';
 import { activityKey, activityOf } from '@shared/model/activities';
 import { audienceParts } from '@shared/model/audience';
 import { Plan } from '@shared/model/published-plan';
+import { ReputationLevel } from '@shared/model/reputation';
 import { clockTime, relativeStart, spotsKey } from '@shared/time/plan-time';
 import { IconTile } from '@components/icon-tile/icon-tile';
 import { PersonAvatar } from '@components/person-avatar/person-avatar';
@@ -27,6 +28,8 @@ export class PlanTicket {
   readonly distanceMeters = input<number | null>(null);
   /** The reputation of the organizer (HU-009): with it, the ticket says who organizes */
   readonly organizerReputation = input<number | null>(null);
+  /** The level of the organizer (HU-062), next to their reputation */
+  readonly organizerLevel = input<ReputationLevel | null>(null);
   /** The photo of the organizer (HU-020), next to their name */
   readonly organizerPhoto = input<string | null>(null);
 

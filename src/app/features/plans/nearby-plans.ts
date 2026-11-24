@@ -151,6 +151,15 @@ export class NearbyPlans {
         ),
       ),
   );
+  /** Their levels (HU-062), from the same answer */
+  protected readonly levelOf = computed(
+    () =>
+      new Map(
+        (this.organizerScores.hasValue() ? this.organizerScores.value() : []).map(
+          ({ userId, level }) => [userId, level ?? null] as const,
+        ),
+      ),
+  );
   /** The photos of the organizers of the list (HU-020), also in one question */
   protected readonly organizerPhotos = httpResource<PersonPhoto[]>(() => {
     const ids = [...new Set(this.plans().map(({ plan }) => plan.organizerId))].slice(0, 50);

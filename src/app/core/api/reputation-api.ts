@@ -10,6 +10,7 @@ import {
   PersonStats,
   PlanKudos,
   Reputation,
+  Streak,
 } from '@shared/model/reputation';
 
 /** Client of the reputation service through the API Gateway (HU-009). */
@@ -25,6 +26,11 @@ export class ReputationApi {
   /** Why my reputation went up or down, the latest first. */
   ledger(page = 0, size = 20): Observable<LedgerPage> {
     return this.http.get<LedgerPage>(`${this.base}/me/ledger`, { params: { page, size } });
+  }
+
+  /** My weekly streak (HU-062). */
+  myStreak(): Observable<Streak> {
+    return this.http.get<Streak>(`${this.base}/me/streak`);
   }
 
   of(userId: string): Observable<Reputation> {

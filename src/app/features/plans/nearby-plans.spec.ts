@@ -140,11 +140,13 @@ describe('NearbyPlans', () => {
 
     const scores = http.expectOne((request) => request.url.endsWith('/api/v1/reputation/scores'));
     expect(scores.request.params.get('ids')).toBe('org');
-    scores.flush([{ userId: 'org', score: 35 }]);
+    scores.flush([{ userId: 'org', score: 135, level: 'REGULAR', nextLevelAt: 500 }]);
     await render();
 
     const organizer = element().querySelector('.nearby-card .plan-ticket__organizer');
-    expect(organizer?.textContent?.replace(/\s+/g, ' ')).toContain('Organiza Ana · Reputación 35');
+    expect(organizer?.textContent?.replace(/\s+/g, ' ')).toContain(
+      'Organiza Ana · Reputación 135 Nivel⚡ Habitual',
+    );
   });
 
   it('should show the photo of each organizer, asking once for the whole list', async () => {
