@@ -1,7 +1,8 @@
-import { ADMIN, expect, signIn, test, uniqueTitle } from './support/fixtures';
+import { ADMIN, expect, planIdIn, signIn, test, uniqueTitle } from './support/fixtures';
 
 test('publishes a plan with a minimum of participants and finds it in its page and on the home screen', async ({
   openPage,
+  cancelLater,
   t,
 }) => {
   const title = uniqueTitle('E2E publish');
@@ -28,6 +29,8 @@ test('publishes a plan with a minimum of participants and finds it in its page a
   await page.getByRole('button', { name: t('publish.submit') }).click();
 
   await expect(page).toHaveURL(/\/plans\/[0-9a-f-]{36}/);
+  // Published through the interface: registered by hand, so that it is cancelled when the test ends
+  cancelLater(ADMIN, planIdIn(page.url()));
   await expect(page.locator('.plan-card')).toContainText(title);
   await expect(page.locator('.plan-minimum')).toContainText(
     t('plan.minimumPending').split('{{count}}')[0].trim(),
