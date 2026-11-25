@@ -1,0 +1,51 @@
+@use 'abstracts' as *;
+
+// Its parts lay out as content of the page: nothing to cancel and nothing said, no room taken
+:host {
+  display: contents;
+}
+
+// The same quiet box as leaving a plan, with what it costs when it is late
+.cancel-confirm {
+  @include stack(space(3));
+  @include enter(ol-scale-in, 0ms, var(--ol-duration-base));
+}
+
+.cancel-confirm__title {
+  @include weight(semibold);
+}
+
+.cancel-confirm__text {
+  @include text(sm);
+}
+
+.cancel-confirm__late {
+  @include text(sm);
+  @include weight(semibold);
+  color: var(--ol-danger-text);
+}
+
+.cancel-confirm__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: space(2);
+}
+
+// The live region is always there so that its text is announced; empty, it takes no room (and no gap)
+.cancel-status {
+  @include focus-ring;
+
+  &:empty {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+}
+
+.cancel-status__text {
+  @include text(sm);
+  @include weight(semibold);
+  margin: 0;
+}

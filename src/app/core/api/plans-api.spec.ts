@@ -190,4 +190,22 @@ describe('PlansApi', () => {
     expect(http.expectOne(`${base}/me`).request.method).toBe('DELETE');
     http.verify();
   });
+
+  it('should cancel a plan with a DELETE without a body', () => {
+    TestBed.configureTestingModule({
+      providers: [provideHttpClient(), provideHttpClientTesting()],
+    });
+    const api = TestBed.inject(PlansApi);
+    const http = TestBed.inject(HttpTestingController);
+    let done = false;
+
+    api.cancel('plan-1').subscribe(() => (done = true));
+
+    const request = http.expectOne(`${environment.apiUrl}/api/v1/plans/plan-1`);
+    expect(request.request.method).toBe('DELETE');
+    expect(request.request.body).toBeNull();
+    request.flush(null, { status: 204, statusText: 'No Content' });
+    expect(done).toBe(true);
+    http.verify();
+  });
 });

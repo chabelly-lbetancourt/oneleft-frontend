@@ -10,6 +10,13 @@ import { activityKey } from '@shared/model/activities';
 import { PlanNearbyNotice } from '@shared/model/notifications';
 import { clockTime, spotsKey } from '@shared/time/plan-time';
 
+/** The text of a cancelled plan by its reason; one the app does not know yet only says that it was cancelled */
+const CANCELLED_KEYS: Record<string, string> = {
+  MINIMUM_NOT_REACHED: 'notices.cancelled',
+  ORGANIZER: 'notices.cancelledOrganizer',
+};
+const cancelledKey = (reason: string) => CANCELLED_KEYS[reason] ?? 'notices.cancelledOther';
+
 /**
  * Toasts of the personal events: someone joined or left one of my plans, a spot I was waiting for is mine, a plan I
  * like has been published nearby (HU-006) or a plan I am in starts soon (HU-007), I earned a badge (HU-044) or
@@ -87,7 +94,7 @@ export class JoinNotices {
       this.show(
         'pi-times-circle',
         'notices.cancelledTitle',
-        this.transloco.translate('notices.cancelled', {
+        this.transloco.translate(cancelledKey(notice.reason), {
           title: notice.title,
           time: clockTime(new Date(notice.startsAt), this.language.locale()),
         }),

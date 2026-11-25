@@ -59,10 +59,10 @@ describe('apiErrorMessage', () => {
 
     expect(message).toEqual({ key: 'errors.plan.tooManyActive', params: { max: 6 } });
     expect(transloco.translate(message.key, message.params)).toBe(
-      'Ya tienes 6 planes publicados sin empezar, el máximo de tu nivel. Espera a que empiece alguno para publicar otro.',
+      'Ya tienes 6 planes publicados sin empezar, el máximo de tu nivel. Espera a que empiece alguno o cancela uno para publicar otro.',
     );
     expect(transloco.translate(message.key, message.params, 'en')).toBe(
-      'You already have 6 published plans that have not started, the most your level allows. Wait for one to start to publish another.',
+      'You already have 6 published plans that have not started, the most your level allows. Wait for one to start, or cancel one, to publish another.',
     );
   });
 });

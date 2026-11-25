@@ -191,6 +191,15 @@
     "startedHint": "Ya ha empezado: no admite a nadie más.",
     "finishedHint": "Este plan ya terminó.",
     "cancelledHint": "Este plan se canceló.",
+    "cancelledOrganizerHint": "Quien lo organizaba lo ha cancelado.",
+    "cancelledByYouHint": "Cancelaste este plan.",
+    "cancelPlan": "Cancelar plan",
+    "cancelConfirmTitle": "¿Cancelar este plan?",
+    "cancelConfirmNotify": "Avisaremos a quienes se apuntaron o esperaban plaza. No se puede deshacer.",
+    "cancelConfirmLate": "Falta menos de 1 hora para que empiece: cancelarlo ahora te restará {{points}} puntos de reputación.",
+    "cancelYes": "Sí, cancelar el plan",
+    "cancelKeep": "No, mantenerlo",
+    "cancelDone": "Has cancelado el plan. Hemos avisado a quienes se apuntaron.",
     "minimumPending": "Sale si se apuntan al menos {{count}} · lo sabrás a las {{time}}",
     "minimumConfirmed": "Confirmado: se llegó al mínimo de {{count}}",
     "cancelledMinimumHint": "Se canceló porque no se llegó al mínimo de participantes.",
@@ -689,7 +698,7 @@
       "notOrganizer": "Solo el organizador puede hacer esto.",
       "audienceMismatch": "Este plan no encaja con tu perfil (género o edad).",
       "audienceAge": "La edad mínima no puede ser mayor que la máxima y debe ser de 18 o más",
-      "tooManyActive": "Ya tienes {{max}} planes publicados sin empezar, el máximo de tu nivel. Espera a que empiece alguno para publicar otro."
+      "tooManyActive": "Ya tienes {{max}} planes publicados sin empezar, el máximo de tu nivel. Espera a que empiece alguno o cancela uno para publicar otro."
     },
     "meetingPoint": {
       "name": "El lugar necesita un nombre de hasta 100 caracteres"
@@ -719,6 +728,7 @@
       "limited": "Vas demasiado rápido. Vuelve a intentarlo en {{ minutes }} min."
     },
     "leaveFailed": "No se ha podido salir del plan",
+    "cancelFailed": "No se ha podido cancelar el plan. Inténtalo de nuevo.",
     "waitlistFailed": "No se ha podido actualizar la lista de espera",
     "notificationsSaveFailed": "No se han podido guardar tus avisos",
     "pushFailed": "No se han podido activar los avisos en este navegador",
@@ -878,6 +888,8 @@
     "reminder": "«{{title}}» empieza a las {{time}} en {{place}}",
     "cancelledTitle": "Plan cancelado",
     "cancelled": "«{{title}}» de las {{time}} se ha cancelado: no se llegó al mínimo de participantes",
+    "cancelledOrganizer": "«{{title}}» de las {{time}} se ha cancelado: quien lo organizaba lo ha cancelado",
+    "cancelledOther": "«{{title}}» de las {{time}} se ha cancelado",
     "arrivalTitle": "Novedades de tu plan",
     "onTheWay": "{{name}} va de camino a «{{title}}»",
     "late": "{{name}} llegará {{minutes}} min tarde a «{{title}}»",

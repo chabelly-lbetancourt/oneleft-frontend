@@ -344,7 +344,7 @@ describe('PublishPlan', () => {
     await render();
 
     expect(element().querySelector('.status-message')?.textContent).toContain(
-      'Ya tienes 5 planes publicados sin empezar, el máximo de tu nivel.',
+      'Ya tienes 5 planes publicados sin empezar, el máximo de tu nivel. Espera a que empiece alguno o cancela uno',
     );
   });
 

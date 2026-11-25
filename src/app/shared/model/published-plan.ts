@@ -184,14 +184,21 @@ export interface PlanReminderNotice {
   startsAt: string;
 }
 
-/** A plan I am in has been cancelled because it did not reach its minimum (HU-039). */
+/** Why a plan was cancelled: it did not reach its minimum (HU-039) or its organizer cancelled it. */
+export type CancelReason = 'MINIMUM_NOT_REACHED' | 'ORGANIZER';
+
+/** A plan I am in or waiting for has been cancelled. */
 export interface PlanCancelledNotice {
   planId: string;
   title: string;
   placeName: string;
   startsAt: string;
-  reason: 'MINIMUM_NOT_REACHED';
+  /** A {@link CancelReason}; the service may add more, so any other value is told with a generic text */
+  reason: string;
 }
+
+/** From how long before the start cancelling a plan costs its organizer reputation (LATE_CANCELLATION, HU-009) */
+export const LATE_CANCELLATION_MS = 60 * 60_000;
 
 /** A plan from a shared link, without a session (HU-024) */
 export interface PublicPlan extends PublishPlan {

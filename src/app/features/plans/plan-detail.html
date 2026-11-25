@@ -468,6 +468,9 @@
         @if (withMemories()) {
           <app-plan-memories [planId]="current.id" [names]="namesById()" />
         }
+        @if (isOrganizer()) {
+          <app-plan-cancel [plan]="current" (cancelled)="onCancelled()" (failed)="reload()" />
+        }
         @if (canReport()) {
           @if (reporting()) {
             <app-report-form

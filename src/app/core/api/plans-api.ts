@@ -147,6 +147,14 @@ export class PlansApi {
     return this.http.get<Plan[]>(`${this.base}/mine`);
   }
 
+  /**
+   * Cancels a plan I organize before it starts: whoever joined or was waiting is told. Cancelling a plan that is
+   * already cancelled does nothing (204 both times).
+   */
+  cancel(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.base}/${id}`);
+  }
+
   /** Takes a free spot in the plan (HU-005). */
   join(id: string): Observable<Plan> {
     return this.http.post<Plan>(`${this.base}/${id}/participants`, null);

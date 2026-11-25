@@ -1,0 +1,66 @@
+@if (canCancel()) {
+  @if (confirming()) {
+    <div
+      class="cancel-confirm panel-muted"
+      #confirmPanel
+      tabindex="-1"
+      role="group"
+      aria-labelledby="cancel-confirm-title"
+    >
+      <p class="cancel-confirm__title" id="cancel-confirm-title">
+        {{ 'plan.cancelConfirmTitle' | transloco }}
+      </p>
+      <p class="cancel-confirm__text">{{ 'plan.cancelConfirmNotify' | transloco }}</p>
+      @if (late()) {
+        <p class="cancel-confirm__late">
+          <i class="pi pi-exclamation-triangle" aria-hidden="true"></i>
+          {{ 'plan.cancelConfirmLate' | transloco: { points: latePoints } }}
+        </p>
+      }
+      <div class="cancel-confirm__actions">
+        <p-button
+          class="cancel-yes"
+          [label]="'plan.cancelYes' | transloco"
+          icon="pi pi-times-circle"
+          severity="danger"
+          [rounded]="true"
+          [loading]="cancelling()"
+          (onClick)="cancel()"
+        />
+        <p-button
+          class="cancel-keep"
+          [label]="'plan.cancelKeep' | transloco"
+          [text]="true"
+          severity="secondary"
+          [disabled]="cancelling()"
+          (onClick)="keep()"
+        />
+      </div>
+    </div>
+  } @else {
+    <p-button
+      class="cancel-plan"
+      #cancelButton
+      [label]="'plan.cancelPlan' | transloco"
+      icon="pi pi-times-circle"
+      [text]="true"
+      severity="danger"
+      size="small"
+      (onClick)="ask()"
+    />
+  }
+}
+<!-- Always in the page, so that what is written in it is announced -->
+<div class="cancel-status" #status role="status" aria-live="polite" tabindex="-1">
+  @if (done()) {
+    <p class="cancel-status__text">
+      <i class="pi pi-check-circle" aria-hidden="true"></i>
+      {{ 'plan.cancelDone' | transloco }}
+    </p>
+  }
+</div>
+@if (error(); as message) {
+  <p-message severity="error" class="cancel-error">{{
+    message.key | transloco: message.params
+  }}</p-message>
+}
