@@ -1,3 +1,4 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import { TranslocoService } from '@jsverse/transloco';
@@ -7,6 +8,7 @@ import { translocoTesting } from '@testing/transloco-testing';
 import { PhotosApi } from '@core/api/photos-api';
 import { SocialApi } from '@core/api/social-api';
 import { PlansApi } from '@core/api/plans-api';
+import { MemoriesApi } from '@core/api/memories-api';
 import { ReputationApi } from '@core/api/reputation-api';
 import { PersonPhoto } from '@shared/model/photo';
 import { HiddenPlan } from '@shared/model/social';
@@ -96,6 +98,10 @@ describe('PlanDetail', () => {
   };
 
   const usersApi = { demographics: vi.fn() };
+  /** An empty album unless a test says otherwise (HU-052) */
+  const memoriesApi = {
+    page: vi.fn((): Observable<unknown> => of({ items: [], page: 0, size: 20, total: 0 })),
+  };
 
   const create = async (plan: unknown, published?: string, me = 'me') => {
     api.plan.mockReturnValue(plan instanceof Error ? throwError(() => plan) : of(plan));
@@ -129,6 +135,7 @@ describe('PlanDetail', () => {
         { provide: PhotosApi, useValue: photosApi },
         { provide: SocialApi, useValue: socialApi },
         { provide: ReputationApi, useValue: reputationApi },
+        { provide: MemoriesApi, useValue: memoriesApi },
         { provide: Session, useValue: session },
         {
           provide: UserEvents,
@@ -265,6 +272,7 @@ describe('PlanDetail', () => {
         { provide: PhotosApi, useValue: photosApi },
         { provide: SocialApi, useValue: socialApi },
         { provide: ReputationApi, useValue: reputationApi },
+        { provide: MemoriesApi, useValue: memoriesApi },
         { provide: Session, useValue: session },
         {
           provide: UserEvents,
@@ -292,6 +300,7 @@ describe('PlanDetail', () => {
         { provide: PhotosApi, useValue: photosApi },
         { provide: SocialApi, useValue: socialApi },
         { provide: ReputationApi, useValue: reputationApi },
+        { provide: MemoriesApi, useValue: memoriesApi },
         { provide: Session, useValue: session },
         {
           provide: UserEvents,
@@ -1061,5 +1070,46 @@ describe('PlanDetail', () => {
       await create({ ...finished, status }, undefined, PLAN.organizerId);
       expect(element().querySelector('.summary-share')).toBeNull();
     }
+  });
+
+  it('should show the memories to the group of a finished plan (HU-052)', async () => {
+    const past = new Date(Date.now() - 3 * 3600_000).toISOString();
+    const finished = { ...PLAN, startsAt: past, status: 'FINISHED', participants: [LUCIA] };
+    await create(finished, undefined, PLAN.organizerId);
+    expect(memoriesApi.page).toHaveBeenCalledWith('plan-1', 0);
+    expect(element().querySelector('app-plan-memories')?.textContent).toContain('Recuerdos');
+
+    await create(finished, undefined, LUCIA.userId);
+    expect(element().querySelector('app-plan-memories .plan-memories')).not.toBeNull();
+
+    // Not to someone who was not in the plan, nor while it is going on, nor if it was cancelled
+    await create(finished, undefined, 'someone-else');
+    expect(element().querySelector('app-plan-memories')).toBeNull();
+    for (const status of ['OPEN', 'IN_PROGRESS', 'CANCELLED']) {
+      await create({ ...finished, status }, undefined, PLAN.organizerId);
+      expect(element().querySelector('app-plan-memories')).toBeNull();
+    }
+  });
+
+  it('should keep the plan as it is when its album cannot be read (HU-052)', async () => {
+    const past = new Date(Date.now() - 3 * 3600_000).toISOString();
+    const finished = { ...PLAN, startsAt: past, status: 'FINISHED', participants: [LUCIA] };
+    // A service without the album yet: no section
+    memoriesApi.page.mockReturnValueOnce(throwError(() => new HttpErrorResponse({ status: 404 })));
+    await create(finished, undefined, PLAN.organizerId);
+    expect(element().querySelector('.plan-memories')).toBeNull();
+    expect(element().querySelector('.summary-share')).not.toBeNull();
+
+    // The storage does not answer: the section says so
+    memoriesApi.page.mockReturnValueOnce(
+      throwError(
+        () => new HttpErrorResponse({ status: 503, error: { code: 'memory.unavailable' } }),
+      ),
+    );
+    await create(finished, undefined, PLAN.organizerId);
+    expect(element().querySelector('.plan-memories__unavailable')?.textContent).toContain(
+      'Ahora mismo no se pueden ver los recuerdos',
+    );
+    expect(element().querySelector('.plan-card')).not.toBeNull();
   });
 });

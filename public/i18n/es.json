@@ -511,6 +511,35 @@
       "GREAT_ORGANIZER": "Organizó genial 📋"
     }
   },
+  "memories": {
+    "title": "Recuerdos",
+    "hint": "Las fotos del plan, solo para quienes estuvisteis en él. Hasta 10 por persona.",
+    "loading": "Cargando los recuerdos…",
+    "empty": "Aún no hay fotos de este plan. Sube la primera.",
+    "add": "Subir fotos",
+    "uploading": "Subiendo la foto {{current}} de {{total}}…",
+    "uploaded": "Foto añadida al álbum.",
+    "uploadedMany": "{{count}} fotos añadidas al álbum.",
+    "more": "Ver más fotos",
+    "count": "{{shown}} de {{total}} fotos",
+    "you": "Tú",
+    "someone": "Alguien del plan",
+    "altMine": "Foto que subiste el {{date}}",
+    "altOther": "Foto de {{name}}, subida el {{date}}",
+    "remove": "Quitar",
+    "removeLabel": "Quitar la foto que subiste el {{date}}",
+    "removeConfirm": "¿Quitar esta foto del álbum?",
+    "removeYes": "Sí, quitar",
+    "cancel": "Cancelar",
+    "removed": "Has quitado la foto del álbum.",
+    "broken": "No se ha podido mostrar esta foto.",
+    "unavailable": "Ahora mismo no se pueden ver los recuerdos de este plan. Inténtalo en un rato.",
+    "retry": "Reintentar",
+    "errors": {
+      "notImage": "Ese archivo no es una imagen que se pueda leer. Prueba con una foto JPEG, PNG o WebP.",
+      "tooBig": "La foto pesa demasiado. Prueba con otra."
+    }
+  },
   "publish": {
     "title": "Publicar un plan",
     "what": "¿Qué plan es?",
@@ -742,6 +771,23 @@
       "notUploaded": "La foto no llegó a subirse. Inténtalo de nuevo.",
       "key": "No se ha podido guardar la foto. Inténtalo de nuevo.",
       "unavailable": "Ahora mismo no se pueden cambiar las fotos. Inténtalo en un rato."
+    },
+    "memoriesFailed": "No se han podido cargar más fotos. Inténtalo de nuevo.",
+    "memoryUploadFailed": "No se ha podido subir la foto. Inténtalo de nuevo.",
+    "memoryRemoveFailed": "No se ha podido quitar la foto. Inténtalo de nuevo.",
+    "memory": {
+      "planNotFinished": "Las fotos se pueden subir cuando el plan ha terminado.",
+      "personLimit": "Ya has subido 10 fotos a este plan, el máximo por persona. Quita alguna para subir otra.",
+      "planLimit": "El álbum de este plan está lleno: tiene 100 fotos.",
+      "format": "La foto tiene que ser WebP o JPEG.",
+      "empty": "La foto está vacía. Prueba con otra.",
+      "tooBig": "La foto ya reducida pesa más de 2 MB. Prueba con otra.",
+      "key": "No se ha podido guardar la foto. Inténtalo de nuevo.",
+      "notUploaded": "La foto no llegó a subirse. Inténtalo de nuevo.",
+      "notAPhoto": "Ese archivo no es una foto WebP o JPEG. Prueba con otra.",
+      "notFound": "Esa foto ya no está en el álbum.",
+      "notYours": "Solo puedes quitar las fotos que subiste tú.",
+      "unavailable": "Ahora mismo no se pueden guardar ni quitar fotos. Inténtalo en un rato."
     },
     "kudosFailed": "No se ha podido dar el kudos. Inténtalo de nuevo.",
     "kudos": {

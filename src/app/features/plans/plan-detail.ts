@@ -30,6 +30,7 @@ import { ageOf, Demographics } from '@shared/model/demographics';
 import { levelKey } from '@shared/model/profile';
 import { ActivityVisibility } from '@components/activity-visibility/activity-visibility';
 import { PlanKudosPanel } from '@components/plan-kudos/plan-kudos';
+import { PlanMemories } from '@components/plan-memories/plan-memories';
 import { CardSkeleton } from '@components/card-skeleton/card-skeleton';
 import { IconTile } from '@components/icon-tile/icon-tile';
 import { PersonAvatar } from '@components/person-avatar/person-avatar';
@@ -80,6 +81,7 @@ const ENDED: Plan['status'][] = ['IN_PROGRESS', 'FINISHED', 'CANCELLED'];
     PageLayout,
     PersonAvatar,
     PlanCheckIn,
+    PlanMemories,
     PlanRoute,
     ReportForm,
     ReputationBadge,
@@ -235,6 +237,10 @@ export class PlanDetail {
   });
   /** The summary for Stories (HU-057): for the organizer and whoever joined, once the plan has finished */
   protected readonly canShareSummary = computed(
+    () => this.plan()?.status === 'FINISHED' && this.inChat(),
+  );
+  /** The album of the plan (HU-052): its organizer and whoever joined share photos once it has finished */
+  protected readonly withMemories = computed(
     () => this.plan()?.status === 'FINISHED' && this.inChat(),
   );
   /** Browsers without the native share sheet copy the link instead */

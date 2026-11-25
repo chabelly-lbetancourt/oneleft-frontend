@@ -1,0 +1,99 @@
+@use 'abstracts' as *;
+
+:host {
+  display: block;
+}
+
+.plan-memories {
+  @include stack(space(3));
+}
+
+.plan-memories__title {
+  @include text(base);
+  @include weight(semibold);
+}
+
+// Two photos per row on a phone, three from a tablet up
+.plan-memories__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: space(3);
+
+  @include up(sm) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.memory {
+  @include stack(space(1));
+  @include focus-ring;
+  min-width: 0;
+}
+
+.memory__photo {
+  @include radius(md);
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  background-color: var(--ol-surface);
+}
+
+.memory__broken {
+  @include stack(space(2));
+  @include text(xs);
+  align-items: center;
+  justify-content: center;
+  padding: space(2);
+  border: 1px dashed var(--ol-border-strong);
+  color: var(--ol-text-muted);
+  text-align: center;
+}
+
+.memory__who {
+  @include text(sm);
+  @include weight(semibold);
+  @include truncate;
+}
+
+.memory__confirm {
+  @include cluster(space(1));
+}
+
+.memory__question {
+  @include text(sm);
+  flex-basis: 100%;
+}
+
+.plan-memories__unavailable {
+  color: var(--ol-text-soft);
+}
+
+.plan-memories__upload {
+  @include stack(space(2));
+  align-items: flex-start;
+}
+
+.plan-memories__progress {
+  @include stack(space(1));
+  width: 100%;
+
+  progress {
+    width: 100%;
+    accent-color: var(--ol-brand);
+  }
+}
+
+.plan-memories__outcome {
+  @include text(sm);
+  @include focus-ring;
+
+  // Empty, it stays in the page (a hidden live region is not read out) but takes no room
+  &:empty {
+    position: absolute;
+  }
+}
+
+.plan-memories__outcome--done {
+  color: var(--ol-text-soft);
+}

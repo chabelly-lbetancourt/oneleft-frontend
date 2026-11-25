@@ -465,6 +465,9 @@
         @if (withKudos() && inChat()) {
           <app-plan-kudos [planId]="current.id" [names]="namesById()" [photos]="photoOf()" />
         }
+        @if (withMemories()) {
+          <app-plan-memories [planId]="current.id" [names]="namesById()" />
+        }
         @if (canReport()) {
           @if (reporting()) {
             <app-report-form
