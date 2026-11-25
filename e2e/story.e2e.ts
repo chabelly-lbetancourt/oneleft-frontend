@@ -1,5 +1,5 @@
 import { readFileSync } from 'node:fs';
-import { Route } from '@playwright/test';
+import { Locator, Page, Route } from '@playwright/test';
 import { ANA, expect, signIn, test } from './support/fixtures';
 
 /**
@@ -130,15 +130,8 @@ test('copies the link of my plan for the link sticker of the Story', async ({ op
   expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(link);
 });
 
-/**
- * HU-057 in the web: someone of a finished plan makes its summary for Stories and downloads it. The plan and the
- * services its page asks are answered in the browser, so the test creates nothing.
- */
-test('makes the summary of a finished plan for Stories and downloads it', async ({
-  openPage,
-  t,
-}) => {
-  const page = await openPage();
+/** Answers the page of a finished plan the signed-in person was in, and the services that page asks: nothing else. */
+const routeFinishedPlan = async (page: Page): Promise<void> => {
   const joinedAt = new Date(Date.now() - 5 * 3600_000).toISOString();
   await page.route(
     (url) => url.pathname === `/api/v1/plans/${PLAN_ID}`,
@@ -172,11 +165,24 @@ test('makes the summary of a finished plan for Stories and downloads it', async 
     (url) => url.pathname.startsWith(`/api/v1/plans/${PLAN_ID}/`),
     (route) => route.fulfill({ status: 204 }),
   );
-  // No kudos to give: that panel is not what this test is about
+  // No kudos to give: that panel is not what these tests are about
   await page.route(
     (url) => url.pathname === `/api/v1/reputation/plans/${PLAN_ID}/kudos`,
     (route) => route.fulfill({ json: { open: false, until: joinedAt, people: [] } }),
   );
+};
+
+/**
+ * HU-057 in the web: someone of a finished plan makes its summary for Stories and downloads it. The plan and the
+ * services its page asks are answered in the browser, so the test creates nothing. The album is not there (as in a
+ * service that does not have it yet): the summary comes without photos.
+ */
+test('makes the summary of a finished plan for Stories and downloads it', async ({
+  openPage,
+  t,
+}) => {
+  const page = await openPage();
+  await routeFinishedPlan(page);
   await page.goto('/profile');
   await signIn(page, ANA);
   await expect(page.locator('.profile-card')).toBeVisible();
@@ -196,5 +202,100 @@ test('makes the summary of a finished plan for Stories and downloads it', async 
     summary.locator('.story-download').click(),
   ]);
   expect(download.suggestedFilename()).toBe(`oneleft-summary-${PLAN_ID}.png`);
+  expect(pngSize(readFileSync(await download.path()))).toEqual({ width: 1080, height: 1920 });
+});
+
+const STORAGE = 'http://storage.test';
+/** The color of the photos of the album of the test: none of the card */
+const PHOTO_COLOR = [0, 128, 255];
+/** The centre of the row of photos of the summary: with three photos, the middle of the second one */
+const PHOTOS_CENTRE = { x: 540, y: 940 };
+
+/** The color of a point of the card shown, as red, green and blue */
+const colorAt = (preview: Locator, point: { x: number; y: number }): Promise<number[]> =>
+  preview.evaluate(async (image: HTMLImageElement, { x, y }) => {
+    await image.decode();
+    const canvas = document.createElement('canvas');
+    canvas.width = image.naturalWidth;
+    canvas.height = image.naturalHeight;
+    const ctx = canvas.getContext('2d')!;
+    ctx.drawImage(image, 0, 0);
+    return [...ctx.getImageData(x, y, 1, 1).data].slice(0, 3);
+  }, point);
+
+/** How far two colors are, in their channel that differs most */
+const distance = (one: number[], other: number[]): number =>
+  Math.max(...one.map((channel, index) => Math.abs(channel - other[index])));
+
+/**
+ * The summary with the photos of the album of the plan (HU-052 in HU-057). The plan, its album and the storage are
+ * answered in the browser, so the test creates nothing. The storage is another origin: while it does not let the web
+ * read the photos (no CORS headers) the summary comes without them; once it does, they are in the card, which can
+ * still be exported (the canvas is not tainted).
+ */
+test('puts the photos of the album in the summary when the storage lets read them', async ({
+  openPage,
+  t,
+}) => {
+  const page = await openPage();
+  const uploadedAt = new Date(Date.now() - 3600_000).toISOString();
+  const album = ['m3', 'm2', 'm1'].map((id) => ({
+    id,
+    planId: PLAN_ID,
+    userId: '5d1c7c2e-2f0b-4d6e-9a43-0c1e7a9b0002',
+    url: `${STORAGE}/oneleft-photos/memories/${id}.png?X-Amz-Signature=view`,
+    size: 1024,
+    uploadedAt,
+  }));
+  let photo: Buffer = Buffer.alloc(0);
+  let readable = false;
+  await routeFinishedPlan(page);
+  await page.route(
+    (url) => url.pathname === `/api/v1/plans/${PLAN_ID}/memories`,
+    (route) => route.fulfill({ json: { items: album, page: 0, size: 20, total: album.length } }),
+  );
+  await page.route(`${STORAGE}/**`, (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: 'image/png',
+      headers: readable ? { 'access-control-allow-origin': '*' } : {},
+      body: photo,
+    }),
+  );
+  await page.goto('/profile');
+  await signIn(page, ANA);
+  await expect(page.locator('.profile-card')).toBeVisible();
+  // A real image of one color, made by the browser
+  const encoded = await page.evaluate(([red, green, blue]) => {
+    const canvas = document.createElement('canvas');
+    canvas.width = 64;
+    canvas.height = 64;
+    const ctx = canvas.getContext('2d')!;
+    ctx.fillStyle = `rgb(${red}, ${green}, ${blue})`;
+    ctx.fillRect(0, 0, 64, 64);
+    return canvas.toDataURL('image/png').split(',')[1];
+  }, PHOTO_COLOR);
+  photo = Buffer.from(encoded, 'base64');
+
+  await page.goto(`/plans/${PLAN_ID}`);
+  const summary = page.locator('.summary-share');
+  const preview = summary.locator('.story-preview');
+  await summary.getByRole('button', { name: t('summary.create') }).click();
+
+  // The storage does not let the web read the photos: the summary, as it was without them
+  await expect(preview).toBeVisible();
+  expect(await preview.evaluate((image: HTMLImageElement) => image.naturalWidth)).toBe(1080);
+  expect(distance(await colorAt(preview, PHOTOS_CENTRE), PHOTO_COLOR)).toBeGreaterThan(40);
+
+  await summary.getByRole('button', { name: t('story.close') }).click();
+  readable = true;
+  await summary.getByRole('button', { name: t('summary.create') }).click();
+
+  await expect(preview).toBeVisible();
+  expect(distance(await colorAt(preview, PHOTOS_CENTRE), PHOTO_COLOR)).toBeLessThan(8);
+  const [download] = await Promise.all([
+    page.waitForEvent('download'),
+    summary.locator('.story-download').click(),
+  ]);
   expect(pngSize(readFileSync(await download.path()))).toEqual({ width: 1080, height: 1920 });
 });

@@ -263,7 +263,7 @@
   },
   "summary": {
     "title": "Resumen del plan",
-    "hint": "Una imagen con lo que fue el plan, para compartirla en Instagram, WhatsApp o TikTok. Se crea en tu móvil.",
+    "hint": "Una imagen con lo que fue el plan y las últimas fotos de su álbum, si las hay, para compartirla en Instagram, WhatsApp o TikTok. Se crea en tu móvil y la ves antes de compartirla.",
     "create": "Crear el resumen",
     "preview": "Resumen de «{{title}}» para Stories",
     "headline": "¡Plan hecho!",

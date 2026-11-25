@@ -6,6 +6,7 @@ import { PlansApi } from '@core/api/plans-api';
 import { Language } from '@core/i18n/language';
 import { NativePlatform } from '@core/platform';
 import { StoryCard, StoryTexts, SummaryTexts } from '@core/story/story-card';
+import { SummaryPhotos } from '@core/story/summary-photos';
 import { activityKey } from '@shared/model/activities';
 import { Plan } from '@shared/model/published-plan';
 import { clockTime } from '@shared/time/plan-time';
@@ -22,8 +23,9 @@ export type LinkCopy = 'idle' | 'copied' | 'failed';
 
 /**
  * The card of a plan for Stories: the invitation with its QR code (HU-056) or the summary of a finished plan
- * (HU-057). Made in the device, shown before sharing it, and shared with the share sheet (Instagram, WhatsApp,
- * TikTok…). A browser that cannot share files downloads it instead.
+ * (HU-057), with the newest photos of its album if it has any (HU-052). Made in the device, shown before sharing it,
+ * and shared with the share sheet (Instagram, WhatsApp, TikTok…). A browser that cannot share files downloads it
+ * instead.
  *
  * The invitation comes with the link of the plan for the link sticker of Instagram (HU-058): an image shared with the
  * share sheet carries no link, and only Instagram itself can add the sticker, so the app copies the link and says how
@@ -37,6 +39,7 @@ export type LinkCopy = 'idle' | 'copied' | 'failed';
 })
 export class StoryShare {
   private readonly stories = inject(StoryCard);
+  private readonly photos = inject(SummaryPhotos);
   private readonly platform = inject(NativePlatform);
   private readonly api = inject(PlansApi);
   private readonly language = inject(Language);
@@ -73,7 +76,10 @@ export class StoryShare {
       const link = this.link();
       const image =
         this.kind() === 'summary'
-          ? await this.stories.createSummary(this.summaryTexts(link))
+          ? await this.stories.createSummary(
+              this.summaryTexts(link),
+              await this.photos.ofPlan(this.plan().id),
+            )
           : await this.stories.create(this.texts(link), link);
       this.forget();
       this.linkCopy.set('idle');
