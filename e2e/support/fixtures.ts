@@ -1,5 +1,6 @@
 import {
   APIRequestContext,
+  APIResponse,
   BrowserContext,
   BrowserContextOptions,
   Page,
@@ -64,8 +65,16 @@ interface Fixtures {
   t: (key: string) => string;
   /** A new mobile browser (its own session) with the app language chosen and the device location granted. */
   openPage: () => Promise<Page>;
-  /** Publishes a plan through the gateway as a user, 70 minutes from now and about 600 m from the device. */
-  /** Publishes a plan through the gateway; it starts in 70 minutes unless told otherwise. */
+  /**
+   * Registers a plan a user has published, so that it is cancelled when the test ends, also if it fails: each person
+   * can only have a few plans that have not started (409 plan.tooManyActive), and the tests would use them up.
+   * publishPlan does it by itself; a test only calls it for a plan it publishes through the interface.
+   */
+  cancelLater: (user: TestUser, planId: string) => void;
+  /**
+   * Publishes a plan through the gateway, about 600 m from the device; it starts in 70 minutes unless told otherwise.
+   * The plan is cancelled when the test ends.
+   */
   publishPlan: (
     user: TestUser,
     title: string,
@@ -134,10 +143,20 @@ export const test = base.extend<E2eOptions & Fixtures>({
     }
   },
 
-  publishPlan: async ({ request }, use) => {
-    await use((user, title, spots = 2, startsInSeconds = 70 * 60) =>
-      publish(request, user, title, spots, startsInSeconds),
-    );
+  cancelLater: async ({ request }, use) => {
+    const published: PublishedBy[] = [];
+    await use((user, planId) => {
+      published.push({ user, planId });
+    });
+    await cancelPlans(request, published);
+  },
+
+  publishPlan: async ({ request, cancelLater }, use) => {
+    await use(async (user, title, spots = 2, startsInSeconds = 70 * 60) => {
+      const plan = await publish(request, user, title, spots, startsInSeconds);
+      cancelLater(user, plan.id);
+      return plan;
+    });
   },
 
   participate: async ({ request }, use) => {
@@ -209,6 +228,65 @@ const publish = async (
   });
   expect(response.status(), await response.text()).toBe(201);
   return (await response.json()) as PublishedPlan;
+};
+
+interface PublishedBy {
+  user: TestUser;
+  planId: string;
+}
+
+/** The id of the plan whose page is open (/plans/{id}), to register a plan published through the interface. */
+export const planIdIn = (url: string): string => {
+  const id = /\/plans\/([0-9a-f-]{36})/.exec(new URL(url).pathname)?.[1];
+  if (!id) {
+    throw new Error(`No plan in ${url}`);
+  }
+  return id;
+};
+
+/**
+ * Whether the answer to cancelling a plan (DELETE /api/v1/plans/{id}) leaves nothing to clean up:
+ * - 204: cancelled, now or before (the service answers the same both times);
+ * - 409 plan.started: it has started or finished, so it no longer counts as a plan that has not started;
+ * - 404 or 405 without the plan.notFound code: the service does not have the endpoint yet. The tests run against the
+ *   `:pre` images, which do not cancel plans until the backend is promoted.
+ * Anything else (401, 403, 404 plan.notFound, 409 plan.busy, 5xx…) is a failure of the clean-up.
+ */
+const nothingLeftToCancel = async (response: APIResponse): Promise<boolean> => {
+  const status = response.status();
+  if (status === 204) {
+    return true;
+  }
+  const code = ((await response.json().catch(() => null)) as { code?: unknown } | null)?.code;
+  if (status === 409) {
+    return code === 'plan.started';
+  }
+  // TODO(#180): remove this tolerance once the backend in `pre` has DELETE /api/v1/plans/{id}
+  return (status === 404 || status === 405) && code !== 'plan.notFound';
+};
+
+/**
+ * Cancels the plans a test published, each with the token of whoever published it. All of them are tried, and any
+ * that could not be cancelled makes the test fail.
+ */
+const cancelPlans = async (request: APIRequestContext, published: PublishedBy[]) => {
+  const tokens = new Map<string, string>();
+  const failures: string[] = [];
+  for (const { user, planId } of published) {
+    try {
+      const bearer = tokens.get(user.username) ?? (await token(request, user));
+      tokens.set(user.username, bearer);
+      const response = await request.delete(`${API_URL}/api/v1/plans/${planId}`, {
+        headers: { Authorization: `Bearer ${bearer}` },
+      });
+      if (!(await nothingLeftToCancel(response))) {
+        failures.push(`${planId}: ${response.status()} ${await response.text()}`);
+      }
+    } catch (error) {
+      failures.push(`${planId}: ${String(error)}`);
+    }
+  }
+  expect(failures, 'Plans published by the test that could not be cancelled').toEqual([]);
 };
 
 /** A title nobody else has, so each run finds its own plans among the seed ones. */
