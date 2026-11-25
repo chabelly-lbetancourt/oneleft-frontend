@@ -277,4 +277,51 @@ describe('JoinNotices', () => {
       detail: '«Pádel» se ha completado con otra persona. ¡Gracias por pedir plaza!',
     });
   });
+
+  it('should say why a plan was cancelled, and only that it was when the reason is unknown', () => {
+    const cancelled = new Subject<PlanCancelledNotice>();
+    TestBed.configureTestingModule({
+      imports: [JoinNotices, translocoTesting()],
+      providers: [
+        provideRouter([]),
+        {
+          provide: UserEvents,
+          useValue: {
+            joined$: EMPTY,
+            left$: EMPTY,
+            spotFreed$: EMPTY,
+            nearby$: EMPTY,
+            reminder$: EMPTY,
+            cancelled$: cancelled.asObservable(),
+            arrival$: EMPTY,
+            checkIn$: EMPTY,
+            badge$: EMPTY,
+            kudos$: EMPTY,
+            joinRequest$: EMPTY,
+            requestDecided$: EMPTY,
+          },
+        },
+      ],
+    });
+    const fixture = TestBed.createComponent(JoinNotices);
+    const add = vi.spyOn(fixture.debugElement.injector.get(MessageService), 'add');
+    fixture.detectChanges();
+    const notice = {
+      planId: 'p5',
+      title: 'Pádel',
+      placeName: 'Pistas de la Albufera',
+      startsAt: new Date(Date.now() + 3600_000).toISOString(),
+    };
+
+    cancelled.next({ ...notice, reason: 'ORGANIZER' });
+    cancelled.next({ ...notice, reason: 'MINIMUM_NOT_REACHED' });
+    cancelled.next({ ...notice, reason: 'SOMETHING_NEW' });
+
+    expect(add.mock.calls[0][0]).toMatchObject({ summary: 'Plan cancelado', severity: 'warn' });
+    expect(add.mock.calls[0][0].detail).toMatch(
+      /^«Pádel» de las \d{2}:\d{2} se ha cancelado: quien lo organizaba lo ha cancelado$/,
+    );
+    expect(add.mock.calls[1][0].detail).toMatch(/no se llegó al mínimo de participantes$/);
+    expect(add.mock.calls[2][0].detail).toMatch(/^«Pádel» de las \d{2}:\d{2} se ha cancelado$/);
+  });
 });

@@ -76,6 +76,7 @@ describe('PlanDetail', () => {
     checkIns: vi.fn((): Observable<CheckIn[]> => of([])),
     join: vi.fn(),
     leave: vi.fn(),
+    cancel: vi.fn(),
     joinWaitlist: vi.fn(),
     leaveWaitlist: vi.fn(),
   };
@@ -349,6 +350,102 @@ describe('PlanDetail', () => {
     fixture.detectChanges();
     expect(element().querySelector('.ended-hint')?.textContent).toContain('se canceló');
     expect(element().querySelector('.plan-time')?.textContent).not.toContain('·');
+  });
+
+  describe('cancelling my plan', () => {
+    const click = async (selector: string) => {
+      element().querySelector<HTMLButtonElement>(`${selector} button`)!.click();
+      await render();
+    };
+    const startingIn = (minutes: number) => ({
+      ...PLAN,
+      startsAt: new Date(Date.now() + minutes * 60_000).toISOString(),
+    });
+    const problem = (status: number, code: string) =>
+      throwError(() => new HttpErrorResponse({ status, error: { code } }));
+
+    it('should offer it only to the organizer of a plan that has not started nor been cancelled', async () => {
+      await create(PLAN, undefined, 'org');
+      expect(element().querySelector('.cancel-plan')?.textContent).toContain('Cancelar plan');
+
+      await create(PLAN);
+      expect(element().querySelector('.cancel-plan')).toBeNull();
+      await create({ ...PLAN, participants: [{ ...LUCIA, userId: 'me' }] });
+      expect(element().querySelector('.cancel-plan')).toBeNull();
+      await create(startingIn(-1), undefined, 'org');
+      expect(element().querySelector('.cancel-plan')).toBeNull();
+      await create({ ...PLAN, status: 'CANCELLED' }, undefined, 'org');
+      expect(element().querySelector('.cancel-plan')).toBeNull();
+    });
+
+    it('should cancel the plan, show it cancelled and announce it in the live region', async () => {
+      await create(PLAN, undefined, 'org');
+      api.cancel.mockReturnValue(of(undefined));
+      api.plan.mockReturnValue(of({ ...PLAN, status: 'CANCELLED' }));
+
+      await click('.cancel-plan');
+      await click('.cancel-yes');
+
+      expect(api.cancel).toHaveBeenCalledWith('plan-1');
+      expect(api.plan).toHaveBeenCalledTimes(2);
+      expect(element().querySelector('.plan-state')?.textContent).toContain('Cancelado');
+      expect(element().querySelector('.cancel-status')?.textContent).toContain(
+        'Has cancelado el plan',
+      );
+      expect(element().querySelector('.ended-hint')?.textContent).toContain(
+        'Cancelaste este plan.',
+      );
+      expect(element().querySelector('.cancel-plan')).toBeNull();
+      expect(element().querySelector('.cancel-confirm')).toBeNull();
+      expect(document.activeElement).toBe(element().querySelector('.cancel-status'));
+    });
+
+    it('should show the plan cancelled at once, even before it is read again', async () => {
+      await create(PLAN, undefined, 'org');
+      api.cancel.mockReturnValue(of(undefined));
+      api.plan.mockReturnValue(new Subject());
+
+      await click('.cancel-plan');
+      await click('.cancel-yes');
+
+      expect(element().querySelector('.plan-state')?.textContent).toContain('Cancelado');
+    });
+
+    it('should show the plan as it is when it could not be cancelled', async () => {
+      await create(PLAN, undefined, 'org');
+      api.cancel.mockReturnValue(problem(409, 'plan.started'));
+      api.plan.mockReturnValue(of({ ...PLAN, status: 'IN_PROGRESS' }));
+
+      await click('.cancel-plan');
+      await click('.cancel-yes');
+
+      expect(element().querySelector('.cancel-error')?.textContent).toContain(
+        'El plan ya ha empezado.',
+      );
+      expect(element().querySelector('.plan-state')?.textContent).toContain('En curso');
+      expect(element().querySelector('.cancel-plan')).toBeNull();
+    });
+  });
+
+  it('should say who cancelled the plan when its notice arrives', async () => {
+    const notice = { planId: 'plan-1', title: PLAN.title, placeName: 'Pistas', startsAt: '' };
+    // A minimum that was reached: without the notice, nothing says why it was cancelled
+    const minimum = { participants: 1, deadline: PLAN.startsAt, confirmed: true };
+    await create({ ...PLAN, minimum, participants: [{ ...LUCIA, userId: 'me' }] });
+    api.plan.mockReturnValue(of({ ...PLAN, minimum, status: 'CANCELLED' }));
+
+    cancelled.next({ ...notice, startsAt: PLAN.startsAt, reason: 'ORGANIZER' });
+    await render();
+    expect(element().querySelector('.ended-hint')?.textContent).toContain(
+      'Quien lo organizaba lo ha cancelado.',
+    );
+
+    cancelled.next({ ...notice, startsAt: PLAN.startsAt, reason: 'SOMETHING_NEW' });
+    await render();
+    expect(element().querySelector('.ended-hint')?.textContent).toContain('Este plan se canceló.');
+
+    await create({ ...PLAN, minimum, status: 'CANCELLED' });
+    expect(element().querySelector('.ended-hint')?.textContent).toContain('Este plan se canceló.');
   });
 
   it('should reload the plan when someone joins it', async () => {

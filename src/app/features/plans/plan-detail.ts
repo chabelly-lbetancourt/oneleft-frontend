@@ -34,6 +34,7 @@ import { PlanMemories } from '@components/plan-memories/plan-memories';
 import { CardSkeleton } from '@components/card-skeleton/card-skeleton';
 import { IconTile } from '@components/icon-tile/icon-tile';
 import { PersonAvatar } from '@components/person-avatar/person-avatar';
+import { PlanCancel } from '@components/plan-cancel/plan-cancel';
 import { PlanCheckIn } from '@components/plan-check-in/plan-check-in';
 import { PlanRoute } from '@components/plan-route/plan-route';
 import { ReportForm } from '@components/report-form/report-form';
@@ -80,6 +81,7 @@ const ENDED: Plan['status'][] = ['IN_PROGRESS', 'FINISHED', 'CANCELLED'];
     Message,
     PageLayout,
     PersonAvatar,
+    PlanCancel,
     PlanCheckIn,
     PlanMemories,
     PlanRoute,
@@ -191,6 +193,12 @@ export class PlanDetail {
   protected readonly justJoined = signal(false);
   protected readonly justLeft = signal(false);
   protected readonly confirmingLeave = signal(false);
+  /** The plan is mine: its organizer can cancel it until it starts */
+  protected readonly isOrganizer = computed(
+    () => !this.isGuest() && this.plan()?.organizerId === this.session.userId(),
+  );
+  /** Why the plan was cancelled, when known: I cancelled it, or its notice said so. The plan itself does not say */
+  private readonly cancelReason = signal<string | null>(null);
   /** A leave or waiting list request in progress */
   protected readonly busy = signal(false);
   /** Opened from a shared link without a session (HU-024): the public view of the plan */
@@ -358,8 +366,28 @@ export class PlanDetail {
     if (plan?.status === 'FINISHED') {
       return 'plan.finishedHint';
     }
-    return plan?.minimum ? 'plan.cancelledMinimumHint' : 'plan.cancelledHint';
+    return this.cancelledHintKey(plan);
   });
+  /**
+   * Why the plan was cancelled. The plan does not carry the reason: it is known when I cancelled it or its notice
+   * arrived; otherwise a minimum that was not reached is the likely one. An unknown reason only says it was cancelled.
+   */
+  private cancelledHintKey(plan: Plan | null): string {
+    switch (this.cancelReason()) {
+      case 'ORGANIZER':
+        return plan?.organizerId === this.session.userId()
+          ? 'plan.cancelledByYouHint'
+          : 'plan.cancelledOrganizerHint';
+      case 'MINIMUM_NOT_REACHED':
+        return 'plan.cancelledMinimumHint';
+      case null:
+        return plan?.minimum && !plan.minimum.confirmed
+          ? 'plan.cancelledMinimumHint'
+          : 'plan.cancelledHint';
+      default:
+        return 'plan.cancelledHint';
+    }
+  }
   /** Minimum of participants (HU-039), while the plan is upcoming: pending with its deadline, or confirmed */
   protected readonly minimum = computed(() => {
     const plan = this.plan();
@@ -385,7 +413,12 @@ export class PlanDetail {
         untracked(() => this.loadPhotos(plan));
       }
     });
-    effect(() => this.load(this.id()));
+    effect(() => {
+      const id = this.id();
+      // Another plan: what was known about the cancellation of the last one does not apply
+      untracked(() => this.cancelReason.set(null));
+      this.load(id);
+    });
     // The plan is refreshed at once when a notice about it arrives: someone joined or left, or my spot came up
     const events = inject(UserEvents);
     merge(
@@ -401,6 +434,13 @@ export class PlanDetail {
         takeUntilDestroyed(inject(DestroyRef)),
       )
       .subscribe(() => this.load(this.id()));
+    // The notice says why the plan was cancelled (its organizer, or the minimum); the plan does not
+    events.cancelled$
+      .pipe(
+        filter((notice) => notice.planId === this.id()),
+        takeUntilDestroyed(),
+      )
+      .subscribe((notice) => this.cancelReason.set(notice.reason));
   }
 
   /** Loads the plan again, when something about its requests changed (HU-069). */
@@ -527,6 +567,16 @@ export class PlanDetail {
       this.justJoined.set(false);
       this.justLeft.set(true);
     });
+  }
+
+  /**
+   * I have cancelled my plan. Its organizer gets no notice of their own cancellation, so the page shows it cancelled at
+   * once and asks for the plan again.
+   */
+  protected onCancelled(): void {
+    this.cancelReason.set('ORGANIZER');
+    this.plan.update((plan) => plan && { ...plan, status: 'CANCELLED' });
+    this.load(this.id());
   }
 
   protected joinWaitlist(): void {

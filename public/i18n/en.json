@@ -191,6 +191,15 @@
     "startedHint": "It has started: nobody else can join.",
     "finishedHint": "This plan is over.",
     "cancelledHint": "This plan was cancelled.",
+    "cancelledOrganizerHint": "Whoever organized it has cancelled it.",
+    "cancelledByYouHint": "You cancelled this plan.",
+    "cancelPlan": "Cancel plan",
+    "cancelConfirmTitle": "Cancel this plan?",
+    "cancelConfirmNotify": "We will tell everyone who joined or was waiting for a spot. This cannot be undone.",
+    "cancelConfirmLate": "It starts in less than 1 hour: cancelling it now will cost you {{points}} reputation points.",
+    "cancelYes": "Yes, cancel the plan",
+    "cancelKeep": "No, keep it",
+    "cancelDone": "You have cancelled the plan. We have told everyone who joined.",
     "minimumPending": "Goes ahead if at least {{count}} join · you will know at {{time}}",
     "minimumConfirmed": "Confirmed: the minimum of {{count}} was reached",
     "cancelledMinimumHint": "It was cancelled because not enough people joined.",
@@ -689,7 +698,7 @@
       "notOrganizer": "Only the organizer can do this.",
       "audienceMismatch": "This plan does not fit your profile (gender or age).",
       "audienceAge": "The minimum age cannot be above the maximum and must be 18 or more",
-      "tooManyActive": "You already have {{max}} published plans that have not started, the most your level allows. Wait for one to start to publish another."
+      "tooManyActive": "You already have {{max}} published plans that have not started, the most your level allows. Wait for one to start, or cancel one, to publish another."
     },
     "meetingPoint": {
       "name": "The meeting point needs a name of up to 100 characters"
@@ -719,6 +728,7 @@
       "limited": "You are going too fast. Please try again in {{ minutes }} min."
     },
     "leaveFailed": "You could not leave the plan",
+    "cancelFailed": "The plan could not be cancelled. Please try again.",
     "waitlistFailed": "The waiting list could not be updated",
     "notificationsSaveFailed": "Your notices could not be saved",
     "pushFailed": "Notices could not be turned on in this browser",
@@ -878,6 +888,8 @@
     "reminder": "«{{title}}» starts at {{time}} at {{place}}",
     "cancelledTitle": "Plan cancelled",
     "cancelled": "«{{title}}» at {{time}} has been cancelled: not enough people joined",
+    "cancelledOrganizer": "«{{title}}» at {{time}} has been cancelled: whoever organized it cancelled it",
+    "cancelledOther": "«{{title}}» at {{time}} has been cancelled",
     "arrivalTitle": "News of your plan",
     "onTheWay": "{{name}} is on the way to «{{title}}»",
     "late": "{{name}} will be {{minutes}} min late to «{{title}}»",

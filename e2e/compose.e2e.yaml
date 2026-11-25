@@ -1,9 +1,12 @@
 # Overrides for the oneleft-infra Docker Compose in the end-to-end tests: the published backend images
 # (ghcr.io with ONELEFT_IMAGE_TAG, pre by default; ONELEFT_IMAGES=oneleft/ ONELEFT_IMAGE_TAG=dev uses the local builds), no observability stack and a publication limit that the tests never reach.
+# The same for the limit of requests per person and minute (120): the tests sign in as the same few people one after
+# another, far faster than anyone would, and reached it (429 on the profile of Ana after a dozen tests in a row).
 #   docker compose -f ../oneleft-infra/docker/compose.yaml -f e2e/compose.e2e.yaml --profile backend up -d --no-build --wait
 x-e2e-env: &e2e-env
   SPRING_PROFILES_ACTIVE: seed
   RATE_LIMIT_PUBLISH_PER_HOUR: '1000'
+  RATE_LIMIT_API_PER_MINUTE: '1000'
 
 services:
   gateway:
