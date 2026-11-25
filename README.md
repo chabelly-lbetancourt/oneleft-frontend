@@ -141,6 +141,13 @@ La app de Android es la misma compilación de Angular empaquetada con **Capacito
   Actividad y Perfil, por encima de la barra de navegación del sistema. Solo con sesión, y se oculta en el chat, al
   publicar y al iniciar sesión; publicar deja de ser la barra fija del inicio y de «Planes cerca». La web sigue con su
   cabecera.
+- **WebView mínimo: Android System WebView 119** (`android.minWebViewVersion` en
+  [`capacitor.config.ts`](capacitor.config.ts)). Es el Chrome más antiguo para el que compila Angular 22 (su
+  *baseline widely available*), y el CSS de la app (`oklch`, `color-mix` y Tailwind CSS 4) necesita al menos la 111.
+  Con un WebView anterior la app no se abre a medias y sin estilos: Capacitor muestra
+  [`public/webview-update.html`](public/webview-update.html) (`server.errorPath`), una página estática en español e
+  inglés que pide actualizar «Android System WebView» desde Play Store. Esa página no usa el bundle de Angular ni
+  CSS moderno; Capacitor también la muestra si la página principal de la app no llega a cargarse.
 
 Requisitos: Android Studio (o el SDK de Android con `ANDROID_HOME`) y Java 21.
 

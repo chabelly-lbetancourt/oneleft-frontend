@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { RoundedRectContext, traceRoundedRect } from './rounded-rect';
 
 /** Size of a Story (Instagram, WhatsApp, TikTok): vertical, 9:16. */
 export const STORY_WIDTH = 1080;
@@ -62,15 +63,15 @@ export type StoryContext = Pick<
   | 'fillRect'
   | 'fillText'
   | 'measureText'
-  | 'beginPath'
-  | 'roundRect'
   | 'fill'
->;
+> &
+  RoundedRectContext;
 
 const MARGIN = 90;
 const CARD_TOP = 470;
 const CARD_BOTTOM = 1720;
 const CARD_PADDING = 70;
+const CARD_RADIUS = 56;
 const QR_SIZE = 500;
 const SUMMARY_HEADLINE_SIZE = 130;
 
@@ -136,8 +137,13 @@ const startCard = (
   ctx.textBaseline = 'alphabetic';
   write(brand, 180, 800, 76, palette.onBackground);
   ctx.fillStyle = palette.card;
-  ctx.beginPath();
-  ctx.roundRect(MARGIN, CARD_TOP, STORY_WIDTH - 2 * MARGIN, CARD_BOTTOM - CARD_TOP, 56);
+  const card = {
+    x: MARGIN,
+    y: CARD_TOP,
+    width: STORY_WIDTH - 2 * MARGIN,
+    height: CARD_BOTTOM - CARD_TOP,
+  };
+  traceRoundedRect(ctx, card, CARD_RADIUS);
   ctx.fill();
   return write;
 };

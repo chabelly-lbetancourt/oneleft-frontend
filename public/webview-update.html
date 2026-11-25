@@ -1,0 +1,121 @@
+<!doctype html>
+<!--
+  Shown by the Android app instead of the app itself when Android System WebView is older than the minimum
+  (android.minWebViewVersion and server.errorPath in capacitor.config.ts, #183). It must work on any WebView: no
+  bundle, no translations file, no script and only CSS that every WebView understands.
+-->
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <title>OneLeft · Actualiza Android System WebView / Update Android System WebView</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <style>
+      :root {
+        --page-background: #fafaf9;
+        --page-text: #1c1917;
+        --page-text-muted: #57534e;
+        --page-accent: #b93709;
+        --page-on-accent: #ffffff;
+        --page-border: #d6d3d1;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --page-background: #0c0a09;
+          --page-text: #f5f5f4;
+          --page-text-muted: #d6d3d1;
+          --page-accent: #ff8138;
+          --page-on-accent: #1c1917;
+          --page-border: #57534e;
+        }
+      }
+      html {
+        background: #fafaf9;
+        background: var(--page-background);
+      }
+      body {
+        max-width: 32rem;
+        margin: 0 auto;
+        padding: 2rem 1.5rem;
+        color: #1c1917;
+        color: var(--page-text);
+        font-family: Roboto, 'Segoe UI', Helvetica, Arial, sans-serif;
+        font-size: 1rem;
+        line-height: 1.5;
+      }
+      .brand {
+        margin: 0 0 1.5rem;
+        font-size: 1.5rem;
+        font-weight: 700;
+      }
+      .brand span {
+        color: #b93709;
+        color: var(--page-accent);
+      }
+      h1 {
+        margin: 0 0 0.75rem;
+        font-size: 1.375rem;
+        line-height: 1.25;
+      }
+      p {
+        margin: 0 0 1rem;
+        color: #57534e;
+        color: var(--page-text-muted);
+      }
+      section + section {
+        margin-top: 2rem;
+        padding-top: 2rem;
+        border-top: 1px solid #d6d3d1;
+        border-top: 1px solid var(--page-border);
+      }
+      .action {
+        display: inline-block;
+        min-height: 1.5rem;
+        padding: 0.75rem 1.25rem;
+        border-radius: 0.5rem;
+        background: #b93709;
+        background: var(--page-accent);
+        color: #ffffff;
+        color: var(--page-on-accent);
+        font-weight: 700;
+        text-decoration: none;
+      }
+      .action:focus {
+        outline: 3px solid #1c1917;
+        outline: 3px solid var(--page-text);
+        outline-offset: 3px;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <p class="brand">One<span>Left</span></p>
+      <section lang="es">
+        <h1>Actualiza Android System WebView</h1>
+        <p>
+          OneLeft necesita la versión 119 o posterior de Android System WebView, y la de este
+          dispositivo es más antigua. Actualiza «Android System WebView» desde Play Store (en
+          Android 7, 8 y 9, actualiza «Chrome») y vuelve a abrir OneLeft.
+        </p>
+        <a
+          class="action"
+          href="https://play.google.com/store/apps/details?id=com.google.android.webview"
+          >Abrir Play Store</a
+        >
+      </section>
+      <section lang="en">
+        <h1>Update Android System WebView</h1>
+        <p>
+          OneLeft needs version 119 or later of Android System WebView, and the one on this device
+          is older. Update “Android System WebView” from Play Store (on Android 7, 8 and 9, update
+          “Chrome”) and open OneLeft again.
+        </p>
+        <a
+          class="action"
+          href="https://play.google.com/store/apps/details?id=com.google.android.webview"
+          >Open Play Store</a
+        >
+      </section>
+    </main>
+  </body>
+</html>

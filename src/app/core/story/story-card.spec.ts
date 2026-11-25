@@ -12,7 +12,10 @@ import {
   wrapText,
 } from './story-card';
 
-/** A 2D context that measures 30 px per character and keeps what is drawn (jsdom has no canvas). */
+/**
+ * A 2D context that measures 30 px per character and keeps what is drawn (jsdom has no canvas). Like an old WebView of
+ * Android, it has no `roundRect` (#183).
+ */
 const fakeContext = () => {
   const texts: { text: string; font: string; color: string }[] = [];
   const rects: { x: number; y: number; width: number; height: number; color: string }[] = [];
@@ -29,10 +32,12 @@ const fakeContext = () => {
     },
     measureText: (text: string) => ({ width: text.length * 30 }) as TextMetrics,
     beginPath: vi.fn(),
-    roundRect: vi.fn(),
+    moveTo: vi.fn(),
+    arcTo: vi.fn(),
+    closePath: vi.fn(),
     fill: vi.fn(),
   };
-  return { ctx: ctx as unknown as StoryContext, texts, rects };
+  return { ctx: ctx as unknown as StoryContext, texts, rects, arcTo: ctx.arcTo, fill: ctx.fill };
 };
 
 const TEXTS: StoryTexts = {
@@ -93,6 +98,17 @@ describe('drawStory', () => {
         ({ x, y, width }) => x > 0 && y > 0 && x + width < STORY_WIDTH && y + width < STORY_HEIGHT,
       ),
     ).toBe(true);
+  });
+
+  it('should round the white card where the canvas has no roundRect (#183)', () => {
+    const { ctx, arcTo, fill } = fakeContext();
+
+    drawStory(ctx, TEXTS, CHESS, PALETTE, 'Plus Jakarta Sans');
+
+    // The four corners of the card, from its top right one, and the card filled once
+    expect(arcTo).toHaveBeenCalledTimes(4);
+    expect(arcTo).toHaveBeenNthCalledWith(1, 990, 470, 990, 1720, 56);
+    expect(fill).toHaveBeenCalledTimes(1);
   });
 });
 
