@@ -229,9 +229,10 @@ const distance = (one: number[], other: number[]): number =>
 
 /**
  * The summary with the photos of the album of the plan (HU-052 in HU-057). The plan, its album and the storage are
- * answered in the browser, so the test creates nothing. The storage is another origin: while it does not let the web
- * read the photos (no CORS headers) the summary comes without them; once it does, they are in the card, which can
- * still be exported (the canvas is not tainted).
+ * answered in the browser, so the test creates nothing. The storage is another origin: while the web cannot read the
+ * photos the summary comes without them; once it can, they are in the card, which can still be exported (the canvas
+ * is not tainted). A storage that sends no CORS headers is a failed request for the page, and that is what the test
+ * gives: Playwright adds those headers itself to the answers it fulfills.
  */
 test('puts the photos of the album in the summary when the storage lets read them', async ({
   openPage,
@@ -255,12 +256,14 @@ test('puts the photos of the album in the summary when the storage lets read the
     (route) => route.fulfill({ json: { items: album, page: 0, size: 20, total: album.length } }),
   );
   await page.route(`${STORAGE}/**`, (route) =>
-    route.fulfill({
-      status: 200,
-      contentType: 'image/png',
-      headers: readable ? { 'access-control-allow-origin': '*' } : {},
-      body: photo,
-    }),
+    readable
+      ? route.fulfill({
+          status: 200,
+          contentType: 'image/png',
+          headers: { 'access-control-allow-origin': '*' },
+          body: photo,
+        })
+      : route.abort('failed'),
   );
   await page.goto('/profile');
   await signIn(page, ANA);
@@ -282,7 +285,7 @@ test('puts the photos of the album in the summary when the storage lets read the
   const preview = summary.locator('.story-preview');
   await summary.getByRole('button', { name: t('summary.create') }).click();
 
-  // The storage does not let the web read the photos: the summary, as it was without them
+  // The web cannot read the photos: the summary, as it was without them
   await expect(preview).toBeVisible();
   expect(await preview.evaluate((image: HTMLImageElement) => image.naturalWidth)).toBe(1080);
   expect(distance(await colorAt(preview, PHOTOS_CENTRE), PHOTO_COLOR)).toBeGreaterThan(40);
