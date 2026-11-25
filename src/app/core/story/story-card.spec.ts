@@ -19,6 +19,13 @@ import {
 const fakeContext = () => {
   const texts: { text: string; font: string; color: string }[] = [];
   const rects: { x: number; y: number; width: number; height: number; color: string }[] = [];
+  /** What happens to the path and to the images, in order */
+  const steps: (string | number | object)[][] = [];
+  const step =
+    (name: string) =>
+    (...args: (number | object)[]) => {
+      steps.push([name, ...args]);
+    };
   const ctx = {
     fillStyle: '',
     font: '',
@@ -36,8 +43,19 @@ const fakeContext = () => {
     arcTo: vi.fn(),
     closePath: vi.fn(),
     fill: vi.fn(),
+    save: step('save'),
+    restore: step('restore'),
+    clip: step('clip'),
+    drawImage: step('drawImage'),
   };
-  return { ctx: ctx as unknown as StoryContext, texts, rects, arcTo: ctx.arcTo, fill: ctx.fill };
+  return {
+    ctx: ctx as unknown as StoryContext,
+    texts,
+    rects,
+    steps,
+    arcTo: ctx.arcTo,
+    fill: ctx.fill,
+  };
 };
 
 const TEXTS: StoryTexts = {
@@ -170,6 +188,64 @@ describe('drawSummary', () => {
   });
 });
 
+describe('drawSummary with photos of the album (HU-052)', () => {
+  /** A decoded photo of that size */
+  const photo = (width: number, height: number) =>
+    ({ width, height, close: vi.fn() }) as unknown as ImageBitmap;
+
+  it('should draw the photos in a centered row, each cut to a square from its centre and clipped', () => {
+    const { ctx, steps, arcTo } = fakeContext();
+    const wide = photo(1600, 900);
+    const tall = photo(600, 800);
+
+    drawSummary(ctx, SUMMARY, PALETTE, 'Plus Jakarta Sans', [wide, tall]);
+
+    // Two squares of 240 px with 20 px between them, centered in the 1080 px of the story
+    expect(steps).toEqual([
+      ['save'],
+      ['clip'],
+      ['drawImage', wide, 350, 0, 900, 900, 290, 820, 240, 240],
+      ['restore'],
+      ['save'],
+      ['clip'],
+      ['drawImage', tall, 0, 100, 600, 600, 550, 820, 240, 240],
+      ['restore'],
+    ]);
+    // The white card and the two photos, with rounded corners and no roundRect (#183)
+    expect(arcTo).toHaveBeenCalledTimes(12);
+    expect(arcTo).toHaveBeenNthCalledWith(5, 530, 820, 530, 1060, 28);
+  });
+
+  it('should keep every text of the summary, with a smaller figure that leaves room for the photos', () => {
+    const { ctx, texts } = fakeContext();
+
+    drawSummary(ctx, SUMMARY, PALETTE, 'Plus Jakarta Sans', [photo(800, 800)]);
+
+    expect(texts.map(({ text }) => text)).toEqual([
+      'OneLeft',
+      '¡Plan hecho!',
+      'PÁDEL',
+      'Pádel 2 contra 2',
+      '4',
+      'PERSONAS',
+      '24 de noviembre',
+      'Pistas de la Albufera',
+      'oneleft.example.com',
+    ]);
+    expect(texts[4].font).toBe('800 230px Plus Jakarta Sans');
+  });
+
+  it('should draw the summary as before when there are no photos', () => {
+    const { ctx, texts, steps, arcTo } = fakeContext();
+
+    drawSummary(ctx, SUMMARY, PALETTE, 'Plus Jakarta Sans', []);
+
+    expect(steps).toEqual([]);
+    expect(arcTo).toHaveBeenCalledTimes(4);
+    expect(texts[4].font).toBe('800 340px Plus Jakarta Sans');
+  });
+});
+
 describe('wrapText', () => {
   it('should split a long text in the lines that fit and end the last one with an ellipsis', () => {
     const { ctx } = fakeContext();
@@ -229,6 +305,36 @@ describe('StoryCard', () => {
     expect([canvas.width, canvas.height]).toEqual([STORY_WIDTH, STORY_HEIGHT]);
     expect(texts.map(({ text }) => text)).toContain('¡Plan hecho!');
     expect(rects).toHaveLength(1);
+  });
+
+  it('should draw the photos of the album in the summary and close them afterwards (HU-052)', async () => {
+    const { ctx, steps } = fakeContext();
+    vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue(
+      ctx as unknown as CanvasRenderingContext2D,
+    );
+    vi.spyOn(HTMLCanvasElement.prototype, 'toBlob').mockImplementation((callback) =>
+      callback(new Blob(['png'], { type: 'image/png' })),
+    );
+    const photos = [0, 1].map(
+      () => ({ width: 800, height: 600, close: vi.fn() }) as unknown as ImageBitmap,
+    );
+
+    const image = await TestBed.inject(StoryCard).createSummary(SUMMARY, photos);
+
+    expect(image.type).toBe('image/png');
+    expect(steps.filter(([name]) => name === 'drawImage').map(([, drawn]) => drawn)).toEqual(
+      photos,
+    );
+    expect(photos.every((photo) => vi.mocked(photo.close).mock.calls.length === 1)).toBe(true);
+  });
+
+  it('should close the photos of the album when the summary cannot be made', async () => {
+    vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue(null);
+    const photo = { width: 800, height: 600, close: vi.fn() } as unknown as ImageBitmap;
+
+    await expect(TestBed.inject(StoryCard).createSummary(SUMMARY, [photo])).rejects.toThrow();
+
+    expect(photo.close).toHaveBeenCalledTimes(1);
   });
 
   it('should fail when the image cannot be made', async () => {

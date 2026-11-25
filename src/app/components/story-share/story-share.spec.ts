@@ -5,6 +5,7 @@ import { PlansApi } from '@core/api/plans-api';
 import { Language } from '@core/i18n/language';
 import { NativePlatform } from '@core/platform';
 import { StoryCard } from '@core/story/story-card';
+import { SummaryPhotos } from '@core/story/summary-photos';
 import { Plan } from '@shared/model/published-plan';
 import { clockTime } from '@shared/time/plan-time';
 import { StoryKind, StoryShare } from './story-share';
@@ -32,6 +33,10 @@ describe('StoryShare', () => {
   const stories = {
     create: vi.fn(() => Promise.resolve(image)),
     createSummary: vi.fn(() => Promise.resolve(image)),
+  };
+  /** The photos of the album, already decoded: none unless a test says otherwise */
+  const photos = {
+    ofPlan: vi.fn<(planId: string) => Promise<ImageBitmap[]>>(() => Promise.resolve([])),
   };
   const platform = { isNative: vi.fn(() => false), shareImage: vi.fn(() => Promise.resolve()) };
   const share = vi.fn(() => Promise.resolve());
@@ -72,6 +77,7 @@ describe('StoryShare', () => {
       imports: [StoryShare, translocoTesting()],
       providers: [
         { provide: StoryCard, useValue: stories },
+        { provide: SummaryPhotos, useValue: photos },
         { provide: NativePlatform, useValue: platform },
         {
           provide: PlansApi,
@@ -174,17 +180,20 @@ describe('StoryShare', () => {
       await click('.story-create');
 
       expect(stories.create).not.toHaveBeenCalled();
-      expect(stories.createSummary).toHaveBeenCalledWith({
-        brand: 'OneLeft',
-        headline: '¡Plan hecho!',
-        activity: 'Pádel',
-        title: 'Pádel 2 contra 2',
-        people: '4',
-        peopleLabel: 'personas',
-        when: startsAt.toLocaleDateString('es-ES', { day: 'numeric', month: 'long' }),
-        place: 'Pistas de la Albufera',
-        link: 'oneleft.example.com',
-      });
+      expect(stories.createSummary).toHaveBeenCalledWith(
+        {
+          brand: 'OneLeft',
+          headline: '¡Plan hecho!',
+          activity: 'Pádel',
+          title: 'Pádel 2 contra 2',
+          people: '4',
+          peopleLabel: 'personas',
+          when: startsAt.toLocaleDateString('es-ES', { day: 'numeric', month: 'long' }),
+          place: 'Pistas de la Albufera',
+          link: 'oneleft.example.com',
+        },
+        [],
+      );
       const preview = element().querySelector<HTMLImageElement>('.story-preview')!;
       expect(preview.getAttribute('src')).toBe('blob:card');
       expect(preview.alt).toBe('Resumen de «Pádel 2 contra 2» para Stories');
@@ -199,7 +208,30 @@ describe('StoryShare', () => {
 
       expect(stories.createSummary).toHaveBeenCalledWith(
         expect.objectContaining({ people: '1', peopleLabel: 'persona', activity: 'Petanca' }),
+        [],
       );
+    });
+
+    it('should put the newest photos of the album of the plan in the summary (HU-052)', async () => {
+      const album = [{ width: 800, height: 600 }] as ImageBitmap[];
+      photos.ofPlan.mockReturnValueOnce(Promise.resolve(album));
+      await create(FINISHED, 'summary');
+      expect(element().querySelector('.story-share .hint')?.textContent).toContain(
+        'las últimas fotos de su álbum',
+      );
+
+      await click('.story-create');
+
+      expect(photos.ofPlan).toHaveBeenCalledExactlyOnceWith('plan-1');
+      expect(stories.createSummary).toHaveBeenCalledWith(expect.any(Object), album);
+      expect(element().querySelector('.story-preview')).not.toBeNull();
+    });
+
+    it('should not ask for the album for the invitation to a plan', async () => {
+      await create();
+      await click('.story-create');
+
+      expect(photos.ofPlan).not.toHaveBeenCalled();
     });
 
     it('should share the summary with the share sheet, under its own file name', async () => {
